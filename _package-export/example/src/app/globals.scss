@@ -340,35 +340,35 @@ button {
 }
 
 // Animation demo
-@keyframes float {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(60px); }
+@keyframes slide {
+  0%, 100% { left: 0; }
+  50% { left: calc(100% - 16px); }
 }
 
 .animation-demo {
-  display: flex;
-  align-items: center;
-  gap: 3rem;
   padding: 1.5rem 0;
   margin-top: 0.5rem;
 }
 
-.floating-circle {
-  width: 20px;
-  height: 20px;
+.slider-track {
+  position: relative;
+  width: 100%;
+  max-width: 200px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 2px;
+}
+
+.slider-circle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
   border-radius: 50%;
-  background: #667eea;
-  animation: float 2.5s ease-in-out infinite;
-
-  &.delay-1 {
-    animation-delay: -0.8s;
-    background: #f5576c;
-  }
-
-  &.delay-2 {
-    animation-delay: -1.6s;
-    background: #4facfe;
-  }
+  background: #4C74FF;
+  animation: slide 2s ease-in-out infinite;
 }
 
 // Footer

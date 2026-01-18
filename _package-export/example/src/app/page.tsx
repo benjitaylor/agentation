@@ -380,12 +380,12 @@ export default function RootLayout({ children }) {
         <section className="demo-section">
           <h2>Animation pause demo</h2>
           <p>
-            Click the pause button in the toolbar to freeze these animations:
+            Click the pause button in the toolbar to freeze this animation:
           </p>
           <div className="animation-demo">
-            <div className="floating-circle" />
-            <div className="floating-circle delay-1" />
-            <div className="floating-circle delay-2" />
+            <div className="slider-track">
+              <div className="slider-circle" />
+            </div>
           </div>
         </section>
 
