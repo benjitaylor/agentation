@@ -8,14 +8,14 @@ function AnimatedLogo() {
     <svg width="157" height="32" viewBox="0 0 157 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Agentation">
       <style>{`
         @keyframes lookAround {
-          0%, 85%, 100% { transform: translate(0, 0); }
-          88% { transform: translate(1px, 0); }
-          91% { transform: translate(1px, -0.5px); }
-          94% { transform: translate(-1px, -0.5px); }
-          97% { transform: translate(-1px, 0); }
+          0%, 100% { transform: translate(0, 0); }
+          12%, 18% { transform: translate(0.8px, 0); }
+          35%, 42% { transform: translate(-0.6px, -0.3px); }
+          60%, 68% { transform: translate(0, 0); }
+          80%, 88% { transform: translate(-0.5px, 0.2px); }
         }
         .bunny-eye {
-          animation: lookAround 4s ease-in-out infinite;
+          animation: lookAround 8s ease-in-out infinite;
         }
       `}</style>
       {/* Slash */}
