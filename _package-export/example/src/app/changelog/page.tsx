@@ -35,6 +35,18 @@ export default function ChangelogPage() {
           <li>Smooth exit animations - Element outline fades out when annotation is submitted</li>
         </ul>
 
+        <h3>Bug Fixes</h3>
+        <ul>
+          <li>Drag selection detection - Fixed issue where not all elements inside the green boundary were being selected
+            <ul>
+              <li>Added missing element types (td, th, section, article, aside, nav, div, span)</li>
+              <li>Improved overlap detection using center-point and area-based calculations</li>
+              <li>Elements are now selected if their center is inside or if they overlap by more than 50%</li>
+              <li>Divs and spans with meaningful text content or interactive roles are now included</li>
+            </ul>
+          </li>
+        </ul>
+
         <h3>Performance</h3>
         <ul>
           <li>60fps drag selection - Drag rectangle and element highlights use direct DOM updates

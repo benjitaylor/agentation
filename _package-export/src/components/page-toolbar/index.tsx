@@ -664,17 +664,29 @@ export function PageFeedbackToolbar({
 
         // Also check elements near the selection bounds
         const nearbyElements = document.querySelectorAll(
-          "button, a, input, img, p, h1, h2, h3, h4, h5, h6, li, label",
+          "button, a, input, img, p, h1, h2, h3, h4, h5, h6, li, label, td, th, div, span, section, article, aside, nav",
         );
         nearbyElements.forEach((el) => {
           if (el instanceof HTMLElement) {
             const rect = el.getBoundingClientRect();
-            if (
-              rect.left < right &&
-              rect.right > left &&
-              rect.top < bottom &&
-              rect.bottom > top
-            ) {
+            // Check if element's center point is inside the selection rectangle
+            // or if the element intersects significantly with the selection
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const centerInside =
+              centerX >= left &&
+              centerX <= right &&
+              centerY >= top &&
+              centerY <= bottom;
+
+            // Also include if element overlaps significantly
+            const overlapX = Math.min(rect.right, right) - Math.max(rect.left, left);
+            const overlapY = Math.min(rect.bottom, bottom) - Math.max(rect.top, top);
+            const overlapArea = overlapX > 0 && overlapY > 0 ? overlapX * overlapY : 0;
+            const elementArea = rect.width * rect.height;
+            const overlapRatio = elementArea > 0 ? overlapArea / elementArea : 0;
+
+            if (centerInside || overlapRatio > 0.5) {
               candidateElements.add(el);
             }
           }
@@ -698,6 +710,10 @@ export function PageFeedbackToolbar({
           "label",
           "td",
           "th",
+          "section",
+          "article",
+          "aside",
+          "nav",
         ];
 
         candidateElements.forEach((el) => {
@@ -726,9 +742,23 @@ export function PageFeedbackToolbar({
           ) {
             const tagName = el.tagName.toLowerCase();
 
-            // Only include semantic/meaningful tags, not generic divs/spans
+            // Include semantic tags
             if (meaningfulTags.includes(tagName)) {
               allMatching.push({ element: el, rect });
+            }
+            // For divs and spans, only include if they have visible text content or are interactive
+            else if (tagName === "div" || tagName === "span") {
+              const hasText = el.textContent && el.textContent.trim().length > 0;
+              const isInteractive =
+                el.onclick !== null ||
+                el.getAttribute("role") === "button" ||
+                el.getAttribute("role") === "link" ||
+                el.classList.contains("clickable") ||
+                el.hasAttribute("data-clickable");
+
+              if ((hasText || isInteractive) && !el.querySelector("p, h1, h2, h3, h4, h5, h6, button, a")) {
+                allMatching.push({ element: el, rect });
+              }
             }
           }
         });

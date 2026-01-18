@@ -752,6 +752,34 @@ export function PageFeedbackToolbarCSS({
           }
         }
 
+        // Also check nearby elements
+        const nearbyElements = document.querySelectorAll(
+          "button, a, input, img, p, h1, h2, h3, h4, h5, h6, li, label, td, th, div, span, section, article, aside, nav",
+        );
+        for (const el of nearbyElements) {
+          if (el instanceof HTMLElement) {
+            const rect = el.getBoundingClientRect();
+            // Check if element's center point is inside or if it overlaps significantly
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const centerInside =
+              centerX >= left &&
+              centerX <= right &&
+              centerY >= top &&
+              centerY <= bottom;
+
+            const overlapX = Math.min(rect.right, right) - Math.max(rect.left, left);
+            const overlapY = Math.min(rect.bottom, bottom) - Math.max(rect.top, top);
+            const overlapArea = overlapX > 0 && overlapY > 0 ? overlapX * overlapY : 0;
+            const elementArea = rect.width * rect.height;
+            const overlapRatio = elementArea > 0 ? overlapArea / elementArea : 0;
+
+            if (centerInside || overlapRatio > 0.5) {
+              candidateElements.add(el);
+            }
+          }
+        }
+
         const allMatching: DOMRect[] = [];
         const meaningfulTags = new Set([
           "BUTTON",
@@ -769,6 +797,10 @@ export function PageFeedbackToolbarCSS({
           "LABEL",
           "TD",
           "TH",
+          "SECTION",
+          "ARTICLE",
+          "ASIDE",
+          "NAV",
         ]);
 
         for (const el of candidateElements) {
@@ -792,7 +824,25 @@ export function PageFeedbackToolbarCSS({
             rect.top < bottom &&
             rect.bottom > top
           ) {
-            if (meaningfulTags.has(el.tagName)) {
+            const tagName = el.tagName;
+            let shouldInclude = meaningfulTags.has(tagName);
+
+            // For divs and spans, only include if they have meaningful content
+            if (!shouldInclude && (tagName === "DIV" || tagName === "SPAN")) {
+              const hasText = el.textContent && el.textContent.trim().length > 0;
+              const isInteractive =
+                el.onclick !== null ||
+                el.getAttribute("role") === "button" ||
+                el.getAttribute("role") === "link" ||
+                el.classList.contains("clickable") ||
+                el.hasAttribute("data-clickable");
+
+              if ((hasText || isInteractive) && !el.querySelector("p, h1, h2, h3, h4, h5, h6, button, a")) {
+                shouldInclude = true;
+              }
+            }
+
+            if (shouldInclude) {
               // Check if any existing match contains this element (filter children)
               let dominated = false;
               for (const existingRect of allMatching) {
