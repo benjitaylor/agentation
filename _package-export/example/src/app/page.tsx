@@ -5,6 +5,7 @@ import { Highlight, themes } from "prism-react-renderer";
 import { motion, AnimatePresence } from "framer-motion";
 
 type OutputFormat = 'standard' | 'detailed' | 'compact';
+type FeedbackStyle = 'direct' | 'instructional' | 'contextual';
 
 const FORMAT_STORAGE_KEY = 'agentation-output-format';
 
@@ -100,9 +101,26 @@ const outputExamples: Record<OutputFormat, string> = {
    Typo - should be "Settings"`,
 };
 
+// Experimental: Different feedback writing styles
+const styleExamples: Record<FeedbackStyle, { description: string; example: string }> = {
+  direct: {
+    description: "State the problem plainly",
+    example: `**Feedback:** Typo: "Settigns" → "Settings"`,
+  },
+  instructional: {
+    description: "Tell the agent what to do",
+    example: `**Feedback:** Change the text from "Settigns" to "Settings" in the nav label component`,
+  },
+  contextual: {
+    description: "Explain the why",
+    example: `**Feedback:** The sidebar nav shows "Settigns" which looks unprofessional - fix the spelling to "Settings"`,
+  },
+};
+
 export default function AgentationDocs() {
   const [inputValue, setInputValue] = useState("");
   const [outputFormat, setOutputFormat] = useState<OutputFormat>('standard');
+  const [feedbackStyle, setFeedbackStyle] = useState<FeedbackStyle>('direct');
 
   // Load saved format on mount
   useEffect(() => {
@@ -226,6 +244,46 @@ export default function AgentationDocs() {
           </p>
           <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', marginTop: '0.5rem' }}>
             Try it: changing format here updates the toolbar output.
+          </p>
+        </section>
+
+        <section>
+          <h2>Feedback style <span style={{ fontSize: '0.625rem', fontWeight: 400, color: 'rgba(0,0,0,0.4)', marginLeft: '0.5rem' }}>experimental</span></h2>
+          <p>
+            How you write feedback may affect agent results. We&rsquo;re testing different styles:
+          </p>
+          <div className="format-toggle">
+            <button
+              className={feedbackStyle === 'direct' ? 'active' : ''}
+              onClick={() => setFeedbackStyle('direct')}
+            >
+              Direct
+            </button>
+            <button
+              className={feedbackStyle === 'instructional' ? 'active' : ''}
+              onClick={() => setFeedbackStyle('instructional')}
+            >
+              Instructional
+            </button>
+            <button
+              className={feedbackStyle === 'contextual' ? 'active' : ''}
+              onClick={() => setFeedbackStyle('contextual')}
+            >
+              Contextual
+            </button>
+          </div>
+          <div style={{ marginTop: '0.5rem' }}>
+            <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', marginBottom: '0.375rem' }}>
+              {styleExamples[feedbackStyle].description}:
+            </p>
+            <AnimatedCodeBlock
+              code={styleExamples[feedbackStyle].example}
+              language="markdown"
+              formatKey={feedbackStyle}
+            />
+          </div>
+          <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', marginTop: '0.5rem' }}>
+            This is for testing only &mdash; style doesn&rsquo;t affect the actual output yet.
           </p>
         </section>
 
