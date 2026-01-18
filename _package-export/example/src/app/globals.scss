@@ -253,6 +253,11 @@ button {
         background: #1a1a1a;
         color: white;
       }
+
+      // Forensic button gets red when active
+      &:last-child.active {
+        background: #dc2626;
+      }
     }
   }
 }
