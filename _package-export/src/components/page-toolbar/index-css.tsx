@@ -299,6 +299,7 @@ export function PageFeedbackToolbarCSS() {
   const [cleared, setCleared] = useState(false);
   const [hoveredMarkerId, setHoveredMarkerId] = useState<string | null>(null);
   const [scrollY, setScrollY] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isFrozen, setIsFrozen] = useState(false);
   const [exitingIds, setExitingIds] = useState<Set<string>>(new Set()); // IDs currently animating out
@@ -308,6 +309,8 @@ export function PageFeedbackToolbarCSS() {
   const animatedIdsRef = useRef<Set<string>>(new Set());
   // Track the most recently added ID for hover protection
   const recentlyAddedIdRef = useRef<string | null>(null);
+  // Scroll timeout ref for debouncing
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
 
@@ -319,11 +322,31 @@ export function PageFeedbackToolbarCSS() {
     setAnnotations(stored);
   }, [pathname]);
 
-  // Track scroll
+  // Track scroll with debounced "scrolling" detection
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+      setIsScrolling(true);
+      setHoverInfo(null); // Clear hover while scrolling
+
+      // Clear existing timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      // Set timeout to detect when scrolling stops
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsScrolling(false);
+      }, 150);
+    };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
   }, []);
 
   // Save annotations
@@ -442,6 +465,9 @@ export function PageFeedbackToolbarCSS() {
     if (!isActive || pendingAnnotation) return;
 
     const handleMouseMove = (e: MouseEvent) => {
+      // Don't update hover while scrolling
+      if (isScrolling) return;
+
       if ((e.target as HTMLElement).closest("[data-feedback-toolbar]")) {
         setHoverInfo(null);
         return;
@@ -462,7 +488,7 @@ export function PageFeedbackToolbarCSS() {
 
     document.addEventListener("mousemove", handleMouseMove);
     return () => document.removeEventListener("mousemove", handleMouseMove);
-  }, [isActive, pendingAnnotation]);
+  }, [isActive, pendingAnnotation, isScrolling]);
 
   // Handle click
   useEffect(() => {
@@ -739,6 +765,8 @@ export function PageFeedbackToolbarCSS() {
             const isHovered = hoveredMarkerId === annotation.id;
             const isExiting = exitingIds.has(annotation.id);
             const isNew = !animatedIdsRef.current.has(annotation.id) && !isExiting;
+            // Keep hovered state while exiting to avoid flash back to number
+            const showAsHovered = isHovered || isExiting;
 
             // Mark as animated after render
             if (isNew) {
@@ -748,7 +776,7 @@ export function PageFeedbackToolbarCSS() {
             return (
               <div
                 key={annotation.id}
-                className={`${styles.marker} ${isHovered ? styles.hovered : ""} ${isExiting ? 'agentation-marker-exit' : ''} ${isNew ? 'agentation-marker-new' : ''}`}
+                className={`${styles.marker} ${showAsHovered ? styles.hovered : ""} ${isExiting ? 'agentation-marker-exit' : ''} ${isNew ? 'agentation-marker-new' : ''}`}
                 data-annotation-marker
                 style={{
                   left: `${annotation.x}%`,
@@ -761,7 +789,7 @@ export function PageFeedbackToolbarCSS() {
                   if (!isExiting) deleteAnnotation(annotation.id);
                 }}
               >
-                {isHovered ? <IconClose size={10} /> : index + 1}
+                {showAsHovered ? <IconClose size={10} /> : index + 1}
                 {isHovered && !isExiting && (
                   <div className={`${styles.markerTooltip} agentation-tooltip-animate`}>
                     {annotation.selectedText && (
