@@ -5,8 +5,8 @@ import "./globals.scss";
 import { FeedbackToolbar } from "../../lib";
 
 export const metadata: Metadata = {
-  title: "Feedback Tool Example",
-  description: "Example page for testing the feedback annotation toolbar",
+  title: "Agentation",
+  description: "Visual feedback for AI-assisted development",
 };
 
 export default function RootLayout({
