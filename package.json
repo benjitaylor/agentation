@@ -1,7 +1,0 @@
-{
-  "name": "agentation-monorepo",
-  "private": true,
-  "scripts": {
-    "build": "cd _package-export && npm install && npm run build && cd example && npm install && npm run build"
-  }
-}
