@@ -1,5 +1,0 @@
-{
-  "framework": "nextjs",
-  "installCommand": "npm install --legacy-peer-deps",
-  "buildCommand": "cd .. && npm install --legacy-peer-deps && npm run build && cd example && npm run build"
-}
