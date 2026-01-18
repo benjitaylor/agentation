@@ -4,9 +4,11 @@ import { useState, useEffect, useCallback } from "react";
 import { Highlight, themes } from "prism-react-renderer";
 import { motion, AnimatePresence } from "framer-motion";
 
-type OutputFormat = 'standard' | 'detailed' | 'compact';
+type OutputFormat = 'compact' | 'standard' | 'detailed' | 'forensic';
+type FeedbackStyle = 'direct' | 'instructional' | 'contextual';
 
 const FORMAT_STORAGE_KEY = 'agentation-output-format';
+const STYLE_STORAGE_KEY = 'agentation-feedback-style';
 
 // Code block with syntax highlighting
 function CodeBlock({ code, language = "tsx" }: { code: string; language?: string }) {
@@ -98,17 +100,66 @@ const outputExamples: Record<OutputFormat, string> = {
 
 2. **.nav-label** ("Settigns...")
    Typo - should be "Settings"`,
+
+  forensic: `## Page Feedback: /dashboard
+
+**Environment:**
+- Viewport: 1440×900
+- URL: http://localhost:3000/dashboard
+- User Agent: Mozilla/5.0 Chrome/142.0.0.0
+- Timestamp: 2024-01-15T10:30:00.000Z
+- Device Pixel Ratio: 2
+
+---
+
+### 1. button.submit-btn
+
+**Full DOM Path:**
+\`\`\`
+body > div.app > main.dashboard > div.form-container > div.actions > button.submit-btn
+\`\`\`
+
+**CSS Classes:** \`submit-btn, primary\`
+**Position:**
+- Bounding box: x:450, y:320
+- Dimensions: 120×40px
+- Annotation at: 45.2% from left, 320px from top
+**Computed Styles:** bg: rgb(59, 130, 246), font: 14px, weight: 600, padding: 8px 16px, radius: 6px
+**Accessibility:** focusable
+
+**Issue:** Button text should say "Save" not "Submit"`,
+};
+
+// Experimental: Different feedback writing styles
+const styleExamples: Record<FeedbackStyle, { description: string; example: string }> = {
+  direct: {
+    description: "Your words, as written",
+    example: `**Feedback:** Typo: "Settigns" → "Settings"`,
+  },
+  instructional: {
+    description: "Adds action verb if needed",
+    example: `**Feedback:** Fix typo: Typo: "Settigns" → "Settings"`,
+  },
+  contextual: {
+    description: "Adds impact context when relevant",
+    example: `**Feedback:** Typo: "Settigns" → "Settings" — looks unprofessional`,
+  },
 };
 
 export default function AgentationDocs() {
   const [inputValue, setInputValue] = useState("");
   const [outputFormat, setOutputFormat] = useState<OutputFormat>('standard');
+  const [feedbackStyle, setFeedbackStyle] = useState<FeedbackStyle>('direct');
 
-  // Load saved format on mount
+  // Load saved format and style on mount
   useEffect(() => {
-    const saved = localStorage.getItem(FORMAT_STORAGE_KEY);
-    if (saved && ['compact', 'standard', 'detailed'].includes(saved)) {
-      setOutputFormat(saved as OutputFormat);
+    const savedFormat = localStorage.getItem(FORMAT_STORAGE_KEY);
+    if (savedFormat && ['compact', 'standard', 'detailed', 'forensic'].includes(savedFormat)) {
+      setOutputFormat(savedFormat as OutputFormat);
+    }
+    const savedStyle = localStorage.getItem(STYLE_STORAGE_KEY);
+    if (savedStyle && ['direct', 'instructional', 'contextual'].includes(savedStyle)) {
+      setFeedbackStyle(savedStyle as FeedbackStyle);
     }
   }, []);
 
@@ -116,8 +167,13 @@ export default function AgentationDocs() {
   const handleFormatChange = useCallback((format: OutputFormat) => {
     setOutputFormat(format);
     localStorage.setItem(FORMAT_STORAGE_KEY, format);
-    // Dispatch custom event for toolbar to listen to
     window.dispatchEvent(new CustomEvent('agentation-format-change', { detail: format }));
+  }, []);
+
+  const handleStyleChange = useCallback((style: FeedbackStyle) => {
+    setFeedbackStyle(style);
+    localStorage.setItem(STYLE_STORAGE_KEY, style);
+    window.dispatchEvent(new CustomEvent('agentation-style-change', { detail: style }));
   }, []);
 
   return (
@@ -218,6 +274,12 @@ export default function AgentationDocs() {
             >
               Detailed
             </button>
+            <button
+              className={outputFormat === 'forensic' ? 'active' : ''}
+              onClick={() => handleFormatChange('forensic')}
+            >
+              Forensic
+            </button>
           </div>
           <AnimatedCodeBlock code={outputExamples[outputFormat]} language="markdown" formatKey={outputFormat} />
           <p>
@@ -225,8 +287,47 @@ export default function AgentationDocs() {
             in your codebase to find the exact component.
           </p>
           <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', marginTop: '0.5rem' }}>
-            Changing the format here will also change the output from the toolbar on this page,
-            so you can try it out for yourself.
+            Try it: changing format here updates the toolbar output.
+          </p>
+        </section>
+
+        <section>
+          <h2>Feedback style <span style={{ fontSize: '0.625rem', fontWeight: 400, color: 'rgba(0,0,0,0.4)', marginLeft: '0.5rem' }}>experimental — likely removing (redundant)</span></h2>
+          <p>
+            How you write feedback may affect agent results. We&rsquo;re testing different styles:
+          </p>
+          <div className="format-toggle">
+            <button
+              className={feedbackStyle === 'direct' ? 'active' : ''}
+              onClick={() => handleStyleChange('direct')}
+            >
+              Direct
+            </button>
+            <button
+              className={feedbackStyle === 'instructional' ? 'active' : ''}
+              onClick={() => handleStyleChange('instructional')}
+            >
+              Instructional
+            </button>
+            <button
+              className={feedbackStyle === 'contextual' ? 'active' : ''}
+              onClick={() => handleStyleChange('contextual')}
+            >
+              Contextual
+            </button>
+          </div>
+          <div style={{ marginTop: '0.5rem' }}>
+            <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', marginBottom: '0.375rem' }}>
+              {styleExamples[feedbackStyle].description}:
+            </p>
+            <AnimatedCodeBlock
+              code={styleExamples[feedbackStyle].example}
+              language="markdown"
+              formatKey={feedbackStyle}
+            />
+          </div>
+          <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', marginTop: '0.5rem' }}>
+            Style transforms output based on detected keywords (typo, missing, broken, etc).
           </p>
         </section>
 

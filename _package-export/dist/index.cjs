@@ -362,7 +362,7 @@ function identifyElement(target) {
   }
   if (tag === "p") {
     const text = target.textContent?.trim();
-    if (text && text.length < 50) return { name: `paragraph: "${text.slice(0, 40)}"`, path };
+    if (text) return { name: `paragraph: "${text.slice(0, 40)}${text.length > 40 ? "..." : ""}"`, path };
     return { name: "paragraph", path };
   }
   if (tag === "span" || tag === "label") {
@@ -459,6 +459,37 @@ function identifyAnimationElement(target) {
   }
   return tag;
 }
+function getNearbyElements(element) {
+  const parent = element.parentElement;
+  if (!parent) return "";
+  const siblings = Array.from(parent.children).filter(
+    (child) => child !== element && child instanceof HTMLElement
+  );
+  if (siblings.length === 0) return "";
+  const siblingIds = siblings.slice(0, 4).map((sib) => {
+    const tag = sib.tagName.toLowerCase();
+    const className = sib.className;
+    let cls = "";
+    if (typeof className === "string" && className) {
+      const meaningful = className.split(/\s+/).map((c) => c.replace(/[_][a-zA-Z0-9]{5,}.*$/, "")).find((c) => c.length > 2 && !/^[a-z]{1,2}$/.test(c));
+      if (meaningful) cls = `.${meaningful}`;
+    }
+    if (tag === "button" || tag === "a") {
+      const text = sib.textContent?.trim().slice(0, 15);
+      if (text) return `${tag}${cls} "${text}"`;
+    }
+    return `${tag}${cls}`;
+  });
+  const parentTag = parent.tagName.toLowerCase();
+  let parentId = parentTag;
+  if (typeof parent.className === "string" && parent.className) {
+    const parentCls = parent.className.split(/\s+/).map((c) => c.replace(/[_][a-zA-Z0-9]{5,}.*$/, "")).find((c) => c.length > 2 && !/^[a-z]{1,2}$/.test(c));
+    if (parentCls) parentId = `.${parentCls}`;
+  }
+  const total = parent.children.length;
+  const suffix = total > siblingIds.length + 1 ? ` (${total} total in ${parentId})` : "";
+  return siblingIds.join(", ") + suffix;
+}
 function getElementClasses(target) {
   const className = target.className;
   if (typeof className !== "string" || !className) return "";
@@ -467,6 +498,63 @@ function getElementClasses(target) {
     return match ? match[1] : c;
   }).filter((c, i, arr) => arr.indexOf(c) === i);
   return classes.join(", ");
+}
+function getComputedStylesSnapshot(target) {
+  if (typeof window === "undefined") return "";
+  const styles = window.getComputedStyle(target);
+  const parts = [];
+  const color = styles.color;
+  const bg = styles.backgroundColor;
+  if (color && color !== "rgb(0, 0, 0)") parts.push(`color: ${color}`);
+  if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") parts.push(`bg: ${bg}`);
+  const fontSize = styles.fontSize;
+  const fontWeight = styles.fontWeight;
+  if (fontSize) parts.push(`font: ${fontSize}`);
+  if (fontWeight && fontWeight !== "400" && fontWeight !== "normal") parts.push(`weight: ${fontWeight}`);
+  const padding = styles.padding;
+  const margin = styles.margin;
+  if (padding && padding !== "0px") parts.push(`padding: ${padding}`);
+  if (margin && margin !== "0px") parts.push(`margin: ${margin}`);
+  const display = styles.display;
+  const position = styles.position;
+  if (display && display !== "block" && display !== "inline") parts.push(`display: ${display}`);
+  if (position && position !== "static") parts.push(`position: ${position}`);
+  const borderRadius = styles.borderRadius;
+  if (borderRadius && borderRadius !== "0px") parts.push(`radius: ${borderRadius}`);
+  return parts.join(", ");
+}
+function getAccessibilityInfo(target) {
+  const parts = [];
+  const role = target.getAttribute("role");
+  const ariaLabel = target.getAttribute("aria-label");
+  const ariaDescribedBy = target.getAttribute("aria-describedby");
+  const tabIndex = target.getAttribute("tabindex");
+  const ariaHidden = target.getAttribute("aria-hidden");
+  if (role) parts.push(`role="${role}"`);
+  if (ariaLabel) parts.push(`aria-label="${ariaLabel}"`);
+  if (ariaDescribedBy) parts.push(`aria-describedby="${ariaDescribedBy}"`);
+  if (tabIndex) parts.push(`tabindex=${tabIndex}`);
+  if (ariaHidden === "true") parts.push("aria-hidden");
+  const focusable = target.matches("a, button, input, select, textarea, [tabindex]");
+  if (focusable) parts.push("focusable");
+  return parts.join(", ");
+}
+function getFullElementPath(target) {
+  const parts = [];
+  let current = target;
+  while (current && current.tagName.toLowerCase() !== "html") {
+    const tag = current.tagName.toLowerCase();
+    let identifier = tag;
+    if (current.id) {
+      identifier = `${tag}#${current.id}`;
+    } else if (current.className && typeof current.className === "string") {
+      const cls = current.className.split(/\s+/).map((c) => c.replace(/[_][a-zA-Z0-9]{5,}.*$/, "")).find((c) => c.length > 2);
+      if (cls) identifier = `${tag}.${cls}`;
+    }
+    parts.unshift(identifier);
+    current = current.parentElement;
+  }
+  return parts.join(" > ");
 }
 
 // src/utils/storage.ts
@@ -1331,6 +1419,13 @@ var cssAnimationStyles2 = `
   animation: agentation-fade-in 0.08s ease-out forwards;
 }
 
+/* Hide hover elements during scroll - applied to body */
+body.agentation-scrolling .agentation-hover-highlight,
+body.agentation-scrolling .agentation-hover-tooltip {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* Cursor styles for annotation mode */
 .agentation-active-cursor {
   cursor: crosshair !important;
@@ -1366,7 +1461,63 @@ if (typeof document !== "undefined") {
     document.head.appendChild(style);
   }
 }
-function generateOutput2(annotations, pathname, format = "standard") {
+function stylizeFeedback(comment, element, style) {
+  if (style === "direct") {
+    return comment;
+  }
+  const lower = comment.toLowerCase();
+  if (style === "instructional") {
+    const actionStarts = ["fix", "change", "update", "add", "remove", "delete", "move", "resize", "replace", "make", "set", "increase", "decrease", "adjust"];
+    if (actionStarts.some((v) => lower.startsWith(v))) {
+      return comment;
+    }
+    if (lower.includes("typo") || lower.includes("misspell") || lower.includes("\u2192") || lower.includes("->")) {
+      return `Fix typo: ${comment}`;
+    }
+    if (lower.includes("missing") || lower.includes("need") || lower.includes("should have") || lower.includes("no ")) {
+      return `Add: ${comment}`;
+    }
+    if (lower.includes("wrong") || lower.includes("incorrect") || lower.includes("should be") || lower.includes("should say")) {
+      return `Change: ${comment}`;
+    }
+    if (lower.includes("broken") || lower.includes("doesn't work") || lower.includes("not working")) {
+      return `Fix: ${comment}`;
+    }
+    if (lower.includes("too ")) {
+      return `Adjust: ${comment}`;
+    }
+    return comment;
+  }
+  if (style === "contextual") {
+    if (lower.includes("typo") || lower.includes("misspell") || lower.includes("\u2192") || lower.includes("->") || lower.includes("spelling")) {
+      return `${comment} \u2014 looks unprofessional`;
+    }
+    if (lower.includes("missing") || lower.includes("can't find") || lower.includes("should have") || lower.includes("need")) {
+      return `${comment} \u2014 users expect this`;
+    }
+    if (lower.includes("confus") || lower.includes("unclear") || lower.includes("don't understand") || lower.includes("hard to")) {
+      return `${comment} \u2014 hurts usability`;
+    }
+    if (lower.includes("broken") || lower.includes("doesn't work") || lower.includes("not working") || lower.includes("bug")) {
+      return `${comment} \u2014 blocks user flow`;
+    }
+    if (lower.includes("slow") || lower.includes("lag") || lower.includes("loading")) {
+      return `${comment} \u2014 feels sluggish`;
+    }
+    if (lower.includes("align") || lower.includes("spacing") || lower.includes("margin") || lower.includes("position")) {
+      return `${comment} \u2014 visual inconsistency`;
+    }
+    if (lower.includes("color") || lower.includes("contrast") || lower.includes("can't read") || lower.includes("hard to see")) {
+      return `${comment} \u2014 accessibility concern`;
+    }
+    if (lower.includes("too small") || lower.includes("too big") || lower.includes("too large") || lower.includes("size")) {
+      return `${comment} \u2014 affects tap/click target`;
+    }
+    return comment;
+  }
+  return comment;
+}
+function generateOutput2(annotations, pathname, format = "standard", style = "direct") {
   if (annotations.length === 0) return "";
   const viewport = typeof window !== "undefined" ? `${window.innerWidth}\xD7${window.innerHeight}` : "unknown";
   if (format === "compact") {
@@ -1374,11 +1525,12 @@ function generateOutput2(annotations, pathname, format = "standard") {
 
 `;
     annotations.forEach((a, i) => {
-      const selector = a.cssClasses ? `.${a.cssClasses.split(" ")[0]}` : a.elementPath;
-      output2 += `${i + 1}. **${selector}**`;
-      if (a.selectedText) output2 += ` ("${a.selectedText.slice(0, 30)}...")`;
+      const selector = a.cssClasses ? `.${a.cssClasses.split(",")[0].trim()}` : a.elementPath;
+      output2 += `${i + 1}. **${a.element}** (\`${selector}\`)`;
+      if (a.selectedText) output2 += `
+   > "${a.selectedText.slice(0, 50)}..."`;
       output2 += `
-   ${a.comment}
+   ${stylizeFeedback(a.comment, a.element, style)}
 
 `;
     });
@@ -1412,6 +1564,10 @@ function generateOutput2(annotations, pathname, format = "standard") {
         output2 += `**Bounding box:** x:${Math.round(a.boundingBox.x)}, y:${Math.round(a.boundingBox.y)}, ${Math.round(a.boundingBox.width)}\xD7${Math.round(a.boundingBox.height)}px
 `;
       }
+      if (a.computedStyles) {
+        output2 += `**Styles:** ${a.computedStyles}
+`;
+      }
       if (a.selectedText) {
         output2 += `**Selected text:** "${a.selectedText}"
 `;
@@ -1420,8 +1576,12 @@ function generateOutput2(annotations, pathname, format = "standard") {
         output2 += `**Nearby text:** "${a.nearbyText.slice(0, 150)}"
 `;
       }
+      if (a.nearbyElements) {
+        output2 += `**Siblings:** ${a.nearbyElements}
+`;
+      }
       output2 += `
-**Issue:** ${a.comment}
+**Issue:** ${stylizeFeedback(a.comment, a.element, style)}
 
 `;
       output2 += `---
@@ -1429,6 +1589,96 @@ function generateOutput2(annotations, pathname, format = "standard") {
 `;
     });
     output2 += `**Search tips:** Use the class names or selectors above to find these elements in your codebase. Try \`grep -r "className.*submit-btn"\` or search for the nearby text content.
+`;
+    return output2.trim();
+  }
+  if (format === "forensic") {
+    let output2 = `## Page Feedback: ${pathname}
+
+`;
+    output2 += `**Environment:**
+`;
+    output2 += `- Viewport: ${viewport}
+`;
+    output2 += `- URL: ${typeof window !== "undefined" ? window.location.href : pathname}
+`;
+    output2 += `- User Agent: ${typeof navigator !== "undefined" ? navigator.userAgent : "unknown"}
+`;
+    output2 += `- Timestamp: ${(/* @__PURE__ */ new Date()).toISOString()}
+`;
+    output2 += `- Device Pixel Ratio: ${typeof window !== "undefined" ? window.devicePixelRatio : "unknown"}
+
+`;
+    output2 += `---
+
+`;
+    annotations.forEach((a, i) => {
+      output2 += `### ${i + 1}. ${a.element}
+
+`;
+      if (a.fullPath) {
+        output2 += `**Full DOM Path:**
+\`\`\`
+${a.fullPath}
+\`\`\`
+
+`;
+      } else {
+        output2 += `**Selector:** \`${a.elementPath}\`
+`;
+      }
+      if (a.cssClasses) {
+        output2 += `**CSS Classes:** \`${a.cssClasses}\`
+`;
+      }
+      if (a.boundingBox) {
+        output2 += `**Position:**
+`;
+        output2 += `- Bounding box: x:${Math.round(a.boundingBox.x)}, y:${Math.round(a.boundingBox.y)}
+`;
+        output2 += `- Dimensions: ${Math.round(a.boundingBox.width)}\xD7${Math.round(a.boundingBox.height)}px
+`;
+        output2 += `- Annotation at: ${a.x.toFixed(1)}% from left, ${Math.round(a.y)}px from top
+`;
+      }
+      if (a.computedStyles) {
+        output2 += `**Computed Styles:** ${a.computedStyles}
+`;
+      }
+      if (a.accessibility) {
+        output2 += `**Accessibility:** ${a.accessibility}
+`;
+      }
+      if (a.selectedText) {
+        output2 += `**Selected Text:** "${a.selectedText}"
+`;
+      }
+      if (a.nearbyText) {
+        output2 += `**Nearby Text:** "${a.nearbyText}"
+`;
+      }
+      if (a.nearbyElements) {
+        output2 += `**Sibling Elements:** ${a.nearbyElements}
+`;
+      }
+      output2 += `
+**Issue:** ${stylizeFeedback(a.comment, a.element, style)}
+
+`;
+      output2 += `---
+
+`;
+    });
+    output2 += `## Search Strategies
+
+`;
+    output2 += `1. **By class name:** \`grep -r "className.*yourClass" src/\`
+`;
+    output2 += `2. **By text content:** \`grep -r "the text you see" src/\`
+`;
+    output2 += `3. **By element path:** Use the DOM path to locate nested components
+`;
+    output2 += `4. **By computed styles:** If a style looks wrong, search for those CSS values
 `;
     return output2.trim();
   }
@@ -1457,7 +1707,11 @@ function generateOutput2(annotations, pathname, format = "standard") {
       output += `**Context:** "${a.nearbyText.slice(0, 80)}"
 `;
     }
-    output += `**Feedback:** ${a.comment}
+    if (a.nearbyElements) {
+      output += `**Siblings:** ${a.nearbyElements}
+`;
+    }
+    output += `**Feedback:** ${stylizeFeedback(a.comment, a.element, style)}
 
 `;
   });
@@ -1479,20 +1733,67 @@ function PageFeedbackToolbarCSS() {
   const [mounted, setMounted] = (0, import_react4.useState)(false);
   const [isFrozen, setIsFrozen] = (0, import_react4.useState)(false);
   const [exitingIds, setExitingIds] = (0, import_react4.useState)(/* @__PURE__ */ new Set());
+  const [outputFormat, setOutputFormat] = (0, import_react4.useState)("standard");
+  const [feedbackStyle, setFeedbackStyle] = (0, import_react4.useState)("direct");
   const popupRef = (0, import_react4.useRef)(null);
+  const overlayRef = (0, import_react4.useRef)(null);
+  const isScrollingRef = (0, import_react4.useRef)(false);
   const animatedIdsRef = (0, import_react4.useRef)(/* @__PURE__ */ new Set());
   const recentlyAddedIdRef = (0, import_react4.useRef)(null);
+  const scrollTimeoutRef = (0, import_react4.useRef)(null);
   const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
   (0, import_react4.useEffect)(() => {
     setMounted(true);
     setScrollY(window.scrollY);
     const stored = loadAnnotations(pathname);
     setAnnotations(stored);
+    const savedFormat = localStorage.getItem("agentation-output-format");
+    if (savedFormat && ["compact", "standard", "detailed", "forensic"].includes(savedFormat)) {
+      setOutputFormat(savedFormat);
+    }
+    const savedStyle = localStorage.getItem("agentation-feedback-style");
+    if (savedStyle && ["direct", "instructional", "contextual"].includes(savedStyle)) {
+      setFeedbackStyle(savedStyle);
+    }
   }, [pathname]);
   (0, import_react4.useEffect)(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
+    const handleFormatChange = (e) => {
+      setOutputFormat(e.detail);
+    };
+    window.addEventListener("agentation-format-change", handleFormatChange);
+    return () => window.removeEventListener("agentation-format-change", handleFormatChange);
+  }, []);
+  (0, import_react4.useEffect)(() => {
+    const handleStyleChange = (e) => {
+      setFeedbackStyle(e.detail);
+    };
+    window.addEventListener("agentation-style-change", handleStyleChange);
+    return () => window.removeEventListener("agentation-style-change", handleStyleChange);
+  }, []);
+  (0, import_react4.useEffect)(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+      if (!isScrollingRef.current) {
+        isScrollingRef.current = true;
+        document.body.classList.add("agentation-scrolling");
+      }
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      scrollTimeoutRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
+        document.body.classList.remove("agentation-scrolling");
+        setHoverInfo(null);
+      }, 100);
+    };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.body.classList.remove("agentation-scrolling");
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
   }, []);
   (0, import_react4.useEffect)(() => {
     if (mounted && annotations.length > 0) {
@@ -1581,6 +1882,7 @@ function PageFeedbackToolbarCSS() {
   (0, import_react4.useEffect)(() => {
     if (!isActive || pendingAnnotation) return;
     const handleMouseMove = (e) => {
+      if (isScrollingRef.current) return;
       if (e.target.closest("[data-feedback-toolbar]")) {
         setHoverInfo(null);
         return;
@@ -1630,7 +1932,11 @@ function PageFeedbackToolbarCSS() {
         selectedText,
         boundingBox: { x: rect.left, y: rect.top + window.scrollY, width: rect.width, height: rect.height },
         nearbyText: getNearbyText(elementUnder),
-        cssClasses: getElementClasses(elementUnder)
+        cssClasses: getElementClasses(elementUnder),
+        nearbyElements: getNearbyElements(elementUnder),
+        computedStyles: getComputedStylesSnapshot(elementUnder),
+        fullPath: getFullElementPath(elementUnder),
+        accessibility: getAccessibilityInfo(elementUnder)
       });
       setHoverInfo(null);
     };
@@ -1651,7 +1957,11 @@ function PageFeedbackToolbarCSS() {
       selectedText: pendingAnnotation.selectedText,
       boundingBox: pendingAnnotation.boundingBox,
       nearbyText: pendingAnnotation.nearbyText,
-      cssClasses: pendingAnnotation.cssClasses
+      cssClasses: pendingAnnotation.cssClasses,
+      nearbyElements: pendingAnnotation.nearbyElements,
+      computedStyles: pendingAnnotation.computedStyles,
+      fullPath: pendingAnnotation.fullPath,
+      accessibility: pendingAnnotation.accessibility
     };
     setAnnotations((prev) => [...prev, newAnnotation]);
     setPendingAnnotation(null);
@@ -1681,12 +1991,12 @@ function PageFeedbackToolbarCSS() {
     }, 150);
   }, []);
   const copyOutput = (0, import_react4.useCallback)(async () => {
-    const output = generateOutput2(annotations, pathname);
+    const output = generateOutput2(annotations, pathname, outputFormat, feedbackStyle);
     if (!output) return;
     await navigator.clipboard.writeText(output);
     setCopied(true);
     setTimeout(() => setCopied(false), 2e3);
-  }, [annotations, pathname]);
+  }, [annotations, pathname, outputFormat, feedbackStyle]);
   const clearAll = (0, import_react4.useCallback)(() => {
     setAnnotations([]);
     localStorage.removeItem(getStorageKey(pathname));
@@ -1843,13 +2153,14 @@ function PageFeedbackToolbarCSS() {
             const isHovered = hoveredMarkerId === annotation.id;
             const isExiting = exitingIds.has(annotation.id);
             const isNew = !animatedIdsRef.current.has(annotation.id) && !isExiting;
+            const showAsHovered = isHovered || isExiting;
             if (isNew) {
               animatedIdsRef.current.add(annotation.id);
             }
             return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
               "div",
               {
-                className: `${styles_module_default2.marker} ${isHovered ? styles_module_default2.hovered : ""} ${isExiting ? "agentation-marker-exit" : ""} ${isNew ? "agentation-marker-new" : ""}`,
+                className: `${styles_module_default2.marker} ${showAsHovered ? styles_module_default2.hovered : ""} ${isExiting ? "agentation-marker-exit" : ""} ${isNew ? "agentation-marker-new" : ""}`,
                 "data-annotation-marker": true,
                 style: {
                   left: `${annotation.x}%`,
@@ -1863,7 +2174,7 @@ function PageFeedbackToolbarCSS() {
                   if (!isExiting) deleteAnnotation(annotation.id);
                 },
                 children: [
-                  isHovered ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconClose2, { size: 10 }) : index + 1,
+                  showAsHovered ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconClose2, { size: 10 }) : index + 1,
                   isHovered && !isExiting && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: `${styles_module_default2.markerTooltip} agentation-tooltip-animate`, children: [
                     annotation.selectedText && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("span", { className: styles_module_default2.markerQuote, children: [
                       "\u201C",
@@ -1881,59 +2192,67 @@ function PageFeedbackToolbarCSS() {
           })
         }
       ),
-      isActive && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: styles_module_default2.overlay, "data-feedback-toolbar": true, children: [
-        hoverInfo?.rect && !pendingAnnotation && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
-          "div",
-          {
-            className: `${styles_module_default2.hoverHighlight} agentation-highlight-animate`,
-            style: {
-              left: hoverInfo.rect.left,
-              top: hoverInfo.rect.top,
-              width: hoverInfo.rect.width,
-              height: hoverInfo.rect.height
-            }
-          },
-          `${hoverInfo.rect.left}-${hoverInfo.rect.top}-${hoverInfo.rect.width}`
-        ),
-        hoverInfo && !pendingAnnotation && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
-          "div",
-          {
-            className: `${styles_module_default2.hoverTooltip} agentation-hover-tooltip-animate`,
-            style: {
-              left: Math.min(hoverPosition.x, window.innerWidth - 150),
-              top: Math.max(hoverPosition.y - 32, 8)
-            },
-            children: hoverInfo.element
-          }
-        ),
-        (pendingAnnotation || pendingExiting) && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_jsx_runtime6.Fragment, { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
-            "div",
-            {
-              className: `${styles_module_default2.marker} ${styles_module_default2.pending} ${pendingExiting ? "agentation-pending-exit" : "agentation-pending-enter"}`,
-              style: {
-                left: `${pendingAnnotation?.x ?? 0}%`,
-                top: pendingAnnotation?.clientY ?? 0
+      isActive && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
+        "div",
+        {
+          ref: overlayRef,
+          className: styles_module_default2.overlay,
+          "data-feedback-toolbar": true,
+          children: [
+            hoverInfo?.rect && !pendingAnnotation && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+              "div",
+              {
+                className: `${styles_module_default2.hoverHighlight} agentation-highlight-animate agentation-hover-highlight`,
+                style: {
+                  left: hoverInfo.rect.left,
+                  top: hoverInfo.rect.top,
+                  width: hoverInfo.rect.width,
+                  height: hoverInfo.rect.height
+                }
               },
-              children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconPlus2, { size: 12 })
-            }
-          ),
-          pendingAnnotation && !pendingExiting && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
-            AnnotationPopupCSS,
-            {
-              ref: popupRef,
-              element: pendingAnnotation.element,
-              selectedText: pendingAnnotation.selectedText,
-              onSubmit: addAnnotation,
-              onCancel: cancelAnnotation,
-              style: {
-                left: `${Math.min(Math.max(pendingAnnotation.x, 15), 85)}%`,
-                top: Math.min(pendingAnnotation.clientY + 20, window.innerHeight - 180)
+              `${hoverInfo.rect.left}-${hoverInfo.rect.top}-${hoverInfo.rect.width}`
+            ),
+            hoverInfo && !pendingAnnotation && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+              "div",
+              {
+                className: `${styles_module_default2.hoverTooltip} agentation-hover-tooltip-animate agentation-hover-tooltip`,
+                style: {
+                  left: Math.min(hoverPosition.x, window.innerWidth - 150),
+                  top: Math.max(hoverPosition.y - 32, 8)
+                },
+                children: hoverInfo.element
               }
-            }
-          )
-        ] })
-      ] })
+            ),
+            (pendingAnnotation || pendingExiting) && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_jsx_runtime6.Fragment, { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+                "div",
+                {
+                  className: `${styles_module_default2.marker} ${styles_module_default2.pending} ${pendingExiting ? "agentation-pending-exit" : "agentation-pending-enter"}`,
+                  style: {
+                    left: `${pendingAnnotation?.x ?? 0}%`,
+                    top: pendingAnnotation?.clientY ?? 0
+                  },
+                  children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconPlus2, { size: 12 })
+                }
+              ),
+              pendingAnnotation && !pendingExiting && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+                AnnotationPopupCSS,
+                {
+                  ref: popupRef,
+                  element: pendingAnnotation.element,
+                  selectedText: pendingAnnotation.selectedText,
+                  onSubmit: addAnnotation,
+                  onCancel: cancelAnnotation,
+                  style: {
+                    left: `${Math.min(Math.max(pendingAnnotation.x, 15), 85)}%`,
+                    top: Math.min(pendingAnnotation.clientY + 20, window.innerHeight - 180)
+                  }
+                }
+              )
+            ] })
+          ]
+        }
+      )
     ] }),
     document.body
   );

@@ -19,6 +19,10 @@ import {
   identifyElement,
   getNearbyText,
   getElementClasses,
+  getNearbyElements,
+  getComputedStylesSnapshot,
+  getFullElementPath,
+  getAccessibilityInfo,
 } from "../../utils/element-identification";
 import {
   loadAnnotations,
@@ -189,9 +193,80 @@ type HoverInfo = {
 // Utils
 // =============================================================================
 
-type OutputFormat = 'standard' | 'detailed' | 'compact';
+type OutputFormat = 'compact' | 'standard' | 'detailed' | 'forensic';
+type FeedbackStyle = 'direct' | 'instructional' | 'contextual';
 
-function generateOutput(annotations: Annotation[], pathname: string, format: OutputFormat = 'standard'): string {
+// Transform feedback text based on style
+function stylizeFeedback(comment: string, element: string, style: FeedbackStyle): string {
+  if (style === 'direct') {
+    return comment;
+  }
+
+  const lower = comment.toLowerCase();
+
+  if (style === 'instructional') {
+    // If already starts with action verb, keep as-is
+    const actionStarts = ['fix', 'change', 'update', 'add', 'remove', 'delete', 'move', 'resize', 'replace', 'make', 'set', 'increase', 'decrease', 'adjust'];
+    if (actionStarts.some(v => lower.startsWith(v))) {
+      return comment;
+    }
+
+    // Detect issue type and add appropriate action verb
+    if (lower.includes('typo') || lower.includes('misspell') || lower.includes('→') || lower.includes('->')) {
+      return `Fix typo: ${comment}`;
+    }
+    if (lower.includes('missing') || lower.includes('need') || lower.includes('should have') || lower.includes('no ')) {
+      return `Add: ${comment}`;
+    }
+    if (lower.includes('wrong') || lower.includes('incorrect') || lower.includes('should be') || lower.includes('should say')) {
+      return `Change: ${comment}`;
+    }
+    if (lower.includes('broken') || lower.includes("doesn't work") || lower.includes('not working')) {
+      return `Fix: ${comment}`;
+    }
+    if (lower.includes('too ')) {
+      return `Adjust: ${comment}`;
+    }
+
+    // Default: keep as-is (user's phrasing is probably fine)
+    return comment;
+  }
+
+  if (style === 'contextual') {
+    // Add relevant context suffix based on detected issue type
+    if (lower.includes('typo') || lower.includes('misspell') || lower.includes('→') || lower.includes('->') || lower.includes('spelling')) {
+      return `${comment} — looks unprofessional`;
+    }
+    if (lower.includes('missing') || lower.includes("can't find") || lower.includes('should have') || lower.includes('need')) {
+      return `${comment} — users expect this`;
+    }
+    if (lower.includes('confus') || lower.includes('unclear') || lower.includes("don't understand") || lower.includes('hard to')) {
+      return `${comment} — hurts usability`;
+    }
+    if (lower.includes('broken') || lower.includes("doesn't work") || lower.includes('not working') || lower.includes('bug')) {
+      return `${comment} — blocks user flow`;
+    }
+    if (lower.includes('slow') || lower.includes('lag') || lower.includes('loading')) {
+      return `${comment} — feels sluggish`;
+    }
+    if (lower.includes('align') || lower.includes('spacing') || lower.includes('margin') || lower.includes('position')) {
+      return `${comment} — visual inconsistency`;
+    }
+    if (lower.includes('color') || lower.includes('contrast') || lower.includes('can\'t read') || lower.includes('hard to see')) {
+      return `${comment} — accessibility concern`;
+    }
+    if (lower.includes('too small') || lower.includes('too big') || lower.includes('too large') || lower.includes('size')) {
+      return `${comment} — affects tap/click target`;
+    }
+
+    // No pattern matched - return as-is (don't add generic fluff)
+    return comment;
+  }
+
+  return comment;
+}
+
+function generateOutput(annotations: Annotation[], pathname: string, format: OutputFormat = 'standard', style: FeedbackStyle = 'direct'): string {
   if (annotations.length === 0) return "";
 
   const viewport = typeof window !== "undefined"
@@ -199,13 +274,13 @@ function generateOutput(annotations: Annotation[], pathname: string, format: Out
     : "unknown";
 
   if (format === 'compact') {
-    // Compact: Just the essentials for quick fixes
+    // Compact: Essentials with element name for identification
     let output = `## Feedback: ${pathname}\n\n`;
     annotations.forEach((a, i) => {
-      const selector = a.cssClasses ? `.${a.cssClasses.split(' ')[0]}` : a.elementPath;
-      output += `${i + 1}. **${selector}**`;
-      if (a.selectedText) output += ` ("${a.selectedText.slice(0, 30)}...")`;
-      output += `\n   ${a.comment}\n\n`;
+      const selector = a.cssClasses ? `.${a.cssClasses.split(',')[0].trim()}` : a.elementPath;
+      output += `${i + 1}. **${a.element}** (\`${selector}\`)`;
+      if (a.selectedText) output += `\n   > "${a.selectedText.slice(0, 50)}..."`;
+      output += `\n   ${stylizeFeedback(a.comment, a.element, style)}\n\n`;
     });
     return output.trim();
   }
@@ -233,6 +308,11 @@ function generateOutput(annotations: Annotation[], pathname: string, format: Out
         output += `**Bounding box:** x:${Math.round(a.boundingBox.x)}, y:${Math.round(a.boundingBox.y)}, ${Math.round(a.boundingBox.width)}×${Math.round(a.boundingBox.height)}px\n`;
       }
 
+      // Computed styles (new)
+      if (a.computedStyles) {
+        output += `**Styles:** ${a.computedStyles}\n`;
+      }
+
       // Text context
       if (a.selectedText) {
         output += `**Selected text:** "${a.selectedText}"\n`;
@@ -241,12 +321,88 @@ function generateOutput(annotations: Annotation[], pathname: string, format: Out
         output += `**Nearby text:** "${a.nearbyText.slice(0, 150)}"\n`;
       }
 
-      output += `\n**Issue:** ${a.comment}\n\n`;
+      // Structural context
+      if (a.nearbyElements) {
+        output += `**Siblings:** ${a.nearbyElements}\n`;
+      }
+
+      output += `\n**Issue:** ${stylizeFeedback(a.comment, a.element, style)}\n\n`;
       output += `---\n\n`;
     });
 
     // Add search hints
     output += `**Search tips:** Use the class names or selectors above to find these elements in your codebase. Try \`grep -r "className.*submit-btn"\` or search for the nearby text content.\n`;
+
+    return output.trim();
+  }
+
+  if (format === 'forensic') {
+    // Forensic: Maximum context for complex debugging
+    let output = `## Page Feedback: ${pathname}\n\n`;
+    output += `**Environment:**\n`;
+    output += `- Viewport: ${viewport}\n`;
+    output += `- URL: ${typeof window !== "undefined" ? window.location.href : pathname}\n`;
+    output += `- User Agent: ${typeof navigator !== "undefined" ? navigator.userAgent : 'unknown'}\n`;
+    output += `- Timestamp: ${new Date().toISOString()}\n`;
+    output += `- Device Pixel Ratio: ${typeof window !== "undefined" ? window.devicePixelRatio : 'unknown'}\n\n`;
+    output += `---\n\n`;
+
+    annotations.forEach((a, i) => {
+      output += `### ${i + 1}. ${a.element}\n\n`;
+
+      // Full DOM path
+      if (a.fullPath) {
+        output += `**Full DOM Path:**\n\`\`\`\n${a.fullPath}\n\`\`\`\n\n`;
+      } else {
+        output += `**Selector:** \`${a.elementPath}\`\n`;
+      }
+
+      // CSS info
+      if (a.cssClasses) {
+        output += `**CSS Classes:** \`${a.cssClasses}\`\n`;
+      }
+
+      // Detailed position
+      if (a.boundingBox) {
+        output += `**Position:**\n`;
+        output += `- Bounding box: x:${Math.round(a.boundingBox.x)}, y:${Math.round(a.boundingBox.y)}\n`;
+        output += `- Dimensions: ${Math.round(a.boundingBox.width)}×${Math.round(a.boundingBox.height)}px\n`;
+        output += `- Annotation at: ${a.x.toFixed(1)}% from left, ${Math.round(a.y)}px from top\n`;
+      }
+
+      // Computed styles
+      if (a.computedStyles) {
+        output += `**Computed Styles:** ${a.computedStyles}\n`;
+      }
+
+      // Accessibility
+      if (a.accessibility) {
+        output += `**Accessibility:** ${a.accessibility}\n`;
+      }
+
+      // Text context
+      if (a.selectedText) {
+        output += `**Selected Text:** "${a.selectedText}"\n`;
+      }
+      if (a.nearbyText) {
+        output += `**Nearby Text:** "${a.nearbyText}"\n`;
+      }
+
+      // Structural context
+      if (a.nearbyElements) {
+        output += `**Sibling Elements:** ${a.nearbyElements}\n`;
+      }
+
+      output += `\n**Issue:** ${stylizeFeedback(a.comment, a.element, style)}\n\n`;
+      output += `---\n\n`;
+    });
+
+    // Detailed search hints
+    output += `## Search Strategies\n\n`;
+    output += `1. **By class name:** \`grep -r "className.*yourClass" src/\`\n`;
+    output += `2. **By text content:** \`grep -r "the text you see" src/\`\n`;
+    output += `3. **By element path:** Use the DOM path to locate nested components\n`;
+    output += `4. **By computed styles:** If a style looks wrong, search for those CSS values\n`;
 
     return output.trim();
   }
@@ -273,7 +429,11 @@ function generateOutput(annotations: Annotation[], pathname: string, format: Out
       output += `**Context:** "${a.nearbyText.slice(0, 80)}"\n`;
     }
 
-    output += `**Feedback:** ${a.comment}\n\n`;
+    if (a.nearbyElements) {
+      output += `**Siblings:** ${a.nearbyElements}\n`;
+    }
+
+    output += `**Feedback:** ${stylizeFeedback(a.comment, a.element, style)}\n\n`;
   });
 
   return output.trim();
@@ -300,6 +460,10 @@ export function PageFeedbackToolbarCSS() {
     boundingBox?: { x: number; y: number; width: number; height: number };
     nearbyText?: string;
     cssClasses?: string;
+    nearbyElements?: string;
+    computedStyles?: string;
+    fullPath?: string;
+    accessibility?: string;
   } | null>(null);
   const [pendingExiting, setPendingExiting] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -310,6 +474,7 @@ export function PageFeedbackToolbarCSS() {
   const [isFrozen, setIsFrozen] = useState(false);
   const [exitingIds, setExitingIds] = useState<Set<string>>(new Set()); // IDs currently animating out
   const [outputFormat, setOutputFormat] = useState<OutputFormat>('standard');
+  const [feedbackStyle, setFeedbackStyle] = useState<FeedbackStyle>('direct');
 
   const popupRef = useRef<AnnotationPopupHandle>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -330,10 +495,14 @@ export function PageFeedbackToolbarCSS() {
     const stored = loadAnnotations<Annotation>(pathname);
     setAnnotations(stored);
 
-    // Load saved output format
+    // Load saved output format and style
     const savedFormat = localStorage.getItem('agentation-output-format');
-    if (savedFormat && ['compact', 'standard', 'detailed'].includes(savedFormat)) {
+    if (savedFormat && ['compact', 'standard', 'detailed', 'forensic'].includes(savedFormat)) {
       setOutputFormat(savedFormat as OutputFormat);
+    }
+    const savedStyle = localStorage.getItem('agentation-feedback-style');
+    if (savedStyle && ['direct', 'instructional', 'contextual'].includes(savedStyle)) {
+      setFeedbackStyle(savedStyle as FeedbackStyle);
     }
   }, [pathname]);
 
@@ -344,6 +513,15 @@ export function PageFeedbackToolbarCSS() {
     };
     window.addEventListener('agentation-format-change', handleFormatChange as EventListener);
     return () => window.removeEventListener('agentation-format-change', handleFormatChange as EventListener);
+  }, []);
+
+  // Listen for style changes from the page
+  useEffect(() => {
+    const handleStyleChange = (e: CustomEvent<FeedbackStyle>) => {
+      setFeedbackStyle(e.detail);
+    };
+    window.addEventListener('agentation-style-change', handleStyleChange as EventListener);
+    return () => window.removeEventListener('agentation-style-change', handleStyleChange as EventListener);
   }, []);
 
   // Track scroll - hide hover elements during scroll for clean UX
@@ -563,6 +741,10 @@ export function PageFeedbackToolbarCSS() {
         boundingBox: { x: rect.left, y: rect.top + window.scrollY, width: rect.width, height: rect.height },
         nearbyText: getNearbyText(elementUnder),
         cssClasses: getElementClasses(elementUnder),
+        nearbyElements: getNearbyElements(elementUnder),
+        computedStyles: getComputedStylesSnapshot(elementUnder),
+        fullPath: getFullElementPath(elementUnder),
+        accessibility: getAccessibilityInfo(elementUnder),
       });
       setHoverInfo(null);
     };
@@ -588,6 +770,10 @@ export function PageFeedbackToolbarCSS() {
       boundingBox: pendingAnnotation.boundingBox,
       nearbyText: pendingAnnotation.nearbyText,
       cssClasses: pendingAnnotation.cssClasses,
+      nearbyElements: pendingAnnotation.nearbyElements,
+      computedStyles: pendingAnnotation.computedStyles,
+      fullPath: pendingAnnotation.fullPath,
+      accessibility: pendingAnnotation.accessibility,
     };
 
     setAnnotations((prev) => [...prev, newAnnotation]);
@@ -627,13 +813,13 @@ export function PageFeedbackToolbarCSS() {
 
   // Copy output
   const copyOutput = useCallback(async () => {
-    const output = generateOutput(annotations, pathname, outputFormat);
+    const output = generateOutput(annotations, pathname, outputFormat, feedbackStyle);
     if (!output) return;
 
     await navigator.clipboard.writeText(output);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, [annotations, pathname, outputFormat]);
+  }, [annotations, pathname, outputFormat, feedbackStyle]);
 
   // Clear all
   const clearAll = useCallback(() => {
