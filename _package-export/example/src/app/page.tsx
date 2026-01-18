@@ -106,11 +106,10 @@ export default function ExamplePage() {
             to freeze these animations:
           </p>
 
-          <div style={{ marginTop: "1rem" }}>
-            <div className="animated-element">
-              <span className="dot" />
-              Pulsing Element
-            </div>
+          <div className="animation-demo">
+            <div className="floating-circle" />
+            <div className="floating-circle delay-1" />
+            <div className="floating-circle delay-2" />
           </div>
         </div>
 
