@@ -1,6 +1,7 @@
 "use client";
 
 import { Highlight, themes } from "prism-react-renderer";
+import { Footer } from "../Footer";
 
 function CodeBlock({ code, language = "tsx" }: { code: string; language?: string }) {
   return (
@@ -22,7 +23,8 @@ function CodeBlock({ code, language = "tsx" }: { code: string; language?: string
 
 export default function InstallPage() {
   return (
-    <article className="article">
+    <>
+      <article className="article">
       <header>
         <h1>Installation</h1>
         <p className="tagline">Get started with Agentation in your project</p>
@@ -124,5 +126,8 @@ function App() {
         </ul>
       </section>
     </article>
+
+    <Footer />
+    </>
   );
 }

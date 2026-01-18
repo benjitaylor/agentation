@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Highlight, themes } from "prism-react-renderer";
 import { motion, AnimatePresence } from "framer-motion";
+import { Footer } from "../Footer";
 
 type OutputFormat = 'compact' | 'standard' | 'detailed' | 'forensic';
 
@@ -143,7 +144,8 @@ export default function OutputPage() {
   }, []);
 
   return (
-    <article className="article">
+    <>
+      <article className="article">
       <header>
         <h1>Output Format</h1>
         <p className="tagline">How Agentation structures feedback for AI agents</p>
@@ -223,5 +225,8 @@ export default function OutputPage() {
         </ul>
       </section>
     </article>
+
+    <Footer />
+    </>
   );
 }

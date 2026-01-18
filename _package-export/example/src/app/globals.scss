@@ -143,6 +143,11 @@ button {
     &:hover {
       color: rgba(0, 0, 0, 0.7);
     }
+
+    &.active {
+      color: #4C74FF;
+      font-weight: 600;
+    }
   }
 
   // Hide on smaller screens where it would overlap content

@@ -1,8 +1,11 @@
 "use client";
 
+import { Footer } from "../Footer";
+
 export default function ChangelogPage() {
   return (
-    <article className="article">
+    <>
+      <article className="article">
       <header>
         <h1>Changelog</h1>
         <p className="tagline">Recent updates to Agentation</p>
@@ -45,6 +48,12 @@ export default function ChangelogPage() {
               <li>Divs and spans with meaningful text content or interactive roles are now included</li>
             </ul>
           </li>
+        </ul>
+
+        <h3>Documentation</h3>
+        <ul>
+          <li>Navigation improvements - Active page now highlighted in sidebar</li>
+          <li>Consistent footer - Added footer with credits to all pages</li>
         </ul>
 
         <h3>Performance</h3>
@@ -115,5 +124,8 @@ export default function ChangelogPage() {
         </ul>
       </section>
     </article>
+
+    <Footer />
+    </>
   );
 }

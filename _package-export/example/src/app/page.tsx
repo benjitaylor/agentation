@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Footer } from "./Footer";
 
 function AnimatedLogo() {
   return (
@@ -168,9 +169,7 @@ export default function AgentationDocs() {
         </section>
       </article>
 
-      <footer className="footer">
-        <p>Made by <a href="https://benji.org" target="_blank" rel="noopener noreferrer">Benji Taylor</a> and <a href="https://dennisjin.com" target="_blank" rel="noopener noreferrer">Dennis Jin</a></p>
-      </footer>
+      <Footer />
     </>
   );
 }

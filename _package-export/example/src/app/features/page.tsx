@@ -1,8 +1,11 @@
 "use client";
 
+import { Footer } from "../Footer";
+
 export default function FeaturesPage() {
   return (
-    <article className="article">
+    <>
+      <article className="article">
       <header>
         <h1>Features</h1>
         <p className="tagline">Everything Agentation can do</p>
@@ -103,5 +106,8 @@ export default function FeaturesPage() {
         </ul>
       </section>
     </article>
+
+    <Footer />
+    </>
   );
 }
