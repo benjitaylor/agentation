@@ -1331,6 +1331,13 @@ var cssAnimationStyles2 = `
   animation: agentation-fade-in 0.08s ease-out forwards;
 }
 
+/* Hide hover elements during scroll - applied to body */
+body.agentation-scrolling .agentation-hover-highlight,
+body.agentation-scrolling .agentation-hover-tooltip {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* Cursor styles for annotation mode */
 .agentation-active-cursor {
   cursor: crosshair !important;
@@ -1479,20 +1486,55 @@ function PageFeedbackToolbarCSS() {
   const [mounted, setMounted] = (0, import_react4.useState)(false);
   const [isFrozen, setIsFrozen] = (0, import_react4.useState)(false);
   const [exitingIds, setExitingIds] = (0, import_react4.useState)(/* @__PURE__ */ new Set());
+  const [outputFormat, setOutputFormat] = (0, import_react4.useState)("standard");
   const popupRef = (0, import_react4.useRef)(null);
+  const overlayRef = (0, import_react4.useRef)(null);
+  const isScrollingRef = (0, import_react4.useRef)(false);
   const animatedIdsRef = (0, import_react4.useRef)(/* @__PURE__ */ new Set());
   const recentlyAddedIdRef = (0, import_react4.useRef)(null);
+  const scrollTimeoutRef = (0, import_react4.useRef)(null);
   const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
   (0, import_react4.useEffect)(() => {
     setMounted(true);
     setScrollY(window.scrollY);
     const stored = loadAnnotations(pathname);
     setAnnotations(stored);
+    const savedFormat = localStorage.getItem("agentation-output-format");
+    if (savedFormat && ["compact", "standard", "detailed"].includes(savedFormat)) {
+      setOutputFormat(savedFormat);
+    }
   }, [pathname]);
   (0, import_react4.useEffect)(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
+    const handleFormatChange = (e) => {
+      setOutputFormat(e.detail);
+    };
+    window.addEventListener("agentation-format-change", handleFormatChange);
+    return () => window.removeEventListener("agentation-format-change", handleFormatChange);
+  }, []);
+  (0, import_react4.useEffect)(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+      if (!isScrollingRef.current) {
+        isScrollingRef.current = true;
+        document.body.classList.add("agentation-scrolling");
+      }
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      scrollTimeoutRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
+        document.body.classList.remove("agentation-scrolling");
+        setHoverInfo(null);
+      }, 100);
+    };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.body.classList.remove("agentation-scrolling");
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
   }, []);
   (0, import_react4.useEffect)(() => {
     if (mounted && annotations.length > 0) {
@@ -1581,6 +1623,7 @@ function PageFeedbackToolbarCSS() {
   (0, import_react4.useEffect)(() => {
     if (!isActive || pendingAnnotation) return;
     const handleMouseMove = (e) => {
+      if (isScrollingRef.current) return;
       if (e.target.closest("[data-feedback-toolbar]")) {
         setHoverInfo(null);
         return;
@@ -1681,12 +1724,12 @@ function PageFeedbackToolbarCSS() {
     }, 150);
   }, []);
   const copyOutput = (0, import_react4.useCallback)(async () => {
-    const output = generateOutput2(annotations, pathname);
+    const output = generateOutput2(annotations, pathname, outputFormat);
     if (!output) return;
     await navigator.clipboard.writeText(output);
     setCopied(true);
     setTimeout(() => setCopied(false), 2e3);
-  }, [annotations, pathname]);
+  }, [annotations, pathname, outputFormat]);
   const clearAll = (0, import_react4.useCallback)(() => {
     setAnnotations([]);
     localStorage.removeItem(getStorageKey(pathname));
@@ -1843,13 +1886,14 @@ function PageFeedbackToolbarCSS() {
             const isHovered = hoveredMarkerId === annotation.id;
             const isExiting = exitingIds.has(annotation.id);
             const isNew = !animatedIdsRef.current.has(annotation.id) && !isExiting;
+            const showAsHovered = isHovered || isExiting;
             if (isNew) {
               animatedIdsRef.current.add(annotation.id);
             }
             return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
               "div",
               {
-                className: `${styles_module_default2.marker} ${isHovered ? styles_module_default2.hovered : ""} ${isExiting ? "agentation-marker-exit" : ""} ${isNew ? "agentation-marker-new" : ""}`,
+                className: `${styles_module_default2.marker} ${showAsHovered ? styles_module_default2.hovered : ""} ${isExiting ? "agentation-marker-exit" : ""} ${isNew ? "agentation-marker-new" : ""}`,
                 "data-annotation-marker": true,
                 style: {
                   left: `${annotation.x}%`,
@@ -1863,7 +1907,7 @@ function PageFeedbackToolbarCSS() {
                   if (!isExiting) deleteAnnotation(annotation.id);
                 },
                 children: [
-                  isHovered ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconClose2, { size: 10 }) : index + 1,
+                  showAsHovered ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconClose2, { size: 10 }) : index + 1,
                   isHovered && !isExiting && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: `${styles_module_default2.markerTooltip} agentation-tooltip-animate`, children: [
                     annotation.selectedText && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("span", { className: styles_module_default2.markerQuote, children: [
                       "\u201C",
@@ -1881,59 +1925,67 @@ function PageFeedbackToolbarCSS() {
           })
         }
       ),
-      isActive && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: styles_module_default2.overlay, "data-feedback-toolbar": true, children: [
-        hoverInfo?.rect && !pendingAnnotation && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
-          "div",
-          {
-            className: `${styles_module_default2.hoverHighlight} agentation-highlight-animate`,
-            style: {
-              left: hoverInfo.rect.left,
-              top: hoverInfo.rect.top,
-              width: hoverInfo.rect.width,
-              height: hoverInfo.rect.height
-            }
-          },
-          `${hoverInfo.rect.left}-${hoverInfo.rect.top}-${hoverInfo.rect.width}`
-        ),
-        hoverInfo && !pendingAnnotation && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
-          "div",
-          {
-            className: `${styles_module_default2.hoverTooltip} agentation-hover-tooltip-animate`,
-            style: {
-              left: Math.min(hoverPosition.x, window.innerWidth - 150),
-              top: Math.max(hoverPosition.y - 32, 8)
-            },
-            children: hoverInfo.element
-          }
-        ),
-        (pendingAnnotation || pendingExiting) && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_jsx_runtime6.Fragment, { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
-            "div",
-            {
-              className: `${styles_module_default2.marker} ${styles_module_default2.pending} ${pendingExiting ? "agentation-pending-exit" : "agentation-pending-enter"}`,
-              style: {
-                left: `${pendingAnnotation?.x ?? 0}%`,
-                top: pendingAnnotation?.clientY ?? 0
+      isActive && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
+        "div",
+        {
+          ref: overlayRef,
+          className: styles_module_default2.overlay,
+          "data-feedback-toolbar": true,
+          children: [
+            hoverInfo?.rect && !pendingAnnotation && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+              "div",
+              {
+                className: `${styles_module_default2.hoverHighlight} agentation-highlight-animate agentation-hover-highlight`,
+                style: {
+                  left: hoverInfo.rect.left,
+                  top: hoverInfo.rect.top,
+                  width: hoverInfo.rect.width,
+                  height: hoverInfo.rect.height
+                }
               },
-              children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconPlus2, { size: 12 })
-            }
-          ),
-          pendingAnnotation && !pendingExiting && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
-            AnnotationPopupCSS,
-            {
-              ref: popupRef,
-              element: pendingAnnotation.element,
-              selectedText: pendingAnnotation.selectedText,
-              onSubmit: addAnnotation,
-              onCancel: cancelAnnotation,
-              style: {
-                left: `${Math.min(Math.max(pendingAnnotation.x, 15), 85)}%`,
-                top: Math.min(pendingAnnotation.clientY + 20, window.innerHeight - 180)
+              `${hoverInfo.rect.left}-${hoverInfo.rect.top}-${hoverInfo.rect.width}`
+            ),
+            hoverInfo && !pendingAnnotation && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+              "div",
+              {
+                className: `${styles_module_default2.hoverTooltip} agentation-hover-tooltip-animate agentation-hover-tooltip`,
+                style: {
+                  left: Math.min(hoverPosition.x, window.innerWidth - 150),
+                  top: Math.max(hoverPosition.y - 32, 8)
+                },
+                children: hoverInfo.element
               }
-            }
-          )
-        ] })
-      ] })
+            ),
+            (pendingAnnotation || pendingExiting) && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_jsx_runtime6.Fragment, { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+                "div",
+                {
+                  className: `${styles_module_default2.marker} ${styles_module_default2.pending} ${pendingExiting ? "agentation-pending-exit" : "agentation-pending-enter"}`,
+                  style: {
+                    left: `${pendingAnnotation?.x ?? 0}%`,
+                    top: pendingAnnotation?.clientY ?? 0
+                  },
+                  children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconPlus2, { size: 12 })
+                }
+              ),
+              pendingAnnotation && !pendingExiting && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+                AnnotationPopupCSS,
+                {
+                  ref: popupRef,
+                  element: pendingAnnotation.element,
+                  selectedText: pendingAnnotation.selectedText,
+                  onSubmit: addAnnotation,
+                  onCancel: cancelAnnotation,
+                  style: {
+                    left: `${Math.min(Math.max(pendingAnnotation.x, 15), 85)}%`,
+                    top: Math.min(pendingAnnotation.clientY + 20, window.innerHeight - 180)
+                  }
+                }
+              )
+            ] })
+          ]
+        }
+      )
     ] }),
     document.body
   );
