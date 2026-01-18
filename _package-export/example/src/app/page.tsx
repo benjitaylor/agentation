@@ -1,41 +1,19 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Highlight, themes } from "prism-react-renderer";
+import { motion, AnimatePresence } from "framer-motion";
 
 type OutputFormat = 'standard' | 'detailed' | 'compact';
 
 const FORMAT_STORAGE_KEY = 'agentation-output-format';
 
-// Code block with syntax highlighting and optional animation
-function CodeBlock({
-  code,
-  language = "tsx",
-  animationKey
-}: {
-  code: string;
-  language?: string;
-  animationKey?: string | number;
-}) {
-  const [isAnimating, setIsAnimating] = useState(false);
-  const prevKeyRef = useRef(animationKey);
-
-  useEffect(() => {
-    if (animationKey !== prevKeyRef.current) {
-      setIsAnimating(true);
-      prevKeyRef.current = animationKey;
-      const timer = setTimeout(() => setIsAnimating(false), 250);
-      return () => clearTimeout(timer);
-    }
-  }, [animationKey]);
-
+// Code block with syntax highlighting
+function CodeBlock({ code, language = "tsx" }: { code: string; language?: string }) {
   return (
     <Highlight theme={themes.github} code={code.trim()} language={language}>
       {({ style, tokens, getLineProps, getTokenProps }) => (
-        <pre
-          className={`code-block ${isAnimating ? 'animating' : ''}`}
-          style={{ ...style, background: 'transparent' }}
-        >
+        <pre className="code-block" style={{ ...style, background: 'transparent' }}>
           {tokens.map((line, i) => (
             <div key={i} {...getLineProps({ line })}>
               {line.map((token, key) => (
@@ -46,6 +24,24 @@ function CodeBlock({
         </pre>
       )}
     </Highlight>
+  );
+}
+
+// Animated code block with smooth height transitions
+function AnimatedCodeBlock({ code, language, formatKey }: { code: string; language?: string; formatKey: string }) {
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={formatKey}
+        initial={{ opacity: 0, height: 'auto' }}
+        animate={{ opacity: 1, height: 'auto' }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.15, ease: 'easeOut' }}
+        layout
+      >
+        <CodeBlock code={code} language={language} />
+      </motion.div>
+    </AnimatePresence>
   );
 }
 
@@ -211,7 +207,7 @@ export default function AgentationDocs() {
               Detailed
             </button>
           </div>
-          <CodeBlock code={outputExamples[outputFormat]} language="markdown" animationKey={outputFormat} />
+          <AnimatedCodeBlock code={outputExamples[outputFormat]} language="markdown" formatKey={outputFormat} />
           <p>
             The output includes searchable selectors and class names that agents can <code>grep</code> for
             in your codebase to find the exact component.
