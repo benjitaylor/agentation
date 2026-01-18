@@ -1,6 +1,6 @@
 # Dependencies
 node_modules/
-dist/
+dist/*
 
 # Build output (dist is committed for Vercel deployment)
 # dist/
