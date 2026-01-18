@@ -211,6 +211,41 @@ button {
     white-space: pre;
     margin: 0.625rem 0;
   }
+
+  .format-toggle {
+    display: inline-flex;
+    gap: 0;
+    margin: 0.5rem 0;
+    border-radius: 0.375rem;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+
+    button {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: white;
+      color: rgba(0, 0, 0, 0.5);
+      border: none;
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.15s ease;
+
+      &:last-child {
+        border-right: none;
+      }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.03);
+        color: rgba(0, 0, 0, 0.7);
+      }
+
+      &.active {
+        background: #1a1a1a;
+        color: white;
+      }
+    }
+  }
 }
 
 // =============================================================================
@@ -285,7 +320,7 @@ button {
   font-size: 0.875rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 0.375rem;
-  margin: 0.5rem 0;
+  margin: 1rem 0 0.5rem;
   transition: border-color 0.15s ease;
 
   &:focus {
@@ -301,50 +336,52 @@ button {
 // Animation demo
 @keyframes float {
   0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(120px); }
-}
-
-@keyframes pulse-opacity {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 0.4; }
+  50% { transform: translateX(60px); }
 }
 
 .animation-demo {
   display: flex;
   align-items: center;
-  gap: 2rem;
-  padding: 2rem 0;
-  margin-top: 1rem;
+  gap: 3rem;
+  padding: 1.5rem 0;
+  margin-top: 0.5rem;
 }
 
 .floating-circle {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-  animation: float 3s ease-in-out infinite, pulse-opacity 3s ease-in-out infinite;
+  background: #667eea;
+  animation: float 2.5s ease-in-out infinite;
 
   &.delay-1 {
-    animation-delay: -1s;
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    box-shadow: 0 4px 12px rgba(240, 147, 251, 0.4);
+    animation-delay: -0.8s;
+    background: #f5576c;
   }
 
   &.delay-2 {
-    animation-delay: -2s;
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
+    animation-delay: -1.6s;
+    background: #4facfe;
   }
 }
 
 // Footer
 .footer {
-  max-width: 38rem;
+  max-width: 36rem;
   margin: 0 auto;
-  padding: 3rem 1.5rem;
-  border-top: 1px solid #f0f0f0;
-  text-align: center;
+  padding: 2rem 1.5rem 3rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  text-align: left;
   color: rgba(0, 0, 0, 0.4);
   font-size: 0.75rem;
+
+  a {
+    color: rgba(0, 0, 0, 0.5);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.7);
+    }
+  }
 }

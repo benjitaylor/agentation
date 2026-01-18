@@ -86,7 +86,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupHandle, AnnotationPo
     ref
   ) {
     const [text, setText] = useState("");
-    const [isShaking, setIsShaking] = useState(false);
+    const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -96,15 +96,24 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupHandle, AnnotationPo
       return () => clearTimeout(timer);
     }, []);
 
-    // Shake animation - subtle shake
+    // Shake animation - use CSS directly to avoid re-render flash
     const shake = useCallback(() => {
-      setIsShaking(true);
+      const el = containerRef.current;
+      if (!el) return;
+
+      // Remove and re-add shake class to restart animation
+      el.classList.remove('agentation-popup-shake');
+      // Force reflow
+      void el.offsetWidth;
+      el.classList.add('agentation-popup-shake');
     }, []);
 
-    // Handle shake animation end - clear shake state cleanly
+    // Handle animation end
     const handleAnimationEnd = useCallback((e: React.AnimationEvent) => {
+      if (e.animationName === 'agentation-popup-in') {
+        setHasAnimatedIn(true);
+      }
       if (e.animationName === 'agentation-popup-shake') {
-        setIsShaking(false);
         textareaRef.current?.focus();
       }
     }, []);
@@ -135,7 +144,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupHandle, AnnotationPo
     return (
       <div
         ref={containerRef}
-        className={`${styles.popup} agentation-popup-animate-in ${isShaking ? "agentation-popup-shake" : ""}`}
+        className={`${styles.popup} ${!hasAnimatedIn ? "agentation-popup-animate-in" : ""}`}
         data-annotation-popup
         style={style}
         onClick={(e) => e.stopPropagation()}

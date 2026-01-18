@@ -2,8 +2,66 @@
 
 import { useState } from "react";
 
+type OutputFormat = 'standard' | 'detailed' | 'compact';
+
+const outputExamples: Record<OutputFormat, string> = {
+  standard: `## Page Feedback: /dashboard
+**Viewport:** 1512×738
+
+### 1. button.submit-btn
+**Selector:** \`.form-container > .actions > button.submit-btn\`
+**Classes:** \`submit-btn primary\`
+**Position:** 450, 320 (120×40)
+**Feedback:** Button text should say "Save" not "Submit"
+
+### 2. span.nav-label
+**Selector:** \`.sidebar > nav > .nav-item > span\`
+**Selected:** "Settigns"
+**Feedback:** Typo - should be "Settings"`,
+
+  detailed: `## Page Feedback: /dashboard
+**Viewport:** 1512×738
+**URL:** https://myapp.com/dashboard
+**User Agent:** Chrome/120.0
+
+---
+
+### 1. button.submit-btn
+
+**Selector:** \`.form-container > .actions > button.submit-btn\`
+**Classes:** \`.submit-btn\`, \`.primary\`
+**Bounding box:** x:450, y:320, 120×40px
+**Nearby text:** "Cancel Save Changes"
+
+**Issue:** Button text should say "Save" not "Submit"
+
+---
+
+### 2. span.nav-label
+
+**Selector:** \`.sidebar > nav > .nav-item > span\`
+**Classes:** \`.nav-label\`
+**Selected text:** "Settigns"
+**Nearby text:** "Dashboard Settigns Profile"
+
+**Issue:** Typo - should be "Settings"
+
+---
+
+**Search tips:** Use the class names or selectors above to find these elements. Try \`grep -r "className.*submit-btn"\` or search for the nearby text.`,
+
+  compact: `## Feedback: /dashboard
+
+1. **.submit-btn**
+   Button text should say "Save" not "Submit"
+
+2. **.nav-label** ("Settigns...")
+   Typo - should be "Settings"`,
+};
+
 export default function AgentationDocs() {
   const [inputValue, setInputValue] = useState("");
+  const [outputFormat, setOutputFormat] = useState<OutputFormat>('standard');
 
   return (
     <>
@@ -69,21 +127,30 @@ export default function AgentationDocs() {
         <section>
           <h2>Output format</h2>
           <p>
-            When you copy, you get structured markdown that agents can parse and act on:
+            When you copy, you get structured markdown that agents can parse and act on.
+            Three formats are available:
           </p>
-          <pre className="code-block">{`## Page Feedback: /dashboard
-**Viewport:** 1512×738
-
-### 1. button.submit-btn
-**Selector:** \`.form-container > .actions > button.submit-btn\`
-**Classes:** \`submit-btn primary\`
-**Position:** 450, 320 (120×40)
-**Feedback:** Button text should say "Save" not "Submit"
-
-### 2. span.nav-label
-**Selector:** \`.sidebar > nav > .nav-item > span\`
-**Selected:** "Settigns"
-**Feedback:** Typo - should be "Settings"`}</pre>
+          <div className="format-toggle">
+            <button
+              className={outputFormat === 'compact' ? 'active' : ''}
+              onClick={() => setOutputFormat('compact')}
+            >
+              Compact
+            </button>
+            <button
+              className={outputFormat === 'standard' ? 'active' : ''}
+              onClick={() => setOutputFormat('standard')}
+            >
+              Standard
+            </button>
+            <button
+              className={outputFormat === 'detailed' ? 'active' : ''}
+              onClick={() => setOutputFormat('detailed')}
+            >
+              Detailed
+            </button>
+          </div>
+          <pre className="code-block">{outputExamples[outputFormat]}</pre>
           <p>
             The output includes searchable selectors and class names that agents can <code>grep</code> for
             in your codebase to find the exact component.
@@ -237,7 +304,7 @@ export default function RootLayout({ children }) {
         <section className="demo-section">
           <h2>Animation pause demo</h2>
           <p>
-            Click the pause button (⏸) in the toolbar to freeze these animations:
+            Click the pause button in the toolbar to freeze these animations:
           </p>
           <div className="animation-demo">
             <div className="floating-circle" />
@@ -284,7 +351,7 @@ export default function RootLayout({ children }) {
       </article>
 
       <footer className="footer">
-        <p>Agentation &middot; Visual feedback for AI coding agents</p>
+        <p>Created by <a href="https://benji.org" target="_blank" rel="noopener noreferrer">Benji Taylor</a></p>
       </footer>
     </>
   );
