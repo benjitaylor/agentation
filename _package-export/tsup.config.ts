@@ -13,7 +13,10 @@ function scssModulesPlugin(): Plugin {
       // Handle all .scss files
       build.onLoad({ filter: /\.scss$/ }, async (args) => {
         const isModule = args.path.includes(".module.");
+        // Use parent directory + filename for unique style IDs
+        const parentDir = path.basename(path.dirname(args.path));
         const baseName = path.basename(args.path, isModule ? ".module.scss" : ".scss");
+        const styleId = `${parentDir}-${baseName}`;
 
         // Compile SCSS to CSS
         const result = sass.compile(args.path);
@@ -40,10 +43,10 @@ const classNames = ${JSON.stringify(classNames)};
 
 // SSR-safe style injection
 if (typeof document !== 'undefined') {
-  let style = document.getElementById('feedback-tool-styles-${baseName}');
+  let style = document.getElementById('feedback-tool-styles-${styleId}');
   if (!style) {
     style = document.createElement('style');
-    style.id = 'feedback-tool-styles-${baseName}';
+    style.id = 'feedback-tool-styles-${styleId}';
     style.textContent = css;
     document.head.appendChild(style);
   }
@@ -57,10 +60,10 @@ export default classNames;
           const contents = `
 const css = ${JSON.stringify(css)};
 if (typeof document !== 'undefined') {
-  let style = document.getElementById('feedback-tool-styles-${baseName}');
+  let style = document.getElementById('feedback-tool-styles-${styleId}');
   if (!style) {
     style = document.createElement('style');
-    style.id = 'feedback-tool-styles-${baseName}';
+    style.id = 'feedback-tool-styles-${styleId}';
     style.textContent = css;
     document.head.appendChild(style);
   }
