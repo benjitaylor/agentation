@@ -58,7 +58,11 @@ const DEFAULT_SETTINGS: ToolbarSettings = {
   blockInteractions: false,
 };
 
-const OUTPUT_DETAIL_OPTIONS: { value: OutputDetailLevel; label: string; description: string }[] = [
+const OUTPUT_DETAIL_OPTIONS: {
+  value: OutputDetailLevel;
+  label: string;
+  description: string;
+}[] = [
   { value: "compact", label: "Compact", description: "Minimal output" },
   { value: "standard", label: "Standard", description: "Balanced detail" },
   { value: "detailed", label: "Detailed", description: "Full context" },
@@ -96,14 +100,15 @@ function isElementFixed(element: HTMLElement): boolean {
 function generateOutput(
   annotations: Annotation[],
   pathname: string,
-  detailLevel: OutputDetailLevel = "standard"
+  detailLevel: OutputDetailLevel = "standard",
 ): string {
   if (annotations.length === 0) return "";
 
   // Include viewport dimensions
-  const viewport = typeof window !== "undefined"
-    ? `${window.innerWidth}×${window.innerHeight}`
-    : "unknown";
+  const viewport =
+    typeof window !== "undefined"
+      ? `${window.innerWidth}×${window.innerHeight}`
+      : "unknown";
 
   let output = `## Page Feedback: ${pathname}\n`;
 
@@ -213,9 +218,16 @@ export function PageFeedbackToolbar({
 
   // Multi-select drag state
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
-  const [dragCurrent, setDragCurrent] = useState<{ x: number; y: number } | null>(null);
-  const [selectedElements, setSelectedElements] = useState<{ element: HTMLElement; rect: DOMRect }[]>([]);
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const [dragCurrent, setDragCurrent] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const [selectedElements, setSelectedElements] = useState<
+    { element: HTMLElement; rect: DOMRect }[]
+  >([]);
   const mouseDownPosRef = useRef<{ x: number; y: number } | null>(null);
   const justFinishedDragRef = useRef(false);
   const lastElementUpdateRef = useRef(0);
@@ -225,7 +237,8 @@ export function PageFeedbackToolbar({
   const popupRef = useRef<AnnotationPopupHandle>(null);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
+  const pathname =
+    typeof window !== "undefined" ? window.location.pathname : "/";
 
   // Mount and load
   useEffect(() => {
@@ -247,15 +260,20 @@ export function PageFeedbackToolbar({
     // Detect dark mode
     const darkModeQuery = window.matchMedia("(prefers-color-scheme: dark)");
     setIsDarkMode(darkModeQuery.matches);
-    const handleDarkModeChange = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
+    const handleDarkModeChange = (e: MediaQueryListEvent) =>
+      setIsDarkMode(e.matches);
     darkModeQuery.addEventListener("change", handleDarkModeChange);
-    return () => darkModeQuery.removeEventListener("change", handleDarkModeChange);
+    return () =>
+      darkModeQuery.removeEventListener("change", handleDarkModeChange);
   }, [pathname]);
 
   // Save settings when changed
   useEffect(() => {
     if (mounted) {
-      localStorage.setItem("feedback-toolbar-settings", JSON.stringify(settings));
+      localStorage.setItem(
+        "feedback-toolbar-settings",
+        JSON.stringify(settings),
+      );
     }
   }, [settings, mounted]);
 
@@ -269,42 +287,46 @@ export function PageFeedbackToolbar({
     const timeoutIds: ReturnType<typeof setTimeout>[] = [];
 
     // Activate toolbar first
-    timeoutIds.push(setTimeout(() => {
-      setIsActive(true);
-    }, demoDelay - 200));
+    timeoutIds.push(
+      setTimeout(() => {
+        setIsActive(true);
+      }, demoDelay - 200),
+    );
 
     // Add each demo annotation with staggered timing
     demoAnnotations.forEach((demo, index) => {
-      const annotationDelay = demoDelay + (index * 300);
+      const annotationDelay = demoDelay + index * 300;
 
-      timeoutIds.push(setTimeout(() => {
-        const element = document.querySelector(demo.selector) as HTMLElement;
-        if (!element) return;
+      timeoutIds.push(
+        setTimeout(() => {
+          const element = document.querySelector(demo.selector) as HTMLElement;
+          if (!element) return;
 
-        const rect = element.getBoundingClientRect();
-        const { name, path } = identifyElement(element);
+          const rect = element.getBoundingClientRect();
+          const { name, path } = identifyElement(element);
 
-        const newAnnotation: Annotation = {
-          id: `demo-${Date.now()}-${index}`,
-          x: ((rect.left + rect.width / 2) / window.innerWidth) * 100,
-          y: rect.top + rect.height / 2 + window.scrollY,
-          comment: demo.comment,
-          element: name,
-          elementPath: path,
-          timestamp: Date.now(),
-          selectedText: demo.selectedText,
-          boundingBox: {
-            x: rect.left,
-            y: rect.top + window.scrollY,
-            width: rect.width,
-            height: rect.height,
-          },
-          nearbyText: getNearbyText(element),
-          cssClasses: getElementClasses(element),
-        };
+          const newAnnotation: Annotation = {
+            id: `demo-${Date.now()}-${index}`,
+            x: ((rect.left + rect.width / 2) / window.innerWidth) * 100,
+            y: rect.top + rect.height / 2 + window.scrollY,
+            comment: demo.comment,
+            element: name,
+            elementPath: path,
+            timestamp: Date.now(),
+            selectedText: demo.selectedText,
+            boundingBox: {
+              x: rect.left,
+              y: rect.top + window.scrollY,
+              width: rect.width,
+              height: rect.height,
+            },
+            nearbyText: getNearbyText(element),
+            cssClasses: getElementClasses(element),
+          };
 
-        setAnnotations((prev) => [...prev, newAnnotation]);
-      }, annotationDelay));
+          setAnnotations((prev) => [...prev, newAnnotation]);
+        }, annotationDelay),
+      );
     });
 
     return () => {
@@ -451,7 +473,10 @@ export function PageFeedbackToolbar({
         return;
       }
 
-      const elementUnder = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement;
+      const elementUnder = document.elementFromPoint(
+        e.clientX,
+        e.clientY,
+      ) as HTMLElement;
       if (!elementUnder || elementUnder.closest("[data-feedback-toolbar]")) {
         setHoverInfo(null);
         return;
@@ -487,7 +512,9 @@ export function PageFeedbackToolbar({
 
       // If there's a pending annotation
       if (pendingAnnotation) {
-        const isInteractive = target.closest("button, a, input, select, textarea, [role='button'], [onclick]");
+        const isInteractive = target.closest(
+          "button, a, input, select, textarea, [role='button'], [onclick]",
+        );
         if (isInteractive && !settings.blockInteractions) {
           // Let the click through without shaking - don't interrupt normal site usage
           return;
@@ -500,7 +527,9 @@ export function PageFeedbackToolbar({
 
       // Block interactions on interactive elements if setting is enabled
       if (settings.blockInteractions) {
-        const isInteractive = target.closest("button, a, input, select, textarea, [role='button'], [onclick]");
+        const isInteractive = target.closest(
+          "button, a, input, select, textarea, [role='button'], [onclick]",
+        );
         if (isInteractive) {
           e.preventDefault();
           e.stopPropagation();
@@ -509,7 +538,10 @@ export function PageFeedbackToolbar({
 
       e.preventDefault();
 
-      const elementUnder = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement;
+      const elementUnder = document.elementFromPoint(
+        e.clientX,
+        e.clientY,
+      ) as HTMLElement;
       if (!elementUnder) return;
 
       const { name, path } = identifyElement(elementUnder);
@@ -538,7 +570,7 @@ export function PageFeedbackToolbar({
           x: rect.left,
           y: isFixed ? rect.top : rect.top + window.scrollY,
           width: rect.width,
-          height: rect.height
+          height: rect.height,
         },
         nearbyText: getNearbyText(elementUnder),
         cssClasses: getElementClasses(elementUnder),
@@ -611,10 +643,15 @@ export function PageFeedbackToolbar({
 
         // Find elements using elementsFromPoint at corners and center for better performance
         const pointsToCheck = [
-          [left, top], [right, top], [left, bottom], [right, bottom],
+          [left, top],
+          [right, top],
+          [left, bottom],
+          [right, bottom],
           [(left + right) / 2, (top + bottom) / 2],
-          [left, (top + bottom) / 2], [right, (top + bottom) / 2],
-          [(left + right) / 2, top], [(left + right) / 2, bottom],
+          [left, (top + bottom) / 2],
+          [right, (top + bottom) / 2],
+          [(left + right) / 2, top],
+          [(left + right) / 2, bottom],
         ];
 
         const candidateElements = new Set<HTMLElement>();
@@ -626,11 +663,18 @@ export function PageFeedbackToolbar({
         });
 
         // Also check elements near the selection bounds
-        const nearbyElements = document.querySelectorAll("button, a, input, img, p, h1, h2, h3, h4, h5, h6, li, label");
+        const nearbyElements = document.querySelectorAll(
+          "button, a, input, img, p, h1, h2, h3, h4, h5, h6, li, label",
+        );
         nearbyElements.forEach((el) => {
           if (el instanceof HTMLElement) {
             const rect = el.getBoundingClientRect();
-            if (rect.left < right && rect.right > left && rect.top < bottom && rect.bottom > top) {
+            if (
+              rect.left < right &&
+              rect.right > left &&
+              rect.top < bottom &&
+              rect.bottom > top
+            ) {
               candidateElements.add(el);
             }
           }
@@ -638,7 +682,23 @@ export function PageFeedbackToolbar({
 
         // First pass: collect all meaningful elements that intersect
         const allMatching: { element: HTMLElement; rect: DOMRect }[] = [];
-        const meaningfulTags = ["button", "a", "input", "img", "p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "label", "td", "th"];
+        const meaningfulTags = [
+          "button",
+          "a",
+          "input",
+          "img",
+          "p",
+          "h1",
+          "h2",
+          "h3",
+          "h4",
+          "h5",
+          "h6",
+          "li",
+          "label",
+          "td",
+          "th",
+        ];
 
         candidateElements.forEach((el) => {
           // Skip toolbar elements
@@ -648,13 +708,22 @@ export function PageFeedbackToolbar({
           const rect = el.getBoundingClientRect();
 
           // Skip elements that are too large (probably containers)
-          if (rect.width > window.innerWidth * 0.8 && rect.height > window.innerHeight * 0.5) return;
+          if (
+            rect.width > window.innerWidth * 0.8 &&
+            rect.height > window.innerHeight * 0.5
+          )
+            return;
 
           // Skip very small elements
           if (rect.width < 10 || rect.height < 10) return;
 
           // Check if element intersects with selection rectangle
-          if (rect.left < right && rect.right > left && rect.top < bottom && rect.bottom > top) {
+          if (
+            rect.left < right &&
+            rect.right > left &&
+            rect.top < bottom &&
+            rect.bottom > top
+          ) {
             const tagName = el.tagName.toLowerCase();
 
             // Only include semantic/meaningful tags, not generic divs/spans
@@ -667,8 +736,8 @@ export function PageFeedbackToolbar({
         // Second pass: keep only leaf elements (those that don't contain other selected elements)
         const elementsInSelection = allMatching.filter(({ element: el }) => {
           // Check if this element contains any other selected element
-          const containsOther = allMatching.some(({ element: other }) =>
-            other !== el && el.contains(other)
+          const containsOther = allMatching.some(
+            ({ element: other }) => other !== el && el.contains(other),
           );
           return !containsOther;
         });
@@ -700,7 +769,12 @@ export function PageFeedbackToolbar({
             right: Math.max(acc.right, rect.right),
             bottom: Math.max(acc.bottom, rect.bottom),
           }),
-          { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity }
+          {
+            left: Infinity,
+            top: Infinity,
+            right: -Infinity,
+            bottom: -Infinity,
+          },
         );
 
         // Use mouse release position for marker
@@ -711,7 +785,10 @@ export function PageFeedbackToolbar({
           .slice(0, 5)
           .map(({ element }) => identifyElement(element).name)
           .join(", ");
-        const suffix = selectedElements.length > 5 ? ` +${selectedElements.length - 5} more` : "";
+        const suffix =
+          selectedElements.length > 5
+            ? ` +${selectedElements.length - 5} more`
+            : "";
 
         setPendingAnnotation({
           x,
@@ -746,29 +823,32 @@ export function PageFeedbackToolbar({
   }, [isActive, isDragging, selectedElements]);
 
   // Add annotation
-  const addAnnotation = useCallback((comment: string) => {
-    if (!pendingAnnotation) return;
+  const addAnnotation = useCallback(
+    (comment: string) => {
+      if (!pendingAnnotation) return;
 
-    const newAnnotation: Annotation = {
-      id: Date.now().toString(),
-      x: pendingAnnotation.x,
-      y: pendingAnnotation.y,
-      comment,
-      element: pendingAnnotation.element,
-      elementPath: pendingAnnotation.elementPath,
-      timestamp: Date.now(),
-      selectedText: pendingAnnotation.selectedText,
-      boundingBox: pendingAnnotation.boundingBox,
-      nearbyText: pendingAnnotation.nearbyText,
-      cssClasses: pendingAnnotation.cssClasses,
-      isMultiSelect: pendingAnnotation.isMultiSelect,
-      isFixed: pendingAnnotation.isFixed,
-    };
+      const newAnnotation: Annotation = {
+        id: Date.now().toString(),
+        x: pendingAnnotation.x,
+        y: pendingAnnotation.y,
+        comment,
+        element: pendingAnnotation.element,
+        elementPath: pendingAnnotation.elementPath,
+        timestamp: Date.now(),
+        selectedText: pendingAnnotation.selectedText,
+        boundingBox: pendingAnnotation.boundingBox,
+        nearbyText: pendingAnnotation.nearbyText,
+        cssClasses: pendingAnnotation.cssClasses,
+        isMultiSelect: pendingAnnotation.isMultiSelect,
+        isFixed: pendingAnnotation.isFixed,
+      };
 
-    setAnnotations((prev) => [...prev, newAnnotation]);
-    setPendingAnnotation(null);
-    window.getSelection()?.removeAllRanges();
-  }, [pendingAnnotation]);
+      setAnnotations((prev) => [...prev, newAnnotation]);
+      setPendingAnnotation(null);
+      window.getSelection()?.removeAllRanges();
+    },
+    [pendingAnnotation],
+  );
 
   // Cancel annotation
   const cancelAnnotation = useCallback(() => {
@@ -815,7 +895,13 @@ export function PageFeedbackToolbar({
     if (settings.autoClearAfterCopy) {
       setTimeout(() => clearAll(), 500);
     }
-  }, [annotations, pathname, settings.outputDetail, settings.autoClearAfterCopy, clearAll]);
+  }, [
+    annotations,
+    pathname,
+    settings.outputDetail,
+    settings.autoClearAfterCopy,
+    clearAll,
+  ]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -846,7 +932,10 @@ export function PageFeedbackToolbar({
             <motion.button
               key="toggle"
               className={styles.toggleButton}
-              onClick={(e) => { e.stopPropagation(); setIsActive(true); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsActive(true);
+              }}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
@@ -859,7 +948,14 @@ export function PageFeedbackToolbar({
               title="Start feedback mode"
             >
               <IconFeedback size={18} />
-              {hasAnnotations && <span className={styles.badge} style={{ backgroundColor: settings.annotationColor }}>{annotations.length}</span>}
+              {hasAnnotations && (
+                <span
+                  className={styles.badge}
+                  style={{ backgroundColor: settings.annotationColor }}
+                >
+                  {annotations.length}
+                </span>
+              )}
             </motion.button>
           ) : (
             <motion.div
@@ -877,7 +973,10 @@ export function PageFeedbackToolbar({
             >
               <motion.button
                 className={styles.controlButton}
-                onClick={(e) => { e.stopPropagation(); toggleFreeze(); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFreeze();
+                }}
                 title={isFrozen ? "Resume animations" : "Pause animations"}
                 data-active={isFrozen}
                 whileTap={{ scale: 0.95 }}
@@ -887,7 +986,10 @@ export function PageFeedbackToolbar({
 
               <motion.button
                 className={styles.controlButton}
-                onClick={(e) => { e.stopPropagation(); setShowMarkers(!showMarkers); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMarkers(!showMarkers);
+                }}
                 title={showMarkers ? "Hide markers" : "Show markers"}
                 whileTap={{ scale: 0.95 }}
               >
@@ -896,7 +998,10 @@ export function PageFeedbackToolbar({
 
               <motion.button
                 className={styles.controlButton}
-                onClick={(e) => { e.stopPropagation(); copyOutput(); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  copyOutput();
+                }}
                 disabled={!hasAnnotations}
                 title="Copy feedback"
                 whileTap={{ scale: 0.95 }}
@@ -906,7 +1011,10 @@ export function PageFeedbackToolbar({
 
               <motion.button
                 className={styles.controlButton}
-                onClick={(e) => { e.stopPropagation(); clearAll(); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  clearAll();
+                }}
                 disabled={!hasAnnotations}
                 title="Clear all"
                 data-danger
@@ -917,7 +1025,10 @@ export function PageFeedbackToolbar({
 
               <motion.button
                 className={styles.controlButton}
-                onClick={(e) => { e.stopPropagation(); setShowSettings(!showSettings); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowSettings(!showSettings);
+                }}
                 title="Settings"
                 data-active={showSettings}
                 whileTap={{ scale: 0.95 }}
@@ -929,7 +1040,10 @@ export function PageFeedbackToolbar({
 
               <motion.button
                 className={styles.controlButton}
-                onClick={(e) => { e.stopPropagation(); setIsActive(false); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsActive(false);
+                }}
                 title="Exit feedback mode"
                 whileTap={{ scale: 0.95 }}
               >
@@ -957,11 +1071,18 @@ export function PageFeedbackToolbar({
                     <button
                       key={option.value}
                       className={`${styles.settingsOption} ${settings.outputDetail === option.value ? styles.selected : ""}`}
-                      onClick={() => setSettings((s) => ({ ...s, outputDetail: option.value }))}
+                      onClick={() =>
+                        setSettings((s) => ({
+                          ...s,
+                          outputDetail: option.value,
+                        }))
+                      }
                       title={option.description}
                     >
                       {option.label}
-                      {settings.outputDetail === option.value && <IconCheck size={12} />}
+                      {settings.outputDetail === option.value && (
+                        <IconCheck size={12} />
+                      )}
                     </button>
                   ))}
                 </div>
@@ -975,7 +1096,12 @@ export function PageFeedbackToolbar({
                       key={color.value}
                       className={`${styles.colorOption} ${settings.annotationColor === color.value ? styles.selected : ""}`}
                       style={{ backgroundColor: color.value }}
-                      onClick={() => setSettings((s) => ({ ...s, annotationColor: color.value }))}
+                      onClick={() =>
+                        setSettings((s) => ({
+                          ...s,
+                          annotationColor: color.value,
+                        }))
+                      }
                       title={color.label}
                     />
                   ))}
@@ -987,7 +1113,12 @@ export function PageFeedbackToolbar({
                   <input
                     type="checkbox"
                     checked={settings.autoClearAfterCopy}
-                    onChange={(e) => setSettings((s) => ({ ...s, autoClearAfterCopy: e.target.checked }))}
+                    onChange={(e) =>
+                      setSettings((s) => ({
+                        ...s,
+                        autoClearAfterCopy: e.target.checked,
+                      }))
+                    }
                   />
                   <span className={styles.toggleLabel}>Clear after copy</span>
                 </label>
@@ -998,9 +1129,16 @@ export function PageFeedbackToolbar({
                   <input
                     type="checkbox"
                     checked={settings.blockInteractions}
-                    onChange={(e) => setSettings((s) => ({ ...s, blockInteractions: e.target.checked }))}
+                    onChange={(e) =>
+                      setSettings((s) => ({
+                        ...s,
+                        blockInteractions: e.target.checked,
+                      }))
+                    }
                   />
-                  <span className={styles.toggleLabel}>Block page interactions</span>
+                  <span className={styles.toggleLabel}>
+                    Block page interactions
+                  </span>
                 </label>
               </div>
             </motion.div>
@@ -1011,150 +1149,194 @@ export function PageFeedbackToolbar({
       {/* Markers layer - positioned absolutely, markers scroll with page */}
       <div className={styles.markersLayer} data-feedback-toolbar>
         <AnimatePresence>
-          {isActive && showMarkers &&
-            annotations.filter(a => !a.isFixed).map((annotation, index) => {
-              const isHovered = hoveredMarkerId === annotation.id;
-              const isDeleting = deletingMarkerId === annotation.id;
-              const showDeleteState = isHovered || isDeleting;
-              const isMulti = annotation.isMultiSelect;
-              const markerColor = isMulti ? "#34C759" : settings.annotationColor;
-              const globalIndex = annotations.findIndex(a => a.id === annotation.id);
+          {isActive &&
+            showMarkers &&
+            annotations
+              .filter((a) => !a.isFixed)
+              .map((annotation, index) => {
+                const isHovered = hoveredMarkerId === annotation.id;
+                const isDeleting = deletingMarkerId === annotation.id;
+                const showDeleteState = isHovered || isDeleting;
+                const isMulti = annotation.isMultiSelect;
+                const markerColor = isMulti
+                  ? "#34C759"
+                  : settings.annotationColor;
+                const globalIndex = annotations.findIndex(
+                  (a) => a.id === annotation.id,
+                );
 
-              return (
-                <motion.div
-                  key={annotation.id}
-                  className={`${styles.marker} ${showDeleteState ? styles.hovered : ""} ${isMulti ? styles.multiSelect : ""}`}
-                  data-annotation-marker
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{
-                    scale: isClearing ? 0 : 1,
-                    opacity: isClearing ? 0 : 1,
-                    transition: isClearing
-                      ? { duration: 0.12, ease: "easeIn", delay: index * 0.02 }
-                      : {
-                          type: "spring",
-                          stiffness: 600,
-                          damping: 28,
-                          delay: index * 0.02,
-                        },
-                  }}
-                  exit={{
-                    scale: 0,
-                    opacity: 0,
-                    transition: { duration: 0.15, ease: "easeIn" },
-                  }}
-                  whileHover={{ scale: 1.1 }}
-                  style={{
-                    left: `${annotation.x}%`,
-                    top: annotation.y,
-                    backgroundColor: showDeleteState ? undefined : markerColor,
-                  }}
-                  onMouseEnter={() => setHoveredMarkerId(annotation.id)}
-                  onMouseLeave={() => setHoveredMarkerId(null)}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteAnnotation(annotation.id);
-                  }}
-                >
-                  {showDeleteState ? <IconClose size={isMulti ? 12 : 10} /> : globalIndex + 1}
-                  <AnimatePresence>
-                    {isHovered && (
-                      <motion.div
-                        className={styles.markerTooltip}
-                        initial={{ opacity: 0, y: 2, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 2, scale: 0.98 }}
-                        transition={{ duration: 0.1, ease: "easeOut" }}
-                      >
-                        {annotation.selectedText && (
-                          <span className={styles.markerQuote}>
-                            &ldquo;{annotation.selectedText.slice(0, 50)}
-                            {annotation.selectedText.length > 50 ? "..." : ""}&rdquo;
-                          </span>
-                        )}
-                        <span className={styles.markerNote}>{annotation.comment}</span>
-                        <span className={styles.markerHint}>Click to remove</span>
-                      </motion.div>
+                return (
+                  <motion.div
+                    key={annotation.id}
+                    className={`${styles.marker} ${showDeleteState ? styles.hovered : ""} ${isMulti ? styles.multiSelect : ""}`}
+                    data-annotation-marker
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{
+                      scale: isClearing ? 0 : 1,
+                      opacity: isClearing ? 0 : 1,
+                      transition: isClearing
+                        ? {
+                            duration: 0.12,
+                            ease: "easeIn",
+                            delay: index * 0.02,
+                          }
+                        : {
+                            type: "spring",
+                            stiffness: 600,
+                            damping: 28,
+                            delay: index * 0.02,
+                          },
+                    }}
+                    exit={{
+                      scale: 0,
+                      opacity: 0,
+                      transition: { duration: 0.15, ease: "easeIn" },
+                    }}
+                    whileHover={{ scale: 1.1 }}
+                    style={{
+                      left: `${annotation.x}%`,
+                      top: annotation.y,
+                      backgroundColor: showDeleteState
+                        ? undefined
+                        : markerColor,
+                    }}
+                    onMouseEnter={() => setHoveredMarkerId(annotation.id)}
+                    onMouseLeave={() => setHoveredMarkerId(null)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteAnnotation(annotation.id);
+                    }}
+                  >
+                    {showDeleteState ? (
+                      <IconClose size={isMulti ? 12 : 10} />
+                    ) : (
+                      globalIndex + 1
                     )}
-                  </AnimatePresence>
-                </motion.div>
-              );
-            })}
+                    <AnimatePresence>
+                      {isHovered && (
+                        <motion.div
+                          className={styles.markerTooltip}
+                          initial={{ opacity: 0, y: 2, scale: 0.98 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 2, scale: 0.98 }}
+                          transition={{ duration: 0.1, ease: "easeOut" }}
+                        >
+                          {annotation.selectedText && (
+                            <span className={styles.markerQuote}>
+                              &ldquo;{annotation.selectedText.slice(0, 50)}
+                              {annotation.selectedText.length > 50 ? "..." : ""}
+                              &rdquo;
+                            </span>
+                          )}
+                          <span className={styles.markerNote}>
+                            {annotation.comment}
+                          </span>
+                          <span className={styles.markerHint}>
+                            Click to remove
+                          </span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
         </AnimatePresence>
       </div>
 
       {/* Fixed markers layer - for annotations on fixed/sticky elements */}
       <div className={styles.fixedMarkersLayer} data-feedback-toolbar>
         <AnimatePresence>
-          {isActive && showMarkers &&
-            annotations.filter(a => a.isFixed).map((annotation, index) => {
-              const isHovered = hoveredMarkerId === annotation.id;
-              const isDeleting = deletingMarkerId === annotation.id;
-              const showDeleteState = isHovered || isDeleting;
-              const isMulti = annotation.isMultiSelect;
-              const markerColor = isMulti ? "#34C759" : settings.annotationColor;
-              const globalIndex = annotations.findIndex(a => a.id === annotation.id);
+          {isActive &&
+            showMarkers &&
+            annotations
+              .filter((a) => a.isFixed)
+              .map((annotation, index) => {
+                const isHovered = hoveredMarkerId === annotation.id;
+                const isDeleting = deletingMarkerId === annotation.id;
+                const showDeleteState = isHovered || isDeleting;
+                const isMulti = annotation.isMultiSelect;
+                const markerColor = isMulti
+                  ? "#34C759"
+                  : settings.annotationColor;
+                const globalIndex = annotations.findIndex(
+                  (a) => a.id === annotation.id,
+                );
 
-              return (
-                <motion.div
-                  key={annotation.id}
-                  className={`${styles.marker} ${styles.fixed} ${showDeleteState ? styles.hovered : ""} ${isMulti ? styles.multiSelect : ""}`}
-                  data-annotation-marker
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{
-                    scale: isClearing ? 0 : 1,
-                    opacity: isClearing ? 0 : 1,
-                    transition: isClearing
-                      ? { duration: 0.12, ease: "easeIn", delay: index * 0.02 }
-                      : {
-                          type: "spring",
-                          stiffness: 600,
-                          damping: 28,
-                          delay: index * 0.02,
-                        },
-                  }}
-                  exit={{
-                    scale: 0,
-                    opacity: 0,
-                    transition: { duration: 0.15, ease: "easeIn" },
-                  }}
-                  whileHover={{ scale: 1.1 }}
-                  style={{
-                    left: `${annotation.x}%`,
-                    top: annotation.y,
-                    backgroundColor: showDeleteState ? undefined : markerColor,
-                  }}
-                  onMouseEnter={() => setHoveredMarkerId(annotation.id)}
-                  onMouseLeave={() => setHoveredMarkerId(null)}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteAnnotation(annotation.id);
-                  }}
-                >
-                  {showDeleteState ? <IconClose size={isMulti ? 12 : 10} /> : globalIndex + 1}
-                  <AnimatePresence>
-                    {isHovered && (
-                      <motion.div
-                        className={styles.markerTooltip}
-                        initial={{ opacity: 0, y: 2, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 2, scale: 0.98 }}
-                        transition={{ duration: 0.1, ease: "easeOut" }}
-                      >
-                        {annotation.selectedText && (
-                          <span className={styles.markerQuote}>
-                            &ldquo;{annotation.selectedText.slice(0, 50)}
-                            {annotation.selectedText.length > 50 ? "..." : ""}&rdquo;
-                          </span>
-                        )}
-                        <span className={styles.markerNote}>{annotation.comment}</span>
-                        <span className={styles.markerHint}>Click to remove</span>
-                      </motion.div>
+                return (
+                  <motion.div
+                    key={annotation.id}
+                    className={`${styles.marker} ${styles.fixed} ${showDeleteState ? styles.hovered : ""} ${isMulti ? styles.multiSelect : ""}`}
+                    data-annotation-marker
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{
+                      scale: isClearing ? 0 : 1,
+                      opacity: isClearing ? 0 : 1,
+                      transition: isClearing
+                        ? {
+                            duration: 0.12,
+                            ease: "easeIn",
+                            delay: index * 0.02,
+                          }
+                        : {
+                            type: "spring",
+                            stiffness: 600,
+                            damping: 28,
+                            delay: index * 0.02,
+                          },
+                    }}
+                    exit={{
+                      scale: 0,
+                      opacity: 0,
+                      transition: { duration: 0.15, ease: "easeIn" },
+                    }}
+                    whileHover={{ scale: 1.1 }}
+                    style={{
+                      left: `${annotation.x}%`,
+                      top: annotation.y,
+                      backgroundColor: showDeleteState
+                        ? undefined
+                        : markerColor,
+                    }}
+                    onMouseEnter={() => setHoveredMarkerId(annotation.id)}
+                    onMouseLeave={() => setHoveredMarkerId(null)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteAnnotation(annotation.id);
+                    }}
+                  >
+                    {showDeleteState ? (
+                      <IconClose size={isMulti ? 12 : 10} />
+                    ) : (
+                      globalIndex + 1
                     )}
-                  </AnimatePresence>
-                </motion.div>
-              );
-            })}
+                    <AnimatePresence>
+                      {isHovered && (
+                        <motion.div
+                          className={styles.markerTooltip}
+                          initial={{ opacity: 0, y: 2, scale: 0.98 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 2, scale: 0.98 }}
+                          transition={{ duration: 0.1, ease: "easeOut" }}
+                        >
+                          {annotation.selectedText && (
+                            <span className={styles.markerQuote}>
+                              &ldquo;{annotation.selectedText.slice(0, 50)}
+                              {annotation.selectedText.length > 50 ? "..." : ""}
+                              &rdquo;
+                            </span>
+                          )}
+                          <span className={styles.markerNote}>
+                            {annotation.comment}
+                          </span>
+                          <span className={styles.markerHint}>
+                            Click to remove
+                          </span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
         </AnimatePresence>
       </div>
 
@@ -1163,24 +1345,27 @@ export function PageFeedbackToolbar({
         <div className={styles.overlay} data-feedback-toolbar>
           {/* Hover highlight - fades out during scroll and drag */}
           <AnimatePresence>
-            {hoverInfo?.rect && !pendingAnnotation && !isScrolling && !isDragging && (
-              <motion.div
-                key="hover-highlight"
-                className={styles.hoverHighlight}
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.12, ease: "easeOut" }}
-                style={{
-                  left: hoverInfo.rect.left,
-                  top: hoverInfo.rect.top,
-                  width: hoverInfo.rect.width,
-                  height: hoverInfo.rect.height,
-                  borderColor: `${settings.annotationColor}80`,
-                  backgroundColor: `${settings.annotationColor}0A`,
-                }}
-              />
-            )}
+            {hoverInfo?.rect &&
+              !pendingAnnotation &&
+              !isScrolling &&
+              !isDragging && (
+                <motion.div
+                  key="hover-highlight"
+                  className={styles.hoverHighlight}
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.12, ease: "easeOut" }}
+                  style={{
+                    left: hoverInfo.rect.left,
+                    top: hoverInfo.rect.top,
+                    width: hoverInfo.rect.width,
+                    height: hoverInfo.rect.height,
+                    borderColor: `${settings.annotationColor}80`,
+                    backgroundColor: `${settings.annotationColor}0A`,
+                  }}
+                />
+              )}
           </AnimatePresence>
 
           {/* Hover tooltip - fades out during scroll and drag */}
@@ -1211,12 +1396,18 @@ export function PageFeedbackToolbar({
                   className={`${styles.marker} ${styles.pending} ${pendingAnnotation.isMultiSelect ? styles.multiSelect : ""}`}
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0, opacity: 0, transition: { duration: 0.15, ease: "easeIn" } }}
+                  exit={{
+                    scale: 0,
+                    opacity: 0,
+                    transition: { duration: 0.15, ease: "easeIn" },
+                  }}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   style={{
                     left: `${pendingAnnotation.x}%`,
                     top: pendingAnnotation.clientY,
-                    backgroundColor: pendingAnnotation.isMultiSelect ? "#34C759" : settings.annotationColor,
+                    backgroundColor: pendingAnnotation.isMultiSelect
+                      ? "#34C759"
+                      : settings.annotationColor,
                   }}
                 >
                   <IconPlus size={12} />
@@ -1231,7 +1422,10 @@ export function PageFeedbackToolbar({
                   variant={pendingAnnotation.isMultiSelect ? "green" : "blue"}
                   style={{
                     left: `${Math.min(Math.max(pendingAnnotation.x, 15), 85)}%`,
-                    top: Math.min(pendingAnnotation.clientY + 20, window.innerHeight - 180),
+                    top: Math.min(
+                      pendingAnnotation.clientY + 20,
+                      window.innerHeight - 180,
+                    ),
                   }}
                 />
               </>
@@ -1251,7 +1445,9 @@ export function PageFeedbackToolbar({
                 }}
               >
                 {selectedElements.length > 0 && (
-                  <div className={styles.dragCount}>{selectedElements.length}</div>
+                  <div className={styles.dragCount}>
+                    {selectedElements.length}
+                  </div>
                 )}
               </div>
 
@@ -1273,7 +1469,7 @@ export function PageFeedbackToolbar({
         </div>
       )}
     </>,
-    document.body
+    document.body,
   );
 }
 
