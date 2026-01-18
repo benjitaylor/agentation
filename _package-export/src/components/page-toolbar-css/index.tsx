@@ -170,7 +170,6 @@ export function PageFeedbackToolbarCSS({
   demoDelay = 1000,
 }: PageFeedbackToolbarCSSProps = {}) {
   const [isActive, setIsActive] = useState(false);
-  const [isActiveVisible, setIsActiveVisible] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [showMarkers, setShowMarkers] = useState(true);
 
@@ -234,17 +233,6 @@ export function PageFeedbackToolbarCSS({
 
   const pathname =
     typeof window !== "undefined" ? window.location.pathname : "/";
-
-  // Handle isActive changes - controls toolbar visibility
-  useEffect(() => {
-    if (isActive) {
-      setIsActiveVisible(true);
-    } else if (isActiveVisible) {
-      // Delay unmount for exit animation
-      const timer = setTimeout(() => setIsActiveVisible(false), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [isActive, isActiveVisible]);
 
   // Handle showSettings changes with exit animation
   useEffect(() => {
@@ -1157,107 +1145,106 @@ export function PageFeedbackToolbarCSS({
     <>
       {/* Toolbar */}
       <div className={styles.toolbar} data-feedback-toolbar>
-        {/* Toggle Button (shown when not active) */}
-        {!isActiveVisible && (
+        {/* Morphing container */}
+        <div
+          className={`${styles.toolbarContainer} ${isActive ? styles.expanded : styles.collapsed}`}
+          onClick={!isActive ? () => setIsActive(true) : undefined}
+          role={!isActive ? "button" : undefined}
+          tabIndex={!isActive ? 0 : -1}
+          title={!isActive ? "Start feedback mode" : undefined}
+        >
+        {/* Toggle content - visible when collapsed */}
+        <div
+          className={`${styles.toggleContent} ${!isActive ? styles.visible : styles.hidden}`}
+        >
+          <IconFeedback size={18} />
+          {hasAnnotations && (
+            <span
+              className={`${styles.badge} ${isActive ? styles.fadeOut : ""}`}
+              style={{ backgroundColor: settings.annotationColor }}
+            >
+              {annotations.length}
+            </span>
+          )}
+        </div>
+
+        {/* Controls content - visible when expanded */}
+        <div
+          className={`${styles.controlsContent} ${isActive ? styles.visible : styles.hidden}`}
+        >
           <button
-            className={`${styles.toggleButton} ${!isActive ? styles.enter : styles.exit}`}
+            className={styles.controlButton}
             onClick={(e) => {
               e.stopPropagation();
-              setIsActive(true);
+              toggleFreeze();
             }}
-            title="Start feedback mode"
+            title={isFrozen ? "Resume animations" : "Pause animations"}
+            data-active={isFrozen}
           >
-            <IconFeedback size={18} />
-            {hasAnnotations && (
-              <span
-                className={styles.badge}
-                style={{ backgroundColor: settings.annotationColor }}
-              >
-                {annotations.length}
-              </span>
-            )}
+            {isFrozen ? <IconPlay size={16} /> : <IconPause size={16} />}
           </button>
-        )}
 
-        {/* Controls Bar (shown when active) */}
-        {isActiveVisible && (
-          <div
-            className={`${styles.controls} ${isActive ? styles.enter : styles.exit}`}
+          <button
+            className={styles.controlButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowMarkers(!showMarkers);
+            }}
+            title={showMarkers ? "Hide markers" : "Show markers"}
           >
-            <button
-              className={styles.controlButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleFreeze();
-              }}
-              title={isFrozen ? "Resume animations" : "Pause animations"}
-              data-active={isFrozen}
-            >
-              {isFrozen ? <IconPlay size={16} /> : <IconPause size={16} />}
-            </button>
+            <EyeMorphIcon size={16} visible={showMarkers} />
+          </button>
 
-            <button
-              className={styles.controlButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowMarkers(!showMarkers);
-              }}
-              title={showMarkers ? "Hide markers" : "Show markers"}
-            >
-              <EyeMorphIcon size={16} visible={showMarkers} />
-            </button>
+          <button
+            className={styles.controlButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              copyOutput();
+            }}
+            disabled={!hasAnnotations}
+            title="Copy feedback"
+          >
+            <CopyMorphIcon size={16} checked={copied} />
+          </button>
 
-            <button
-              className={styles.controlButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                copyOutput();
-              }}
-              disabled={!hasAnnotations}
-              title="Copy feedback"
-            >
-              <CopyMorphIcon size={16} checked={copied} />
-            </button>
+          <button
+            className={styles.controlButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              clearAll();
+            }}
+            disabled={!hasAnnotations}
+            title="Clear all"
+            data-danger
+          >
+            <TrashMorphIcon size={16} checked={cleared} />
+          </button>
 
-            <button
-              className={styles.controlButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                clearAll();
-              }}
-              disabled={!hasAnnotations}
-              title="Clear all"
-              data-danger
-            >
-              <TrashMorphIcon size={16} checked={cleared} />
-            </button>
+          <button
+            className={styles.controlButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowSettings(!showSettings);
+            }}
+            title="Settings"
+            data-active={showSettings}
+          >
+            <IconSettings size={16} />
+          </button>
 
-            <button
-              className={styles.controlButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowSettings(!showSettings);
-              }}
-              title="Settings"
-              data-active={showSettings}
-            >
-              <IconSettings size={16} />
-            </button>
+          <div className={styles.divider} />
 
-            <div className={styles.divider} />
-
-            <button
-              className={styles.controlButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsActive(false);
-              }}
-              title="Exit feedback mode"
-            >
-              <IconChevronDown size={16} />
-            </button>
-          </div>
-        )}
+          <button
+            className={styles.controlButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsActive(false);
+            }}
+            title="Exit feedback mode"
+          >
+            <IconChevronDown size={16} />
+          </button>
+        </div>
 
         {/* Settings Panel - always dark themed */}
         {showSettingsVisible && (
@@ -1397,6 +1384,7 @@ export function PageFeedbackToolbarCSS({
             </div>
           </div>
         )}
+        </div>
       </div>
 
       {/* Markers layer - normal scrolling markers */}
