@@ -160,7 +160,7 @@ export default function OutputPage() {
         </p>
         {outputFormat && (
           <>
-            <div className="format-toggle">
+            <div className="format-toggle" style={{ marginTop: '0.75rem' }}>
               <button
                 className={outputFormat === 'compact' ? 'active' : ''}
                 onClick={() => handleFormatChange('compact')}
