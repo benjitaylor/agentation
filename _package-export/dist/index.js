@@ -1569,16 +1569,52 @@ function PageFeedbackToolbarCSS() {
   }, [pathname]);
   useEffect4(() => {
     const handleKeyDown = (e) => {
+      const target = e.target;
+      const isTyping = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === "a") {
+        e.preventDefault();
+        if (isActive) {
+          handleCloseToolbar();
+        } else {
+          setIsActive(true);
+        }
+        return;
+      }
       if (e.key === "Escape") {
         if (pendingAnnotation) {
         } else if (isActive) {
           handleCloseToolbar();
         }
+        return;
+      }
+      if (isActive && !isTyping && !pendingAnnotation) {
+        switch (e.key.toLowerCase()) {
+          case "p":
+            e.preventDefault();
+            toggleFreeze();
+            break;
+          case "h":
+            e.preventDefault();
+            setShowMarkers((prev) => !prev);
+            break;
+          case "c":
+            if (annotations.length > 0) {
+              e.preventDefault();
+              copyOutput();
+            }
+            break;
+          case "x":
+            if (annotations.length > 0) {
+              e.preventDefault();
+              clearAll();
+            }
+            break;
+        }
       }
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isActive, pendingAnnotation, handleCloseToolbar]);
+  }, [isActive, pendingAnnotation, handleCloseToolbar, toggleFreeze, annotations.length, copyOutput, clearAll]);
   if (!mounted) return null;
   const hasAnnotations = annotations.length > 0;
   const toViewportY = (absoluteY) => absoluteY - scrollY;
@@ -1598,7 +1634,7 @@ function PageFeedbackToolbarCSS() {
                   e.stopPropagation();
                   setIsActive(true);
                 },
-                title: "Start feedback mode",
+                title: "Start feedback mode (\u2318\u21E7A)",
                 style: { display: isActive ? "none" : "flex" },
                 children: [
                   /* @__PURE__ */ jsx6(IconFeedback2, { size: 18 }),
@@ -1615,7 +1651,7 @@ function PageFeedbackToolbarCSS() {
                     e.stopPropagation();
                     toggleFreeze();
                   },
-                  title: isFrozen ? "Resume animations" : "Pause animations",
+                  title: isFrozen ? "Resume animations (P)" : "Pause animations (P)",
                   "data-active": isFrozen,
                   children: isFrozen ? /* @__PURE__ */ jsx6(IconPlay2, { size: 16 }) : /* @__PURE__ */ jsx6(IconPause2, { size: 16 })
                 }
@@ -1628,7 +1664,7 @@ function PageFeedbackToolbarCSS() {
                     e.stopPropagation();
                     setShowMarkers(!showMarkers);
                   },
-                  title: showMarkers ? "Hide markers" : "Show markers",
+                  title: showMarkers ? "Hide markers (H)" : "Show markers (H)",
                   children: /* @__PURE__ */ jsx6(EyeMorphIcon2, { size: 16, visible: showMarkers })
                 }
               ),
@@ -1641,7 +1677,7 @@ function PageFeedbackToolbarCSS() {
                     copyOutput();
                   },
                   disabled: !hasAnnotations,
-                  title: "Copy feedback",
+                  title: "Copy feedback (C)",
                   children: /* @__PURE__ */ jsx6(CopyMorphIcon2, { size: 16, checked: copied })
                 }
               ),
@@ -1654,7 +1690,7 @@ function PageFeedbackToolbarCSS() {
                     clearAll();
                   },
                   disabled: !hasAnnotations,
-                  title: "Clear all",
+                  title: "Clear all (X)",
                   "data-danger": true,
                   children: /* @__PURE__ */ jsx6(TrashMorphIcon2, { size: 16, checked: cleared })
                 }
@@ -1668,7 +1704,7 @@ function PageFeedbackToolbarCSS() {
                     e.stopPropagation();
                     handleCloseToolbar();
                   },
-                  title: "Exit feedback mode",
+                  title: "Exit feedback mode (Esc)",
                   children: /* @__PURE__ */ jsx6(IconChevronDown2, { size: 16 })
                 }
               )

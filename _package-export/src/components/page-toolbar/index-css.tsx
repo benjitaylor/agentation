@@ -515,18 +515,65 @@ export function PageFeedbackToolbarCSS() {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts when typing in inputs
+      const target = e.target as HTMLElement;
+      const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+
+      // Global shortcut: Cmd/Ctrl + Shift + A to toggle feedback mode
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        if (isActive) {
+          handleCloseToolbar();
+        } else {
+          setIsActive(true);
+        }
+        return;
+      }
+
+      // Escape to close
       if (e.key === "Escape") {
         if (pendingAnnotation) {
           // Let popup handle it
         } else if (isActive) {
           handleCloseToolbar();
         }
+        return;
+      }
+
+      // Active mode shortcuts (only when not typing)
+      if (isActive && !isTyping && !pendingAnnotation) {
+        switch (e.key.toLowerCase()) {
+          case 'p':
+            // P to toggle pause animations
+            e.preventDefault();
+            toggleFreeze();
+            break;
+          case 'h':
+            // H to toggle marker visibility
+            e.preventDefault();
+            setShowMarkers(prev => !prev);
+            break;
+          case 'c':
+            // C to copy output
+            if (annotations.length > 0) {
+              e.preventDefault();
+              copyOutput();
+            }
+            break;
+          case 'x':
+            // X to clear all
+            if (annotations.length > 0) {
+              e.preventDefault();
+              clearAll();
+            }
+            break;
+        }
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isActive, pendingAnnotation, handleCloseToolbar]);
+  }, [isActive, pendingAnnotation, handleCloseToolbar, toggleFreeze, annotations.length, copyOutput, clearAll]);
 
   if (!mounted) return null;
 
@@ -545,7 +592,7 @@ export function PageFeedbackToolbarCSS() {
           <button
             className={`${styles.toggleButton} agentation-main-btn`}
             onClick={(e) => { e.stopPropagation(); setIsActive(true); }}
-            title="Start feedback mode"
+            title="Start feedback mode (⌘⇧A)"
             style={{ display: isActive ? 'none' : 'flex' }}
           >
             <IconFeedback size={18} />
@@ -558,7 +605,7 @@ export function PageFeedbackToolbarCSS() {
               <button
                 className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
                 onClick={(e) => { e.stopPropagation(); toggleFreeze(); }}
-                title={isFrozen ? "Resume animations" : "Pause animations"}
+                title={isFrozen ? "Resume animations (P)" : "Pause animations (P)"}
                 data-active={isFrozen}
               >
                 {isFrozen ? <IconPlay size={16} /> : <IconPause size={16} />}
@@ -567,7 +614,7 @@ export function PageFeedbackToolbarCSS() {
               <button
                 className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
                 onClick={(e) => { e.stopPropagation(); setShowMarkers(!showMarkers); }}
-                title={showMarkers ? "Hide markers" : "Show markers"}
+                title={showMarkers ? "Hide markers (H)" : "Show markers (H)"}
               >
                 <EyeMorphIcon size={16} visible={showMarkers} />
               </button>
@@ -576,7 +623,7 @@ export function PageFeedbackToolbarCSS() {
                 className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
                 onClick={(e) => { e.stopPropagation(); copyOutput(); }}
                 disabled={!hasAnnotations}
-                title="Copy feedback"
+                title="Copy feedback (C)"
               >
                 <CopyMorphIcon size={16} checked={copied} />
               </button>
@@ -585,7 +632,7 @@ export function PageFeedbackToolbarCSS() {
                 className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
                 onClick={(e) => { e.stopPropagation(); clearAll(); }}
                 disabled={!hasAnnotations}
-                title="Clear all"
+                title="Clear all (X)"
                 data-danger
               >
                 <TrashMorphIcon size={16} checked={cleared} />
@@ -596,7 +643,7 @@ export function PageFeedbackToolbarCSS() {
               <button
                 className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
                 onClick={(e) => { e.stopPropagation(); handleCloseToolbar(); }}
-                title="Exit feedback mode"
+                title="Exit feedback mode (Esc)"
               >
                 <IconChevronDown size={16} />
               </button>
