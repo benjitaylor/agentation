@@ -396,7 +396,9 @@ export function PageFeedbackToolbarCSS({
     const style = document.createElement("style");
     style.id = "feedback-freeze-styles";
     style.textContent = `
-      *, *::before, *::after {
+      *:not([data-feedback-toolbar]):not([data-feedback-toolbar] *):not([data-annotation-popup]):not([data-annotation-popup] *):not([data-annotation-marker]):not([data-annotation-marker] *),
+      *:not([data-feedback-toolbar]):not([data-feedback-toolbar] *):not([data-annotation-popup]):not([data-annotation-popup] *):not([data-annotation-marker]):not([data-annotation-marker] *)::before,
+      *:not([data-feedback-toolbar]):not([data-feedback-toolbar] *):not([data-annotation-popup]):not([data-annotation-popup] *):not([data-annotation-marker]):not([data-annotation-marker] *)::after {
         animation-play-state: paused !important;
         transition: none !important;
       }
