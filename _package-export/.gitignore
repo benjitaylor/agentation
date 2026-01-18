@@ -1,8 +1,8 @@
 # Dependencies
 node_modules/
 
-# Build output
-dist/
+# Build output (dist is committed for Vercel deployment)
+# dist/
 
 # Next.js (example app)
 .next/
