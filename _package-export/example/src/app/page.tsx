@@ -15,10 +15,16 @@ export default function AgentationDocs() {
 
         <section>
           <p>
-            Agentation is a floating toolbar that lets you annotate elements on a webpage
+            Agentation is a dev tool that lets you annotate elements on your webpage
             and generate structured feedback for AI coding assistants. Click elements,
-            select text, add notes, and copy markdown-formatted output to paste into
-            Claude, ChatGPT, or any AI tool.
+            select text, add notes, and paste the output into Claude Code, Cursor, or
+            any AI tool that has access to your codebase.
+          </p>
+          <p>
+            The key insight: AI assistants can find and fix code much faster when they
+            know exactly which element you&rsquo;re referring to. Agentation captures
+            class names, selectors, and positions so the AI can locate the corresponding
+            source files.
           </p>
         </section>
 
@@ -71,10 +77,30 @@ export default function AgentationDocs() {
         <section>
           <h2>What It Is</h2>
           <ul>
-            <li>A <strong>dev tool</strong> for communicating visual feedback to AI assistants</li>
-            <li>A way to <strong>point at things</strong> instead of describing them</li>
-            <li>A <strong>clipboard helper</strong> that formats feedback as structured markdown</li>
+            <li>A <strong>dev tool</strong> for communicating visual feedback to AI coding assistants</li>
+            <li>A way to <strong>point at things</strong> in your running app so AI can find them in code</li>
+            <li>A bridge between <strong>what you see</strong> in the browser and <strong>what AI can search</strong> in your codebase</li>
           </ul>
+        </section>
+
+        <section>
+          <h2>How It Works With AI</h2>
+          <p>
+            Agentation works best with AI tools that have access to your codebase
+            (Claude Code, Cursor, Windsurf, etc.):
+          </p>
+          <ol>
+            <li>You see a bug or want a change in your running app</li>
+            <li>Use Agentation to annotate the element with your feedback</li>
+            <li>Copy the output and paste it into your AI assistant</li>
+            <li>The AI uses the class names and selectors to <strong>search your codebase</strong></li>
+            <li>It finds the relevant component/file and makes the fix</li>
+          </ol>
+          <p>
+            Without Agentation, you&rsquo;d have to describe the element (&ldquo;the blue button
+            in the sidebar&rdquo;) and hope the AI guesses right. With Agentation, you give it
+            <code>.sidebar &gt; .nav-actions &gt; button.primary</code> and it can grep for that directly.
+          </p>
         </section>
 
         <section>
@@ -221,13 +247,14 @@ export default function RootLayout({ children }) {
           </p>
           <ul>
             <li>Which blue button? There might be several.</li>
-            <li>What&rsquo;s the actual class name or selector?</li>
-            <li>Where exactly is it positioned?</li>
-            <li>What&rsquo;s the parent container?</li>
+            <li>What&rsquo;s the actual class name the AI can search for?</li>
+            <li>What component renders this element?</li>
+            <li>What&rsquo;s the parent container&rsquo;s class?</li>
           </ul>
           <p>
-            Agentation captures this automatically so you can focus on <em>what&rsquo;s wrong</em>
-            rather than <em>where it is</em>.
+            Agentation captures selectors that AI can actually <code>grep</code> for in your codebase.
+            Instead of guessing which file to look at, it can search for <code>className=&quot;submit-btn&quot;</code>
+            and find the exact component.
           </p>
         </section>
       </article>
