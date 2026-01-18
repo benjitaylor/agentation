@@ -20,19 +20,20 @@
 export { PageFeedbackToolbar as Agentation } from "./components/page-toolbar";
 export { PageFeedbackToolbar as FeedbackToolbar } from "./components/page-toolbar"; // legacy alias
 export { PageFeedbackToolbar } from "./components/page-toolbar"; // legacy alias
+export type { DemoAnnotation } from "./components/page-toolbar";
 
 // CSS-only version (no framer-motion dependency)
-export { PageFeedbackToolbarCSS as AgentationCSS } from "./components/page-toolbar/index-css";
-export { PageFeedbackToolbarCSS } from "./components/page-toolbar/index-css";
+export { PageFeedbackToolbarCSS as AgentationCSS } from "./components/page-toolbar-css";
+export { PageFeedbackToolbarCSS } from "./components/page-toolbar-css";
 
 // Shared components (for building custom UIs)
 export { AnnotationPopup, AnnotationPopupPresence } from "./components/annotation-popup";
-export { AnnotationPopupCSS } from "./components/annotation-popup/index-css";
+export { AnnotationPopupCSS } from "./components/annotation-popup-css";
 export type { AnnotationPopupProps, AnnotationPopupHandle } from "./components/annotation-popup";
+export type { AnnotationPopupCSSProps, AnnotationPopupCSSHandle } from "./components/annotation-popup-css";
 
-// Icons
+// Icons (same for both versions - they're pure SVG)
 export * from "./components/icons";
-export * as IconsCSS from "./components/icons-css";
 
 // Utilities (for building custom UIs)
 export {
