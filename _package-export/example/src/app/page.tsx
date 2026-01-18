@@ -142,7 +142,7 @@ export default function AgentationDocs() {
 
         <section>
           <p>
-            Agentation is a dev tool that lets you annotate elements on your webpage
+            Agentation (agent + annotation) is a dev tool that lets you annotate elements on your webpage
             and generate structured feedback for AI coding agents. Click elements,
             select text, add notes, and paste the output into Claude Code, Cursor, or
             any agent that has access to your codebase.
