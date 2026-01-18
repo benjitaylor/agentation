@@ -1,8 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import { Highlight, themes } from "prism-react-renderer";
 
 type OutputFormat = 'standard' | 'detailed' | 'compact';
+
+// Code block with syntax highlighting
+function CodeBlock({ code, language = "tsx" }: { code: string; language?: string }) {
+  return (
+    <Highlight theme={themes.github} code={code.trim()} language={language}>
+      {({ style, tokens, getLineProps, getTokenProps }) => (
+        <pre className="code-block" style={{ ...style, background: 'transparent' }}>
+          {tokens.map((line, i) => (
+            <div key={i} {...getLineProps({ line })}>
+              {line.map((token, key) => (
+                <span key={key} {...getTokenProps({ token })} />
+              ))}
+            </div>
+          ))}
+        </pre>
+      )}
+    </Highlight>
+  );
+}
 
 const outputExamples: Record<OutputFormat, string> = {
   standard: `## Page Feedback: /dashboard
@@ -150,7 +170,7 @@ export default function AgentationDocs() {
               Detailed
             </button>
           </div>
-          <pre className="code-block">{outputExamples[outputFormat]}</pre>
+          <CodeBlock code={outputExamples[outputFormat]} language="markdown" />
           <p>
             The output includes searchable selectors and class names that agents can <code>grep</code> for
             in your codebase to find the exact component.
@@ -220,9 +240,10 @@ export default function AgentationDocs() {
 
         <section>
           <h2>Installation</h2>
-          <pre className="code-block">npm install agentation</pre>
+          <CodeBlock code="npm install agentation" language="bash" />
           <p>Add to your root layout (Next.js App Router):</p>
-          <pre className="code-block">{`// app/layout.tsx
+          <CodeBlock
+            code={`// app/layout.tsx
 import { Agentation } from "agentation";
 // or use AgentationCSS for zero-dep version (no framer-motion)
 
@@ -235,7 +256,9 @@ export default function RootLayout({ children }) {
       </body>
     </html>
   );
-}`}</pre>
+}`}
+            language="tsx"
+          />
           <p>
             The <code>NODE_ENV</code> check ensures it only loads in development.
           </p>
