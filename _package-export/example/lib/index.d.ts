@@ -171,6 +171,9 @@ type Annotation = {
     nearbyText?: string;
     cssClasses?: string;
     nearbyElements?: string;
+    computedStyles?: string;
+    fullPath?: string;
+    accessibility?: string;
 };
 
 declare function getStorageKey(pathname: string): string;

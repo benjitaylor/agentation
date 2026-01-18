@@ -15,6 +15,9 @@ export type Annotation = {
   nearbyText?: string;
   cssClasses?: string;
   nearbyElements?: string;
+  computedStyles?: string;
+  fullPath?: string;
+  accessibility?: string;
 };
 
 // TODO: Add configuration types when abstracting config

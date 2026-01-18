@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Highlight, themes } from "prism-react-renderer";
 import { motion, AnimatePresence } from "framer-motion";
 
-type OutputFormat = 'standard' | 'detailed' | 'compact';
+type OutputFormat = 'compact' | 'standard' | 'detailed' | 'forensic';
 type FeedbackStyle = 'direct' | 'instructional' | 'contextual';
 
 const FORMAT_STORAGE_KEY = 'agentation-output-format';
@@ -100,6 +100,34 @@ const outputExamples: Record<OutputFormat, string> = {
 
 2. **.nav-label** ("Settigns...")
    Typo - should be "Settings"`,
+
+  forensic: `## 🔍 Forensic Page Analysis: /dashboard
+
+**Environment:**
+- Viewport: 1440×900
+- URL: http://localhost:3000/dashboard
+- User Agent: Mozilla/5.0 Chrome/142.0.0.0
+- Timestamp: 2024-01-15T10:30:00.000Z
+- Device Pixel Ratio: 2
+
+---
+
+### 1. button.submit-btn
+
+**Full DOM Path:**
+\`\`\`
+body > div.app > main.dashboard > div.form-container > div.actions > button.submit-btn
+\`\`\`
+
+**CSS Classes:** \`submit-btn, primary\`
+**Position:**
+- Bounding box: x:450, y:320
+- Dimensions: 120×40px
+- Annotation at: 45.2% from left, 320px from top
+**Computed Styles:** bg: rgb(59, 130, 246), font: 14px, weight: 600, padding: 8px 16px, radius: 6px
+**Accessibility:** focusable
+
+**Issue:** Button text should say "Save" not "Submit"`,
 };
 
 // Experimental: Different feedback writing styles
@@ -126,7 +154,7 @@ export default function AgentationDocs() {
   // Load saved format and style on mount
   useEffect(() => {
     const savedFormat = localStorage.getItem(FORMAT_STORAGE_KEY);
-    if (savedFormat && ['compact', 'standard', 'detailed'].includes(savedFormat)) {
+    if (savedFormat && ['compact', 'standard', 'detailed', 'forensic'].includes(savedFormat)) {
       setOutputFormat(savedFormat as OutputFormat);
     }
     const savedStyle = localStorage.getItem(STYLE_STORAGE_KEY);
@@ -245,6 +273,12 @@ export default function AgentationDocs() {
               onClick={() => handleFormatChange('detailed')}
             >
               Detailed
+            </button>
+            <button
+              className={outputFormat === 'forensic' ? 'active' : ''}
+              onClick={() => handleFormatChange('forensic')}
+            >
+              Forensic
             </button>
           </div>
           <AnimatedCodeBlock code={outputExamples[outputFormat]} language="markdown" formatKey={outputFormat} />

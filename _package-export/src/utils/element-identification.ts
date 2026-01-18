@@ -317,3 +317,132 @@ export function getElementClasses(target: HTMLElement): string {
 
   return classes.join(", ");
 }
+
+/**
+ * Gets key computed styles for an element (useful for styling issues)
+ */
+export function getComputedStylesSnapshot(target: HTMLElement): string {
+  if (typeof window === "undefined") return "";
+
+  const styles = window.getComputedStyle(target);
+  const parts: string[] = [];
+
+  // Color & text
+  const color = styles.color;
+  const bg = styles.backgroundColor;
+  if (color && color !== "rgb(0, 0, 0)") parts.push(`color: ${color}`);
+  if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") parts.push(`bg: ${bg}`);
+
+  // Typography
+  const fontSize = styles.fontSize;
+  const fontWeight = styles.fontWeight;
+  if (fontSize) parts.push(`font: ${fontSize}`);
+  if (fontWeight && fontWeight !== "400" && fontWeight !== "normal") parts.push(`weight: ${fontWeight}`);
+
+  // Spacing
+  const padding = styles.padding;
+  const margin = styles.margin;
+  if (padding && padding !== "0px") parts.push(`padding: ${padding}`);
+  if (margin && margin !== "0px") parts.push(`margin: ${margin}`);
+
+  // Layout
+  const display = styles.display;
+  const position = styles.position;
+  if (display && display !== "block" && display !== "inline") parts.push(`display: ${display}`);
+  if (position && position !== "static") parts.push(`position: ${position}`);
+
+  // Border
+  const borderRadius = styles.borderRadius;
+  if (borderRadius && borderRadius !== "0px") parts.push(`radius: ${borderRadius}`);
+
+  return parts.join(", ");
+}
+
+/**
+ * Gets detailed computed styles for forensic-level debugging
+ */
+export function getDetailedComputedStyles(target: HTMLElement): Record<string, string> {
+  if (typeof window === "undefined") return {};
+
+  const styles = window.getComputedStyle(target);
+  const result: Record<string, string> = {};
+
+  // All the properties that are commonly relevant for debugging
+  const properties = [
+    // Colors
+    "color", "backgroundColor", "borderColor",
+    // Typography
+    "fontSize", "fontWeight", "fontFamily", "lineHeight", "letterSpacing", "textAlign",
+    // Box model
+    "width", "height", "padding", "margin", "border", "borderRadius",
+    // Layout
+    "display", "position", "top", "right", "bottom", "left", "zIndex",
+    "flexDirection", "justifyContent", "alignItems", "gap",
+    // Visual
+    "opacity", "visibility", "overflow", "boxShadow",
+    // Transform
+    "transform",
+  ];
+
+  for (const prop of properties) {
+    const value = styles.getPropertyValue(prop.replace(/([A-Z])/g, "-$1").toLowerCase());
+    if (value && value !== "none" && value !== "normal" && value !== "auto" && value !== "0px" && value !== "rgba(0, 0, 0, 0)") {
+      result[prop] = value;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Gets accessibility information for an element
+ */
+export function getAccessibilityInfo(target: HTMLElement): string {
+  const parts: string[] = [];
+
+  const role = target.getAttribute("role");
+  const ariaLabel = target.getAttribute("aria-label");
+  const ariaDescribedBy = target.getAttribute("aria-describedby");
+  const tabIndex = target.getAttribute("tabindex");
+  const ariaHidden = target.getAttribute("aria-hidden");
+
+  if (role) parts.push(`role="${role}"`);
+  if (ariaLabel) parts.push(`aria-label="${ariaLabel}"`);
+  if (ariaDescribedBy) parts.push(`aria-describedby="${ariaDescribedBy}"`);
+  if (tabIndex) parts.push(`tabindex=${tabIndex}`);
+  if (ariaHidden === "true") parts.push("aria-hidden");
+
+  // Check focusability
+  const focusable = target.matches("a, button, input, select, textarea, [tabindex]");
+  if (focusable) parts.push("focusable");
+
+  return parts.join(", ");
+}
+
+/**
+ * Gets full DOM ancestry path (for forensic mode)
+ */
+export function getFullElementPath(target: HTMLElement): string {
+  const parts: string[] = [];
+  let current: HTMLElement | null = target;
+
+  while (current && current.tagName.toLowerCase() !== "html") {
+    const tag = current.tagName.toLowerCase();
+    let identifier = tag;
+
+    if (current.id) {
+      identifier = `${tag}#${current.id}`;
+    } else if (current.className && typeof current.className === "string") {
+      const cls = current.className
+        .split(/\s+/)
+        .map(c => c.replace(/[_][a-zA-Z0-9]{5,}.*$/, ""))
+        .find(c => c.length > 2);
+      if (cls) identifier = `${tag}.${cls}`;
+    }
+
+    parts.unshift(identifier);
+    current = current.parentElement;
+  }
+
+  return parts.join(" > ");
+}

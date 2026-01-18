@@ -499,6 +499,63 @@ function getElementClasses(target) {
   }).filter((c, i, arr) => arr.indexOf(c) === i);
   return classes.join(", ");
 }
+function getComputedStylesSnapshot(target) {
+  if (typeof window === "undefined") return "";
+  const styles = window.getComputedStyle(target);
+  const parts = [];
+  const color = styles.color;
+  const bg = styles.backgroundColor;
+  if (color && color !== "rgb(0, 0, 0)") parts.push(`color: ${color}`);
+  if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") parts.push(`bg: ${bg}`);
+  const fontSize = styles.fontSize;
+  const fontWeight = styles.fontWeight;
+  if (fontSize) parts.push(`font: ${fontSize}`);
+  if (fontWeight && fontWeight !== "400" && fontWeight !== "normal") parts.push(`weight: ${fontWeight}`);
+  const padding = styles.padding;
+  const margin = styles.margin;
+  if (padding && padding !== "0px") parts.push(`padding: ${padding}`);
+  if (margin && margin !== "0px") parts.push(`margin: ${margin}`);
+  const display = styles.display;
+  const position = styles.position;
+  if (display && display !== "block" && display !== "inline") parts.push(`display: ${display}`);
+  if (position && position !== "static") parts.push(`position: ${position}`);
+  const borderRadius = styles.borderRadius;
+  if (borderRadius && borderRadius !== "0px") parts.push(`radius: ${borderRadius}`);
+  return parts.join(", ");
+}
+function getAccessibilityInfo(target) {
+  const parts = [];
+  const role = target.getAttribute("role");
+  const ariaLabel = target.getAttribute("aria-label");
+  const ariaDescribedBy = target.getAttribute("aria-describedby");
+  const tabIndex = target.getAttribute("tabindex");
+  const ariaHidden = target.getAttribute("aria-hidden");
+  if (role) parts.push(`role="${role}"`);
+  if (ariaLabel) parts.push(`aria-label="${ariaLabel}"`);
+  if (ariaDescribedBy) parts.push(`aria-describedby="${ariaDescribedBy}"`);
+  if (tabIndex) parts.push(`tabindex=${tabIndex}`);
+  if (ariaHidden === "true") parts.push("aria-hidden");
+  const focusable = target.matches("a, button, input, select, textarea, [tabindex]");
+  if (focusable) parts.push("focusable");
+  return parts.join(", ");
+}
+function getFullElementPath(target) {
+  const parts = [];
+  let current = target;
+  while (current && current.tagName.toLowerCase() !== "html") {
+    const tag = current.tagName.toLowerCase();
+    let identifier = tag;
+    if (current.id) {
+      identifier = `${tag}#${current.id}`;
+    } else if (current.className && typeof current.className === "string") {
+      const cls = current.className.split(/\s+/).map((c) => c.replace(/[_][a-zA-Z0-9]{5,}.*$/, "")).find((c) => c.length > 2);
+      if (cls) identifier = `${tag}.${cls}`;
+    }
+    parts.unshift(identifier);
+    current = current.parentElement;
+  }
+  return parts.join(" > ");
+}
 
 // src/utils/storage.ts
 var STORAGE_PREFIX = "feedback-annotations-";
@@ -1507,6 +1564,10 @@ function generateOutput2(annotations, pathname, format = "standard", style = "di
         output2 += `**Bounding box:** x:${Math.round(a.boundingBox.x)}, y:${Math.round(a.boundingBox.y)}, ${Math.round(a.boundingBox.width)}\xD7${Math.round(a.boundingBox.height)}px
 `;
       }
+      if (a.computedStyles) {
+        output2 += `**Styles:** ${a.computedStyles}
+`;
+      }
       if (a.selectedText) {
         output2 += `**Selected text:** "${a.selectedText}"
 `;
@@ -1528,6 +1589,96 @@ function generateOutput2(annotations, pathname, format = "standard", style = "di
 `;
     });
     output2 += `**Search tips:** Use the class names or selectors above to find these elements in your codebase. Try \`grep -r "className.*submit-btn"\` or search for the nearby text content.
+`;
+    return output2.trim();
+  }
+  if (format === "forensic") {
+    let output2 = `## \u{1F50D} Forensic Page Analysis: ${pathname}
+
+`;
+    output2 += `**Environment:**
+`;
+    output2 += `- Viewport: ${viewport}
+`;
+    output2 += `- URL: ${typeof window !== "undefined" ? window.location.href : pathname}
+`;
+    output2 += `- User Agent: ${typeof navigator !== "undefined" ? navigator.userAgent : "unknown"}
+`;
+    output2 += `- Timestamp: ${(/* @__PURE__ */ new Date()).toISOString()}
+`;
+    output2 += `- Device Pixel Ratio: ${typeof window !== "undefined" ? window.devicePixelRatio : "unknown"}
+
+`;
+    output2 += `---
+
+`;
+    annotations.forEach((a, i) => {
+      output2 += `### ${i + 1}. ${a.element}
+
+`;
+      if (a.fullPath) {
+        output2 += `**Full DOM Path:**
+\`\`\`
+${a.fullPath}
+\`\`\`
+
+`;
+      } else {
+        output2 += `**Selector:** \`${a.elementPath}\`
+`;
+      }
+      if (a.cssClasses) {
+        output2 += `**CSS Classes:** \`${a.cssClasses}\`
+`;
+      }
+      if (a.boundingBox) {
+        output2 += `**Position:**
+`;
+        output2 += `- Bounding box: x:${Math.round(a.boundingBox.x)}, y:${Math.round(a.boundingBox.y)}
+`;
+        output2 += `- Dimensions: ${Math.round(a.boundingBox.width)}\xD7${Math.round(a.boundingBox.height)}px
+`;
+        output2 += `- Annotation at: ${a.x.toFixed(1)}% from left, ${Math.round(a.y)}px from top
+`;
+      }
+      if (a.computedStyles) {
+        output2 += `**Computed Styles:** ${a.computedStyles}
+`;
+      }
+      if (a.accessibility) {
+        output2 += `**Accessibility:** ${a.accessibility}
+`;
+      }
+      if (a.selectedText) {
+        output2 += `**Selected Text:** "${a.selectedText}"
+`;
+      }
+      if (a.nearbyText) {
+        output2 += `**Nearby Text:** "${a.nearbyText}"
+`;
+      }
+      if (a.nearbyElements) {
+        output2 += `**Sibling Elements:** ${a.nearbyElements}
+`;
+      }
+      output2 += `
+**Issue:** ${stylizeFeedback(a.comment, a.element, style)}
+
+`;
+      output2 += `---
+
+`;
+    });
+    output2 += `## Search Strategies
+
+`;
+    output2 += `1. **By class name:** \`grep -r "className.*yourClass" src/\`
+`;
+    output2 += `2. **By text content:** \`grep -r "the text you see" src/\`
+`;
+    output2 += `3. **By element path:** Use the DOM path to locate nested components
+`;
+    output2 += `4. **By computed styles:** If a style looks wrong, search for those CSS values
 `;
     return output2.trim();
   }
@@ -1597,7 +1748,7 @@ function PageFeedbackToolbarCSS() {
     const stored = loadAnnotations(pathname);
     setAnnotations(stored);
     const savedFormat = localStorage.getItem("agentation-output-format");
-    if (savedFormat && ["compact", "standard", "detailed"].includes(savedFormat)) {
+    if (savedFormat && ["compact", "standard", "detailed", "forensic"].includes(savedFormat)) {
       setOutputFormat(savedFormat);
     }
     const savedStyle = localStorage.getItem("agentation-feedback-style");
@@ -1782,7 +1933,10 @@ function PageFeedbackToolbarCSS() {
         boundingBox: { x: rect.left, y: rect.top + window.scrollY, width: rect.width, height: rect.height },
         nearbyText: getNearbyText(elementUnder),
         cssClasses: getElementClasses(elementUnder),
-        nearbyElements: getNearbyElements(elementUnder)
+        nearbyElements: getNearbyElements(elementUnder),
+        computedStyles: getComputedStylesSnapshot(elementUnder),
+        fullPath: getFullElementPath(elementUnder),
+        accessibility: getAccessibilityInfo(elementUnder)
       });
       setHoverInfo(null);
     };
@@ -1804,7 +1958,10 @@ function PageFeedbackToolbarCSS() {
       boundingBox: pendingAnnotation.boundingBox,
       nearbyText: pendingAnnotation.nearbyText,
       cssClasses: pendingAnnotation.cssClasses,
-      nearbyElements: pendingAnnotation.nearbyElements
+      nearbyElements: pendingAnnotation.nearbyElements,
+      computedStyles: pendingAnnotation.computedStyles,
+      fullPath: pendingAnnotation.fullPath,
+      accessibility: pendingAnnotation.accessibility
     };
     setAnnotations((prev) => [...prev, newAnnotation]);
     setPendingAnnotation(null);

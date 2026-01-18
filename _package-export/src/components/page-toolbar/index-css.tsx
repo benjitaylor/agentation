@@ -20,6 +20,9 @@ import {
   getNearbyText,
   getElementClasses,
   getNearbyElements,
+  getComputedStylesSnapshot,
+  getFullElementPath,
+  getAccessibilityInfo,
 } from "../../utils/element-identification";
 import {
   loadAnnotations,
@@ -190,7 +193,7 @@ type HoverInfo = {
 // Utils
 // =============================================================================
 
-type OutputFormat = 'standard' | 'detailed' | 'compact';
+type OutputFormat = 'compact' | 'standard' | 'detailed' | 'forensic';
 type FeedbackStyle = 'direct' | 'instructional' | 'contextual';
 
 // Transform feedback text based on style
@@ -305,6 +308,11 @@ function generateOutput(annotations: Annotation[], pathname: string, format: Out
         output += `**Bounding box:** x:${Math.round(a.boundingBox.x)}, y:${Math.round(a.boundingBox.y)}, ${Math.round(a.boundingBox.width)}×${Math.round(a.boundingBox.height)}px\n`;
       }
 
+      // Computed styles (new)
+      if (a.computedStyles) {
+        output += `**Styles:** ${a.computedStyles}\n`;
+      }
+
       // Text context
       if (a.selectedText) {
         output += `**Selected text:** "${a.selectedText}"\n`;
@@ -324,6 +332,77 @@ function generateOutput(annotations: Annotation[], pathname: string, format: Out
 
     // Add search hints
     output += `**Search tips:** Use the class names or selectors above to find these elements in your codebase. Try \`grep -r "className.*submit-btn"\` or search for the nearby text content.\n`;
+
+    return output.trim();
+  }
+
+  if (format === 'forensic') {
+    // Forensic: Maximum context for complex debugging
+    let output = `## 🔍 Forensic Page Analysis: ${pathname}\n\n`;
+    output += `**Environment:**\n`;
+    output += `- Viewport: ${viewport}\n`;
+    output += `- URL: ${typeof window !== "undefined" ? window.location.href : pathname}\n`;
+    output += `- User Agent: ${typeof navigator !== "undefined" ? navigator.userAgent : 'unknown'}\n`;
+    output += `- Timestamp: ${new Date().toISOString()}\n`;
+    output += `- Device Pixel Ratio: ${typeof window !== "undefined" ? window.devicePixelRatio : 'unknown'}\n\n`;
+    output += `---\n\n`;
+
+    annotations.forEach((a, i) => {
+      output += `### ${i + 1}. ${a.element}\n\n`;
+
+      // Full DOM path
+      if (a.fullPath) {
+        output += `**Full DOM Path:**\n\`\`\`\n${a.fullPath}\n\`\`\`\n\n`;
+      } else {
+        output += `**Selector:** \`${a.elementPath}\`\n`;
+      }
+
+      // CSS info
+      if (a.cssClasses) {
+        output += `**CSS Classes:** \`${a.cssClasses}\`\n`;
+      }
+
+      // Detailed position
+      if (a.boundingBox) {
+        output += `**Position:**\n`;
+        output += `- Bounding box: x:${Math.round(a.boundingBox.x)}, y:${Math.round(a.boundingBox.y)}\n`;
+        output += `- Dimensions: ${Math.round(a.boundingBox.width)}×${Math.round(a.boundingBox.height)}px\n`;
+        output += `- Annotation at: ${a.x.toFixed(1)}% from left, ${Math.round(a.y)}px from top\n`;
+      }
+
+      // Computed styles
+      if (a.computedStyles) {
+        output += `**Computed Styles:** ${a.computedStyles}\n`;
+      }
+
+      // Accessibility
+      if (a.accessibility) {
+        output += `**Accessibility:** ${a.accessibility}\n`;
+      }
+
+      // Text context
+      if (a.selectedText) {
+        output += `**Selected Text:** "${a.selectedText}"\n`;
+      }
+      if (a.nearbyText) {
+        output += `**Nearby Text:** "${a.nearbyText}"\n`;
+      }
+
+      // Structural context
+      if (a.nearbyElements) {
+        output += `**Sibling Elements:** ${a.nearbyElements}\n`;
+      }
+
+      output += `\n**Issue:** ${stylizeFeedback(a.comment, a.element, style)}\n\n`;
+      output += `---\n\n`;
+    });
+
+    // Detailed search hints
+    output += `## Search Strategies\n\n`;
+    output += `1. **By class name:** \`grep -r "className.*yourClass" src/\`\n`;
+    output += `2. **By text content:** \`grep -r "the text you see" src/\`\n`;
+    output += `3. **By element path:** Use the DOM path to locate nested components\n`;
+    output += `4. **By computed styles:** If a style looks wrong, search for those CSS values\n`;
 
     return output.trim();
   }
@@ -382,6 +461,9 @@ export function PageFeedbackToolbarCSS() {
     nearbyText?: string;
     cssClasses?: string;
     nearbyElements?: string;
+    computedStyles?: string;
+    fullPath?: string;
+    accessibility?: string;
   } | null>(null);
   const [pendingExiting, setPendingExiting] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -415,7 +497,7 @@ export function PageFeedbackToolbarCSS() {
 
     // Load saved output format and style
     const savedFormat = localStorage.getItem('agentation-output-format');
-    if (savedFormat && ['compact', 'standard', 'detailed'].includes(savedFormat)) {
+    if (savedFormat && ['compact', 'standard', 'detailed', 'forensic'].includes(savedFormat)) {
       setOutputFormat(savedFormat as OutputFormat);
     }
     const savedStyle = localStorage.getItem('agentation-feedback-style');
@@ -660,6 +742,9 @@ export function PageFeedbackToolbarCSS() {
         nearbyText: getNearbyText(elementUnder),
         cssClasses: getElementClasses(elementUnder),
         nearbyElements: getNearbyElements(elementUnder),
+        computedStyles: getComputedStylesSnapshot(elementUnder),
+        fullPath: getFullElementPath(elementUnder),
+        accessibility: getAccessibilityInfo(elementUnder),
       });
       setHoverInfo(null);
     };
@@ -686,6 +771,9 @@ export function PageFeedbackToolbarCSS() {
       nearbyText: pendingAnnotation.nearbyText,
       cssClasses: pendingAnnotation.cssClasses,
       nearbyElements: pendingAnnotation.nearbyElements,
+      computedStyles: pendingAnnotation.computedStyles,
+      fullPath: pendingAnnotation.fullPath,
+      accessibility: pendingAnnotation.accessibility,
     };
 
     setAnnotations((prev) => [...prev, newAnnotation]);
