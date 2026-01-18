@@ -130,6 +130,12 @@ const cssAnimationStyles = `
   animation: agentation-fade-in 0.08s ease-out forwards;
 }
 
+/* Hide overlay during scroll */
+.scrolling {
+  opacity: 0 !important;
+  transition: opacity 0.08s ease-out !important;
+}
+
 /* Cursor styles for annotation mode */
 .agentation-active-cursor {
   cursor: crosshair !important;
@@ -306,6 +312,7 @@ export function PageFeedbackToolbarCSS() {
 
   const popupRef = useRef<AnnotationPopupHandle>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const isScrollingRef = useRef(false);
   // Track which marker IDs have already animated in (to prevent re-animation)
   const animatedIdsRef = useRef<Set<string>>(new Set());
   // Track the most recently added ID for hover protection
@@ -342,10 +349,11 @@ export function PageFeedbackToolbarCSS() {
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);
+      isScrollingRef.current = true;
 
-      // Hide hover overlay instantly during scroll
+      // Hide hover overlay via class (survives React re-renders)
       if (overlayRef.current) {
-        overlayRef.current.style.opacity = '0';
+        overlayRef.current.classList.add('scrolling');
       }
 
       // Clear existing timeout
@@ -355,8 +363,9 @@ export function PageFeedbackToolbarCSS() {
 
       // Restore after scrolling stops
       scrollTimeoutRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
         if (overlayRef.current) {
-          overlayRef.current.style.opacity = '';
+          overlayRef.current.classList.remove('scrolling');
         }
         setHoverInfo(null); // Clear stale hover info
       }, 100);
@@ -487,6 +496,9 @@ export function PageFeedbackToolbarCSS() {
     if (!isActive || pendingAnnotation) return;
 
     const handleMouseMove = (e: MouseEvent) => {
+      // Skip updates while scrolling
+      if (isScrollingRef.current) return;
+
       if ((e.target as HTMLElement).closest("[data-feedback-toolbar]")) {
         setHoverInfo(null);
         return;
@@ -826,13 +838,12 @@ export function PageFeedbackToolbarCSS() {
           })}
       </div>
 
-      {/* Interactive overlay - fades during scroll */}
+      {/* Interactive overlay - fades during scroll via .scrolling class */}
       {isActive && (
         <div
           ref={overlayRef}
           className={styles.overlay}
           data-feedback-toolbar
-          style={{ transition: 'opacity 0.1s ease-out' }}
         >
           {/* Hover highlight */}
           {hoverInfo?.rect && !pendingAnnotation && (
