@@ -128,12 +128,14 @@ body > div.app > main.dashboard > div.form-container > div.actions > button.subm
 };
 
 export default function OutputPage() {
-  const [outputFormat, setOutputFormat] = useState<OutputFormat>('standard');
+  const [outputFormat, setOutputFormat] = useState<OutputFormat | null>(null);
 
   useEffect(() => {
     const savedFormat = localStorage.getItem(FORMAT_STORAGE_KEY);
     if (savedFormat && ['compact', 'standard', 'detailed', 'forensic'].includes(savedFormat)) {
       setOutputFormat(savedFormat as OutputFormat);
+    } else {
+      setOutputFormat('standard');
     }
   }, []);
 
@@ -156,33 +158,37 @@ export default function OutputPage() {
           When you copy, you get structured markdown that agents can parse and act on.
           Four formats are available:
         </p>
-        <div className="format-toggle">
-          <button
-            className={outputFormat === 'compact' ? 'active' : ''}
-            onClick={() => handleFormatChange('compact')}
-          >
-            Compact
-          </button>
-          <button
-            className={outputFormat === 'standard' ? 'active' : ''}
-            onClick={() => handleFormatChange('standard')}
-          >
-            Standard
-          </button>
-          <button
-            className={outputFormat === 'detailed' ? 'active' : ''}
-            onClick={() => handleFormatChange('detailed')}
-          >
-            Detailed
-          </button>
-          <button
-            className={outputFormat === 'forensic' ? 'active' : ''}
-            onClick={() => handleFormatChange('forensic')}
-          >
-            Forensic
-          </button>
-        </div>
-        <AnimatedCodeBlock code={outputExamples[outputFormat]} language="markdown" formatKey={outputFormat} />
+        {outputFormat && (
+          <>
+            <div className="format-toggle">
+              <button
+                className={outputFormat === 'compact' ? 'active' : ''}
+                onClick={() => handleFormatChange('compact')}
+              >
+                Compact
+              </button>
+              <button
+                className={outputFormat === 'standard' ? 'active' : ''}
+                onClick={() => handleFormatChange('standard')}
+              >
+                Standard
+              </button>
+              <button
+                className={outputFormat === 'detailed' ? 'active' : ''}
+                onClick={() => handleFormatChange('detailed')}
+              >
+                Detailed
+              </button>
+              <button
+                className={outputFormat === 'forensic' ? 'active' : ''}
+                onClick={() => handleFormatChange('forensic')}
+              >
+                Forensic
+              </button>
+            </div>
+            <AnimatedCodeBlock code={outputExamples[outputFormat]} language="markdown" formatKey={outputFormat} />
+          </>
+        )}
         <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', marginTop: '0.5rem' }}>
           Changing format here updates the toolbar output.
         </p>

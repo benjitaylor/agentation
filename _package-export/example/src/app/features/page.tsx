@@ -55,27 +55,27 @@ export default function FeaturesPage() {
           <tbody>
             <tr>
               <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)' }}><code>Cmd+Shift+A</code> / <code>Ctrl+Shift+A</code></td>
-              <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>Toggle feedback mode</td>
+              <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)', color: 'rgba(0,0,0,0.5)' }}>Toggle feedback mode</td>
             </tr>
             <tr>
               <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)' }}><code>Esc</code></td>
-              <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>Close toolbar or cancel</td>
+              <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)', color: 'rgba(0,0,0,0.5)' }}>Close toolbar or cancel</td>
             </tr>
             <tr>
               <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)' }}><code>P</code></td>
-              <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>Pause/resume animations</td>
+              <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)', color: 'rgba(0,0,0,0.5)' }}>Pause/resume animations</td>
             </tr>
             <tr>
               <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)' }}><code>H</code></td>
-              <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>Hide/show markers</td>
+              <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)', color: 'rgba(0,0,0,0.5)' }}>Hide/show markers</td>
             </tr>
             <tr>
               <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)' }}><code>C</code></td>
-              <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>Copy feedback</td>
+              <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.1)', color: 'rgba(0,0,0,0.5)' }}>Copy feedback</td>
             </tr>
             <tr>
               <td style={{ padding: '0.5rem 0' }}><code>X</code></td>
-              <td style={{ padding: '0.5rem 0' }}>Clear all annotations</td>
+              <td style={{ padding: '0.5rem 0', color: 'rgba(0,0,0,0.5)' }}>Clear all annotations</td>
             </tr>
           </tbody>
         </table>
