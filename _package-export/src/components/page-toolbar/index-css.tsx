@@ -272,10 +272,10 @@ export function PageFeedbackToolbarCSS() {
 
   const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
 
-  // Sync markersWithState with annotations
+  // Sync markersWithState with annotations - also reset when toolbar becomes active
   useEffect(() => {
     setMarkersWithState(annotations.map(a => ({ ...a, exiting: false })));
-  }, [annotations]);
+  }, [annotations, isActive]);
 
   // Mount and load
   useEffect(() => {

@@ -1446,7 +1446,7 @@ function PageFeedbackToolbarCSS() {
   const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
   (0, import_react4.useEffect)(() => {
     setMarkersWithState(annotations.map((a) => ({ ...a, exiting: false })));
-  }, [annotations]);
+  }, [annotations, isActive]);
   (0, import_react4.useEffect)(() => {
     setMounted(true);
     setScrollY(window.scrollY);

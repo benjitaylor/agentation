@@ -1400,7 +1400,7 @@ function PageFeedbackToolbarCSS() {
   const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
   useEffect4(() => {
     setMarkersWithState(annotations.map((a) => ({ ...a, exiting: false })));
-  }, [annotations]);
+  }, [annotations, isActive]);
   useEffect4(() => {
     setMounted(true);
     setScrollY(window.scrollY);
