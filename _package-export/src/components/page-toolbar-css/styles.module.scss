@@ -491,6 +491,7 @@ $green: #34c759;
   top: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
+  z-index: 100002;
   background: white;
   padding: 0.625rem 0.75rem;
   border-radius: 0.5rem;
