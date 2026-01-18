@@ -1,0 +1,310 @@
+// =============================================================================
+// Example Page Styles (based on benji.org styling)
+// =============================================================================
+
+// CSS Variables
+:root {
+  --font-fallback: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-primary: var(--font-inter, var(--font-fallback));
+
+  --body-color: #111;
+  --body-bg: #fdfdfc;
+  --heading-color: #111;
+  --hyperlink-color: #2480ed;
+
+  --selection-color: #111111;
+  --selection-bg: #ededed;
+  --focus-color: rgba(0, 122, 255, 0.5);
+}
+
+// Reset
+* {
+  outline: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+
+::selection {
+  color: var(--selection-color);
+  background: var(--selection-bg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-color);
+}
+
+html {
+  background: var(--body-bg);
+  color: var(--body-color);
+}
+
+html,
+html body {
+  min-height: 100%;
+}
+
+body {
+  overflow-y: scroll;
+  font-size: 16px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-primary);
+}
+
+// Typography
+h1, h2, h3, h4, h5, h6 {
+  color: var(--heading-color);
+  position: relative;
+}
+
+h1 {
+  font-size: 1.1875rem;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.01875rem;
+}
+
+h2 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: -0.00813rem;
+}
+
+h3 {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.00813rem;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img, svg {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  font-family: var(--font-primary);
+
+  &:disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+}
+
+// Links
+.styled-link {
+  position: relative;
+  display: inline;
+  color: var(--hyperlink-color);
+  font-weight: inherit;
+  line-height: inherit;
+  transition: all 200ms ease;
+
+  &:hover {
+    color: #74b1fd;
+  }
+}
+
+// =============================================================================
+// Article Layout (matches benji.org)
+// =============================================================================
+
+.article {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 38rem;
+  margin: 0 auto;
+  padding: 5rem 1.5rem 3rem;
+
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-bottom: 0.5rem;
+
+    time {
+      color: rgba(0, 0, 0, 0.4);
+      font-size: 0.6875rem;
+      font-weight: 460;
+      letter-spacing: 0.00063rem;
+      text-transform: uppercase;
+    }
+  }
+
+  p {
+    font-size: 0.9375rem;
+    font-weight: 460;
+    line-height: 1.5rem;
+    letter-spacing: -0.00563rem;
+  }
+
+  blockquote {
+    border-left: 2px solid #e0e0e0;
+    padding-left: 1rem;
+    margin: 0.5rem 0;
+    color: rgba(0, 0, 0, 0.7);
+    font-style: italic;
+  }
+
+  ul, ol {
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    li {
+      font-size: 0.9375rem;
+      font-weight: 460;
+      line-height: 1.5rem;
+      letter-spacing: -0.00563rem;
+    }
+  }
+
+  code {
+    font-family: "SF Mono", "SFMono-Regular", Consolas, monospace;
+    font-size: 0.85em;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+  }
+}
+
+// =============================================================================
+// Demo Components
+// =============================================================================
+
+.demo-section {
+  padding: 2rem 0;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 1rem;
+
+  h2 {
+    margin-bottom: 1rem;
+  }
+}
+
+.button-group {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.demo-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  background: #111;
+  color: white;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #333;
+  }
+
+  &.secondary {
+    background: white;
+    color: #111;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      background: #f5f5f5;
+    }
+  }
+}
+
+.demo-card {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  margin: 1rem 0;
+
+  h3 {
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.demo-input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9375rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
+  transition: border-color 0.15s ease;
+
+  &:focus {
+    border-color: #3c82f7;
+    outline: none;
+  }
+
+  &::placeholder {
+    color: rgba(0, 0, 0, 0.35);
+  }
+}
+
+// Animation demo
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes slide {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(10px); }
+  100% { transform: translateX(0); }
+}
+
+.animated-element {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  animation: pulse 2s ease-in-out infinite;
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    animation: slide 1s ease-in-out infinite;
+  }
+}
+
+// Footer
+.footer {
+  max-width: 38rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+  border-top: 1px solid #f0f0f0;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 0.75rem;
+}
