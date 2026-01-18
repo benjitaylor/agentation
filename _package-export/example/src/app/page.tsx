@@ -399,7 +399,6 @@ export default function AgentationDocs() {
           <CodeBlock
             code={`// app/layout.tsx
 import { Agentation } from "agentation";
-// or use AgentationCSS for zero-dep version (no framer-motion)
 
 export default function RootLayout({ children }) {
   return (
@@ -417,12 +416,9 @@ export default function RootLayout({ children }) {
             The <code>NODE_ENV</code> check ensures it only loads in development.
           </p>
           <p>
-            <strong>Two versions available:</strong>
+            <strong>Zero dependencies</strong> &mdash; Agentation uses CSS-only animations
+            with no runtime dependencies beyond React.
           </p>
-          <ul>
-            <li><code>Agentation</code> &mdash; Smoother animations, requires framer-motion peer dependency</li>
-            <li><code>AgentationCSS</code> &mdash; CSS-only animations, zero runtime dependencies</li>
-          </ul>
         </section>
 
         <section>

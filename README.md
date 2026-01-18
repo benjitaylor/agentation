@@ -71,16 +71,6 @@ const demoAnnotations = [
 />
 ```
 
-### CSS-Only Version (Recommended)
-
-For zero runtime dependencies beyond React:
-
-```tsx
-import { AgentationCSS } from 'agentation';
-
-<AgentationCSS />
-```
-
 ## Props
 
 | Prop | Type | Default | Description |
@@ -140,15 +130,14 @@ The toolbar includes a settings panel with:
 
 ## Architecture
 
-### Two Versions
+### Zero Dependencies
 
-1. **Agentation** - Uses framer-motion for animations
-2. **AgentationCSS** - Pure CSS animations, zero additional dependencies
+Agentation uses pure CSS animations with no runtime dependencies beyond React.
 
 ### Key Components
 
-- `PageFeedbackToolbar` / `PageFeedbackToolbarCSS` - Main toolbar component
-- `AnnotationPopup` / `AnnotationPopupCSS` - Annotation input popup
+- `PageFeedbackToolbar` - Main toolbar component
+- `AnnotationPopup` - Annotation input popup
 - Icon components with morph animations
 
 ### Performance Optimizations
