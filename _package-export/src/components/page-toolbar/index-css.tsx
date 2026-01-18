@@ -19,6 +19,7 @@ import {
   identifyElement,
   getNearbyText,
   getElementClasses,
+  getNearbyElements,
 } from "../../utils/element-identification";
 import {
   loadAnnotations,
@@ -199,12 +200,12 @@ function generateOutput(annotations: Annotation[], pathname: string, format: Out
     : "unknown";
 
   if (format === 'compact') {
-    // Compact: Just the essentials for quick fixes
+    // Compact: Essentials with element name for identification
     let output = `## Feedback: ${pathname}\n\n`;
     annotations.forEach((a, i) => {
-      const selector = a.cssClasses ? `.${a.cssClasses.split(' ')[0]}` : a.elementPath;
-      output += `${i + 1}. **${selector}**`;
-      if (a.selectedText) output += ` ("${a.selectedText.slice(0, 30)}...")`;
+      const selector = a.cssClasses ? `.${a.cssClasses.split(',')[0].trim()}` : a.elementPath;
+      output += `${i + 1}. **${a.element}** (\`${selector}\`)`;
+      if (a.selectedText) output += `\n   > "${a.selectedText.slice(0, 50)}..."`;
       output += `\n   ${a.comment}\n\n`;
     });
     return output.trim();
@@ -241,6 +242,11 @@ function generateOutput(annotations: Annotation[], pathname: string, format: Out
         output += `**Nearby text:** "${a.nearbyText.slice(0, 150)}"\n`;
       }
 
+      // Structural context
+      if (a.nearbyElements) {
+        output += `**Siblings:** ${a.nearbyElements}\n`;
+      }
+
       output += `\n**Issue:** ${a.comment}\n\n`;
       output += `---\n\n`;
     });
@@ -273,6 +279,10 @@ function generateOutput(annotations: Annotation[], pathname: string, format: Out
       output += `**Context:** "${a.nearbyText.slice(0, 80)}"\n`;
     }
 
+    if (a.nearbyElements) {
+      output += `**Siblings:** ${a.nearbyElements}\n`;
+    }
+
     output += `**Feedback:** ${a.comment}\n\n`;
   });
 
@@ -300,6 +310,7 @@ export function PageFeedbackToolbarCSS() {
     boundingBox?: { x: number; y: number; width: number; height: number };
     nearbyText?: string;
     cssClasses?: string;
+    nearbyElements?: string;
   } | null>(null);
   const [pendingExiting, setPendingExiting] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -563,6 +574,7 @@ export function PageFeedbackToolbarCSS() {
         boundingBox: { x: rect.left, y: rect.top + window.scrollY, width: rect.width, height: rect.height },
         nearbyText: getNearbyText(elementUnder),
         cssClasses: getElementClasses(elementUnder),
+        nearbyElements: getNearbyElements(elementUnder),
       });
       setHoverInfo(null);
     };
@@ -588,6 +600,7 @@ export function PageFeedbackToolbarCSS() {
       boundingBox: pendingAnnotation.boundingBox,
       nearbyText: pendingAnnotation.nearbyText,
       cssClasses: pendingAnnotation.cssClasses,
+      nearbyElements: pendingAnnotation.nearbyElements,
     };
 
     setAnnotations((prev) => [...prev, newAnnotation]);

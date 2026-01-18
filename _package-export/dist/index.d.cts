@@ -170,6 +170,7 @@ type Annotation = {
     };
     nearbyText?: string;
     cssClasses?: string;
+    nearbyElements?: string;
 };
 
 declare function getStorageKey(pathname: string): string;

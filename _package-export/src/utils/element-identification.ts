@@ -103,7 +103,7 @@ export function identifyElement(target: HTMLElement): { name: string; path: stri
   // Text elements
   if (tag === "p") {
     const text = target.textContent?.trim();
-    if (text && text.length < 50) return { name: `paragraph: "${text.slice(0, 40)}"`, path };
+    if (text) return { name: `paragraph: "${text.slice(0, 40)}${text.length > 40 ? '...' : ''}"`, path };
     return { name: "paragraph", path };
   }
   if (tag === "span" || tag === "label") {

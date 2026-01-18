@@ -316,7 +316,7 @@ function identifyElement(target) {
   }
   if (tag === "p") {
     const text = target.textContent?.trim();
-    if (text && text.length < 50) return { name: `paragraph: "${text.slice(0, 40)}"`, path };
+    if (text) return { name: `paragraph: "${text.slice(0, 40)}${text.length > 40 ? "..." : ""}"`, path };
     return { name: "paragraph", path };
   }
   if (tag === "span" || tag === "label") {
@@ -412,6 +412,37 @@ function identifyAnimationElement(target) {
     return "container";
   }
   return tag;
+}
+function getNearbyElements(element) {
+  const parent = element.parentElement;
+  if (!parent) return "";
+  const siblings = Array.from(parent.children).filter(
+    (child) => child !== element && child instanceof HTMLElement
+  );
+  if (siblings.length === 0) return "";
+  const siblingIds = siblings.slice(0, 4).map((sib) => {
+    const tag = sib.tagName.toLowerCase();
+    const className = sib.className;
+    let cls = "";
+    if (typeof className === "string" && className) {
+      const meaningful = className.split(/\s+/).map((c) => c.replace(/[_][a-zA-Z0-9]{5,}.*$/, "")).find((c) => c.length > 2 && !/^[a-z]{1,2}$/.test(c));
+      if (meaningful) cls = `.${meaningful}`;
+    }
+    if (tag === "button" || tag === "a") {
+      const text = sib.textContent?.trim().slice(0, 15);
+      if (text) return `${tag}${cls} "${text}"`;
+    }
+    return `${tag}${cls}`;
+  });
+  const parentTag = parent.tagName.toLowerCase();
+  let parentId = parentTag;
+  if (typeof parent.className === "string" && parent.className) {
+    const parentCls = parent.className.split(/\s+/).map((c) => c.replace(/[_][a-zA-Z0-9]{5,}.*$/, "")).find((c) => c.length > 2 && !/^[a-z]{1,2}$/.test(c));
+    if (parentCls) parentId = `.${parentCls}`;
+  }
+  const total = parent.children.length;
+  const suffix = total > siblingIds.length + 1 ? ` (${total} total in ${parentId})` : "";
+  return siblingIds.join(", ") + suffix;
 }
 function getElementClasses(target) {
   const className = target.className;
@@ -1335,9 +1366,10 @@ function generateOutput2(annotations, pathname, format = "standard") {
 
 `;
     annotations.forEach((a, i) => {
-      const selector = a.cssClasses ? `.${a.cssClasses.split(" ")[0]}` : a.elementPath;
-      output2 += `${i + 1}. **${selector}**`;
-      if (a.selectedText) output2 += ` ("${a.selectedText.slice(0, 30)}...")`;
+      const selector = a.cssClasses ? `.${a.cssClasses.split(",")[0].trim()}` : a.elementPath;
+      output2 += `${i + 1}. **${a.element}** (\`${selector}\`)`;
+      if (a.selectedText) output2 += `
+   > "${a.selectedText.slice(0, 50)}..."`;
       output2 += `
    ${a.comment}
 
@@ -1381,6 +1413,10 @@ function generateOutput2(annotations, pathname, format = "standard") {
         output2 += `**Nearby text:** "${a.nearbyText.slice(0, 150)}"
 `;
       }
+      if (a.nearbyElements) {
+        output2 += `**Siblings:** ${a.nearbyElements}
+`;
+      }
       output2 += `
 **Issue:** ${a.comment}
 
@@ -1416,6 +1452,10 @@ function generateOutput2(annotations, pathname, format = "standard") {
 `;
     } else if (a.nearbyText) {
       output += `**Context:** "${a.nearbyText.slice(0, 80)}"
+`;
+    }
+    if (a.nearbyElements) {
+      output += `**Siblings:** ${a.nearbyElements}
 `;
     }
     output += `**Feedback:** ${a.comment}
@@ -1627,7 +1667,8 @@ function PageFeedbackToolbarCSS() {
         selectedText,
         boundingBox: { x: rect.left, y: rect.top + window.scrollY, width: rect.width, height: rect.height },
         nearbyText: getNearbyText(elementUnder),
-        cssClasses: getElementClasses(elementUnder)
+        cssClasses: getElementClasses(elementUnder),
+        nearbyElements: getNearbyElements(elementUnder)
       });
       setHoverInfo(null);
     };
@@ -1648,7 +1689,8 @@ function PageFeedbackToolbarCSS() {
       selectedText: pendingAnnotation.selectedText,
       boundingBox: pendingAnnotation.boundingBox,
       nearbyText: pendingAnnotation.nearbyText,
-      cssClasses: pendingAnnotation.cssClasses
+      cssClasses: pendingAnnotation.cssClasses,
+      nearbyElements: pendingAnnotation.nearbyElements
     };
     setAnnotations((prev) => [...prev, newAnnotation]);
     setPendingAnnotation(null);

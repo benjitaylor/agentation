@@ -14,6 +14,7 @@ export type Annotation = {
   boundingBox?: { x: number; y: number; width: number; height: number };
   nearbyText?: string;
   cssClasses?: string;
+  nearbyElements?: string;
 };
 
 // TODO: Add configuration types when abstracting config
