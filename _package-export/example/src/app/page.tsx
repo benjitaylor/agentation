@@ -258,7 +258,7 @@ export default function AgentationDocs() {
         </section>
 
         <section>
-          <h2>Feedback style <span style={{ fontSize: '0.625rem', fontWeight: 400, color: 'rgba(0,0,0,0.4)', marginLeft: '0.5rem' }}>experimental</span></h2>
+          <h2>Feedback style <span style={{ fontSize: '0.625rem', fontWeight: 400, color: 'rgba(0,0,0,0.4)', marginLeft: '0.5rem' }}>experimental — likely removing (redundant)</span></h2>
           <p>
             How you write feedback may affect agent results. We&rsquo;re testing different styles:
           </p>
