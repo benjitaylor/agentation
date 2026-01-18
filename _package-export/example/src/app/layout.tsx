@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.scss";
 
-// Import the feedback toolbar from the package source
-import { FeedbackToolbar } from "@benji/feedback-tool";
+// Import the feedback toolbar from local lib
+import { FeedbackToolbar } from "../../lib";
 
 export const metadata: Metadata = {
   title: "Feedback Tool Example",
