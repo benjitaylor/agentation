@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.scss";
 
-// Import the feedback toolbar from the package source
-import { FeedbackToolbar } from "@benji/feedback-tool";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
+// Import the feedback toolbar from local lib
+import { FeedbackToolbar } from "../../lib";
 
 export const metadata: Metadata = {
   title: "Feedback Tool Example",
@@ -21,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en">
       <body>
         {children}
         {/* The feedback toolbar - renders in bottom-right corner */}

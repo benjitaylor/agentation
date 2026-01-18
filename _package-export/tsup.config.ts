@@ -1,4 +1,78 @@
-import { defineConfig } from "tsup";
+import { defineConfig, type Options } from "tsup";
+import * as sass from "sass";
+import postcss from "postcss";
+import postcssModules from "postcss-modules";
+import * as path from "path";
+import type { Plugin } from "esbuild";
+
+// Custom SCSS CSS Modules plugin with SSR-safe style injection
+function scssModulesPlugin(): Plugin {
+  return {
+    name: "scss-modules",
+    setup(build) {
+      // Handle all .scss files
+      build.onLoad({ filter: /\.scss$/ }, async (args) => {
+        const isModule = args.path.includes(".module.");
+        const baseName = path.basename(args.path, isModule ? ".module.scss" : ".scss");
+
+        // Compile SCSS to CSS
+        const result = sass.compile(args.path);
+        let css = result.css;
+
+        if (isModule) {
+          // Process with postcss-modules to get class name mappings
+          let classNames: Record<string, string> = {};
+          const postcssResult = await postcss([
+            postcssModules({
+              getJSON(cssFileName, json) {
+                classNames = json;
+              },
+              generateScopedName: "[name]__[local]___[hash:base64:5]",
+            }),
+          ]).process(css, { from: args.path });
+
+          css = postcssResult.css;
+
+          // Generate JS that exports class names and injects styles (SSR-safe)
+          const contents = `
+const css = ${JSON.stringify(css)};
+const classNames = ${JSON.stringify(classNames)};
+
+// SSR-safe style injection
+if (typeof document !== 'undefined') {
+  let style = document.getElementById('feedback-tool-styles-${baseName}');
+  if (!style) {
+    style = document.createElement('style');
+    style.id = 'feedback-tool-styles-${baseName}';
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+}
+
+export default classNames;
+`;
+          return { contents, loader: "js" };
+        } else {
+          // Regular SCSS - no CSS modules processing
+          const contents = `
+const css = ${JSON.stringify(css)};
+if (typeof document !== 'undefined') {
+  let style = document.getElementById('feedback-tool-styles-${baseName}');
+  if (!style) {
+    style = document.createElement('style');
+    style.id = 'feedback-tool-styles-${baseName}';
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+}
+export default {};
+`;
+          return { contents, loader: "js" };
+        }
+      });
+    },
+  };
+}
 
 export default defineConfig({
   entry: ["src/index.ts"],
@@ -8,6 +82,8 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   external: ["react", "react-dom", "framer-motion"],
-  // TODO: Configure CSS extraction once styles are converted
-  // injectStyle: true, // or extract to separate file
+  esbuildPlugins: [scssModulesPlugin()],
+  banner: {
+    js: '"use client";',
+  },
 });
