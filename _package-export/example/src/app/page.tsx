@@ -1,16 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Highlight, themes } from "prism-react-renderer";
 
 type OutputFormat = 'standard' | 'detailed' | 'compact';
 
-// Code block with syntax highlighting
-function CodeBlock({ code, language = "tsx" }: { code: string; language?: string }) {
+const FORMAT_STORAGE_KEY = 'agentation-output-format';
+
+// Code block with syntax highlighting and optional animation
+function CodeBlock({
+  code,
+  language = "tsx",
+  animationKey
+}: {
+  code: string;
+  language?: string;
+  animationKey?: string | number;
+}) {
+  const [isAnimating, setIsAnimating] = useState(false);
+  const prevKeyRef = useRef(animationKey);
+
+  useEffect(() => {
+    if (animationKey !== prevKeyRef.current) {
+      setIsAnimating(true);
+      prevKeyRef.current = animationKey;
+      const timer = setTimeout(() => setIsAnimating(false), 250);
+      return () => clearTimeout(timer);
+    }
+  }, [animationKey]);
+
   return (
     <Highlight theme={themes.github} code={code.trim()} language={language}>
       {({ style, tokens, getLineProps, getTokenProps }) => (
-        <pre className="code-block" style={{ ...style, background: 'transparent' }}>
+        <pre
+          className={`code-block ${isAnimating ? 'animating' : ''}`}
+          style={{ ...style, background: 'transparent' }}
+        >
           {tokens.map((line, i) => (
             <div key={i} {...getLineProps({ line })}>
               {line.map((token, key) => (
@@ -83,6 +108,22 @@ export default function AgentationDocs() {
   const [inputValue, setInputValue] = useState("");
   const [outputFormat, setOutputFormat] = useState<OutputFormat>('standard');
 
+  // Load saved format on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(FORMAT_STORAGE_KEY);
+    if (saved && ['compact', 'standard', 'detailed'].includes(saved)) {
+      setOutputFormat(saved as OutputFormat);
+    }
+  }, []);
+
+  // Save format to localStorage and notify toolbar
+  const handleFormatChange = useCallback((format: OutputFormat) => {
+    setOutputFormat(format);
+    localStorage.setItem(FORMAT_STORAGE_KEY, format);
+    // Dispatch custom event for toolbar to listen to
+    window.dispatchEvent(new CustomEvent('agentation-format-change', { detail: format }));
+  }, []);
+
   return (
     <>
       <article className="article">
@@ -153,27 +194,31 @@ export default function AgentationDocs() {
           <div className="format-toggle">
             <button
               className={outputFormat === 'compact' ? 'active' : ''}
-              onClick={() => setOutputFormat('compact')}
+              onClick={() => handleFormatChange('compact')}
             >
               Compact
             </button>
             <button
               className={outputFormat === 'standard' ? 'active' : ''}
-              onClick={() => setOutputFormat('standard')}
+              onClick={() => handleFormatChange('standard')}
             >
               Standard
             </button>
             <button
               className={outputFormat === 'detailed' ? 'active' : ''}
-              onClick={() => setOutputFormat('detailed')}
+              onClick={() => handleFormatChange('detailed')}
             >
               Detailed
             </button>
           </div>
-          <CodeBlock code={outputExamples[outputFormat]} language="markdown" />
+          <CodeBlock code={outputExamples[outputFormat]} language="markdown" animationKey={outputFormat} />
           <p>
             The output includes searchable selectors and class names that agents can <code>grep</code> for
             in your codebase to find the exact component.
+          </p>
+          <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', marginTop: '0.5rem' }}>
+            Changing the format here will also change the output from the toolbar on this page,
+            so you can try it out for yourself.
           </p>
         </section>
 

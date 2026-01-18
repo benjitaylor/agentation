@@ -130,12 +130,6 @@ const cssAnimationStyles = `
   animation: agentation-fade-in 0.08s ease-out forwards;
 }
 
-/* Hide hover elements during scroll - applied directly via DOM for instant response */
-.agentation-scrolling .agentation-hover-hide {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
 /* Cursor styles for annotation mode */
 .agentation-active-cursor {
   cursor: crosshair !important;
@@ -308,8 +302,10 @@ export function PageFeedbackToolbarCSS() {
   const [mounted, setMounted] = useState(false);
   const [isFrozen, setIsFrozen] = useState(false);
   const [exitingIds, setExitingIds] = useState<Set<string>>(new Set()); // IDs currently animating out
+  const [outputFormat, setOutputFormat] = useState<OutputFormat>('standard');
 
   const popupRef = useRef<AnnotationPopupHandle>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   // Track which marker IDs have already animated in (to prevent re-animation)
   const animatedIdsRef = useRef<Set<string>>(new Set());
   // Track the most recently added ID for hover protection
@@ -325,33 +321,50 @@ export function PageFeedbackToolbarCSS() {
     setScrollY(window.scrollY);
     const stored = loadAnnotations<Annotation>(pathname);
     setAnnotations(stored);
+
+    // Load saved output format
+    const savedFormat = localStorage.getItem('agentation-output-format');
+    if (savedFormat && ['compact', 'standard', 'detailed'].includes(savedFormat)) {
+      setOutputFormat(savedFormat as OutputFormat);
+    }
   }, [pathname]);
 
-  // Track scroll with debounced "scrolling" detection
-  // Uses direct DOM manipulation for instant visual feedback
+  // Listen for format changes from the page
+  useEffect(() => {
+    const handleFormatChange = (e: CustomEvent<OutputFormat>) => {
+      setOutputFormat(e.detail);
+    };
+    window.addEventListener('agentation-format-change', handleFormatChange as EventListener);
+    return () => window.removeEventListener('agentation-format-change', handleFormatChange as EventListener);
+  }, []);
+
+  // Track scroll - hide hover elements during scroll for clean UX
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);
 
-      // Instantly hide hover via CSS class (no React render delay)
-      document.body.classList.add('agentation-scrolling');
+      // Hide hover overlay instantly during scroll
+      if (overlayRef.current) {
+        overlayRef.current.style.opacity = '0';
+      }
 
       // Clear existing timeout
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
 
-      // Set timeout to detect when scrolling stops
+      // Restore after scrolling stops
       scrollTimeoutRef.current = setTimeout(() => {
-        document.body.classList.remove('agentation-scrolling');
+        if (overlayRef.current) {
+          overlayRef.current.style.opacity = '';
+        }
         setHoverInfo(null); // Clear stale hover info
-      }, 150);
+      }, 100);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      document.body.classList.remove('agentation-scrolling');
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
@@ -474,9 +487,6 @@ export function PageFeedbackToolbarCSS() {
     if (!isActive || pendingAnnotation) return;
 
     const handleMouseMove = (e: MouseEvent) => {
-      // Don't update hover while scrolling (check DOM class for instant response)
-      if (document.body.classList.contains('agentation-scrolling')) return;
-
       if ((e.target as HTMLElement).closest("[data-feedback-toolbar]")) {
         setHoverInfo(null);
         return;
@@ -605,13 +615,13 @@ export function PageFeedbackToolbarCSS() {
 
   // Copy output
   const copyOutput = useCallback(async () => {
-    const output = generateOutput(annotations, pathname);
+    const output = generateOutput(annotations, pathname, outputFormat);
     if (!output) return;
 
     await navigator.clipboard.writeText(output);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, [annotations, pathname]);
+  }, [annotations, pathname, outputFormat]);
 
   // Clear all
   const clearAll = useCallback(() => {
@@ -816,14 +826,19 @@ export function PageFeedbackToolbarCSS() {
           })}
       </div>
 
-      {/* Interactive overlay */}
+      {/* Interactive overlay - fades during scroll */}
       {isActive && (
-        <div className={styles.overlay} data-feedback-toolbar>
-          {/* Hover highlight - hidden during scroll via CSS class on body */}
+        <div
+          ref={overlayRef}
+          className={styles.overlay}
+          data-feedback-toolbar
+          style={{ transition: 'opacity 0.1s ease-out' }}
+        >
+          {/* Hover highlight */}
           {hoverInfo?.rect && !pendingAnnotation && (
             <div
               key={`${hoverInfo.rect.left}-${hoverInfo.rect.top}-${hoverInfo.rect.width}`}
-              className={`${styles.hoverHighlight} agentation-highlight-animate agentation-hover-hide`}
+              className={`${styles.hoverHighlight} agentation-highlight-animate`}
               style={{
                 left: hoverInfo.rect.left,
                 top: hoverInfo.rect.top,
@@ -833,10 +848,10 @@ export function PageFeedbackToolbarCSS() {
             />
           )}
 
-          {/* Hover tooltip - hidden during scroll via CSS class on body */}
+          {/* Hover tooltip */}
           {hoverInfo && !pendingAnnotation && (
             <div
-              className={`${styles.hoverTooltip} agentation-hover-tooltip-animate agentation-hover-hide`}
+              className={`${styles.hoverTooltip} agentation-hover-tooltip-animate`}
               style={{
                 left: Math.min(hoverPosition.x, window.innerWidth - 150),
                 top: Math.max(hoverPosition.y - 32, 8),

@@ -210,6 +210,22 @@ button {
     overflow-x: auto;
     white-space: pre;
     margin: 0.625rem 0;
+
+    // Animate format changes
+    &.animating {
+      animation: code-block-fade 0.25s ease-out;
+    }
+  }
+
+  @keyframes code-block-fade {
+    0% {
+      opacity: 0.4;
+      transform: translateY(4px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .format-toggle {
