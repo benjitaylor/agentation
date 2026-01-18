@@ -121,7 +121,6 @@ function App() {
           <li><strong>No network requests</strong> &mdash; all processing is client-side</li>
           <li><strong>No data collection</strong> &mdash; nothing is tracked or stored remotely</li>
           <li><strong>Dev-only</strong> &mdash; use the NODE_ENV check to exclude from production</li>
-          <li><strong>Open source</strong> &mdash; review the source if you have concerns</li>
         </ul>
       </section>
     </article>
