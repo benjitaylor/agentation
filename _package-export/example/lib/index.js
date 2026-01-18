@@ -1463,7 +1463,7 @@ import { createPortal as createPortal2 } from "react-dom";
 import { useState as useState3, useRef as useRef3, useEffect as useEffect3, useCallback as useCallback3, forwardRef as forwardRef2, useImperativeHandle as useImperativeHandle2 } from "react";
 
 // src/components/annotation-popup-css/styles.module.scss
-var css3 = '@keyframes styles-module__popupEnter___AuQDN {\n  from {\n    opacity: 0;\n    transform: translateX(-50%) scale(0.95) translateY(4px);\n  }\n  to {\n    opacity: 1;\n    transform: translateX(-50%) scale(1) translateY(0);\n  }\n}\n@keyframes styles-module__popupExit___JJKQX {\n  from {\n    opacity: 1;\n    transform: translateX(-50%) scale(1) translateY(0);\n  }\n  to {\n    opacity: 0;\n    transform: translateX(-50%) scale(0.95) translateY(4px);\n  }\n}\n@keyframes styles-module__shake___jdbWe {\n  0%, 100% {\n    transform: translateX(-50%) scale(1) translateY(0) translateX(0);\n  }\n  20% {\n    transform: translateX(-50%) scale(1) translateY(0) translateX(-3px);\n  }\n  40% {\n    transform: translateX(-50%) scale(1) translateY(0) translateX(3px);\n  }\n  60% {\n    transform: translateX(-50%) scale(1) translateY(0) translateX(-2px);\n  }\n  80% {\n    transform: translateX(-50%) scale(1) translateY(0) translateX(2px);\n  }\n}\n.styles-module__popup___IhzrD {\n  position: fixed;\n  transform: translateX(-50%);\n  width: 280px;\n  padding: 0.75rem;\n  background: white;\n  border-radius: 0.75rem;\n  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.04);\n  cursor: default;\n  z-index: 100;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n  will-change: transform, opacity;\n  contain: layout style;\n  opacity: 0;\n}\n.styles-module__popup___IhzrD.styles-module__enter___L7U7N {\n  animation: styles-module__popupEnter___AuQDN 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;\n}\n.styles-module__popup___IhzrD.styles-module__entered___COX-w {\n  opacity: 1;\n  transform: translateX(-50%) scale(1) translateY(0);\n}\n.styles-module__popup___IhzrD.styles-module__exit___5eGjE {\n  animation: styles-module__popupExit___JJKQX 0.15s ease-in forwards;\n}\n.styles-module__popup___IhzrD.styles-module__entered___COX-w.styles-module__shake___jdbWe {\n  animation: styles-module__shake___jdbWe 0.25s ease-out;\n}\n\n.styles-module__header___wWsSi {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 0.5rem;\n}\n\n.styles-module__element___fTV2z {\n  font-size: 0.75rem;\n  font-weight: 500;\n  color: rgba(0, 0, 0, 0.65);\n  max-width: 100%;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  flex: 1;\n}\n\n.styles-module__timestamp___Dtpsv {\n  font-size: 0.625rem;\n  font-weight: 500;\n  color: rgba(0, 0, 0, 0.35);\n  font-variant-numeric: tabular-nums;\n  margin-left: 0.5rem;\n  flex-shrink: 0;\n}\n\n.styles-module__quote___mcMmQ {\n  font-size: 0.6875rem;\n  font-style: italic;\n  color: rgba(0, 0, 0, 0.5);\n  margin-bottom: 0.5rem;\n  padding: 0.4rem 0.5rem;\n  background: rgba(0, 0, 0, 0.03);\n  border-radius: 0.25rem;\n  line-height: 1.45;\n}\n\n.styles-module__textarea___jrSae {\n  width: 100%;\n  padding: 0.5rem 0.625rem;\n  font-size: 0.8125rem;\n  font-family: inherit;\n  border: 1px solid rgba(0, 0, 0, 0.12);\n  border-radius: 0.375rem;\n  resize: none;\n  outline: none;\n  transition: border-color 0.15s ease;\n}\n.styles-module__textarea___jrSae:focus {\n  border-color: #3c82f7;\n}\n.styles-module__textarea___jrSae.styles-module__green___99l3h:focus {\n  border-color: #34C759;\n}\n.styles-module__textarea___jrSae::placeholder {\n  color: rgba(0, 0, 0, 0.35);\n}\n\n.styles-module__actions___D6x3f {\n  display: flex;\n  justify-content: flex-end;\n  gap: 0.375rem;\n  margin-top: 0.5rem;\n}\n\n.styles-module__cancel___hRjnL,\n.styles-module__submit___K-mIR {\n  padding: 0.4rem 0.875rem;\n  font-size: 0.75rem;\n  font-weight: 500;\n  border-radius: 1rem;\n  border: none;\n  cursor: pointer;\n  transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;\n}\n\n.styles-module__cancel___hRjnL {\n  background: transparent;\n  color: rgba(0, 0, 0, 0.5);\n}\n.styles-module__cancel___hRjnL:hover {\n  background: rgba(0, 0, 0, 0.05);\n  color: rgba(0, 0, 0, 0.7);\n}\n\n.styles-module__submit___K-mIR {\n  color: white;\n}\n.styles-module__submit___K-mIR:hover:not(:disabled) {\n  filter: brightness(0.9);\n}\n.styles-module__submit___K-mIR:disabled {\n  cursor: not-allowed;\n}';
+var css3 = '@keyframes styles-module__popupEnter___AuQDN {\n  from {\n    opacity: 0;\n    transform: translateX(-50%) scale(0.95) translateY(4px);\n  }\n  to {\n    opacity: 1;\n    transform: translateX(-50%) scale(1) translateY(0);\n  }\n}\n@keyframes styles-module__popupExit___JJKQX {\n  from {\n    opacity: 1;\n    transform: translateX(-50%) scale(1) translateY(0);\n  }\n  to {\n    opacity: 0;\n    transform: translateX(-50%) scale(0.95) translateY(4px);\n  }\n}\n@keyframes styles-module__shake___jdbWe {\n  0%, 100% {\n    transform: translateX(-50%) scale(1) translateY(0) translateX(0);\n  }\n  20% {\n    transform: translateX(-50%) scale(1) translateY(0) translateX(-3px);\n  }\n  40% {\n    transform: translateX(-50%) scale(1) translateY(0) translateX(3px);\n  }\n  60% {\n    transform: translateX(-50%) scale(1) translateY(0) translateX(-2px);\n  }\n  80% {\n    transform: translateX(-50%) scale(1) translateY(0) translateX(2px);\n  }\n}\n.styles-module__popup___IhzrD {\n  position: fixed;\n  transform: translateX(-50%);\n  width: 280px;\n  padding: 0.75rem;\n  background: white;\n  border-radius: 0.75rem;\n  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.04);\n  cursor: default;\n  z-index: 100001;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n  will-change: transform, opacity;\n  contain: layout style;\n  opacity: 0;\n}\n.styles-module__popup___IhzrD.styles-module__enter___L7U7N {\n  animation: styles-module__popupEnter___AuQDN 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;\n}\n.styles-module__popup___IhzrD.styles-module__entered___COX-w {\n  opacity: 1;\n  transform: translateX(-50%) scale(1) translateY(0);\n}\n.styles-module__popup___IhzrD.styles-module__exit___5eGjE {\n  animation: styles-module__popupExit___JJKQX 0.15s ease-in forwards;\n}\n.styles-module__popup___IhzrD.styles-module__entered___COX-w.styles-module__shake___jdbWe {\n  animation: styles-module__shake___jdbWe 0.25s ease-out;\n}\n\n.styles-module__header___wWsSi {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 0.5rem;\n}\n\n.styles-module__element___fTV2z {\n  font-size: 0.75rem;\n  font-weight: 500;\n  color: rgba(0, 0, 0, 0.65);\n  max-width: 100%;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  flex: 1;\n}\n\n.styles-module__timestamp___Dtpsv {\n  font-size: 0.625rem;\n  font-weight: 500;\n  color: rgba(0, 0, 0, 0.35);\n  font-variant-numeric: tabular-nums;\n  margin-left: 0.5rem;\n  flex-shrink: 0;\n}\n\n.styles-module__quote___mcMmQ {\n  font-size: 0.6875rem;\n  font-style: italic;\n  color: rgba(0, 0, 0, 0.5);\n  margin-bottom: 0.5rem;\n  padding: 0.4rem 0.5rem;\n  background: rgba(0, 0, 0, 0.03);\n  border-radius: 0.25rem;\n  line-height: 1.45;\n}\n\n.styles-module__textarea___jrSae {\n  width: 100%;\n  padding: 0.5rem 0.625rem;\n  font-size: 0.8125rem;\n  font-family: inherit;\n  border: 1px solid rgba(0, 0, 0, 0.12);\n  border-radius: 0.375rem;\n  resize: none;\n  outline: none;\n  transition: border-color 0.15s ease;\n}\n.styles-module__textarea___jrSae:focus {\n  border-color: #3c82f7;\n}\n.styles-module__textarea___jrSae.styles-module__green___99l3h:focus {\n  border-color: #34C759;\n}\n.styles-module__textarea___jrSae::placeholder {\n  color: rgba(0, 0, 0, 0.35);\n}\n\n.styles-module__actions___D6x3f {\n  display: flex;\n  justify-content: flex-end;\n  gap: 0.375rem;\n  margin-top: 0.5rem;\n}\n\n.styles-module__cancel___hRjnL,\n.styles-module__submit___K-mIR {\n  padding: 0.4rem 0.875rem;\n  font-size: 0.75rem;\n  font-weight: 500;\n  border-radius: 1rem;\n  border: none;\n  cursor: pointer;\n  transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;\n}\n\n.styles-module__cancel___hRjnL {\n  background: transparent;\n  color: rgba(0, 0, 0, 0.5);\n}\n.styles-module__cancel___hRjnL:hover {\n  background: rgba(0, 0, 0, 0.05);\n  color: rgba(0, 0, 0, 0.7);\n}\n\n.styles-module__submit___K-mIR {\n  color: white;\n}\n.styles-module__submit___K-mIR:hover:not(:disabled) {\n  filter: brightness(0.9);\n}\n.styles-module__submit___K-mIR:disabled {\n  cursor: not-allowed;\n}';
 var classNames3 = { "popup": "styles-module__popup___IhzrD", "enter": "styles-module__enter___L7U7N", "popupEnter": "styles-module__popupEnter___AuQDN", "entered": "styles-module__entered___COX-w", "exit": "styles-module__exit___5eGjE", "popupExit": "styles-module__popupExit___JJKQX", "shake": "styles-module__shake___jdbWe", "header": "styles-module__header___wWsSi", "element": "styles-module__element___fTV2z", "timestamp": "styles-module__timestamp___Dtpsv", "quote": "styles-module__quote___mcMmQ", "textarea": "styles-module__textarea___jrSae", "green": "styles-module__green___99l3h", "actions": "styles-module__actions___D6x3f", "cancel": "styles-module__cancel___hRjnL", "submit": "styles-module__submit___K-mIR" };
 if (typeof document !== "undefined") {
   let style = document.getElementById("feedback-tool-styles-annotation-popup-css-styles");
@@ -1484,12 +1484,14 @@ var AnnotationPopupCSS = forwardRef2(
     timestamp,
     selectedText,
     placeholder = "What should change?",
+    initialValue = "",
+    submitLabel = "Add",
     onSubmit,
     onCancel,
     style,
     accentColor = "#3c82f7"
   }, ref) {
-    const [text, setText] = useState3("");
+    const [text, setText] = useState3(initialValue);
     const [isShaking, setIsShaking] = useState3(false);
     const [animState, setAnimState] = useState3("initial");
     const [isFocused, setIsFocused] = useState3(false);
@@ -1593,7 +1595,7 @@ var AnnotationPopupCSS = forwardRef2(
                 },
                 onClick: handleSubmit,
                 disabled: !text.trim(),
-                children: "Add"
+                children: submitLabel
               }
             )
           ] })
@@ -1604,8 +1606,8 @@ var AnnotationPopupCSS = forwardRef2(
 );
 
 // src/components/page-toolbar-css/styles.module.scss
-var css4 = '@keyframes styles-module__scaleIn___c-r1K {\n  from {\n    opacity: 0;\n    transform: scale(0.85);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1);\n  }\n}\n@keyframes styles-module__scaleOut___Wctwz {\n  from {\n    opacity: 1;\n    transform: scale(1);\n  }\n  to {\n    opacity: 0;\n    transform: scale(0.85);\n  }\n}\n@keyframes styles-module__slideUp___kgD36 {\n  from {\n    opacity: 0;\n    transform: scale(0.85) translateY(8px);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1) translateY(0);\n  }\n}\n@keyframes styles-module__slideDown___zcdje {\n  from {\n    opacity: 1;\n    transform: scale(1) translateY(0);\n  }\n  to {\n    opacity: 0;\n    transform: scale(0.85) translateY(8px);\n  }\n}\n@keyframes styles-module__markerIn___5FaAP {\n  0% {\n    opacity: 0;\n    transform: translate(-50%, -50%) scale(0.3);\n  }\n  100% {\n    opacity: 1;\n    transform: translate(-50%, -50%) scale(1);\n  }\n}\n@keyframes styles-module__markerOut___GU5jX {\n  0% {\n    opacity: 1;\n    transform: translate(-50%, -50%) scale(1);\n  }\n  100% {\n    opacity: 0;\n    transform: translate(-50%, -50%) scale(0.3);\n  }\n}\n@keyframes styles-module__fadeIn___b9qmf {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n@keyframes styles-module__fadeOut___6Ut6- {\n  from {\n    opacity: 1;\n  }\n  to {\n    opacity: 0;\n  }\n}\n@keyframes styles-module__tooltipIn___0N31w {\n  from {\n    opacity: 0;\n    transform: translateX(-50%) translateY(2px) scale(0.98);\n  }\n  to {\n    opacity: 1;\n    transform: translateX(-50%) translateY(0) scale(1);\n  }\n}\n@keyframes styles-module__hoverHighlightIn___6WYHY {\n  from {\n    opacity: 0;\n    transform: scale(0.98);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1);\n  }\n}\n@keyframes styles-module__hoverTooltipIn___FYGQx {\n  from {\n    opacity: 0;\n    transform: scale(0.95) translateY(4px);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1) translateY(0);\n  }\n}\n@keyframes styles-module__settingsPanelIn___MGfO8 {\n  from {\n    opacity: 0;\n    transform: translateY(10px) scale(0.95);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0) scale(1);\n  }\n}\n@keyframes styles-module__settingsPanelOut___Zfymi {\n  from {\n    opacity: 1;\n    transform: translateY(0) scale(1);\n  }\n  to {\n    opacity: 0;\n    transform: translateY(10px) scale(0.95);\n  }\n}\n.styles-module__toolbar___wNsdK {\n  position: fixed;\n  bottom: 1.25rem;\n  right: 1.25rem;\n  z-index: 100000;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n}\n\n.styles-module__toggleButton___2m7Io {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 44px;\n  height: 44px;\n  border-radius: 22px;\n  border: none;\n  background: #1a1a1a;\n  color: #fff;\n  cursor: pointer;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1);\n}\n.styles-module__toggleButton___2m7Io svg {\n  margin-top: -1px;\n}\n.styles-module__toggleButton___2m7Io:hover {\n  background: #2a2a2a;\n}\n.styles-module__toggleButton___2m7Io:active {\n  transform: scale(0.95);\n}\n.styles-module__toggleButton___2m7Io.styles-module__enter___WFIki {\n  animation: styles-module__scaleIn___c-r1K 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;\n}\n.styles-module__toggleButton___2m7Io.styles-module__exit___fyOJ0 {\n  animation: styles-module__scaleOut___Wctwz 0.15s ease-in forwards;\n}\n\n.styles-module__badge___2XsgF {\n  position: absolute;\n  top: -4px;\n  right: -4px;\n  min-width: 18px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  background: #3c82f7;\n  color: white;\n  font-size: 0.625rem;\n  font-weight: 600;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);\n}\n\n.styles-module__controls___GjxQ2 {\n  display: flex;\n  align-items: center;\n  gap: 0.25rem;\n  padding: 0.375rem;\n  border-radius: 1.5rem;\n  background: #1a1a1a;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1);\n}\n.styles-module__controls___GjxQ2.styles-module__enter___WFIki {\n  animation: styles-module__slideUp___kgD36 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;\n}\n.styles-module__controls___GjxQ2.styles-module__exit___fyOJ0 {\n  animation: styles-module__slideDown___zcdje 0.15s ease-in forwards;\n}\n\n.styles-module__controlButton___8Q0jc {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 34px;\n  height: 34px;\n  border-radius: 50%;\n  border: none;\n  background: transparent;\n  color: rgba(255, 255, 255, 0.85);\n  cursor: pointer;\n  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;\n}\n.styles-module__controlButton___8Q0jc:hover:not(:disabled) {\n  background: rgba(255, 255, 255, 0.12);\n  color: #fff;\n}\n.styles-module__controlButton___8Q0jc:active:not(:disabled) {\n  transform: scale(0.92);\n}\n.styles-module__controlButton___8Q0jc:disabled {\n  opacity: 0.35;\n  cursor: not-allowed;\n}\n.styles-module__controlButton___8Q0jc[data-active=true] {\n  color: #3c82f7;\n  background: rgba(60, 130, 247, 0.25);\n}\n.styles-module__controlButton___8Q0jc[data-danger]:hover:not(:disabled) {\n  background: rgba(255, 59, 48, 0.25);\n  color: #ff3b30;\n}\n\n.styles-module__divider___c--s1 {\n  width: 1px;\n  height: 20px;\n  background: rgba(255, 255, 255, 0.15);\n  margin: 0 0.125rem;\n}\n\n.styles-module__overlay___Q1O9y {\n  position: fixed;\n  inset: 0;\n  z-index: 99999;\n  pointer-events: none;\n}\n.styles-module__overlay___Q1O9y > * {\n  pointer-events: auto;\n}\n\n.styles-module__hoverHighlight___ogakW {\n  position: fixed;\n  border: 2px solid rgba(60, 130, 247, 0.5);\n  border-radius: 4px;\n  pointer-events: none !important;\n  background: rgba(60, 130, 247, 0.04);\n  box-sizing: border-box;\n  will-change: opacity;\n  contain: layout style;\n}\n.styles-module__hoverHighlight___ogakW.styles-module__enter___WFIki {\n  animation: styles-module__hoverHighlightIn___6WYHY 0.12s ease-out forwards;\n}\n\n.styles-module__multiSelectOutline___cSJ-m {\n  position: fixed;\n  border: 2px dashed rgba(52, 199, 89, 0.6);\n  border-radius: 4px;\n  pointer-events: none !important;\n  background: rgba(52, 199, 89, 0.05);\n  box-sizing: border-box;\n  will-change: opacity;\n}\n.styles-module__multiSelectOutline___cSJ-m.styles-module__enter___WFIki {\n  animation: styles-module__fadeIn___b9qmf 0.15s ease-out forwards;\n}\n\n.styles-module__singleSelectOutline___QhX-O {\n  position: fixed;\n  border: 2px solid rgba(60, 130, 247, 0.6);\n  border-radius: 4px;\n  pointer-events: none !important;\n  background: rgba(60, 130, 247, 0.05);\n  box-sizing: border-box;\n  will-change: opacity;\n}\n.styles-module__singleSelectOutline___QhX-O.styles-module__enter___WFIki {\n  animation: styles-module__fadeIn___b9qmf 0.15s ease-out forwards;\n}\n\n.styles-module__hoverTooltip___bvLk7 {\n  position: fixed;\n  font-size: 0.6875rem;\n  font-weight: 500;\n  color: #fff;\n  background: rgba(0, 0, 0, 0.85);\n  padding: 0.35rem 0.6rem;\n  border-radius: 0.375rem;\n  pointer-events: none !important;\n  white-space: nowrap;\n  max-width: 200px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.styles-module__hoverTooltip___bvLk7.styles-module__enter___WFIki {\n  animation: styles-module__hoverTooltipIn___FYGQx 0.1s ease-out forwards;\n}\n\n.styles-module__markersLayer___-25j1 {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  height: 0;\n  z-index: 99998;\n  pointer-events: none;\n}\n.styles-module__markersLayer___-25j1 > * {\n  pointer-events: auto;\n}\n\n.styles-module__fixedMarkersLayer___ffyX6 {\n  position: fixed;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 99998;\n  pointer-events: none;\n}\n.styles-module__fixedMarkersLayer___ffyX6 > * {\n  pointer-events: auto;\n}\n\n.styles-module__marker___6sQrs {\n  position: absolute;\n  width: 22px;\n  height: 22px;\n  background: #3c82f7;\n  color: white;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 0.6875rem;\n  font-weight: 600;\n  transform: translate(-50%, -50%) scale(1);\n  opacity: 1;\n  cursor: pointer;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n  user-select: none;\n  will-change: transform, opacity;\n  contain: layout style;\n}\n.styles-module__marker___6sQrs:not(.styles-module__enter___WFIki):not(.styles-module__exit___fyOJ0):not(.styles-module__clearing___FQ--7) {\n  transition: background-color 0.15s ease, transform 0.1s ease;\n}\n.styles-module__marker___6sQrs.styles-module__enter___WFIki {\n  animation: styles-module__markerIn___5FaAP 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;\n}\n.styles-module__marker___6sQrs.styles-module__exit___fyOJ0 {\n  animation: styles-module__markerOut___GU5jX 0.2s ease-out both;\n  pointer-events: none;\n}\n.styles-module__marker___6sQrs.styles-module__clearing___FQ--7 {\n  animation: styles-module__markerOut___GU5jX 0.15s ease-out both;\n  pointer-events: none;\n}\n.styles-module__marker___6sQrs:not(.styles-module__enter___WFIki):not(.styles-module__exit___fyOJ0):not(.styles-module__clearing___FQ--7):hover {\n  transform: translate(-50%, -50%) scale(1.1);\n}\n.styles-module__marker___6sQrs.styles-module__pending___2IHLC {\n  position: fixed;\n  background: #3c82f7;\n}\n.styles-module__marker___6sQrs.styles-module__fixed___dBMHC {\n  position: fixed;\n}\n.styles-module__marker___6sQrs.styles-module__multiSelect___YWiuz {\n  background: #34C759;\n  width: 26px;\n  height: 26px;\n  border-radius: 6px;\n  font-size: 0.75rem;\n}\n.styles-module__marker___6sQrs.styles-module__multiSelect___YWiuz.styles-module__pending___2IHLC {\n  background: #34C759;\n}\n.styles-module__marker___6sQrs.styles-module__hovered___ZgXIy {\n  background: #ff3b30;\n}\n\n.styles-module__markerTooltip___aLJID {\n  position: absolute;\n  top: calc(100% + 10px);\n  left: 50%;\n  transform: translateX(-50%);\n  background: white;\n  padding: 0.625rem 0.75rem;\n  border-radius: 0.5rem;\n  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);\n  min-width: 160px;\n  max-width: 280px;\n  pointer-events: none;\n  cursor: default;\n}\n.styles-module__markerTooltip___aLJID.styles-module__enter___WFIki {\n  animation: styles-module__tooltipIn___0N31w 0.1s ease-out forwards;\n}\n\n.styles-module__markerQuote___FHmrz {\n  display: block;\n  font-size: 0.6875rem;\n  font-style: italic;\n  color: rgba(0, 0, 0, 0.5);\n  margin-bottom: 0.375rem;\n  line-height: 1.4;\n}\n\n.styles-module__markerNote___QkrrS {\n  display: block;\n  font-size: 0.75rem;\n  font-weight: 450;\n  line-height: 1.4;\n  color: #333;\n  white-space: normal;\n}\n\n.styles-module__markerHint___2iF-6 {\n  display: block;\n  font-size: 0.625rem;\n  font-weight: 400;\n  color: rgba(0, 0, 0, 0.3);\n  margin-top: 0.375rem;\n}\n\n.styles-module__settingsPanel___OxX3Y {\n  position: absolute;\n  bottom: calc(100% + 0.5rem);\n  right: 0;\n  background: white;\n  border-radius: 0.75rem;\n  padding: 0.75rem;\n  min-width: 200px;\n  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__enter___WFIki {\n  animation: styles-module__settingsPanelIn___MGfO8 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__exit___fyOJ0 {\n  animation: styles-module__settingsPanelOut___Zfymi 0.15s ease-in forwards;\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__dark___ILIQf {\n  background: #2a2a2a;\n  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.08);\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__dark___ILIQf .styles-module__settingsLabel___8UjfX {\n  color: rgba(255, 255, 255, 0.6);\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__dark___ILIQf .styles-module__settingsOption___UNa12 {\n  color: rgba(255, 255, 255, 0.85);\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__dark___ILIQf .styles-module__settingsOption___UNa12:hover {\n  background: rgba(255, 255, 255, 0.1);\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__dark___ILIQf .styles-module__settingsOption___UNa12.styles-module__selected___OwRqP {\n  background: rgba(60, 130, 247, 0.25);\n  color: #7ab3ff;\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__dark___ILIQf .styles-module__toggleLabel___Xm8Aa {\n  color: rgba(255, 255, 255, 0.85);\n}\n\n.styles-module__settingsHeader___pwDY9 {\n  display: flex;\n  align-items: center;\n  gap: 0.375rem;\n  margin-bottom: 0.75rem;\n  padding-bottom: 0.625rem;\n  border-bottom: 1px solid rgba(255, 255, 255, 0.08);\n  color: rgba(255, 255, 255, 0.9);\n}\n\n.styles-module__settingsVersion___TUcFq {\n  font-size: 0.625rem;\n  font-weight: 500;\n  color: rgba(255, 255, 255, 0.4);\n  margin-left: auto;\n}\n\n.styles-module__settingsSection___m-YM2 + .styles-module__settingsSection___m-YM2 {\n  margin-top: 0.75rem;\n  padding-top: 0.75rem;\n  border-top: 1px solid rgba(0, 0, 0, 0.06);\n}\n.styles-module__dark___ILIQf .styles-module__settingsSection___m-YM2 + .styles-module__settingsSection___m-YM2 {\n  border-top-color: rgba(255, 255, 255, 0.08);\n}\n\n.styles-module__settingsLabel___8UjfX {\n  font-size: 0.625rem;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: rgba(0, 0, 0, 0.4);\n  margin-bottom: 0.5rem;\n}\n\n.styles-module__settingsOptions___LyrBA {\n  display: flex;\n  gap: 0.25rem;\n}\n\n.styles-module__settingsOption___UNa12 {\n  flex: 1;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 0.25rem;\n  padding: 0.375rem 0.5rem;\n  border: none;\n  border-radius: 0.375rem;\n  background: transparent;\n  font-size: 0.6875rem;\n  font-weight: 500;\n  color: rgba(0, 0, 0, 0.7);\n  cursor: pointer;\n  transition: background-color 0.15s ease, color 0.15s ease;\n}\n.styles-module__settingsOption___UNa12:hover {\n  background: rgba(0, 0, 0, 0.05);\n}\n.styles-module__settingsOption___UNa12.styles-module__selected___OwRqP {\n  background: rgba(60, 130, 247, 0.15);\n  color: #3c82f7;\n}\n\n.styles-module__sliderContainer___ducXj {\n  display: flex;\n  flex-direction: column;\n  gap: 0.5rem;\n}\n\n.styles-module__slider___GLdxp {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 100%;\n  height: 4px;\n  background: rgba(255, 255, 255, 0.15);\n  border-radius: 2px;\n  outline: none;\n  cursor: pointer;\n}\n.styles-module__slider___GLdxp::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 14px;\n  height: 14px;\n  background: white;\n  border-radius: 50%;\n  cursor: pointer;\n  transition: transform 0.15s ease, box-shadow 0.15s ease;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);\n}\n.styles-module__slider___GLdxp::-moz-range-thumb {\n  width: 14px;\n  height: 14px;\n  background: white;\n  border: none;\n  border-radius: 50%;\n  cursor: pointer;\n  transition: transform 0.15s ease, box-shadow 0.15s ease;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);\n}\n.styles-module__slider___GLdxp:hover::-webkit-slider-thumb {\n  transform: scale(1.15);\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);\n}\n.styles-module__slider___GLdxp:hover::-moz-range-thumb {\n  transform: scale(1.15);\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);\n}\n\n.styles-module__sliderLabels___FhLDB {\n  display: flex;\n  justify-content: space-between;\n}\n\n.styles-module__sliderLabel___U8sPr {\n  font-size: 0.625rem;\n  font-weight: 500;\n  color: rgba(255, 255, 255, 0.4);\n  cursor: pointer;\n  transition: color 0.15s ease;\n}\n.styles-module__sliderLabel___U8sPr:hover {\n  color: rgba(255, 255, 255, 0.7);\n}\n.styles-module__sliderLabel___U8sPr.styles-module__active___-zoN6 {\n  color: rgba(255, 255, 255, 0.9);\n}\n\n.styles-module__colorOptions___iHCNX {\n  display: flex;\n  gap: 0.375rem;\n}\n\n.styles-module__colorOption___IodiY {\n  width: 24px;\n  height: 24px;\n  border-radius: 50%;\n  border: 2px solid transparent;\n  cursor: pointer;\n  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;\n}\n.styles-module__colorOption___IodiY:hover {\n  transform: scale(1.1);\n}\n.styles-module__colorOption___IodiY.styles-module__selected___OwRqP {\n  border-color: white;\n  box-shadow: 0 0 0 2px currentColor;\n}\n\n.styles-module__settingsToggle___fBrFn {\n  display: flex;\n  align-items: center;\n  gap: 0.5rem;\n  cursor: pointer;\n}\n.styles-module__settingsToggle___fBrFn input[type=checkbox] {\n  width: 16px;\n  height: 16px;\n  accent-color: #3c82f7;\n  cursor: pointer;\n}\n\n.styles-module__toggleLabel___Xm8Aa {\n  font-size: 0.75rem;\n  font-weight: 450;\n  color: rgba(0, 0, 0, 0.7);\n}\n\n.styles-module__dragSelection___kZLq2 {\n  position: fixed;\n  top: 0;\n  left: 0;\n  border: 2px solid rgba(52, 199, 89, 0.6);\n  border-radius: 4px;\n  background: rgba(52, 199, 89, 0.08);\n  pointer-events: none;\n  z-index: 99997;\n  will-change: transform, width, height;\n  contain: layout style;\n}\n\n.styles-module__dragCount___KM90j {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background: #34C759;\n  color: white;\n  font-size: 0.875rem;\n  font-weight: 600;\n  padding: 0.25rem 0.5rem;\n  border-radius: 1rem;\n  min-width: 1.5rem;\n  text-align: center;\n}\n\n.styles-module__selectedElementHighlight___fyVlI {\n  position: fixed;\n  border: 2px solid rgba(52, 199, 89, 0.5);\n  border-radius: 4px;\n  background: rgba(52, 199, 89, 0.06);\n  pointer-events: none;\n  z-index: 99996;\n  will-change: transform;\n  contain: strict;\n}';
-var classNames4 = { "toolbar": "styles-module__toolbar___wNsdK", "toggleButton": "styles-module__toggleButton___2m7Io", "enter": "styles-module__enter___WFIki", "scaleIn": "styles-module__scaleIn___c-r1K", "exit": "styles-module__exit___fyOJ0", "scaleOut": "styles-module__scaleOut___Wctwz", "badge": "styles-module__badge___2XsgF", "controls": "styles-module__controls___GjxQ2", "slideUp": "styles-module__slideUp___kgD36", "slideDown": "styles-module__slideDown___zcdje", "controlButton": "styles-module__controlButton___8Q0jc", "divider": "styles-module__divider___c--s1", "overlay": "styles-module__overlay___Q1O9y", "hoverHighlight": "styles-module__hoverHighlight___ogakW", "hoverHighlightIn": "styles-module__hoverHighlightIn___6WYHY", "multiSelectOutline": "styles-module__multiSelectOutline___cSJ-m", "fadeIn": "styles-module__fadeIn___b9qmf", "singleSelectOutline": "styles-module__singleSelectOutline___QhX-O", "hoverTooltip": "styles-module__hoverTooltip___bvLk7", "hoverTooltipIn": "styles-module__hoverTooltipIn___FYGQx", "markersLayer": "styles-module__markersLayer___-25j1", "fixedMarkersLayer": "styles-module__fixedMarkersLayer___ffyX6", "marker": "styles-module__marker___6sQrs", "clearing": "styles-module__clearing___FQ--7", "markerIn": "styles-module__markerIn___5FaAP", "markerOut": "styles-module__markerOut___GU5jX", "pending": "styles-module__pending___2IHLC", "fixed": "styles-module__fixed___dBMHC", "multiSelect": "styles-module__multiSelect___YWiuz", "hovered": "styles-module__hovered___ZgXIy", "markerTooltip": "styles-module__markerTooltip___aLJID", "tooltipIn": "styles-module__tooltipIn___0N31w", "markerQuote": "styles-module__markerQuote___FHmrz", "markerNote": "styles-module__markerNote___QkrrS", "markerHint": "styles-module__markerHint___2iF-6", "settingsPanel": "styles-module__settingsPanel___OxX3Y", "settingsPanelIn": "styles-module__settingsPanelIn___MGfO8", "settingsPanelOut": "styles-module__settingsPanelOut___Zfymi", "dark": "styles-module__dark___ILIQf", "settingsLabel": "styles-module__settingsLabel___8UjfX", "settingsOption": "styles-module__settingsOption___UNa12", "selected": "styles-module__selected___OwRqP", "toggleLabel": "styles-module__toggleLabel___Xm8Aa", "settingsHeader": "styles-module__settingsHeader___pwDY9", "settingsVersion": "styles-module__settingsVersion___TUcFq", "settingsSection": "styles-module__settingsSection___m-YM2", "settingsOptions": "styles-module__settingsOptions___LyrBA", "sliderContainer": "styles-module__sliderContainer___ducXj", "slider": "styles-module__slider___GLdxp", "sliderLabels": "styles-module__sliderLabels___FhLDB", "sliderLabel": "styles-module__sliderLabel___U8sPr", "active": "styles-module__active___-zoN6", "colorOptions": "styles-module__colorOptions___iHCNX", "colorOption": "styles-module__colorOption___IodiY", "settingsToggle": "styles-module__settingsToggle___fBrFn", "dragSelection": "styles-module__dragSelection___kZLq2", "dragCount": "styles-module__dragCount___KM90j", "selectedElementHighlight": "styles-module__selectedElementHighlight___fyVlI", "fadeOut": "styles-module__fadeOut___6Ut6-" };
+var css4 = '@keyframes styles-module__scaleIn___c-r1K {\n  from {\n    opacity: 0;\n    transform: scale(0.85);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1);\n  }\n}\n@keyframes styles-module__scaleOut___Wctwz {\n  from {\n    opacity: 1;\n    transform: scale(1);\n  }\n  to {\n    opacity: 0;\n    transform: scale(0.85);\n  }\n}\n@keyframes styles-module__slideUp___kgD36 {\n  from {\n    opacity: 0;\n    transform: scale(0.85) translateY(8px);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1) translateY(0);\n  }\n}\n@keyframes styles-module__slideDown___zcdje {\n  from {\n    opacity: 1;\n    transform: scale(1) translateY(0);\n  }\n  to {\n    opacity: 0;\n    transform: scale(0.85) translateY(8px);\n  }\n}\n@keyframes styles-module__markerIn___5FaAP {\n  0% {\n    opacity: 0;\n    transform: translate(-50%, -50%) scale(0.3);\n  }\n  100% {\n    opacity: 1;\n    transform: translate(-50%, -50%) scale(1);\n  }\n}\n@keyframes styles-module__markerOut___GU5jX {\n  0% {\n    opacity: 1;\n    transform: translate(-50%, -50%) scale(1);\n  }\n  100% {\n    opacity: 0;\n    transform: translate(-50%, -50%) scale(0.3);\n  }\n}\n@keyframes styles-module__fadeIn___b9qmf {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n@keyframes styles-module__fadeOut___6Ut6- {\n  from {\n    opacity: 1;\n  }\n  to {\n    opacity: 0;\n  }\n}\n@keyframes styles-module__tooltipIn___0N31w {\n  from {\n    opacity: 0;\n    transform: translateX(-50%) translateY(2px) scale(0.98);\n  }\n  to {\n    opacity: 1;\n    transform: translateX(-50%) translateY(0) scale(1);\n  }\n}\n@keyframes styles-module__hoverHighlightIn___6WYHY {\n  from {\n    opacity: 0;\n    transform: scale(0.98);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1);\n  }\n}\n@keyframes styles-module__hoverTooltipIn___FYGQx {\n  from {\n    opacity: 0;\n    transform: scale(0.95) translateY(4px);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1) translateY(0);\n  }\n}\n@keyframes styles-module__settingsPanelIn___MGfO8 {\n  from {\n    opacity: 0;\n    transform: translateY(10px) scale(0.95);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0) scale(1);\n  }\n}\n@keyframes styles-module__settingsPanelOut___Zfymi {\n  from {\n    opacity: 1;\n    transform: translateY(0) scale(1);\n  }\n  to {\n    opacity: 0;\n    transform: translateY(10px) scale(0.95);\n  }\n}\n.styles-module__toolbar___wNsdK {\n  position: fixed;\n  bottom: 1.25rem;\n  right: 1.25rem;\n  z-index: 100000;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n}\n\n.styles-module__toggleButton___2m7Io {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 44px;\n  height: 44px;\n  border-radius: 22px;\n  border: none;\n  background: #1a1a1a;\n  color: #fff;\n  cursor: pointer;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1);\n}\n.styles-module__toggleButton___2m7Io svg {\n  margin-top: -1px;\n}\n.styles-module__toggleButton___2m7Io:hover {\n  background: #2a2a2a;\n}\n.styles-module__toggleButton___2m7Io:active {\n  transform: scale(0.95);\n}\n.styles-module__toggleButton___2m7Io.styles-module__enter___WFIki {\n  animation: styles-module__scaleIn___c-r1K 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;\n}\n.styles-module__toggleButton___2m7Io.styles-module__exit___fyOJ0 {\n  animation: styles-module__scaleOut___Wctwz 0.15s ease-in forwards;\n}\n\n.styles-module__badge___2XsgF {\n  position: absolute;\n  top: -4px;\n  right: -4px;\n  min-width: 18px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  background: #3c82f7;\n  color: white;\n  font-size: 0.625rem;\n  font-weight: 600;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);\n}\n\n.styles-module__controls___GjxQ2 {\n  display: flex;\n  align-items: center;\n  gap: 0.25rem;\n  padding: 0.375rem;\n  border-radius: 1.5rem;\n  background: #1a1a1a;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1);\n}\n.styles-module__controls___GjxQ2.styles-module__enter___WFIki {\n  animation: styles-module__slideUp___kgD36 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;\n}\n.styles-module__controls___GjxQ2.styles-module__exit___fyOJ0 {\n  animation: styles-module__slideDown___zcdje 0.15s ease-in forwards;\n}\n\n.styles-module__controlButton___8Q0jc {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 34px;\n  height: 34px;\n  border-radius: 50%;\n  border: none;\n  background: transparent;\n  color: rgba(255, 255, 255, 0.85);\n  cursor: pointer;\n  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;\n}\n.styles-module__controlButton___8Q0jc:hover:not(:disabled) {\n  background: rgba(255, 255, 255, 0.12);\n  color: #fff;\n}\n.styles-module__controlButton___8Q0jc:active:not(:disabled) {\n  transform: scale(0.92);\n}\n.styles-module__controlButton___8Q0jc:disabled {\n  opacity: 0.35;\n  cursor: not-allowed;\n}\n.styles-module__controlButton___8Q0jc[data-active=true] {\n  color: #3c82f7;\n  background: rgba(60, 130, 247, 0.25);\n}\n.styles-module__controlButton___8Q0jc[data-danger]:hover:not(:disabled) {\n  background: rgba(255, 59, 48, 0.25);\n  color: #ff3b30;\n}\n\n.styles-module__divider___c--s1 {\n  width: 1px;\n  height: 20px;\n  background: rgba(255, 255, 255, 0.15);\n  margin: 0 0.125rem;\n}\n\n.styles-module__overlay___Q1O9y {\n  position: fixed;\n  inset: 0;\n  z-index: 99999;\n  pointer-events: none;\n}\n.styles-module__overlay___Q1O9y > * {\n  pointer-events: auto;\n}\n\n.styles-module__hoverHighlight___ogakW {\n  position: fixed;\n  border: 2px solid rgba(60, 130, 247, 0.5);\n  border-radius: 4px;\n  pointer-events: none !important;\n  background: rgba(60, 130, 247, 0.04);\n  box-sizing: border-box;\n  will-change: opacity;\n  contain: layout style;\n}\n.styles-module__hoverHighlight___ogakW.styles-module__enter___WFIki {\n  animation: styles-module__hoverHighlightIn___6WYHY 0.12s ease-out forwards;\n}\n\n.styles-module__multiSelectOutline___cSJ-m {\n  position: fixed;\n  border: 2px dashed rgba(52, 199, 89, 0.6);\n  border-radius: 4px;\n  pointer-events: none !important;\n  background: rgba(52, 199, 89, 0.05);\n  box-sizing: border-box;\n  will-change: opacity;\n}\n.styles-module__multiSelectOutline___cSJ-m.styles-module__enter___WFIki {\n  animation: styles-module__fadeIn___b9qmf 0.15s ease-out forwards;\n}\n.styles-module__multiSelectOutline___cSJ-m.styles-module__exit___fyOJ0 {\n  animation: styles-module__fadeOut___6Ut6- 0.15s ease-out forwards;\n}\n\n.styles-module__singleSelectOutline___QhX-O {\n  position: fixed;\n  border: 2px solid rgba(60, 130, 247, 0.6);\n  border-radius: 4px;\n  pointer-events: none !important;\n  background: rgba(60, 130, 247, 0.05);\n  box-sizing: border-box;\n  will-change: opacity;\n}\n.styles-module__singleSelectOutline___QhX-O.styles-module__enter___WFIki {\n  animation: styles-module__fadeIn___b9qmf 0.15s ease-out forwards;\n}\n.styles-module__singleSelectOutline___QhX-O.styles-module__exit___fyOJ0 {\n  animation: styles-module__fadeOut___6Ut6- 0.15s ease-out forwards;\n}\n\n.styles-module__hoverTooltip___bvLk7 {\n  position: fixed;\n  font-size: 0.6875rem;\n  font-weight: 500;\n  color: #fff;\n  background: rgba(0, 0, 0, 0.85);\n  padding: 0.35rem 0.6rem;\n  border-radius: 0.375rem;\n  pointer-events: none !important;\n  white-space: nowrap;\n  max-width: 200px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.styles-module__hoverTooltip___bvLk7.styles-module__enter___WFIki {\n  animation: styles-module__hoverTooltipIn___FYGQx 0.1s ease-out forwards;\n}\n\n.styles-module__markersLayer___-25j1 {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  height: 0;\n  z-index: 99998;\n  pointer-events: none;\n}\n.styles-module__markersLayer___-25j1 > * {\n  pointer-events: auto;\n}\n\n.styles-module__fixedMarkersLayer___ffyX6 {\n  position: fixed;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  z-index: 99998;\n  pointer-events: none;\n}\n.styles-module__fixedMarkersLayer___ffyX6 > * {\n  pointer-events: auto;\n}\n\n.styles-module__marker___6sQrs {\n  position: absolute;\n  width: 22px;\n  height: 22px;\n  background: #3c82f7;\n  color: white;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 0.6875rem;\n  font-weight: 600;\n  transform: translate(-50%, -50%) scale(1);\n  opacity: 1;\n  cursor: pointer;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n  user-select: none;\n  will-change: transform, opacity;\n  contain: layout style;\n}\n.styles-module__marker___6sQrs:not(.styles-module__enter___WFIki):not(.styles-module__exit___fyOJ0):not(.styles-module__clearing___FQ--7) {\n  transition: background-color 0.15s ease, transform 0.1s ease;\n}\n.styles-module__marker___6sQrs.styles-module__enter___WFIki {\n  animation: styles-module__markerIn___5FaAP 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;\n}\n.styles-module__marker___6sQrs.styles-module__exit___fyOJ0 {\n  animation: styles-module__markerOut___GU5jX 0.2s ease-out both;\n  pointer-events: none;\n}\n.styles-module__marker___6sQrs.styles-module__clearing___FQ--7 {\n  animation: styles-module__markerOut___GU5jX 0.15s ease-out both;\n  pointer-events: none;\n}\n.styles-module__marker___6sQrs:not(.styles-module__enter___WFIki):not(.styles-module__exit___fyOJ0):not(.styles-module__clearing___FQ--7):hover {\n  transform: translate(-50%, -50%) scale(1.1);\n}\n.styles-module__marker___6sQrs.styles-module__pending___2IHLC {\n  position: fixed;\n  background: #3c82f7;\n}\n.styles-module__marker___6sQrs.styles-module__fixed___dBMHC {\n  position: fixed;\n}\n.styles-module__marker___6sQrs.styles-module__multiSelect___YWiuz {\n  background: #34C759;\n  width: 26px;\n  height: 26px;\n  border-radius: 6px;\n  font-size: 0.75rem;\n}\n.styles-module__marker___6sQrs.styles-module__multiSelect___YWiuz.styles-module__pending___2IHLC {\n  background: #34C759;\n}\n.styles-module__marker___6sQrs.styles-module__hovered___ZgXIy {\n  background: #ff3b30;\n}\n\n.styles-module__markerTooltip___aLJID {\n  position: absolute;\n  top: calc(100% + 10px);\n  left: 50%;\n  transform: translateX(-50%);\n  background: white;\n  padding: 0.625rem 0.75rem;\n  border-radius: 0.5rem;\n  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);\n  min-width: 160px;\n  max-width: 280px;\n  pointer-events: none;\n  cursor: default;\n}\n.styles-module__markerTooltip___aLJID.styles-module__enter___WFIki {\n  animation: styles-module__tooltipIn___0N31w 0.1s ease-out forwards;\n}\n\n.styles-module__markerQuote___FHmrz {\n  display: block;\n  font-size: 0.6875rem;\n  font-style: italic;\n  color: rgba(0, 0, 0, 0.5);\n  margin-bottom: 0.375rem;\n  line-height: 1.4;\n}\n\n.styles-module__markerNote___QkrrS {\n  display: block;\n  font-size: 0.75rem;\n  font-weight: 450;\n  line-height: 1.4;\n  color: #333;\n  white-space: normal;\n}\n\n.styles-module__markerHint___2iF-6 {\n  display: block;\n  font-size: 0.625rem;\n  font-weight: 400;\n  color: rgba(0, 0, 0, 0.3);\n  margin-top: 0.375rem;\n}\n\n.styles-module__settingsPanel___OxX3Y {\n  position: absolute;\n  bottom: calc(100% + 0.5rem);\n  right: 0;\n  background: white;\n  border-radius: 0.75rem;\n  padding: 0.75rem;\n  min-width: 200px;\n  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__enter___WFIki {\n  animation: styles-module__settingsPanelIn___MGfO8 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__exit___fyOJ0 {\n  animation: styles-module__settingsPanelOut___Zfymi 0.15s ease-in forwards;\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__dark___ILIQf {\n  background: #2a2a2a;\n  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.08);\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__dark___ILIQf .styles-module__settingsLabel___8UjfX {\n  color: rgba(255, 255, 255, 0.6);\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__dark___ILIQf .styles-module__settingsOption___UNa12 {\n  color: rgba(255, 255, 255, 0.85);\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__dark___ILIQf .styles-module__settingsOption___UNa12:hover {\n  background: rgba(255, 255, 255, 0.1);\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__dark___ILIQf .styles-module__settingsOption___UNa12.styles-module__selected___OwRqP {\n  background: rgba(60, 130, 247, 0.25);\n  color: #7ab3ff;\n}\n.styles-module__settingsPanel___OxX3Y.styles-module__dark___ILIQf .styles-module__toggleLabel___Xm8Aa {\n  color: rgba(255, 255, 255, 0.85);\n}\n\n.styles-module__settingsHeader___pwDY9 {\n  display: flex;\n  align-items: center;\n  gap: 0.375rem;\n  margin-bottom: 0.75rem;\n  padding-bottom: 0.625rem;\n  border-bottom: 1px solid rgba(255, 255, 255, 0.08);\n  color: rgba(255, 255, 255, 0.9);\n}\n\n.styles-module__settingsVersion___TUcFq {\n  font-size: 0.625rem;\n  font-weight: 500;\n  color: rgba(255, 255, 255, 0.4);\n  margin-left: auto;\n}\n\n.styles-module__settingsSection___m-YM2 + .styles-module__settingsSection___m-YM2 {\n  margin-top: 0.75rem;\n  padding-top: 0.75rem;\n  border-top: 1px solid rgba(0, 0, 0, 0.06);\n}\n.styles-module__dark___ILIQf .styles-module__settingsSection___m-YM2 + .styles-module__settingsSection___m-YM2 {\n  border-top-color: rgba(255, 255, 255, 0.08);\n}\n\n.styles-module__settingsLabel___8UjfX {\n  font-size: 0.625rem;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n  color: rgba(0, 0, 0, 0.4);\n  margin-bottom: 0.5rem;\n}\n\n.styles-module__settingsOptions___LyrBA {\n  display: flex;\n  gap: 0.25rem;\n}\n\n.styles-module__settingsOption___UNa12 {\n  flex: 1;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 0.25rem;\n  padding: 0.375rem 0.5rem;\n  border: none;\n  border-radius: 0.375rem;\n  background: transparent;\n  font-size: 0.6875rem;\n  font-weight: 500;\n  color: rgba(0, 0, 0, 0.7);\n  cursor: pointer;\n  transition: background-color 0.15s ease, color 0.15s ease;\n}\n.styles-module__settingsOption___UNa12:hover {\n  background: rgba(0, 0, 0, 0.05);\n}\n.styles-module__settingsOption___UNa12.styles-module__selected___OwRqP {\n  background: rgba(60, 130, 247, 0.15);\n  color: #3c82f7;\n}\n\n.styles-module__sliderContainer___ducXj {\n  display: flex;\n  flex-direction: column;\n  gap: 0.5rem;\n}\n\n.styles-module__slider___GLdxp {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 100%;\n  height: 4px;\n  background: rgba(255, 255, 255, 0.15);\n  border-radius: 2px;\n  outline: none;\n  cursor: pointer;\n}\n.styles-module__slider___GLdxp::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 14px;\n  height: 14px;\n  background: white;\n  border-radius: 50%;\n  cursor: pointer;\n  transition: transform 0.15s ease, box-shadow 0.15s ease;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);\n}\n.styles-module__slider___GLdxp::-moz-range-thumb {\n  width: 14px;\n  height: 14px;\n  background: white;\n  border: none;\n  border-radius: 50%;\n  cursor: pointer;\n  transition: transform 0.15s ease, box-shadow 0.15s ease;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);\n}\n.styles-module__slider___GLdxp:hover::-webkit-slider-thumb {\n  transform: scale(1.15);\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);\n}\n.styles-module__slider___GLdxp:hover::-moz-range-thumb {\n  transform: scale(1.15);\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);\n}\n\n.styles-module__sliderLabels___FhLDB {\n  display: flex;\n  justify-content: space-between;\n}\n\n.styles-module__sliderLabel___U8sPr {\n  font-size: 0.625rem;\n  font-weight: 500;\n  color: rgba(255, 255, 255, 0.4);\n  cursor: pointer;\n  transition: color 0.15s ease;\n}\n.styles-module__sliderLabel___U8sPr:hover {\n  color: rgba(255, 255, 255, 0.7);\n}\n.styles-module__sliderLabel___U8sPr.styles-module__active___-zoN6 {\n  color: rgba(255, 255, 255, 0.9);\n}\n\n.styles-module__colorOptions___iHCNX {\n  display: flex;\n  gap: 0.375rem;\n}\n\n.styles-module__colorOption___IodiY {\n  width: 24px;\n  height: 24px;\n  border-radius: 50%;\n  border: 2px solid transparent;\n  cursor: pointer;\n  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;\n}\n.styles-module__colorOption___IodiY:hover {\n  transform: scale(1.1);\n}\n.styles-module__colorOption___IodiY.styles-module__selected___OwRqP {\n  border-color: white;\n  box-shadow: 0 0 0 2px currentColor;\n}\n\n.styles-module__settingsToggle___fBrFn {\n  display: flex;\n  align-items: center;\n  gap: 0.5rem;\n  cursor: pointer;\n}\n.styles-module__settingsToggle___fBrFn input[type=checkbox] {\n  width: 16px;\n  height: 16px;\n  accent-color: #3c82f7;\n  cursor: pointer;\n}\n\n.styles-module__toggleLabel___Xm8Aa {\n  font-size: 0.75rem;\n  font-weight: 450;\n  color: rgba(0, 0, 0, 0.7);\n}\n\n.styles-module__dragSelection___kZLq2 {\n  position: fixed;\n  top: 0;\n  left: 0;\n  border: 2px solid rgba(52, 199, 89, 0.6);\n  border-radius: 4px;\n  background: rgba(52, 199, 89, 0.08);\n  pointer-events: none;\n  z-index: 99997;\n  will-change: transform, width, height;\n  contain: layout style;\n}\n\n.styles-module__dragCount___KM90j {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background: #34C759;\n  color: white;\n  font-size: 0.875rem;\n  font-weight: 600;\n  padding: 0.25rem 0.5rem;\n  border-radius: 1rem;\n  min-width: 1.5rem;\n  text-align: center;\n}\n\n.styles-module__highlightsContainer___-0xzG {\n  position: fixed;\n  top: 0;\n  left: 0;\n  pointer-events: none;\n  z-index: 99996;\n}\n\n.styles-module__selectedElementHighlight___fyVlI {\n  position: fixed;\n  top: 0;\n  left: 0;\n  border: 2px solid rgba(52, 199, 89, 0.5);\n  border-radius: 4px;\n  background: rgba(52, 199, 89, 0.06);\n  pointer-events: none;\n  will-change: transform, width, height;\n  contain: layout style;\n}';
+var classNames4 = { "toolbar": "styles-module__toolbar___wNsdK", "toggleButton": "styles-module__toggleButton___2m7Io", "enter": "styles-module__enter___WFIki", "scaleIn": "styles-module__scaleIn___c-r1K", "exit": "styles-module__exit___fyOJ0", "scaleOut": "styles-module__scaleOut___Wctwz", "badge": "styles-module__badge___2XsgF", "controls": "styles-module__controls___GjxQ2", "slideUp": "styles-module__slideUp___kgD36", "slideDown": "styles-module__slideDown___zcdje", "controlButton": "styles-module__controlButton___8Q0jc", "divider": "styles-module__divider___c--s1", "overlay": "styles-module__overlay___Q1O9y", "hoverHighlight": "styles-module__hoverHighlight___ogakW", "hoverHighlightIn": "styles-module__hoverHighlightIn___6WYHY", "multiSelectOutline": "styles-module__multiSelectOutline___cSJ-m", "fadeIn": "styles-module__fadeIn___b9qmf", "fadeOut": "styles-module__fadeOut___6Ut6-", "singleSelectOutline": "styles-module__singleSelectOutline___QhX-O", "hoverTooltip": "styles-module__hoverTooltip___bvLk7", "hoverTooltipIn": "styles-module__hoverTooltipIn___FYGQx", "markersLayer": "styles-module__markersLayer___-25j1", "fixedMarkersLayer": "styles-module__fixedMarkersLayer___ffyX6", "marker": "styles-module__marker___6sQrs", "clearing": "styles-module__clearing___FQ--7", "markerIn": "styles-module__markerIn___5FaAP", "markerOut": "styles-module__markerOut___GU5jX", "pending": "styles-module__pending___2IHLC", "fixed": "styles-module__fixed___dBMHC", "multiSelect": "styles-module__multiSelect___YWiuz", "hovered": "styles-module__hovered___ZgXIy", "markerTooltip": "styles-module__markerTooltip___aLJID", "tooltipIn": "styles-module__tooltipIn___0N31w", "markerQuote": "styles-module__markerQuote___FHmrz", "markerNote": "styles-module__markerNote___QkrrS", "markerHint": "styles-module__markerHint___2iF-6", "settingsPanel": "styles-module__settingsPanel___OxX3Y", "settingsPanelIn": "styles-module__settingsPanelIn___MGfO8", "settingsPanelOut": "styles-module__settingsPanelOut___Zfymi", "dark": "styles-module__dark___ILIQf", "settingsLabel": "styles-module__settingsLabel___8UjfX", "settingsOption": "styles-module__settingsOption___UNa12", "selected": "styles-module__selected___OwRqP", "toggleLabel": "styles-module__toggleLabel___Xm8Aa", "settingsHeader": "styles-module__settingsHeader___pwDY9", "settingsVersion": "styles-module__settingsVersion___TUcFq", "settingsSection": "styles-module__settingsSection___m-YM2", "settingsOptions": "styles-module__settingsOptions___LyrBA", "sliderContainer": "styles-module__sliderContainer___ducXj", "slider": "styles-module__slider___GLdxp", "sliderLabels": "styles-module__sliderLabels___FhLDB", "sliderLabel": "styles-module__sliderLabel___U8sPr", "active": "styles-module__active___-zoN6", "colorOptions": "styles-module__colorOptions___iHCNX", "colorOption": "styles-module__colorOption___IodiY", "settingsToggle": "styles-module__settingsToggle___fBrFn", "dragSelection": "styles-module__dragSelection___kZLq2", "dragCount": "styles-module__dragCount___KM90j", "highlightsContainer": "styles-module__highlightsContainer___-0xzG", "selectedElementHighlight": "styles-module__selectedElementHighlight___fyVlI" };
 if (typeof document !== "undefined") {
   let style = document.getElementById("feedback-tool-styles-page-toolbar-css-styles");
   if (!style) {
@@ -1714,6 +1716,7 @@ function PageFeedbackToolbarCSS({
   const [isClearing, setIsClearing] = useState4(false);
   const [hoveredMarkerId, setHoveredMarkerId] = useState4(null);
   const [deletingMarkerId, setDeletingMarkerId] = useState4(null);
+  const [editingAnnotation, setEditingAnnotation] = useState4(null);
   const [scrollY, setScrollY] = useState4(0);
   const [isScrolling, setIsScrolling] = useState4(false);
   const [mounted, setMounted] = useState4(false);
@@ -1726,16 +1729,17 @@ function PageFeedbackToolbarCSS({
   const [exitingMarkers, setExitingMarkers] = useState4(/* @__PURE__ */ new Set());
   const [pendingExiting, setPendingExiting] = useState4(false);
   const [isDragging, setIsDragging] = useState4(false);
-  const [selectedElements, setSelectedElements] = useState4([]);
   const mouseDownPosRef = useRef4(null);
   const dragStartRef = useRef4(null);
   const dragRectRef = useRef4(null);
+  const highlightsContainerRef = useRef4(null);
   const justFinishedDragRef = useRef4(false);
   const lastElementUpdateRef = useRef4(0);
   const recentlyAddedIdRef = useRef4(null);
   const DRAG_THRESHOLD = 8;
-  const ELEMENT_UPDATE_THROTTLE = 100;
+  const ELEMENT_UPDATE_THROTTLE = 50;
   const popupRef = useRef4(null);
+  const editPopupRef = useRef4(null);
   const scrollTimeoutRef = useRef4(null);
   const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
   useEffect4(() => {
@@ -1870,7 +1874,9 @@ function PageFeedbackToolbarCSS({
     const style = document.createElement("style");
     style.id = "feedback-freeze-styles";
     style.textContent = `
-      *, *::before, *::after {
+      *:not([data-feedback-toolbar]):not([data-feedback-toolbar] *):not([data-annotation-popup]):not([data-annotation-popup] *):not([data-annotation-marker]):not([data-annotation-marker] *),
+      *:not([data-feedback-toolbar]):not([data-feedback-toolbar] *):not([data-annotation-popup]):not([data-annotation-popup] *):not([data-annotation-marker]):not([data-annotation-marker] *)::before,
+      *:not([data-feedback-toolbar]):not([data-feedback-toolbar] *):not([data-annotation-popup]):not([data-annotation-popup] *):not([data-annotation-marker]):not([data-annotation-marker] *)::after {
         animation-play-state: paused !important;
         transition: none !important;
       }
@@ -1906,6 +1912,7 @@ function PageFeedbackToolbarCSS({
   useEffect4(() => {
     if (!isActive) {
       setPendingAnnotation(null);
+      setEditingAnnotation(null);
       setHoverInfo(null);
       setShowSettings(false);
       if (isFrozen) {
@@ -1989,6 +1996,14 @@ function PageFeedbackToolbarCSS({
         popupRef.current?.shake();
         return;
       }
+      if (editingAnnotation) {
+        if (isInteractive && !settings.blockInteractions) {
+          return;
+        }
+        e.preventDefault();
+        editPopupRef.current?.shake();
+        return;
+      }
       e.preventDefault();
       const elementUnder = document.elementFromPoint(e.clientX, e.clientY);
       if (!elementUnder) return;
@@ -2023,7 +2038,7 @@ function PageFeedbackToolbarCSS({
     };
     document.addEventListener("click", handleClick, true);
     return () => document.removeEventListener("click", handleClick, true);
-  }, [isActive, pendingAnnotation, settings.blockInteractions]);
+  }, [isActive, pendingAnnotation, editingAnnotation, settings.blockInteractions]);
   useEffect4(() => {
     if (!isActive || pendingAnnotation) return;
     const handleMouseDown = (e) => {
@@ -2140,14 +2155,34 @@ function PageFeedbackToolbarCSS({
           if (rect.width < 10 || rect.height < 10) continue;
           if (rect.left < right && rect.right > left && rect.top < bottom && rect.bottom > top) {
             if (meaningfulTags.has(el.tagName)) {
-              allMatching.push({ element: el, rect });
+              let dominated = false;
+              for (const existingRect of allMatching) {
+                if (existingRect.left <= rect.left && existingRect.right >= rect.right && existingRect.top <= rect.top && existingRect.bottom >= rect.bottom) {
+                  dominated = true;
+                  break;
+                }
+              }
+              if (!dominated) allMatching.push(rect);
             }
           }
         }
-        const result = allMatching.filter(
-          ({ element: el }) => !allMatching.some(({ element: other }) => other !== el && el.contains(other))
-        );
-        setSelectedElements(result);
+        if (highlightsContainerRef.current) {
+          const container = highlightsContainerRef.current;
+          while (container.children.length > allMatching.length) {
+            container.removeChild(container.lastChild);
+          }
+          allMatching.forEach((rect, i) => {
+            let div = container.children[i];
+            if (!div) {
+              div = document.createElement("div");
+              div.className = styles_module_default4.selectedElementHighlight;
+              container.appendChild(div);
+            }
+            div.style.transform = `translate(${rect.left}px, ${rect.top}px)`;
+            div.style.width = `${rect.width}px`;
+            div.style.height = `${rect.height}px`;
+          });
+        }
       }
     };
     document.addEventListener("mousemove", handleMouseMove, { passive: true });
@@ -2234,7 +2269,9 @@ function PageFeedbackToolbarCSS({
       mouseDownPosRef.current = null;
       dragStartRef.current = null;
       setIsDragging(false);
-      setSelectedElements([]);
+      if (highlightsContainerRef.current) {
+        highlightsContainerRef.current.innerHTML = "";
+      }
     };
     document.addEventListener("mouseup", handleMouseUp);
     return () => document.removeEventListener("mouseup", handleMouseUp);
@@ -2264,7 +2301,11 @@ function PageFeedbackToolbarCSS({
     setTimeout(() => {
       setAnimatedMarkers((prev) => new Set(prev).add(newAnnotation.id));
     }, 250);
-    setPendingAnnotation(null);
+    setPendingExiting(true);
+    setTimeout(() => {
+      setPendingAnnotation(null);
+      setPendingExiting(false);
+    }, 150);
     window.getSelection()?.removeAllRanges();
   }, [pendingAnnotation]);
   const cancelAnnotation = useCallback4(() => {
@@ -2286,6 +2327,22 @@ function PageFeedbackToolbarCSS({
       });
       setDeletingMarkerId(null);
     }, 150);
+  }, []);
+  const startEditAnnotation = useCallback4((annotation) => {
+    setEditingAnnotation(annotation);
+    setHoveredMarkerId(null);
+  }, []);
+  const updateAnnotation = useCallback4((newComment) => {
+    if (!editingAnnotation) return;
+    setAnnotations(
+      (prev) => prev.map(
+        (a) => a.id === editingAnnotation.id ? { ...a, comment: newComment } : a
+      )
+    );
+    setEditingAnnotation(null);
+  }, [editingAnnotation]);
+  const cancelEditAnnotation = useCallback4(() => {
+    setEditingAnnotation(null);
   }, []);
   const clearAll = useCallback4(() => {
     const count = annotations.length;
@@ -2528,9 +2585,14 @@ function PageFeedbackToolbarCSS({
                 e.stopPropagation();
                 if (!markersExiting) deleteAnnotation(annotation.id);
               },
+              onContextMenu: (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!markersExiting) startEditAnnotation(annotation);
+              },
               children: [
                 showDeleteState ? /* @__PURE__ */ jsx5(IconClose, { size: isMulti ? 12 : 10 }) : globalIndex + 1,
-                isHovered && /* @__PURE__ */ jsxs5("div", { className: `${styles_module_default4.markerTooltip} ${styles_module_default4.enter}`, children: [
+                isHovered && !editingAnnotation && /* @__PURE__ */ jsxs5("div", { className: `${styles_module_default4.markerTooltip} ${styles_module_default4.enter}`, children: [
                   annotation.selectedText && /* @__PURE__ */ jsxs5("span", { className: styles_module_default4.markerQuote, children: [
                     "\u201C",
                     annotation.selectedText.slice(0, 50),
@@ -2538,7 +2600,7 @@ function PageFeedbackToolbarCSS({
                     "\u201D"
                   ] }),
                   /* @__PURE__ */ jsx5("span", { className: styles_module_default4.markerNote, children: annotation.comment }),
-                  /* @__PURE__ */ jsx5("span", { className: styles_module_default4.markerHint, children: "Click to remove" })
+                  /* @__PURE__ */ jsx5("span", { className: styles_module_default4.markerHint, children: "Click to remove \xB7 Right-click to edit" })
                 ] })
               ]
             },
@@ -2590,9 +2652,14 @@ function PageFeedbackToolbarCSS({
                 e.stopPropagation();
                 if (!markersExiting) deleteAnnotation(annotation.id);
               },
+              onContextMenu: (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!markersExiting) startEditAnnotation(annotation);
+              },
               children: [
                 showDeleteState ? /* @__PURE__ */ jsx5(IconClose, { size: isMulti ? 12 : 10 }) : globalIndex + 1,
-                isHovered && /* @__PURE__ */ jsxs5("div", { className: `${styles_module_default4.markerTooltip} ${styles_module_default4.enter}`, children: [
+                isHovered && !editingAnnotation && /* @__PURE__ */ jsxs5("div", { className: `${styles_module_default4.markerTooltip} ${styles_module_default4.enter}`, children: [
                   annotation.selectedText && /* @__PURE__ */ jsxs5("span", { className: styles_module_default4.markerQuote, children: [
                     "\u201C",
                     annotation.selectedText.slice(0, 50),
@@ -2600,7 +2667,7 @@ function PageFeedbackToolbarCSS({
                     "\u201D"
                   ] }),
                   /* @__PURE__ */ jsx5("span", { className: styles_module_default4.markerNote, children: annotation.comment }),
-                  /* @__PURE__ */ jsx5("span", { className: styles_module_default4.markerHint, children: "Click to remove" })
+                  /* @__PURE__ */ jsx5("span", { className: styles_module_default4.markerHint, children: "Click to remove \xB7 Right-click to edit" })
                 ] })
               ]
             },
@@ -2673,6 +2740,22 @@ function PageFeedbackToolbarCSS({
           }
         ),
         pendingAnnotation && /* @__PURE__ */ jsxs5(Fragment2, { children: [
+          pendingAnnotation.boundingBox && /* @__PURE__ */ jsx5(
+            "div",
+            {
+              className: `${pendingAnnotation.isMultiSelect ? styles_module_default4.multiSelectOutline : styles_module_default4.singleSelectOutline} ${pendingExiting ? styles_module_default4.exit : styles_module_default4.enter}`,
+              style: {
+                left: pendingAnnotation.boundingBox.x,
+                top: pendingAnnotation.boundingBox.y - scrollY,
+                width: pendingAnnotation.boundingBox.width,
+                height: pendingAnnotation.boundingBox.height,
+                ...pendingAnnotation.isMultiSelect ? {} : {
+                  borderColor: `${settings.annotationColor}99`,
+                  backgroundColor: `${settings.annotationColor}0D`
+                }
+              }
+            }
+          ),
           /* @__PURE__ */ jsx5(
             "div",
             {
@@ -2702,27 +2785,48 @@ function PageFeedbackToolbarCSS({
             }
           )
         ] }),
-        isDragging && /* @__PURE__ */ jsxs5(Fragment2, { children: [
-          /* @__PURE__ */ jsx5(
+        editingAnnotation && /* @__PURE__ */ jsxs5(Fragment2, { children: [
+          editingAnnotation.boundingBox && /* @__PURE__ */ jsx5(
             "div",
             {
-              ref: dragRectRef,
-              className: styles_module_default4.dragSelection
+              className: `${editingAnnotation.isMultiSelect ? styles_module_default4.multiSelectOutline : styles_module_default4.singleSelectOutline} ${styles_module_default4.enter}`,
+              style: {
+                left: editingAnnotation.boundingBox.x,
+                top: editingAnnotation.boundingBox.y - scrollY,
+                width: editingAnnotation.boundingBox.width,
+                height: editingAnnotation.boundingBox.height,
+                ...editingAnnotation.isMultiSelect ? {} : {
+                  borderColor: `${settings.annotationColor}99`,
+                  backgroundColor: `${settings.annotationColor}0D`
+                }
+              }
             }
           ),
-          selectedElements.map(({ element, rect }, i) => /* @__PURE__ */ jsx5(
-            "div",
+          /* @__PURE__ */ jsx5(
+            AnnotationPopupCSS,
             {
-              className: styles_module_default4.selectedElementHighlight,
+              ref: editPopupRef,
+              element: editingAnnotation.element,
+              selectedText: editingAnnotation.selectedText,
+              placeholder: "Edit your feedback...",
+              initialValue: editingAnnotation.comment,
+              submitLabel: "Save",
+              onSubmit: updateAnnotation,
+              onCancel: cancelEditAnnotation,
+              accentColor: editingAnnotation.isMultiSelect ? "#34C759" : settings.annotationColor,
               style: {
-                left: rect.left,
-                top: rect.top,
-                width: rect.width,
-                height: rect.height
+                left: `${Math.min(Math.max(editingAnnotation.x, 15), 85)}%`,
+                top: Math.min(
+                  (editingAnnotation.isFixed ? editingAnnotation.y : editingAnnotation.y - scrollY) + 20,
+                  window.innerHeight - 180
+                )
               }
-            },
-            `${element.tagName}-${i}`
-          ))
+            }
+          )
+        ] }),
+        isDragging && /* @__PURE__ */ jsxs5(Fragment2, { children: [
+          /* @__PURE__ */ jsx5("div", { ref: dragRectRef, className: styles_module_default4.dragSelection }),
+          /* @__PURE__ */ jsx5("div", { ref: highlightsContainerRef, className: styles_module_default4.highlightsContainer })
         ] })
       ] })
     ] }),
@@ -2761,4 +2865,4 @@ export {
   loadAnnotations,
   saveAnnotations
 };
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=index.mjs.map

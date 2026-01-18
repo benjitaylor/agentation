@@ -16,6 +16,10 @@ export interface AnnotationPopupCSSProps {
   selectedText?: string;
   /** Placeholder text for the textarea */
   placeholder?: string;
+  /** Initial value for textarea (for edit mode) */
+  initialValue?: string;
+  /** Label for submit button (default: "Add") */
+  submitLabel?: string;
   /** Called when annotation is submitted with text */
   onSubmit: (text: string) => void;
   /** Called when popup is cancelled/dismissed */
@@ -52,6 +56,8 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
       timestamp,
       selectedText,
       placeholder = "What should change?",
+      initialValue = "",
+      submitLabel = "Add",
       onSubmit,
       onCancel,
       style,
@@ -59,7 +65,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
     },
     ref
   ) {
-    const [text, setText] = useState("");
+    const [text, setText] = useState(initialValue);
     const [isShaking, setIsShaking] = useState(false);
     const [animState, setAnimState] = useState<"initial" | "enter" | "entered" | "exit">("initial");
     const [isFocused, setIsFocused] = useState(false);
@@ -179,7 +185,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
             onClick={handleSubmit}
             disabled={!text.trim()}
           >
-            Add
+            {submitLabel}
           </button>
         </div>
       </div>
