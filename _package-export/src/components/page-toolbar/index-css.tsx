@@ -64,7 +64,7 @@ const cssAnimationStyles = `
   to { opacity: 1; }
 }
 
-/* Marker animations */
+/* Marker animations - only for newly added markers */
 @keyframes agentation-marker-in {
   from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
   to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -75,12 +75,22 @@ const cssAnimationStyles = `
   to { opacity: 0; transform: translate(-50%, -50%) scale(0); }
 }
 
-.agentation-marker-enter {
+.agentation-marker-new {
   animation: agentation-marker-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 .agentation-marker-exit {
   animation: agentation-marker-out 0.15s ease-in forwards;
+  pointer-events: none;
+}
+
+/* Markers layer fade for visibility toggle and toolbar close */
+.agentation-markers-layer {
+  transition: opacity 0.15s ease-out;
+}
+
+.agentation-markers-layer.hiding {
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -118,6 +128,33 @@ const cssAnimationStyles = `
 .agentation-hover-tooltip-animate {
   animation: agentation-fade-in 0.08s ease-out forwards;
 }
+
+/* Cursor styles for annotation mode */
+.agentation-active-cursor {
+  cursor: crosshair !important;
+}
+
+.agentation-active-cursor *:not([data-feedback-toolbar] *):not([data-annotation-popup] *):not([data-annotation-marker]) {
+  cursor: crosshair !important;
+}
+
+/* Allow text cursor for text selection */
+.agentation-active-cursor p,
+.agentation-active-cursor span,
+.agentation-active-cursor a,
+.agentation-active-cursor h1,
+.agentation-active-cursor h2,
+.agentation-active-cursor h3,
+.agentation-active-cursor h4,
+.agentation-active-cursor h5,
+.agentation-active-cursor h6,
+.agentation-active-cursor li,
+.agentation-active-cursor label,
+.agentation-active-cursor blockquote,
+.agentation-active-cursor code,
+.agentation-active-cursor pre {
+  cursor: text !important;
+}
 `;
 
 // Inject styles once
@@ -139,8 +176,6 @@ type HoverInfo = {
   elementPath: string;
   rect: DOMRect | null;
 };
-
-type MarkerWithState = Annotation & { exiting?: boolean };
 
 // =============================================================================
 // Utils
@@ -243,8 +278,8 @@ function generateOutput(annotations: Annotation[], pathname: string, format: Out
 export function PageFeedbackToolbarCSS() {
   const [isActive, setIsActive] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
-  const [markersWithState, setMarkersWithState] = useState<MarkerWithState[]>([]);
   const [showMarkers, setShowMarkers] = useState(true);
+  const [markersHiding, setMarkersHiding] = useState(false); // For fade out animation
   const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
   const [pendingAnnotation, setPendingAnnotation] = useState<{
@@ -262,20 +297,18 @@ export function PageFeedbackToolbarCSS() {
   const [copied, setCopied] = useState(false);
   const [cleared, setCleared] = useState(false);
   const [hoveredMarkerId, setHoveredMarkerId] = useState<string | null>(null);
-  const [recentlyAddedId, setRecentlyAddedId] = useState<string | null>(null);
   const [scrollY, setScrollY] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [isFrozen, setIsFrozen] = useState(false);
-  const [markersExiting, setMarkersExiting] = useState(false);
+  const [exitingIds, setExitingIds] = useState<Set<string>>(new Set()); // IDs currently animating out
 
   const popupRef = useRef<AnnotationPopupHandle>(null);
+  // Track which marker IDs have already animated in (to prevent re-animation)
+  const animatedIdsRef = useRef<Set<string>>(new Set());
+  // Track the most recently added ID for hover protection
+  const recentlyAddedIdRef = useRef<string | null>(null);
 
   const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
-
-  // Sync markersWithState with annotations - also reset when toolbar becomes active
-  useEffect(() => {
-    setMarkersWithState(annotations.map(a => ({ ...a, exiting: false })));
-  }, [annotations, isActive]);
 
   // Mount and load
   useEffect(() => {
@@ -301,14 +334,16 @@ export function PageFeedbackToolbarCSS() {
     }
   }, [annotations, pathname, mounted]);
 
-  // Freeze animations
+  // Freeze animations (excluding toolbar UI)
   const freezeAnimations = useCallback(() => {
     if (isFrozen) return;
 
     const style = document.createElement("style");
     style.id = "feedback-freeze-styles";
     style.textContent = `
-      *, *::before, *::after {
+      *:not([data-feedback-toolbar] *):not([data-annotation-popup] *):not([data-annotation-marker] *),
+      *:not([data-feedback-toolbar] *)::before,
+      *:not([data-feedback-toolbar] *)::after {
         animation-play-state: paused !important;
         transition: none !important;
       }
@@ -348,19 +383,35 @@ export function PageFeedbackToolbarCSS() {
     else freezeAnimations();
   }, [isFrozen, freezeAnimations, unfreezeAnimations]);
 
-  // Handle closing toolbar - animate markers out, then close
+  // Handle closing toolbar - fade out markers, then close
   const handleCloseToolbar = useCallback(() => {
-    if (markersWithState.length > 0) {
-      // Trigger exit animation on all markers
-      setMarkersWithState(prev => prev.map(m => ({ ...m, exiting: true })));
-      // Wait for animation then close
+    if (annotations.length > 0) {
+      // Fade out markers layer
+      setMarkersHiding(true);
+      // Wait for fade then close
       setTimeout(() => {
         setIsActive(false);
+        setMarkersHiding(false);
       }, 150);
     } else {
       setIsActive(false);
     }
-  }, [markersWithState.length]);
+  }, [annotations.length]);
+
+  // Handle visibility toggle with animation
+  const toggleMarkersVisibility = useCallback(() => {
+    if (showMarkers) {
+      // Fade out then hide
+      setMarkersHiding(true);
+      setTimeout(() => {
+        setShowMarkers(false);
+        setMarkersHiding(false);
+      }, 150);
+    } else {
+      // Show immediately (will fade in via CSS)
+      setShowMarkers(true);
+    }
+  }, [showMarkers]);
 
   // Reset state when deactivating
   useEffect(() => {
@@ -368,8 +419,22 @@ export function PageFeedbackToolbarCSS() {
       setPendingAnnotation(null);
       setHoverInfo(null);
       if (isFrozen) unfreezeAnimations();
+      // Clear animated IDs so markers animate in again when toolbar reopens
+      animatedIdsRef.current.clear();
     }
   }, [isActive, isFrozen, unfreezeAnimations]);
+
+  // Apply cursor class when active
+  useEffect(() => {
+    if (isActive) {
+      document.body.classList.add('agentation-active-cursor');
+    } else {
+      document.body.classList.remove('agentation-active-cursor');
+    }
+    return () => {
+      document.body.classList.remove('agentation-active-cursor');
+    };
+  }, [isActive]);
 
   // Handle mouse move
   useEffect(() => {
@@ -472,8 +537,10 @@ export function PageFeedbackToolbarCSS() {
     window.getSelection()?.removeAllRanges();
 
     // Prevent immediate hover on the new marker
-    setRecentlyAddedId(newId);
-    setTimeout(() => setRecentlyAddedId(null), 300);
+    recentlyAddedIdRef.current = newId;
+    setTimeout(() => {
+      recentlyAddedIdRef.current = null;
+    }, 300);
   }, [pendingAnnotation]);
 
   // Cancel annotation with exit animation
@@ -487,11 +554,16 @@ export function PageFeedbackToolbarCSS() {
 
   // Delete annotation with exit animation
   const deleteAnnotation = useCallback((id: string) => {
-    setMarkersWithState(prev =>
-      prev.map(m => m.id === id ? { ...m, exiting: true } : m)
-    );
+    setExitingIds(prev => new Set(prev).add(id));
     setTimeout(() => {
       setAnnotations((prev) => prev.filter((a) => a.id !== id));
+      setExitingIds(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      // Also remove from animated set
+      animatedIdsRef.current.delete(id);
     }, 150);
   }, []);
 
@@ -552,7 +624,7 @@ export function PageFeedbackToolbarCSS() {
           case 'h':
             // H to toggle marker visibility
             e.preventDefault();
-            setShowMarkers(prev => !prev);
+            toggleMarkersVisibility();
             break;
           case 'c':
             // C to copy output
@@ -574,7 +646,7 @@ export function PageFeedbackToolbarCSS() {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isActive, pendingAnnotation, handleCloseToolbar, toggleFreeze, annotations.length, copyOutput, clearAll]);
+  }, [isActive, pendingAnnotation, handleCloseToolbar, toggleFreeze, toggleMarkersVisibility, annotations.length, copyOutput, clearAll]);
 
   if (!mounted) return null;
 
@@ -611,7 +683,7 @@ export function PageFeedbackToolbarCSS() {
 
             <button
               className={styles.controlButton}
-              onClick={(e) => { e.stopPropagation(); setShowMarkers(!showMarkers); }}
+              onClick={(e) => { e.stopPropagation(); toggleMarkersVisibility(); }}
               title={showMarkers ? "Hide markers (H)" : "Show markers (H)"}
             >
               <EyeMorphIcon size={16} visible={showMarkers} />
@@ -650,27 +722,35 @@ export function PageFeedbackToolbarCSS() {
       </div>
 
       {/* Markers layer */}
-      <div className={styles.markersLayer} data-feedback-toolbar>
+      <div
+        className={`${styles.markersLayer} agentation-markers-layer ${markersHiding ? 'hiding' : ''}`}
+        data-feedback-toolbar
+      >
         {isActive && showMarkers &&
-          markersWithState.map((annotation, index) => {
+          annotations.map((annotation, index) => {
             const viewportY = toViewportY(annotation.y);
             const isVisible = viewportY > -30 && viewportY < window.innerHeight + 30;
             if (!isVisible) return null;
 
             const isHovered = hoveredMarkerId === annotation.id;
-            const isExiting = annotation.exiting || markersExiting;
+            const isExiting = exitingIds.has(annotation.id);
+            const isNew = !animatedIdsRef.current.has(annotation.id) && !isExiting;
+
+            // Mark as animated after render
+            if (isNew) {
+              animatedIdsRef.current.add(annotation.id);
+            }
 
             return (
               <div
                 key={annotation.id}
-                className={`${styles.marker} ${isHovered ? styles.hovered : ""} ${isExiting ? 'agentation-marker-exit' : 'agentation-marker-enter'}`}
+                className={`${styles.marker} ${isHovered ? styles.hovered : ""} ${isExiting ? 'agentation-marker-exit' : ''} ${isNew ? 'agentation-marker-new' : ''}`}
                 data-annotation-marker
                 style={{
                   left: `${annotation.x}%`,
                   top: viewportY,
-                  animationDelay: isExiting ? '0s' : `${index * 0.03}s`,
                 }}
-                onMouseEnter={() => !isExiting && annotation.id !== recentlyAddedId && setHoveredMarkerId(annotation.id)}
+                onMouseEnter={() => !isExiting && annotation.id !== recentlyAddedIdRef.current && setHoveredMarkerId(annotation.id)}
                 onMouseLeave={() => setHoveredMarkerId(null)}
                 onClick={(e) => {
                   e.stopPropagation();

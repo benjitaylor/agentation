@@ -1265,7 +1265,7 @@ var cssAnimationStyles2 = `
   to { opacity: 1; }
 }
 
-/* Marker animations */
+/* Marker animations - only for newly added markers */
 @keyframes agentation-marker-in {
   from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
   to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -1276,12 +1276,22 @@ var cssAnimationStyles2 = `
   to { opacity: 0; transform: translate(-50%, -50%) scale(0); }
 }
 
-.agentation-marker-enter {
+.agentation-marker-new {
   animation: agentation-marker-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 .agentation-marker-exit {
   animation: agentation-marker-out 0.15s ease-in forwards;
+  pointer-events: none;
+}
+
+/* Markers layer fade for visibility toggle and toolbar close */
+.agentation-markers-layer {
+  transition: opacity 0.15s ease-out;
+}
+
+.agentation-markers-layer.hiding {
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -1318,6 +1328,33 @@ var cssAnimationStyles2 = `
 /* Hover tooltip fade */
 .agentation-hover-tooltip-animate {
   animation: agentation-fade-in 0.08s ease-out forwards;
+}
+
+/* Cursor styles for annotation mode */
+.agentation-active-cursor {
+  cursor: crosshair !important;
+}
+
+.agentation-active-cursor *:not([data-feedback-toolbar] *):not([data-annotation-popup] *):not([data-annotation-marker]) {
+  cursor: crosshair !important;
+}
+
+/* Allow text cursor for text selection */
+.agentation-active-cursor p,
+.agentation-active-cursor span,
+.agentation-active-cursor a,
+.agentation-active-cursor h1,
+.agentation-active-cursor h2,
+.agentation-active-cursor h3,
+.agentation-active-cursor h4,
+.agentation-active-cursor h5,
+.agentation-active-cursor h6,
+.agentation-active-cursor li,
+.agentation-active-cursor label,
+.agentation-active-cursor blockquote,
+.agentation-active-cursor code,
+.agentation-active-cursor pre {
+  cursor: text !important;
 }
 `;
 if (typeof document !== "undefined") {
@@ -1428,8 +1465,8 @@ function generateOutput2(annotations, pathname, format = "standard") {
 function PageFeedbackToolbarCSS() {
   const [isActive, setIsActive] = (0, import_react4.useState)(false);
   const [annotations, setAnnotations] = (0, import_react4.useState)([]);
-  const [markersWithState, setMarkersWithState] = (0, import_react4.useState)([]);
   const [showMarkers, setShowMarkers] = (0, import_react4.useState)(true);
+  const [markersHiding, setMarkersHiding] = (0, import_react4.useState)(false);
   const [hoverInfo, setHoverInfo] = (0, import_react4.useState)(null);
   const [hoverPosition, setHoverPosition] = (0, import_react4.useState)({ x: 0, y: 0 });
   const [pendingAnnotation, setPendingAnnotation] = (0, import_react4.useState)(null);
@@ -1437,16 +1474,14 @@ function PageFeedbackToolbarCSS() {
   const [copied, setCopied] = (0, import_react4.useState)(false);
   const [cleared, setCleared] = (0, import_react4.useState)(false);
   const [hoveredMarkerId, setHoveredMarkerId] = (0, import_react4.useState)(null);
-  const [recentlyAddedId, setRecentlyAddedId] = (0, import_react4.useState)(null);
   const [scrollY, setScrollY] = (0, import_react4.useState)(0);
   const [mounted, setMounted] = (0, import_react4.useState)(false);
   const [isFrozen, setIsFrozen] = (0, import_react4.useState)(false);
-  const [markersExiting, setMarkersExiting] = (0, import_react4.useState)(false);
+  const [exitingIds, setExitingIds] = (0, import_react4.useState)(/* @__PURE__ */ new Set());
   const popupRef = (0, import_react4.useRef)(null);
+  const animatedIdsRef = (0, import_react4.useRef)(/* @__PURE__ */ new Set());
+  const recentlyAddedIdRef = (0, import_react4.useRef)(null);
   const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
-  (0, import_react4.useEffect)(() => {
-    setMarkersWithState(annotations.map((a) => ({ ...a, exiting: false })));
-  }, [annotations, isActive]);
   (0, import_react4.useEffect)(() => {
     setMounted(true);
     setScrollY(window.scrollY);
@@ -1470,7 +1505,9 @@ function PageFeedbackToolbarCSS() {
     const style = document.createElement("style");
     style.id = "feedback-freeze-styles";
     style.textContent = `
-      *, *::before, *::after {
+      *:not([data-feedback-toolbar] *):not([data-annotation-popup] *):not([data-annotation-marker] *),
+      *:not([data-feedback-toolbar] *)::before,
+      *:not([data-feedback-toolbar] *)::after {
         animation-play-state: paused !important;
         transition: none !important;
       }
@@ -1501,22 +1538,45 @@ function PageFeedbackToolbarCSS() {
     else freezeAnimations();
   }, [isFrozen, freezeAnimations, unfreezeAnimations]);
   const handleCloseToolbar = (0, import_react4.useCallback)(() => {
-    if (markersWithState.length > 0) {
-      setMarkersWithState((prev) => prev.map((m) => ({ ...m, exiting: true })));
+    if (annotations.length > 0) {
+      setMarkersHiding(true);
       setTimeout(() => {
         setIsActive(false);
+        setMarkersHiding(false);
       }, 150);
     } else {
       setIsActive(false);
     }
-  }, [markersWithState.length]);
+  }, [annotations.length]);
+  const toggleMarkersVisibility = (0, import_react4.useCallback)(() => {
+    if (showMarkers) {
+      setMarkersHiding(true);
+      setTimeout(() => {
+        setShowMarkers(false);
+        setMarkersHiding(false);
+      }, 150);
+    } else {
+      setShowMarkers(true);
+    }
+  }, [showMarkers]);
   (0, import_react4.useEffect)(() => {
     if (!isActive) {
       setPendingAnnotation(null);
       setHoverInfo(null);
       if (isFrozen) unfreezeAnimations();
+      animatedIdsRef.current.clear();
     }
   }, [isActive, isFrozen, unfreezeAnimations]);
+  (0, import_react4.useEffect)(() => {
+    if (isActive) {
+      document.body.classList.add("agentation-active-cursor");
+    } else {
+      document.body.classList.remove("agentation-active-cursor");
+    }
+    return () => {
+      document.body.classList.remove("agentation-active-cursor");
+    };
+  }, [isActive]);
   (0, import_react4.useEffect)(() => {
     if (!isActive || pendingAnnotation) return;
     const handleMouseMove = (e) => {
@@ -1595,8 +1655,10 @@ function PageFeedbackToolbarCSS() {
     setAnnotations((prev) => [...prev, newAnnotation]);
     setPendingAnnotation(null);
     window.getSelection()?.removeAllRanges();
-    setRecentlyAddedId(newId);
-    setTimeout(() => setRecentlyAddedId(null), 300);
+    recentlyAddedIdRef.current = newId;
+    setTimeout(() => {
+      recentlyAddedIdRef.current = null;
+    }, 300);
   }, [pendingAnnotation]);
   const cancelAnnotation = (0, import_react4.useCallback)(() => {
     setPendingExiting(true);
@@ -1606,11 +1668,15 @@ function PageFeedbackToolbarCSS() {
     }, 150);
   }, []);
   const deleteAnnotation = (0, import_react4.useCallback)((id) => {
-    setMarkersWithState(
-      (prev) => prev.map((m) => m.id === id ? { ...m, exiting: true } : m)
-    );
+    setExitingIds((prev) => new Set(prev).add(id));
     setTimeout(() => {
       setAnnotations((prev) => prev.filter((a) => a.id !== id));
+      setExitingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      animatedIdsRef.current.delete(id);
     }, 150);
   }, []);
   const copyOutput = (0, import_react4.useCallback)(async () => {
@@ -1654,7 +1720,7 @@ function PageFeedbackToolbarCSS() {
             break;
           case "h":
             e.preventDefault();
-            setShowMarkers((prev) => !prev);
+            toggleMarkersVisibility();
             break;
           case "c":
             if (annotations.length > 0) {
@@ -1673,7 +1739,7 @@ function PageFeedbackToolbarCSS() {
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isActive, pendingAnnotation, handleCloseToolbar, toggleFreeze, annotations.length, copyOutput, clearAll]);
+  }, [isActive, pendingAnnotation, handleCloseToolbar, toggleFreeze, toggleMarkersVisibility, annotations.length, copyOutput, clearAll]);
   if (!mounted) return null;
   const hasAnnotations = annotations.length > 0;
   const toViewportY = (absoluteY) => absoluteY - scrollY;
@@ -1715,7 +1781,7 @@ function PageFeedbackToolbarCSS() {
               className: styles_module_default2.controlButton,
               onClick: (e) => {
                 e.stopPropagation();
-                setShowMarkers(!showMarkers);
+                toggleMarkersVisibility();
               },
               title: showMarkers ? "Hide markers (H)" : "Show markers (H)",
               children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(EyeMorphIcon2, { size: 16, visible: showMarkers })
@@ -1763,45 +1829,55 @@ function PageFeedbackToolbarCSS() {
           )
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("div", { className: styles_module_default2.markersLayer, "data-feedback-toolbar": true, children: isActive && showMarkers && markersWithState.map((annotation, index) => {
-        const viewportY = toViewportY(annotation.y);
-        const isVisible = viewportY > -30 && viewportY < window.innerHeight + 30;
-        if (!isVisible) return null;
-        const isHovered = hoveredMarkerId === annotation.id;
-        const isExiting = annotation.exiting || markersExiting;
-        return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
-          "div",
-          {
-            className: `${styles_module_default2.marker} ${isHovered ? styles_module_default2.hovered : ""} ${isExiting ? "agentation-marker-exit" : "agentation-marker-enter"}`,
-            "data-annotation-marker": true,
-            style: {
-              left: `${annotation.x}%`,
-              top: viewportY,
-              animationDelay: isExiting ? "0s" : `${index * 0.03}s`
-            },
-            onMouseEnter: () => !isExiting && annotation.id !== recentlyAddedId && setHoveredMarkerId(annotation.id),
-            onMouseLeave: () => setHoveredMarkerId(null),
-            onClick: (e) => {
-              e.stopPropagation();
-              if (!isExiting) deleteAnnotation(annotation.id);
-            },
-            children: [
-              isHovered ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconClose2, { size: 10 }) : index + 1,
-              isHovered && !isExiting && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: `${styles_module_default2.markerTooltip} agentation-tooltip-animate`, children: [
-                annotation.selectedText && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("span", { className: styles_module_default2.markerQuote, children: [
-                  "\u201C",
-                  annotation.selectedText.slice(0, 50),
-                  annotation.selectedText.length > 50 ? "..." : "",
-                  "\u201D"
-                ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: styles_module_default2.markerNote, children: annotation.comment }),
-                /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: styles_module_default2.markerHint, children: "Click to remove" })
-              ] })
-            ]
-          },
-          annotation.id
-        );
-      }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+        "div",
+        {
+          className: `${styles_module_default2.markersLayer} agentation-markers-layer ${markersHiding ? "hiding" : ""}`,
+          "data-feedback-toolbar": true,
+          children: isActive && showMarkers && annotations.map((annotation, index) => {
+            const viewportY = toViewportY(annotation.y);
+            const isVisible = viewportY > -30 && viewportY < window.innerHeight + 30;
+            if (!isVisible) return null;
+            const isHovered = hoveredMarkerId === annotation.id;
+            const isExiting = exitingIds.has(annotation.id);
+            const isNew = !animatedIdsRef.current.has(annotation.id) && !isExiting;
+            if (isNew) {
+              animatedIdsRef.current.add(annotation.id);
+            }
+            return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
+              "div",
+              {
+                className: `${styles_module_default2.marker} ${isHovered ? styles_module_default2.hovered : ""} ${isExiting ? "agentation-marker-exit" : ""} ${isNew ? "agentation-marker-new" : ""}`,
+                "data-annotation-marker": true,
+                style: {
+                  left: `${annotation.x}%`,
+                  top: viewportY
+                },
+                onMouseEnter: () => !isExiting && annotation.id !== recentlyAddedIdRef.current && setHoveredMarkerId(annotation.id),
+                onMouseLeave: () => setHoveredMarkerId(null),
+                onClick: (e) => {
+                  e.stopPropagation();
+                  if (!isExiting) deleteAnnotation(annotation.id);
+                },
+                children: [
+                  isHovered ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconClose2, { size: 10 }) : index + 1,
+                  isHovered && !isExiting && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: `${styles_module_default2.markerTooltip} agentation-tooltip-animate`, children: [
+                    annotation.selectedText && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("span", { className: styles_module_default2.markerQuote, children: [
+                      "\u201C",
+                      annotation.selectedText.slice(0, 50),
+                      annotation.selectedText.length > 50 ? "..." : "",
+                      "\u201D"
+                    ] }),
+                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: styles_module_default2.markerNote, children: annotation.comment }),
+                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: styles_module_default2.markerHint, children: "Click to remove" })
+                  ] })
+                ]
+              },
+              annotation.id
+            );
+          })
+        }
+      ),
       isActive && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: styles_module_default2.overlay, "data-feedback-toolbar": true, children: [
         hoverInfo?.rect && !pendingAnnotation && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
           "div",
