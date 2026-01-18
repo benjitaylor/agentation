@@ -211,21 +211,15 @@ button {
     white-space: pre;
     margin: 0.625rem 0;
 
-    // Animate format changes
+    // Quick fade on format change
     &.animating {
-      animation: code-block-fade 0.25s ease-out;
+      animation: code-block-fade 0.15s ease-out;
     }
   }
 
   @keyframes code-block-fade {
-    0% {
-      opacity: 0.4;
-      transform: translateY(4px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0.3; }
+    to { opacity: 1; }
   }
 
   .format-toggle {
