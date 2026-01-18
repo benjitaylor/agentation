@@ -419,9 +419,7 @@ export default function RootLayout({ children }) {
             <li>What&rsquo;s the parent container&rsquo;s class?</li>
           </ul>
           <p>
-            Agentation captures selectors that the agent can actually <code>grep</code> for in your codebase.
-            Instead of guessing which file to look at, it can search for <code>className=&quot;submit-btn&quot;</code>
-            and find the exact component.
+            Agentation gives the agent selectors it can <code>grep</code> for directly.
           </p>
         </section>
       </article>
