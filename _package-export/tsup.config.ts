@@ -77,16 +77,16 @@ export default {};
   };
 }
 
-export default defineConfig({
+export default defineConfig((options) => ({
   entry: ["src/index.ts"],
   format: ["cjs", "esm"],
   dts: true,
   splitting: false,
   sourcemap: true,
-  clean: true,
+  clean: !options.watch, // Only clean on build, not during watch
   external: ["react", "react-dom", "framer-motion"],
   esbuildPlugins: [scssModulesPlugin()],
   banner: {
     js: '"use client";',
   },
-});
+}));
