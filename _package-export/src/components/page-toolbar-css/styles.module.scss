@@ -326,6 +326,10 @@ $green: #34C759;
   &.enter {
     animation: fadeIn 0.15s ease-out forwards;
   }
+
+  &.exit {
+    animation: fadeOut 0.15s ease-out forwards;
+  }
 }
 
 .singleSelectOutline {
@@ -339,6 +343,10 @@ $green: #34C759;
 
   &.enter {
     animation: fadeIn 0.15s ease-out forwards;
+  }
+
+  &.exit {
+    animation: fadeOut 0.15s ease-out forwards;
   }
 }
 
@@ -782,13 +790,22 @@ $green: #34C759;
   text-align: center;
 }
 
+.highlightsContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 99996;
+}
+
 .selectedElementHighlight {
   position: fixed;
+  top: 0;
+  left: 0;
   border: 2px solid rgba($green, 0.5);
   border-radius: 4px;
   background: rgba($green, 0.06);
   pointer-events: none;
-  z-index: 99996;
-  will-change: transform;
-  contain: strict;
+  will-change: transform, width, height;
+  contain: layout style;
 }

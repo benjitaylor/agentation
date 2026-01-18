@@ -1,7 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { Agentation, AgentationCSS } from "../../lib";
+import { AgentationCSS } from "../../lib";
 import type { DemoAnnotation } from "../../lib";
 
 // Example annotations that animate in on page load
@@ -21,13 +20,5 @@ const demoAnnotations: DemoAnnotation[] = [
 ];
 
 export function ToolbarProvider() {
-  const pathname = usePathname();
-
-  // Use CSS version on the css-version route
-  if (pathname === "/css-version") {
-    return <AgentationCSS />;
-  }
-
-  // Use framer-motion version everywhere else
-  return <Agentation demoAnnotations={demoAnnotations} demoDelay={1500} />;
+  return <AgentationCSS demoAnnotations={demoAnnotations} demoDelay={1500} />;
 }

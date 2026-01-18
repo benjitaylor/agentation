@@ -121,11 +121,47 @@ export default function LogicPage() {
         <h3>Drag Selection (Multi-Select)</h3>
         <ul>
           <li><strong>Threshold:</strong> 8px movement before drag starts</li>
-          <li><strong>Element detection throttle:</strong> 100ms (performance optimization)</li>
-          <li><strong>Final count:</strong> Uses <code>querySelectorAll</code> on mouseup for accurate count (not throttled)</li>
+          <li><strong>Element detection throttle:</strong> 50ms (no React overhead)</li>
+          <li><strong>Final count:</strong> Uses <code>querySelectorAll</code> on mouseup for accurate count</li>
           <li><strong>Meaningful elements:</strong> BUTTON, A, INPUT, IMG, P, H1-H6, LI, LABEL, TD, TH</li>
           <li><strong>Filtering:</strong> Removes parent elements that contain other matched elements</li>
           <li><strong>Size limits:</strong> Ignores elements larger than 80% viewport width AND 50% viewport height</li>
+        </ul>
+
+        <h3>Area Selection (Empty Space)</h3>
+        <ul>
+          <li>If drag completes with no elements selected, creates an "Area selection" annotation</li>
+          <li>Requires minimum drag size (20×20px) to avoid accidental creations</li>
+          <li>Stores bounding box of the selected region</li>
+          <li>Uses special placeholder: "What should change in this area?"</li>
+          <li>Treated as multi-select (green marker, dashed outline on hover)</li>
+        </ul>
+      </section>
+
+      {/* ========================================================================= */}
+      <section>
+        <h2>Marker Hover Outlines</h2>
+        <p>When hovering over an annotation marker, a subtle outline shows the target element's bounding box.</p>
+
+        <h3>Single Annotations (Blue)</h3>
+        <ul>
+          <li>Uses <code>singleSelectOutline</code> class</li>
+          <li>Solid border using the user's selected accent color</li>
+          <li>Color applied via inline styles: <code>borderColor</code> and <code>backgroundColor</code></li>
+        </ul>
+
+        <h3>Multi-Select Annotations (Green)</h3>
+        <ul>
+          <li>Uses <code>multiSelectOutline</code> class</li>
+          <li>Dashed border in green (#34C759)</li>
+          <li>Shows the combined bounding box of all selected elements</li>
+        </ul>
+
+        <h3>Implementation</h3>
+        <ul>
+          <li>Only shown when <code>hoveredMarkerId</code> is set and <code>pendingAnnotation</code> is null</li>
+          <li>Position uses stored <code>boundingBox</code> from annotation, adjusted for scroll</li>
+          <li>Animates in with <code>fadeIn</code> keyframes</li>
         </ul>
       </section>
 
@@ -212,24 +248,33 @@ export default function LogicPage() {
         <ul>
           <li><code>will-change: transform, opacity</code> on animated elements</li>
           <li><code>contain: layout style</code> for layout isolation</li>
-          <li><code>contain: strict</code> on drag selection elements</li>
           <li>Specific transition properties instead of <code>transition: all</code></li>
           <li><code>pointer-events: none</code> on overlay, re-enabled on children</li>
         </ul>
 
         <h3>JavaScript Performance</h3>
         <ul>
-          <li><strong>Throttled element detection:</strong> 100ms during drag</li>
+          <li><strong>Zero React re-renders during drag:</strong> All drag visuals use refs and direct DOM updates</li>
+          <li><strong>Throttled element detection:</strong> 50ms during drag (no React overhead)</li>
           <li><strong>Passive event listeners:</strong> scroll, mousemove</li>
           <li><strong>Squared distance comparison:</strong> Skip sqrt calculation for threshold checks</li>
           <li><strong>Set for tag lookup:</strong> O(1) instead of array includes O(n)</li>
-          <li><strong>Ref-based tracking:</strong> mouseDownPosRef, justFinishedDragRef avoid re-renders</li>
+          <li><strong>Ref-based tracking:</strong> mouseDownPosRef, dragStartRef, dragRectRef, highlightsContainerRef</li>
+          <li><strong>Pooled highlight divs:</strong> Reuse DOM elements instead of creating/destroying</li>
         </ul>
 
         <h3>Element Detection Strategy</h3>
         <ul>
           <li><strong>During drag (throttled):</strong> Sample 9 points (corners, edges, center) with elementsFromPoint</li>
           <li><strong>On mouseup (accurate):</strong> querySelectorAll for all meaningful elements, check bounding box intersection</li>
+        </ul>
+
+        <h3>Drag Selection Architecture</h3>
+        <ul>
+          <li><strong>Drag rectangle:</strong> <code>dragRectRef</code> updated via <code>style.transform</code> and <code>style.width/height</code></li>
+          <li><strong>Element highlights:</strong> <code>highlightsContainerRef</code> contains pooled divs updated directly</li>
+          <li><strong>React state only:</strong> <code>isDragging</code> boolean for conditional rendering</li>
+          <li><strong>No state during drag:</strong> mousemove handler never calls setState for visual updates</li>
         </ul>
       </section>
 
@@ -243,24 +288,45 @@ export default function LogicPage() {
           <li><code>annotations</code> - array of saved annotations</li>
           <li><code>pendingAnnotation</code> - annotation being created (popup open)</li>
           <li><code>pendingExiting</code> - tracks when pending annotation is animating out</li>
-          <li><code>showMarkers</code> - visibility toggle</li>
+          <li><code>showMarkers</code> - user's visibility toggle preference</li>
           <li><code>isFrozen</code> - animation pause state</li>
+        </ul>
+
+        <h3>Unified Marker Visibility</h3>
+        <p>
+          Marker visibility is controlled by a <strong>single computed value</strong> that handles both toolbar and eye toggle:
+        </p>
+        <ul>
+          <li><code>shouldShowMarkers = isActive && showMarkers</code> - computed from both states</li>
+          <li><code>markersVisible</code> - whether markers are currently rendered</li>
+          <li><code>markersExiting</code> - whether markers are animating out</li>
+        </ul>
+        <p>
+          This replaces the previous approach with separate <code>isToolbarExiting</code>, <code>showMarkersVisible</code>,
+          and <code>isMarkersHiding</code> states. Now there's one effect that handles all marker show/hide:
+        </p>
+        <ul>
+          <li><strong>Toolbar opens:</strong> <code>shouldShowMarkers</code> → true → markers animate in</li>
+          <li><strong>Toolbar closes:</strong> <code>shouldShowMarkers</code> → false → markers animate out</li>
+          <li><strong>Eye toggle off:</strong> <code>shouldShowMarkers</code> → false → markers animate out</li>
+          <li><strong>Eye toggle on:</strong> <code>shouldShowMarkers</code> → true → markers animate in</li>
         </ul>
 
         <h3>Animation States</h3>
         <ul>
           <li><code>animatedMarkers</code> - Set of marker IDs that have completed enter animation</li>
-          <li><code>exitingMarkers</code> - Set of marker IDs currently animating out</li>
+          <li><code>exitingMarkers</code> - Set of marker IDs currently animating out (individual delete)</li>
           <li><code>hoveredMarkerId</code> / <code>deletingMarkerId</code> - for hover/delete states</li>
           <li><code>isClearing</code> - clear all animation in progress</li>
         </ul>
 
-        <h3>Drag States</h3>
+        <h3>Drag States (Refs Only)</h3>
         <ul>
-          <li><code>isDragging</code> - drag in progress</li>
-          <li><code>dragStart</code> / <code>dragCurrent</code> - coordinates</li>
-          <li><code>selectedElements</code> - elements within selection box</li>
-          <li><code>mouseDownPosRef</code> - ref to avoid re-renders</li>
+          <li><code>isDragging</code> - only React state needed (for conditional rendering)</li>
+          <li><code>mouseDownPosRef</code> - initial mouse position</li>
+          <li><code>dragStartRef</code> - confirmed drag start position (after threshold)</li>
+          <li><code>dragRectRef</code> - DOM ref for selection rectangle</li>
+          <li><code>highlightsContainerRef</code> - DOM ref for element highlights container</li>
         </ul>
       </section>
 

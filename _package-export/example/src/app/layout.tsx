@@ -13,7 +13,6 @@ function SideNav() {
     <nav className="side-nav">
       <Link href="/" className="nav-link">Docs</Link>
       <Link href="/changelog" className="nav-link">Changelog</Link>
-      <Link href="/css-version" className="nav-link">CSS Version</Link>
       <Link href="/logic" className="nav-link">Logic</Link>
     </nav>
   );
@@ -31,7 +30,6 @@ export default function RootLayout({
         <main className="main-content">
           {children}
         </main>
-        {/* Agentation toolbar - switches between framer-motion and CSS versions based on route */}
         <ToolbarProvider />
       </body>
     </html>
