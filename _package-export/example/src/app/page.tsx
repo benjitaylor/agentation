@@ -105,16 +105,16 @@ const outputExamples: Record<OutputFormat, string> = {
 // Experimental: Different feedback writing styles
 const styleExamples: Record<FeedbackStyle, { description: string; example: string }> = {
   direct: {
-    description: "State the problem plainly",
+    description: "Your words, as written",
     example: `**Feedback:** Typo: "Settigns" → "Settings"`,
   },
   instructional: {
-    description: "Tell the agent what to do",
-    example: `**Feedback:** Change the text from "Settigns" to "Settings" in the nav label component`,
+    description: "Adds action verb if needed",
+    example: `**Feedback:** Fix typo: Typo: "Settigns" → "Settings"`,
   },
   contextual: {
-    description: "Explain the why",
-    example: `**Feedback:** The sidebar nav shows "Settigns" which looks unprofessional - fix the spelling to "Settings"`,
+    description: "Adds impact context when relevant",
+    example: `**Feedback:** Typo: "Settigns" → "Settings" — looks unprofessional`,
   },
 };
 
@@ -293,7 +293,7 @@ export default function AgentationDocs() {
             />
           </div>
           <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', marginTop: '0.5rem' }}>
-            This is for testing only &mdash; style doesn&rsquo;t affect the actual output yet.
+            Style transforms output based on detected keywords (typo, missing, broken, etc).
           </p>
         </section>
 

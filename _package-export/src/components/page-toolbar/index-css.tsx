@@ -196,20 +196,70 @@ type FeedbackStyle = 'direct' | 'instructional' | 'contextual';
 // Transform feedback text based on style
 function stylizeFeedback(comment: string, element: string, style: FeedbackStyle): string {
   if (style === 'direct') {
-    return comment; // As-is
+    return comment;
   }
+
+  const lower = comment.toLowerCase();
+
   if (style === 'instructional') {
-    // Make it sound like an instruction
-    const lower = comment.toLowerCase();
-    if (lower.startsWith('fix') || lower.startsWith('change') || lower.startsWith('update') || lower.startsWith('add') || lower.startsWith('remove')) {
-      return comment; // Already instructional
+    // If already starts with action verb, keep as-is
+    const actionStarts = ['fix', 'change', 'update', 'add', 'remove', 'delete', 'move', 'resize', 'replace', 'make', 'set', 'increase', 'decrease', 'adjust'];
+    if (actionStarts.some(v => lower.startsWith(v))) {
+      return comment;
     }
-    return `Update ${element}: ${comment}`;
+
+    // Detect issue type and add appropriate action verb
+    if (lower.includes('typo') || lower.includes('misspell') || lower.includes('→') || lower.includes('->')) {
+      return `Fix typo: ${comment}`;
+    }
+    if (lower.includes('missing') || lower.includes('need') || lower.includes('should have') || lower.includes('no ')) {
+      return `Add: ${comment}`;
+    }
+    if (lower.includes('wrong') || lower.includes('incorrect') || lower.includes('should be') || lower.includes('should say')) {
+      return `Change: ${comment}`;
+    }
+    if (lower.includes('broken') || lower.includes("doesn't work") || lower.includes('not working')) {
+      return `Fix: ${comment}`;
+    }
+    if (lower.includes('too ')) {
+      return `Adjust: ${comment}`;
+    }
+
+    // Default: keep as-is (user's phrasing is probably fine)
+    return comment;
   }
+
   if (style === 'contextual') {
-    // Add context framing
-    return `In ${element}: ${comment}. This affects user experience.`;
+    // Add relevant context suffix based on detected issue type
+    if (lower.includes('typo') || lower.includes('misspell') || lower.includes('→') || lower.includes('->') || lower.includes('spelling')) {
+      return `${comment} — looks unprofessional`;
+    }
+    if (lower.includes('missing') || lower.includes("can't find") || lower.includes('should have') || lower.includes('need')) {
+      return `${comment} — users expect this`;
+    }
+    if (lower.includes('confus') || lower.includes('unclear') || lower.includes("don't understand") || lower.includes('hard to')) {
+      return `${comment} — hurts usability`;
+    }
+    if (lower.includes('broken') || lower.includes("doesn't work") || lower.includes('not working') || lower.includes('bug')) {
+      return `${comment} — blocks user flow`;
+    }
+    if (lower.includes('slow') || lower.includes('lag') || lower.includes('loading')) {
+      return `${comment} — feels sluggish`;
+    }
+    if (lower.includes('align') || lower.includes('spacing') || lower.includes('margin') || lower.includes('position')) {
+      return `${comment} — visual inconsistency`;
+    }
+    if (lower.includes('color') || lower.includes('contrast') || lower.includes('can\'t read') || lower.includes('hard to see')) {
+      return `${comment} — accessibility concern`;
+    }
+    if (lower.includes('too small') || lower.includes('too big') || lower.includes('too large') || lower.includes('size')) {
+      return `${comment} — affects tap/click target`;
+    }
+
+    // No pattern matched - return as-is (don't add generic fluff)
+    return comment;
   }
+
   return comment;
 }
 

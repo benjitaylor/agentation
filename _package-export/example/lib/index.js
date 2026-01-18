@@ -1362,15 +1362,55 @@ function stylizeFeedback(comment, element, style) {
   if (style === "direct") {
     return comment;
   }
+  const lower = comment.toLowerCase();
   if (style === "instructional") {
-    const lower = comment.toLowerCase();
-    if (lower.startsWith("fix") || lower.startsWith("change") || lower.startsWith("update") || lower.startsWith("add") || lower.startsWith("remove")) {
+    const actionStarts = ["fix", "change", "update", "add", "remove", "delete", "move", "resize", "replace", "make", "set", "increase", "decrease", "adjust"];
+    if (actionStarts.some((v) => lower.startsWith(v))) {
       return comment;
     }
-    return `Update ${element}: ${comment}`;
+    if (lower.includes("typo") || lower.includes("misspell") || lower.includes("\u2192") || lower.includes("->")) {
+      return `Fix typo: ${comment}`;
+    }
+    if (lower.includes("missing") || lower.includes("need") || lower.includes("should have") || lower.includes("no ")) {
+      return `Add: ${comment}`;
+    }
+    if (lower.includes("wrong") || lower.includes("incorrect") || lower.includes("should be") || lower.includes("should say")) {
+      return `Change: ${comment}`;
+    }
+    if (lower.includes("broken") || lower.includes("doesn't work") || lower.includes("not working")) {
+      return `Fix: ${comment}`;
+    }
+    if (lower.includes("too ")) {
+      return `Adjust: ${comment}`;
+    }
+    return comment;
   }
   if (style === "contextual") {
-    return `In ${element}: ${comment}. This affects user experience.`;
+    if (lower.includes("typo") || lower.includes("misspell") || lower.includes("\u2192") || lower.includes("->") || lower.includes("spelling")) {
+      return `${comment} \u2014 looks unprofessional`;
+    }
+    if (lower.includes("missing") || lower.includes("can't find") || lower.includes("should have") || lower.includes("need")) {
+      return `${comment} \u2014 users expect this`;
+    }
+    if (lower.includes("confus") || lower.includes("unclear") || lower.includes("don't understand") || lower.includes("hard to")) {
+      return `${comment} \u2014 hurts usability`;
+    }
+    if (lower.includes("broken") || lower.includes("doesn't work") || lower.includes("not working") || lower.includes("bug")) {
+      return `${comment} \u2014 blocks user flow`;
+    }
+    if (lower.includes("slow") || lower.includes("lag") || lower.includes("loading")) {
+      return `${comment} \u2014 feels sluggish`;
+    }
+    if (lower.includes("align") || lower.includes("spacing") || lower.includes("margin") || lower.includes("position")) {
+      return `${comment} \u2014 visual inconsistency`;
+    }
+    if (lower.includes("color") || lower.includes("contrast") || lower.includes("can't read") || lower.includes("hard to see")) {
+      return `${comment} \u2014 accessibility concern`;
+    }
+    if (lower.includes("too small") || lower.includes("too big") || lower.includes("too large") || lower.includes("size")) {
+      return `${comment} \u2014 affects tap/click target`;
+    }
+    return comment;
   }
   return comment;
 }
