@@ -48,7 +48,7 @@ html body {
 
 body {
   overflow-y: scroll;
-  font-size: 16px;
+  font-size: 15px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -62,24 +62,25 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: 1.1875rem;
-  font-weight: 500;
+  font-size: 1.125rem;
+  font-weight: 600;
   line-height: normal;
-  letter-spacing: -0.01875rem;
+  letter-spacing: -0.02rem;
 }
 
 h2 {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: normal;
-  letter-spacing: -0.00813rem;
+  letter-spacing: -0.01rem;
+  margin-bottom: 0.75rem;
 }
 
 h3 {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 500;
   line-height: normal;
-  letter-spacing: -0.00813rem;
+  letter-spacing: -0.01rem;
 }
 
 a {
@@ -119,90 +120,94 @@ button {
 }
 
 // =============================================================================
-// Article Layout (matches benji.org)
+// Article Layout
 // =============================================================================
 
 .article {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  max-width: 38rem;
+  gap: 0.875rem;
+  max-width: 36rem;
   margin: 0 auto;
-  padding: 5rem 1.5rem 3rem;
+  padding: 4rem 1.5rem 3rem;
 
   header {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.75rem;
 
     .tagline {
       color: rgba(0, 0, 0, 0.5);
-      font-size: 0.9375rem;
-      font-weight: 460;
+      font-size: 0.875rem;
+      font-weight: 450;
     }
 
     time {
       color: rgba(0, 0, 0, 0.4);
-      font-size: 0.6875rem;
-      font-weight: 460;
-      letter-spacing: 0.00063rem;
+      font-size: 0.625rem;
+      font-weight: 450;
+      letter-spacing: 0.02rem;
       text-transform: uppercase;
     }
   }
 
   section {
-    margin-top: 0.5rem;
+    margin-top: 0.375rem;
   }
 
   p {
-    font-size: 0.9375rem;
-    font-weight: 460;
-    line-height: 1.5rem;
-    letter-spacing: -0.00563rem;
+    font-size: 0.875rem;
+    font-weight: 450;
+    line-height: 1.45rem;
+    letter-spacing: -0.005rem;
+    color: rgba(0, 0, 0, 0.8);
   }
 
   blockquote {
     border-left: 2px solid #e0e0e0;
     padding-left: 1rem;
     margin: 0.5rem 0;
-    color: rgba(0, 0, 0, 0.7);
+    color: rgba(0, 0, 0, 0.6);
     font-style: italic;
   }
 
   ul, ol {
-    padding-left: 1.25rem;
+    padding-left: 1.125rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
 
     li {
-      font-size: 0.9375rem;
-      font-weight: 460;
-      line-height: 1.5rem;
-      letter-spacing: -0.00563rem;
+      font-size: 0.875rem;
+      font-weight: 450;
+      line-height: 1.45rem;
+      letter-spacing: -0.005rem;
+      color: rgba(0, 0, 0, 0.8);
     }
   }
 
   code {
-    font-family: "SF Mono", "SFMono-Regular", Consolas, monospace;
-    font-size: 0.85em;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 0.125rem 0.375rem;
+    font-family: "SF Mono", "SFMono-Regular", ui-monospace, Consolas, monospace;
+    font-size: 0.8125rem;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 0.1rem 0.35rem;
     border-radius: 0.25rem;
+    color: rgba(0, 0, 0, 0.75);
   }
 
   .code-block {
-    font-family: "SF Mono", "SFMono-Regular", Consolas, monospace;
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    background: #1a1a1a;
-    color: #e0e0e0;
-    padding: 1rem 1.25rem;
+    font-family: "SF Mono", "SFMono-Regular", ui-monospace, Consolas, monospace;
+    font-size: 0.75rem;
+    line-height: 1.55;
+    background: #f8f8f8;
+    color: #333;
+    padding: 0.875rem 1rem;
     border-radius: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
     overflow-x: auto;
     white-space: pre;
-    margin: 0.75rem 0;
+    margin: 0.625rem 0;
   }
 }
 
@@ -211,29 +216,29 @@ button {
 // =============================================================================
 
 .demo-section {
-  padding: 2rem 0;
-  border-top: 1px solid #f0f0f0;
-  margin-top: 1rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  margin-top: 0.75rem;
 
   h2 {
-    margin-bottom: 1rem;
+    margin-bottom: 0.625rem;
   }
 }
 
 .button-group {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
 .demo-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
   background: #111;
   color: white;
   transition: all 0.15s ease;
@@ -255,27 +260,29 @@ button {
 
 .demo-card {
   background: white;
-  border-radius: 0.75rem;
-  padding: 1.25rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
-  margin: 1rem 0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  margin: 0.75rem 0;
 
   h3 {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.375rem;
+    font-size: 0.8125rem;
   }
 
   p {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: rgba(0, 0, 0, 0.6);
   }
 }
 
 .demo-input {
   width: 100%;
-  padding: 0.625rem 0.875rem;
-  font-size: 0.9375rem;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.375rem;
   margin: 0.5rem 0;
   transition: border-color 0.15s ease;
 

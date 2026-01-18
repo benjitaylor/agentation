@@ -29,7 +29,7 @@ export default function AgentationDocs() {
         </section>
 
         <section>
-          <h2>Quick Start</h2>
+          <h2>Quick start</h2>
           <ol>
             <li>Click the <strong>chat bubble</strong> in the bottom-right corner to activate</li>
             <li><strong>Hover</strong> over elements to see their names highlighted</li>
@@ -52,7 +52,22 @@ export default function AgentationDocs() {
         </section>
 
         <section>
-          <h2>Output Format</h2>
+          <h2>Keyboard shortcuts</h2>
+          <ul>
+            <li><code>⌘⇧A</code> / <code>Ctrl+Shift+A</code> &mdash; Toggle feedback mode on/off</li>
+            <li><code>Esc</code> &mdash; Close toolbar or cancel annotation</li>
+            <li><code>P</code> &mdash; Pause/resume animations</li>
+            <li><code>H</code> &mdash; Hide/show annotation markers</li>
+            <li><code>C</code> &mdash; Copy feedback to clipboard</li>
+            <li><code>X</code> &mdash; Clear all annotations</li>
+          </ul>
+          <p>
+            Shortcuts are disabled when typing in an input field.
+          </p>
+        </section>
+
+        <section>
+          <h2>Output format</h2>
           <p>
             When you copy, you get markdown like this that you can paste directly into your agent:
           </p>
@@ -75,7 +90,7 @@ export default function AgentationDocs() {
         </section>
 
         <section>
-          <h2>What It Is</h2>
+          <h2>What it is</h2>
           <ul>
             <li>A <strong>dev tool</strong> for communicating visual feedback to AI coding agents</li>
             <li>A way to <strong>point at things</strong> in your running app so the agent can find them in code</li>
@@ -84,7 +99,7 @@ export default function AgentationDocs() {
         </section>
 
         <section>
-          <h2>How It Works With Agents</h2>
+          <h2>How it works with agents</h2>
           <p>
             Agentation works best with AI tools that have access to your codebase
             (Claude Code, Cursor, Windsurf, etc.):
@@ -104,7 +119,7 @@ export default function AgentationDocs() {
         </section>
 
         <section>
-          <h2>What It Isn&rsquo;t</h2>
+          <h2>What it isn&rsquo;t</h2>
           <ul>
             <li><strong>Not a bug tracker</strong> &mdash; annotations aren&rsquo;t persisted or synced</li>
             <li><strong>Not a design tool</strong> &mdash; you can&rsquo;t edit styles or layouts</li>
@@ -125,7 +140,7 @@ export default function AgentationDocs() {
         </section>
 
         <section>
-          <h2>Best Practices</h2>
+          <h2>Best practices</h2>
           <ul>
             <li><strong>Be specific</strong> &mdash; &ldquo;Button text unclear&rdquo; is better than &ldquo;fix this&rdquo;</li>
             <li><strong>One issue per annotation</strong> &mdash; easier for the agent to address individually</li>
@@ -166,7 +181,7 @@ export default function RootLayout({ children }) {
         </section>
 
         <section>
-          <h2>Security Notes</h2>
+          <h2>Security notes</h2>
           <p>
             Agentation runs in your browser and reads DOM content to generate feedback.
             It does <strong>not</strong> send data anywhere &mdash; everything stays local
@@ -186,7 +201,7 @@ export default function RootLayout({ children }) {
 
         {/* Interactive Demo Section */}
         <section className="demo-section">
-          <h2>Try It</h2>
+          <h2>Try it</h2>
           <p>
             The toolbar is active on this page. Try annotating these demo elements:
           </p>
@@ -219,7 +234,7 @@ export default function RootLayout({ children }) {
 
         {/* Animation Demo */}
         <section className="demo-section">
-          <h2>Animation Pause Demo</h2>
+          <h2>Animation pause demo</h2>
           <p>
             Click the pause button (⏸) in the toolbar to freeze these animations:
           </p>
@@ -231,7 +246,7 @@ export default function RootLayout({ children }) {
         </section>
 
         <section>
-          <h2>Customizing Output</h2>
+          <h2>Customizing output</h2>
           <p>
             The copied output is plain markdown. Feel free to edit it before pasting
             into your agent:
@@ -249,7 +264,7 @@ export default function RootLayout({ children }) {
         </section>
 
         <section>
-          <h2>Why Not Just Describe It?</h2>
+          <h2>Why not just describe it?</h2>
           <p>
             You could type &ldquo;the blue button in the header is misaligned&rdquo; but:
           </p>
