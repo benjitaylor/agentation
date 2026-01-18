@@ -244,6 +244,60 @@ export function identifyAnimationElement(target: HTMLElement): string {
 }
 
 /**
+ * Gets nearby sibling elements for structural context
+ */
+export function getNearbyElements(element: HTMLElement): string {
+  const parent = element.parentElement;
+  if (!parent) return "";
+
+  const siblings = Array.from(parent.children).filter(
+    (child) => child !== element && child instanceof HTMLElement
+  ) as HTMLElement[];
+
+  if (siblings.length === 0) return "";
+
+  // Get concise identifiers for up to 4 nearby siblings
+  const siblingIds = siblings.slice(0, 4).map((sib) => {
+    const tag = sib.tagName.toLowerCase();
+    const className = sib.className;
+
+    // Get first meaningful class
+    let cls = "";
+    if (typeof className === "string" && className) {
+      const meaningful = className
+        .split(/\s+/)
+        .map((c) => c.replace(/[_][a-zA-Z0-9]{5,}.*$/, "")) // Remove module hashes
+        .find((c) => c.length > 2 && !/^[a-z]{1,2}$/.test(c));
+      if (meaningful) cls = `.${meaningful}`;
+    }
+
+    // For buttons/links, include short text
+    if (tag === "button" || tag === "a") {
+      const text = sib.textContent?.trim().slice(0, 15);
+      if (text) return `${tag}${cls} "${text}"`;
+    }
+
+    return `${tag}${cls}`;
+  });
+
+  // Add parent context
+  const parentTag = parent.tagName.toLowerCase();
+  let parentId = parentTag;
+  if (typeof parent.className === "string" && parent.className) {
+    const parentCls = parent.className
+      .split(/\s+/)
+      .map((c) => c.replace(/[_][a-zA-Z0-9]{5,}.*$/, ""))
+      .find((c) => c.length > 2 && !/^[a-z]{1,2}$/.test(c));
+    if (parentCls) parentId = `.${parentCls}`;
+  }
+
+  const total = parent.children.length;
+  const suffix = total > siblingIds.length + 1 ? ` (${total} total in ${parentId})` : "";
+
+  return siblingIds.join(", ") + suffix;
+}
+
+/**
  * Gets CSS class names from an element (cleaned of module hashes)
  */
 export function getElementClasses(target: HTMLElement): string {

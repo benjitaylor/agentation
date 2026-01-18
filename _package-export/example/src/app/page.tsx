@@ -225,8 +225,7 @@ export default function AgentationDocs() {
             in your codebase to find the exact component.
           </p>
           <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', marginTop: '0.5rem' }}>
-            Changing the format here will also change the output from the toolbar on this page,
-            so you can try it out for yourself.
+            Try it: changing format here updates the toolbar output.
           </p>
         </section>
 
@@ -419,7 +418,9 @@ export default function RootLayout({ children }) {
             <li>What&rsquo;s the parent container&rsquo;s class?</li>
           </ul>
           <p>
-            Agentation gives the agent selectors it can <code>grep</code> for directly.
+            Agentation captures selectors that the agent can actually <code>grep</code> for in your codebase.
+            Instead of guessing which file to look at, it can search for <code>className=&quot;submit-btn&quot;</code>
+            and find the exact component.
           </p>
         </section>
       </article>
