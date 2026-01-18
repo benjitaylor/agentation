@@ -34,63 +34,149 @@ import styles from "./styles.module.scss";
 // =============================================================================
 
 const cssAnimationStyles = `
-@keyframes agentation-fade-in {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
+/* Toolbar morphing */
+.agentation-toolbar-container {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3125rem;
+  border-radius: 1.5rem;
+  background: white;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 4px 16px rgba(0, 0, 0, 0.04),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
-@keyframes agentation-fade-scale-in {
-  from { opacity: 0; transform: scale(0.85) translateY(8px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+.agentation-toolbar-container[data-expanded="false"] {
+  padding: 0;
 }
 
-@keyframes agentation-toggle-in {
-  from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
+/* Control buttons fade in/out */
+.agentation-control-btn {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
+.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(1) { transition-delay: 0.02s; }
+.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(2) { transition-delay: 0.04s; }
+.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(3) { transition-delay: 0.06s; }
+.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(4) { transition-delay: 0.08s; }
+.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(5) { transition-delay: 0.1s; }
+.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(6) { transition-delay: 0.12s; }
+
+/* Main button */
+.agentation-main-btn {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.agentation-toolbar-container[data-expanded="true"] .agentation-main-btn {
+  transform: scale(0);
+  width: 0;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+}
+
+/* Hover highlight - more noticeable animation */
+@keyframes agentation-highlight-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.agentation-highlight-animate {
+  animation: agentation-highlight-in 0.15s ease-out forwards;
+  transform-origin: center center;
+}
+
+/* Marker animations */
 @keyframes agentation-marker-in {
   from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
   to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
+@keyframes agentation-marker-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+}
+
+.agentation-marker-enter {
+  animation: agentation-marker-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.agentation-marker-exit {
+  animation: agentation-marker-out 0.15s ease-in forwards;
+  pointer-events: none;
+}
+
+/* Pending marker animation */
+@keyframes agentation-pending-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes agentation-pending-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+}
+
+.agentation-pending-enter {
+  animation: agentation-pending-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.agentation-pending-exit {
+  animation: agentation-pending-out 0.15s ease-in forwards;
+  pointer-events: none;
+}
+
+/* Tooltip animations */
 @keyframes agentation-tooltip-in {
   from { opacity: 0; transform: translateX(-50%) translateY(4px) scale(0.95); }
   to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
-@keyframes agentation-hover-highlight-in {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.agentation-fade-in {
-  animation: agentation-fade-in 0.12s ease-out forwards;
-}
-
-.agentation-fade-scale-in {
-  animation: agentation-fade-scale-in 0.18s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
-}
-
-.agentation-toggle-in {
-  animation: agentation-toggle-in 0.15s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
-}
-
-.agentation-marker-in {
-  animation: agentation-marker-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-.agentation-tooltip-in {
+.agentation-tooltip-animate {
   animation: agentation-tooltip-in 0.1s ease-out forwards;
 }
 
-.agentation-hover-highlight-in {
-  animation: agentation-hover-highlight-in 0.12s ease-out forwards;
-  transform-origin: center center;
+/* Hover tooltip fade */
+@keyframes agentation-hover-tooltip-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
+.agentation-hover-tooltip-animate {
+  animation: agentation-hover-tooltip-in 0.1s ease-out forwards;
+}
+
+/* Button active state */
 .agentation-btn-active:active {
   transform: scale(0.95);
+}
+
+/* Divider */
+.agentation-divider {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.agentation-toolbar-container[data-expanded="true"] .agentation-divider {
+  opacity: 1;
+  transition-delay: 0.1s;
 }
 `;
 
@@ -113,6 +199,8 @@ type HoverInfo = {
   elementPath: string;
   rect: DOMRect | null;
 };
+
+type MarkerWithState = Annotation & { exiting?: boolean };
 
 // =============================================================================
 // Utils
@@ -161,6 +249,7 @@ function generateOutput(annotations: Annotation[], pathname: string): string {
 export function PageFeedbackToolbarCSS() {
   const [isActive, setIsActive] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
+  const [markersWithState, setMarkersWithState] = useState<MarkerWithState[]>([]);
   const [showMarkers, setShowMarkers] = useState(true);
   const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
@@ -175,16 +264,23 @@ export function PageFeedbackToolbarCSS() {
     nearbyText?: string;
     cssClasses?: string;
   } | null>(null);
+  const [pendingExiting, setPendingExiting] = useState(false);
   const [copied, setCopied] = useState(false);
   const [cleared, setCleared] = useState(false);
   const [hoveredMarkerId, setHoveredMarkerId] = useState<string | null>(null);
   const [scrollY, setScrollY] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [isFrozen, setIsFrozen] = useState(false);
+  const [markersExiting, setMarkersExiting] = useState(false);
 
   const popupRef = useRef<AnnotationPopupHandle>(null);
 
   const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
+
+  // Sync markersWithState with annotations
+  useEffect(() => {
+    setMarkersWithState(annotations.map(a => ({ ...a, exiting: false })));
+  }, [annotations]);
 
   // Mount and load
   useEffect(() => {
@@ -256,6 +352,19 @@ export function PageFeedbackToolbarCSS() {
     if (isFrozen) unfreezeAnimations();
     else freezeAnimations();
   }, [isFrozen, freezeAnimations, unfreezeAnimations]);
+
+  // Handle closing toolbar - animate markers out first
+  const handleCloseToolbar = useCallback(() => {
+    if (markersWithState.length > 0) {
+      setMarkersExiting(true);
+      setTimeout(() => {
+        setMarkersExiting(false);
+        setIsActive(false);
+      }, 150);
+    } else {
+      setIsActive(false);
+    }
+  }, [markersWithState.length]);
 
   // Reset state when deactivating
   useEffect(() => {
@@ -366,14 +475,23 @@ export function PageFeedbackToolbarCSS() {
     window.getSelection()?.removeAllRanges();
   }, [pendingAnnotation]);
 
-  // Cancel annotation
+  // Cancel annotation with exit animation
   const cancelAnnotation = useCallback(() => {
-    setPendingAnnotation(null);
+    setPendingExiting(true);
+    setTimeout(() => {
+      setPendingExiting(false);
+      setPendingAnnotation(null);
+    }, 150);
   }, []);
 
-  // Delete annotation
+  // Delete annotation with exit animation
   const deleteAnnotation = useCallback((id: string) => {
-    setAnnotations((prev) => prev.filter((a) => a.id !== id));
+    setMarkersWithState(prev =>
+      prev.map(m => m.id === id ? { ...m, exiting: true } : m)
+    );
+    setTimeout(() => {
+      setAnnotations((prev) => prev.filter((a) => a.id !== id));
+    }, 150);
   }, []);
 
   // Copy output
@@ -401,14 +519,14 @@ export function PageFeedbackToolbarCSS() {
         if (pendingAnnotation) {
           // Let popup handle it
         } else if (isActive) {
-          setIsActive(false);
+          handleCloseToolbar();
         }
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isActive, pendingAnnotation]);
+  }, [isActive, pendingAnnotation, handleCloseToolbar]);
 
   if (!mounted) return null;
 
@@ -417,102 +535,107 @@ export function PageFeedbackToolbarCSS() {
 
   return createPortal(
     <>
-      {/* Toolbar */}
+      {/* Unified Toolbar - morphs between collapsed and expanded */}
       <div className={styles.toolbar} data-feedback-toolbar>
-        {!isActive ? (
+        <div
+          className="agentation-toolbar-container"
+          data-expanded={isActive}
+        >
+          {/* Main feedback button - visible when collapsed */}
           <button
-            key="toggle"
-            className={`${styles.toggleButton} agentation-toggle-in`}
+            className={`${styles.toggleButton} agentation-main-btn`}
             onClick={(e) => { e.stopPropagation(); setIsActive(true); }}
             title="Start feedback mode"
+            style={{ display: isActive ? 'none' : 'flex' }}
           >
             <IconFeedback size={18} />
             {hasAnnotations && <span className={styles.badge}>{annotations.length}</span>}
           </button>
-        ) : (
-          <div
-            key="controls"
-            className={`${styles.controls} agentation-fade-scale-in`}
-          >
-            <button
-              className={`${styles.controlButton} agentation-btn-active`}
-              onClick={(e) => { e.stopPropagation(); toggleFreeze(); }}
-              title={isFrozen ? "Resume animations" : "Pause animations"}
-              data-active={isFrozen}
-            >
-              {isFrozen ? <IconPlay size={16} /> : <IconPause size={16} />}
-            </button>
 
-            <button
-              className={`${styles.controlButton} agentation-btn-active`}
-              onClick={(e) => { e.stopPropagation(); setShowMarkers(!showMarkers); }}
-              title={showMarkers ? "Hide markers" : "Show markers"}
-            >
-              <EyeMorphIcon size={16} visible={showMarkers} />
-            </button>
+          {/* Control buttons - visible when expanded */}
+          {isActive && (
+            <>
+              <button
+                className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
+                onClick={(e) => { e.stopPropagation(); toggleFreeze(); }}
+                title={isFrozen ? "Resume animations" : "Pause animations"}
+                data-active={isFrozen}
+              >
+                {isFrozen ? <IconPlay size={16} /> : <IconPause size={16} />}
+              </button>
 
-            <button
-              className={`${styles.controlButton} agentation-btn-active`}
-              onClick={(e) => { e.stopPropagation(); copyOutput(); }}
-              disabled={!hasAnnotations}
-              title="Copy feedback"
-            >
-              <CopyMorphIcon size={16} checked={copied} />
-            </button>
+              <button
+                className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
+                onClick={(e) => { e.stopPropagation(); setShowMarkers(!showMarkers); }}
+                title={showMarkers ? "Hide markers" : "Show markers"}
+              >
+                <EyeMorphIcon size={16} visible={showMarkers} />
+              </button>
 
-            <button
-              className={`${styles.controlButton} agentation-btn-active`}
-              onClick={(e) => { e.stopPropagation(); clearAll(); }}
-              disabled={!hasAnnotations}
-              title="Clear all"
-              data-danger
-            >
-              <TrashMorphIcon size={16} checked={cleared} />
-            </button>
+              <button
+                className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
+                onClick={(e) => { e.stopPropagation(); copyOutput(); }}
+                disabled={!hasAnnotations}
+                title="Copy feedback"
+              >
+                <CopyMorphIcon size={16} checked={copied} />
+              </button>
 
-            <div className={styles.divider} />
+              <button
+                className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
+                onClick={(e) => { e.stopPropagation(); clearAll(); }}
+                disabled={!hasAnnotations}
+                title="Clear all"
+                data-danger
+              >
+                <TrashMorphIcon size={16} checked={cleared} />
+              </button>
 
-            <button
-              className={`${styles.controlButton} agentation-btn-active`}
-              onClick={(e) => { e.stopPropagation(); setIsActive(false); }}
-              title="Exit feedback mode"
-            >
-              <IconChevronDown size={16} />
-            </button>
-          </div>
-        )}
+              <div className={`${styles.divider} agentation-divider`} />
+
+              <button
+                className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
+                onClick={(e) => { e.stopPropagation(); handleCloseToolbar(); }}
+                title="Exit feedback mode"
+              >
+                <IconChevronDown size={16} />
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Markers layer */}
       <div className={styles.markersLayer} data-feedback-toolbar>
         {isActive && showMarkers &&
-          annotations.map((annotation, index) => {
+          markersWithState.map((annotation, index) => {
             const viewportY = toViewportY(annotation.y);
             const isVisible = viewportY > -30 && viewportY < window.innerHeight + 30;
             if (!isVisible) return null;
 
             const isHovered = hoveredMarkerId === annotation.id;
+            const isExiting = annotation.exiting || markersExiting;
 
             return (
               <div
                 key={annotation.id}
-                className={`${styles.marker} ${isHovered ? styles.hovered : ""} agentation-marker-in`}
+                className={`${styles.marker} ${isHovered ? styles.hovered : ""} ${isExiting ? 'agentation-marker-exit' : 'agentation-marker-enter'}`}
                 data-annotation-marker
                 style={{
                   left: `${annotation.x}%`,
                   top: viewportY,
-                  animationDelay: `${index * 0.03}s`,
+                  animationDelay: isExiting ? '0s' : `${index * 0.03}s`,
                 }}
-                onMouseEnter={() => setHoveredMarkerId(annotation.id)}
+                onMouseEnter={() => !isExiting && setHoveredMarkerId(annotation.id)}
                 onMouseLeave={() => setHoveredMarkerId(null)}
                 onClick={(e) => {
                   e.stopPropagation();
-                  deleteAnnotation(annotation.id);
+                  if (!isExiting) deleteAnnotation(annotation.id);
                 }}
               >
                 {isHovered ? <IconClose size={10} /> : index + 1}
-                {isHovered && (
-                  <div className={`${styles.markerTooltip} agentation-tooltip-in`}>
+                {isHovered && !isExiting && (
+                  <div className={`${styles.markerTooltip} agentation-tooltip-animate`}>
                     {annotation.selectedText && (
                       <span className={styles.markerQuote}>
                         &ldquo;{annotation.selectedText.slice(0, 50)}
@@ -531,10 +654,11 @@ export function PageFeedbackToolbarCSS() {
       {/* Interactive overlay */}
       {isActive && (
         <div className={styles.overlay} data-feedback-toolbar>
-          {/* Hover highlight */}
+          {/* Hover highlight - more noticeable animation */}
           {hoverInfo?.rect && !pendingAnnotation && (
             <div
-              className={`${styles.hoverHighlight} agentation-hover-highlight-in`}
+              key={`${hoverInfo.rect.left}-${hoverInfo.rect.top}-${hoverInfo.rect.width}`}
+              className={`${styles.hoverHighlight} agentation-highlight-animate`}
               style={{
                 left: hoverInfo.rect.left,
                 top: hoverInfo.rect.top,
@@ -547,7 +671,7 @@ export function PageFeedbackToolbarCSS() {
           {/* Hover tooltip */}
           {hoverInfo && !pendingAnnotation && (
             <div
-              className={`${styles.hoverTooltip} agentation-fade-in`}
+              className={`${styles.hoverTooltip} agentation-hover-tooltip-animate`}
               style={{
                 left: Math.min(hoverPosition.x, window.innerWidth - 150),
                 top: Math.max(hoverPosition.y - 32, 8),
@@ -558,29 +682,31 @@ export function PageFeedbackToolbarCSS() {
           )}
 
           {/* Pending annotation marker + popup */}
-          {pendingAnnotation && (
+          {(pendingAnnotation || pendingExiting) && (
             <>
               <div
-                className={`${styles.marker} ${styles.pending} agentation-marker-in`}
+                className={`${styles.marker} ${styles.pending} ${pendingExiting ? 'agentation-pending-exit' : 'agentation-pending-enter'}`}
                 style={{
-                  left: `${pendingAnnotation.x}%`,
-                  top: pendingAnnotation.clientY,
+                  left: `${pendingAnnotation?.x ?? 0}%`,
+                  top: pendingAnnotation?.clientY ?? 0,
                 }}
               >
                 <IconPlus size={12} />
               </div>
 
-              <AnnotationPopupCSS
-                ref={popupRef}
-                element={pendingAnnotation.element}
-                selectedText={pendingAnnotation.selectedText}
-                onSubmit={addAnnotation}
-                onCancel={cancelAnnotation}
-                style={{
-                  left: `${Math.min(Math.max(pendingAnnotation.x, 15), 85)}%`,
-                  top: Math.min(pendingAnnotation.clientY + 20, window.innerHeight - 180),
-                }}
-              />
+              {pendingAnnotation && !pendingExiting && (
+                <AnnotationPopupCSS
+                  ref={popupRef}
+                  element={pendingAnnotation.element}
+                  selectedText={pendingAnnotation.selectedText}
+                  onSubmit={addAnnotation}
+                  onCancel={cancelAnnotation}
+                  style={{
+                    left: `${Math.min(Math.max(pendingAnnotation.x, 15), 85)}%`,
+                    top: Math.min(pendingAnnotation.clientY + 20, window.innerHeight - 180),
+                  }}
+                />
+              )}
             </>
           )}
         </div>

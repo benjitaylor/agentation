@@ -1005,10 +1005,12 @@ var AnnotationPopupCSS = forwardRef2(
     }, []);
     const shake = useCallback3(() => {
       setIsShaking(true);
-      setTimeout(() => {
+    }, []);
+    const handleAnimationEnd = useCallback3((e) => {
+      if (e.animationName === "agentation-popup-shake") {
         setIsShaking(false);
         textareaRef.current?.focus();
-      }, 250);
+      }
     }, []);
     useImperativeHandle2(ref, () => ({ shake }), [shake]);
     const handleSubmit = useCallback3(() => {
@@ -1035,6 +1037,7 @@ var AnnotationPopupCSS = forwardRef2(
         "data-annotation-popup": true,
         style,
         onClick: (e) => e.stopPropagation(),
+        onAnimationEnd: handleAnimationEnd,
         children: [
           /* @__PURE__ */ jsxs4("div", { className: styles_module_default.header, children: [
             /* @__PURE__ */ jsx4("span", { className: styles_module_default.element, children: element }),
@@ -1138,32 +1141,20 @@ var CopyMorphIcon2 = ({ size = 16, checked }) => /* @__PURE__ */ jsxs5("svg", { 
     }
   )
 ] });
-var TrashMorphIcon2 = ({ size = 16, checked }) => /* @__PURE__ */ jsxs5("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", children: [
-  /* @__PURE__ */ jsx5(
-    "path",
-    {
-      d: "M17.65 6.35c-1.63-1.63-3.94-2.57-6.48-2.31-3.67.37-6.69 3.35-7.1 7.02C3.52 15.91 7.27 20 12 20c3.19 0 5.93-1.87 7.21-4.56.32-.67-.16-1.44-.9-1.44-.37 0-.72.2-.88.53-1.13 2.43-3.84 3.97-6.8 3.31-2.22-.49-4.01-2.3-4.48-4.52C5.31 9.44 8.26 6 12 6c1.66 0 3.14.69 4.22 1.78l-1.51 1.51c-.63.63-.19 1.71.7 1.71H19c.55 0 1-.45 1-1V6.41c0-.89-1.08-1.34-1.71-.71l-.64.65z",
-      style: { opacity: checked ? 0 : 1, transition: "opacity 0.15s ease" }
-    }
-  ),
-  /* @__PURE__ */ jsx5(
-    "path",
-    {
-      d: "M6 12.5l3.5 3.5L18 7",
-      stroke: "currentColor",
-      strokeWidth: "2.5",
-      strokeLinecap: "round",
-      strokeLinejoin: "round",
-      fill: "none",
-      style: {
-        opacity: checked ? 1 : 0,
-        transform: checked ? "scale(1)" : "scale(0.5)",
-        transformOrigin: "12px 12px",
-        transition: "opacity 0.2s ease, transform 0.2s ease"
-      }
-    }
-  )
-] });
+var TrashMorphIcon2 = ({ size = 16, checked }) => /* @__PURE__ */ jsx5(
+  "svg",
+  {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "currentColor",
+    style: {
+      transform: checked ? "rotate(360deg)" : "rotate(0deg)",
+      transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+    children: /* @__PURE__ */ jsx5("path", { d: "M17.65 6.35c-1.63-1.63-3.94-2.57-6.48-2.31-3.67.37-6.69 3.35-7.1 7.02C3.52 15.91 7.27 20 12 20c3.19 0 5.93-1.87 7.21-4.56.32-.67-.16-1.44-.9-1.44-.37 0-.72.2-.88.53-1.13 2.43-3.84 3.97-6.8 3.31-2.22-.49-4.01-2.3-4.48-4.52C5.31 9.44 8.26 6 12 6c1.66 0 3.14.69 4.22 1.78l-1.51 1.51c-.63.63-.19 1.71.7 1.71H19c.55 0 1-.45 1-1V6.41c0-.89-1.08-1.34-1.71-.71l-.64.65z" })
+  }
+);
 var IconExternal2 = ({ size = 16 }) => /* @__PURE__ */ jsx5("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: /* @__PURE__ */ jsx5(
   "path",
   {
@@ -1190,63 +1181,149 @@ var IconPlus2 = ({ size = 16 }) => /* @__PURE__ */ jsx5("svg", { width: size, he
 // src/components/page-toolbar/index-css.tsx
 import { Fragment as Fragment2, jsx as jsx6, jsxs as jsxs6 } from "react/jsx-runtime";
 var cssAnimationStyles2 = `
-@keyframes agentation-fade-in {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
+/* Toolbar morphing */
+.agentation-toolbar-container {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3125rem;
+  border-radius: 1.5rem;
+  background: white;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 4px 16px rgba(0, 0, 0, 0.04),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
-@keyframes agentation-fade-scale-in {
-  from { opacity: 0; transform: scale(0.85) translateY(8px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+.agentation-toolbar-container[data-expanded="false"] {
+  padding: 0;
 }
 
-@keyframes agentation-toggle-in {
-  from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
+/* Control buttons fade in/out */
+.agentation-control-btn {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
+.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(1) { transition-delay: 0.02s; }
+.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(2) { transition-delay: 0.04s; }
+.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(3) { transition-delay: 0.06s; }
+.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(4) { transition-delay: 0.08s; }
+.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(5) { transition-delay: 0.1s; }
+.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(6) { transition-delay: 0.12s; }
+
+/* Main button */
+.agentation-main-btn {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.agentation-toolbar-container[data-expanded="true"] .agentation-main-btn {
+  transform: scale(0);
+  width: 0;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+}
+
+/* Hover highlight - more noticeable animation */
+@keyframes agentation-highlight-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.agentation-highlight-animate {
+  animation: agentation-highlight-in 0.15s ease-out forwards;
+  transform-origin: center center;
+}
+
+/* Marker animations */
 @keyframes agentation-marker-in {
   from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
   to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
+@keyframes agentation-marker-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+}
+
+.agentation-marker-enter {
+  animation: agentation-marker-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.agentation-marker-exit {
+  animation: agentation-marker-out 0.15s ease-in forwards;
+  pointer-events: none;
+}
+
+/* Pending marker animation */
+@keyframes agentation-pending-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes agentation-pending-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+}
+
+.agentation-pending-enter {
+  animation: agentation-pending-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.agentation-pending-exit {
+  animation: agentation-pending-out 0.15s ease-in forwards;
+  pointer-events: none;
+}
+
+/* Tooltip animations */
 @keyframes agentation-tooltip-in {
   from { opacity: 0; transform: translateX(-50%) translateY(4px) scale(0.95); }
   to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
-@keyframes agentation-hover-highlight-in {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.agentation-fade-in {
-  animation: agentation-fade-in 0.12s ease-out forwards;
-}
-
-.agentation-fade-scale-in {
-  animation: agentation-fade-scale-in 0.18s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
-}
-
-.agentation-toggle-in {
-  animation: agentation-toggle-in 0.15s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
-}
-
-.agentation-marker-in {
-  animation: agentation-marker-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-.agentation-tooltip-in {
+.agentation-tooltip-animate {
   animation: agentation-tooltip-in 0.1s ease-out forwards;
 }
 
-.agentation-hover-highlight-in {
-  animation: agentation-hover-highlight-in 0.12s ease-out forwards;
-  transform-origin: center center;
+/* Hover tooltip fade */
+@keyframes agentation-hover-tooltip-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
+.agentation-hover-tooltip-animate {
+  animation: agentation-hover-tooltip-in 0.1s ease-out forwards;
+}
+
+/* Button active state */
 .agentation-btn-active:active {
   transform: scale(0.95);
+}
+
+/* Divider */
+.agentation-divider {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.agentation-toolbar-container[data-expanded="true"] .agentation-divider {
+  opacity: 1;
+  transition-delay: 0.1s;
 }
 `;
 if (typeof document !== "undefined") {
@@ -1295,18 +1372,24 @@ function generateOutput2(annotations, pathname) {
 function PageFeedbackToolbarCSS() {
   const [isActive, setIsActive] = useState4(false);
   const [annotations, setAnnotations] = useState4([]);
+  const [markersWithState, setMarkersWithState] = useState4([]);
   const [showMarkers, setShowMarkers] = useState4(true);
   const [hoverInfo, setHoverInfo] = useState4(null);
   const [hoverPosition, setHoverPosition] = useState4({ x: 0, y: 0 });
   const [pendingAnnotation, setPendingAnnotation] = useState4(null);
+  const [pendingExiting, setPendingExiting] = useState4(false);
   const [copied, setCopied] = useState4(false);
   const [cleared, setCleared] = useState4(false);
   const [hoveredMarkerId, setHoveredMarkerId] = useState4(null);
   const [scrollY, setScrollY] = useState4(0);
   const [mounted, setMounted] = useState4(false);
   const [isFrozen, setIsFrozen] = useState4(false);
+  const [markersExiting, setMarkersExiting] = useState4(false);
   const popupRef = useRef4(null);
   const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
+  useEffect4(() => {
+    setMarkersWithState(annotations.map((a) => ({ ...a, exiting: false })));
+  }, [annotations]);
   useEffect4(() => {
     setMounted(true);
     setScrollY(window.scrollY);
@@ -1360,6 +1443,17 @@ function PageFeedbackToolbarCSS() {
     if (isFrozen) unfreezeAnimations();
     else freezeAnimations();
   }, [isFrozen, freezeAnimations, unfreezeAnimations]);
+  const handleCloseToolbar = useCallback4(() => {
+    if (markersWithState.length > 0) {
+      setMarkersExiting(true);
+      setTimeout(() => {
+        setMarkersExiting(false);
+        setIsActive(false);
+      }, 150);
+    } else {
+      setIsActive(false);
+    }
+  }, [markersWithState.length]);
   useEffect4(() => {
     if (!isActive) {
       setPendingAnnotation(null);
@@ -1446,10 +1540,19 @@ function PageFeedbackToolbarCSS() {
     window.getSelection()?.removeAllRanges();
   }, [pendingAnnotation]);
   const cancelAnnotation = useCallback4(() => {
-    setPendingAnnotation(null);
+    setPendingExiting(true);
+    setTimeout(() => {
+      setPendingExiting(false);
+      setPendingAnnotation(null);
+    }, 150);
   }, []);
   const deleteAnnotation = useCallback4((id) => {
-    setAnnotations((prev) => prev.filter((a) => a.id !== id));
+    setMarkersWithState(
+      (prev) => prev.map((m) => m.id === id ? { ...m, exiting: true } : m)
+    );
+    setTimeout(() => {
+      setAnnotations((prev) => prev.filter((a) => a.id !== id));
+    }, 150);
   }, []);
   const copyOutput = useCallback4(async () => {
     const output = generateOutput2(annotations, pathname);
@@ -1469,131 +1572,135 @@ function PageFeedbackToolbarCSS() {
       if (e.key === "Escape") {
         if (pendingAnnotation) {
         } else if (isActive) {
-          setIsActive(false);
+          handleCloseToolbar();
         }
       }
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isActive, pendingAnnotation]);
+  }, [isActive, pendingAnnotation, handleCloseToolbar]);
   if (!mounted) return null;
   const hasAnnotations = annotations.length > 0;
   const toViewportY = (absoluteY) => absoluteY - scrollY;
   return createPortal2(
     /* @__PURE__ */ jsxs6(Fragment2, { children: [
-      /* @__PURE__ */ jsx6("div", { className: styles_module_default2.toolbar, "data-feedback-toolbar": true, children: !isActive ? /* @__PURE__ */ jsxs6(
-        "button",
-        {
-          className: `${styles_module_default2.toggleButton} agentation-toggle-in`,
-          onClick: (e) => {
-            e.stopPropagation();
-            setIsActive(true);
-          },
-          title: "Start feedback mode",
-          children: [
-            /* @__PURE__ */ jsx6(IconFeedback2, { size: 18 }),
-            hasAnnotations && /* @__PURE__ */ jsx6("span", { className: styles_module_default2.badge, children: annotations.length })
-          ]
-        },
-        "toggle"
-      ) : /* @__PURE__ */ jsxs6(
+      /* @__PURE__ */ jsx6("div", { className: styles_module_default2.toolbar, "data-feedback-toolbar": true, children: /* @__PURE__ */ jsxs6(
         "div",
         {
-          className: `${styles_module_default2.controls} agentation-fade-scale-in`,
+          className: "agentation-toolbar-container",
+          "data-expanded": isActive,
           children: [
-            /* @__PURE__ */ jsx6(
+            /* @__PURE__ */ jsxs6(
               "button",
               {
-                className: `${styles_module_default2.controlButton} agentation-btn-active`,
+                className: `${styles_module_default2.toggleButton} agentation-main-btn`,
                 onClick: (e) => {
                   e.stopPropagation();
-                  toggleFreeze();
+                  setIsActive(true);
                 },
-                title: isFrozen ? "Resume animations" : "Pause animations",
-                "data-active": isFrozen,
-                children: isFrozen ? /* @__PURE__ */ jsx6(IconPlay2, { size: 16 }) : /* @__PURE__ */ jsx6(IconPause2, { size: 16 })
+                title: "Start feedback mode",
+                style: { display: isActive ? "none" : "flex" },
+                children: [
+                  /* @__PURE__ */ jsx6(IconFeedback2, { size: 18 }),
+                  hasAnnotations && /* @__PURE__ */ jsx6("span", { className: styles_module_default2.badge, children: annotations.length })
+                ]
               }
             ),
-            /* @__PURE__ */ jsx6(
-              "button",
-              {
-                className: `${styles_module_default2.controlButton} agentation-btn-active`,
-                onClick: (e) => {
-                  e.stopPropagation();
-                  setShowMarkers(!showMarkers);
-                },
-                title: showMarkers ? "Hide markers" : "Show markers",
-                children: /* @__PURE__ */ jsx6(EyeMorphIcon2, { size: 16, visible: showMarkers })
-              }
-            ),
-            /* @__PURE__ */ jsx6(
-              "button",
-              {
-                className: `${styles_module_default2.controlButton} agentation-btn-active`,
-                onClick: (e) => {
-                  e.stopPropagation();
-                  copyOutput();
-                },
-                disabled: !hasAnnotations,
-                title: "Copy feedback",
-                children: /* @__PURE__ */ jsx6(CopyMorphIcon2, { size: 16, checked: copied })
-              }
-            ),
-            /* @__PURE__ */ jsx6(
-              "button",
-              {
-                className: `${styles_module_default2.controlButton} agentation-btn-active`,
-                onClick: (e) => {
-                  e.stopPropagation();
-                  clearAll();
-                },
-                disabled: !hasAnnotations,
-                title: "Clear all",
-                "data-danger": true,
-                children: /* @__PURE__ */ jsx6(TrashMorphIcon2, { size: 16, checked: cleared })
-              }
-            ),
-            /* @__PURE__ */ jsx6("div", { className: styles_module_default2.divider }),
-            /* @__PURE__ */ jsx6(
-              "button",
-              {
-                className: `${styles_module_default2.controlButton} agentation-btn-active`,
-                onClick: (e) => {
-                  e.stopPropagation();
-                  setIsActive(false);
-                },
-                title: "Exit feedback mode",
-                children: /* @__PURE__ */ jsx6(IconChevronDown2, { size: 16 })
-              }
-            )
+            isActive && /* @__PURE__ */ jsxs6(Fragment2, { children: [
+              /* @__PURE__ */ jsx6(
+                "button",
+                {
+                  className: `${styles_module_default2.controlButton} agentation-control-btn agentation-btn-active`,
+                  onClick: (e) => {
+                    e.stopPropagation();
+                    toggleFreeze();
+                  },
+                  title: isFrozen ? "Resume animations" : "Pause animations",
+                  "data-active": isFrozen,
+                  children: isFrozen ? /* @__PURE__ */ jsx6(IconPlay2, { size: 16 }) : /* @__PURE__ */ jsx6(IconPause2, { size: 16 })
+                }
+              ),
+              /* @__PURE__ */ jsx6(
+                "button",
+                {
+                  className: `${styles_module_default2.controlButton} agentation-control-btn agentation-btn-active`,
+                  onClick: (e) => {
+                    e.stopPropagation();
+                    setShowMarkers(!showMarkers);
+                  },
+                  title: showMarkers ? "Hide markers" : "Show markers",
+                  children: /* @__PURE__ */ jsx6(EyeMorphIcon2, { size: 16, visible: showMarkers })
+                }
+              ),
+              /* @__PURE__ */ jsx6(
+                "button",
+                {
+                  className: `${styles_module_default2.controlButton} agentation-control-btn agentation-btn-active`,
+                  onClick: (e) => {
+                    e.stopPropagation();
+                    copyOutput();
+                  },
+                  disabled: !hasAnnotations,
+                  title: "Copy feedback",
+                  children: /* @__PURE__ */ jsx6(CopyMorphIcon2, { size: 16, checked: copied })
+                }
+              ),
+              /* @__PURE__ */ jsx6(
+                "button",
+                {
+                  className: `${styles_module_default2.controlButton} agentation-control-btn agentation-btn-active`,
+                  onClick: (e) => {
+                    e.stopPropagation();
+                    clearAll();
+                  },
+                  disabled: !hasAnnotations,
+                  title: "Clear all",
+                  "data-danger": true,
+                  children: /* @__PURE__ */ jsx6(TrashMorphIcon2, { size: 16, checked: cleared })
+                }
+              ),
+              /* @__PURE__ */ jsx6("div", { className: `${styles_module_default2.divider} agentation-divider` }),
+              /* @__PURE__ */ jsx6(
+                "button",
+                {
+                  className: `${styles_module_default2.controlButton} agentation-control-btn agentation-btn-active`,
+                  onClick: (e) => {
+                    e.stopPropagation();
+                    handleCloseToolbar();
+                  },
+                  title: "Exit feedback mode",
+                  children: /* @__PURE__ */ jsx6(IconChevronDown2, { size: 16 })
+                }
+              )
+            ] })
           ]
-        },
-        "controls"
+        }
       ) }),
-      /* @__PURE__ */ jsx6("div", { className: styles_module_default2.markersLayer, "data-feedback-toolbar": true, children: isActive && showMarkers && annotations.map((annotation, index) => {
+      /* @__PURE__ */ jsx6("div", { className: styles_module_default2.markersLayer, "data-feedback-toolbar": true, children: isActive && showMarkers && markersWithState.map((annotation, index) => {
         const viewportY = toViewportY(annotation.y);
         const isVisible = viewportY > -30 && viewportY < window.innerHeight + 30;
         if (!isVisible) return null;
         const isHovered = hoveredMarkerId === annotation.id;
+        const isExiting = annotation.exiting || markersExiting;
         return /* @__PURE__ */ jsxs6(
           "div",
           {
-            className: `${styles_module_default2.marker} ${isHovered ? styles_module_default2.hovered : ""} agentation-marker-in`,
+            className: `${styles_module_default2.marker} ${isHovered ? styles_module_default2.hovered : ""} ${isExiting ? "agentation-marker-exit" : "agentation-marker-enter"}`,
             "data-annotation-marker": true,
             style: {
               left: `${annotation.x}%`,
               top: viewportY,
-              animationDelay: `${index * 0.03}s`
+              animationDelay: isExiting ? "0s" : `${index * 0.03}s`
             },
-            onMouseEnter: () => setHoveredMarkerId(annotation.id),
+            onMouseEnter: () => !isExiting && setHoveredMarkerId(annotation.id),
             onMouseLeave: () => setHoveredMarkerId(null),
             onClick: (e) => {
               e.stopPropagation();
-              deleteAnnotation(annotation.id);
+              if (!isExiting) deleteAnnotation(annotation.id);
             },
             children: [
               isHovered ? /* @__PURE__ */ jsx6(IconClose2, { size: 10 }) : index + 1,
-              isHovered && /* @__PURE__ */ jsxs6("div", { className: `${styles_module_default2.markerTooltip} agentation-tooltip-in`, children: [
+              isHovered && !isExiting && /* @__PURE__ */ jsxs6("div", { className: `${styles_module_default2.markerTooltip} agentation-tooltip-animate`, children: [
                 annotation.selectedText && /* @__PURE__ */ jsxs6("span", { className: styles_module_default2.markerQuote, children: [
                   "\u201C",
                   annotation.selectedText.slice(0, 50),
@@ -1612,19 +1719,20 @@ function PageFeedbackToolbarCSS() {
         hoverInfo?.rect && !pendingAnnotation && /* @__PURE__ */ jsx6(
           "div",
           {
-            className: `${styles_module_default2.hoverHighlight} agentation-hover-highlight-in`,
+            className: `${styles_module_default2.hoverHighlight} agentation-highlight-animate`,
             style: {
               left: hoverInfo.rect.left,
               top: hoverInfo.rect.top,
               width: hoverInfo.rect.width,
               height: hoverInfo.rect.height
             }
-          }
+          },
+          `${hoverInfo.rect.left}-${hoverInfo.rect.top}-${hoverInfo.rect.width}`
         ),
         hoverInfo && !pendingAnnotation && /* @__PURE__ */ jsx6(
           "div",
           {
-            className: `${styles_module_default2.hoverTooltip} agentation-fade-in`,
+            className: `${styles_module_default2.hoverTooltip} agentation-hover-tooltip-animate`,
             style: {
               left: Math.min(hoverPosition.x, window.innerWidth - 150),
               top: Math.max(hoverPosition.y - 32, 8)
@@ -1632,19 +1740,19 @@ function PageFeedbackToolbarCSS() {
             children: hoverInfo.element
           }
         ),
-        pendingAnnotation && /* @__PURE__ */ jsxs6(Fragment2, { children: [
+        (pendingAnnotation || pendingExiting) && /* @__PURE__ */ jsxs6(Fragment2, { children: [
           /* @__PURE__ */ jsx6(
             "div",
             {
-              className: `${styles_module_default2.marker} ${styles_module_default2.pending} agentation-marker-in`,
+              className: `${styles_module_default2.marker} ${styles_module_default2.pending} ${pendingExiting ? "agentation-pending-exit" : "agentation-pending-enter"}`,
               style: {
-                left: `${pendingAnnotation.x}%`,
-                top: pendingAnnotation.clientY
+                left: `${pendingAnnotation?.x ?? 0}%`,
+                top: pendingAnnotation?.clientY ?? 0
               },
               children: /* @__PURE__ */ jsx6(IconPlus2, { size: 12 })
             }
           ),
-          /* @__PURE__ */ jsx6(
+          pendingAnnotation && !pendingExiting && /* @__PURE__ */ jsx6(
             AnnotationPopupCSS,
             {
               ref: popupRef,

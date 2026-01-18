@@ -97,10 +97,14 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupHandle, AnnotationPo
     // Shake animation - subtle shake
     const shake = useCallback(() => {
       setIsShaking(true);
-      setTimeout(() => {
+    }, []);
+
+    // Handle shake animation end - clear shake state cleanly
+    const handleAnimationEnd = useCallback((e: React.AnimationEvent) => {
+      if (e.animationName === 'agentation-popup-shake') {
         setIsShaking(false);
         textareaRef.current?.focus();
-      }, 250);
+      }
     }, []);
 
     // Expose shake to parent
@@ -133,6 +137,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupHandle, AnnotationPo
         data-annotation-popup
         style={style}
         onClick={(e) => e.stopPropagation()}
+        onAnimationEnd={handleAnimationEnd}
       >
         <div className={styles.header}>
           <span className={styles.element}>{element}</span>
