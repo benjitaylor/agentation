@@ -168,8 +168,10 @@ $red: #ff3b30;
 // =============================================================================
 
 .markersLayer {
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 99998;
   pointer-events: none;
 
@@ -183,7 +185,7 @@ $red: #ff3b30;
 // =============================================================================
 
 .marker {
-  position: fixed;
+  position: absolute;
   width: 22px;
   height: 22px;
   background: $blue;
@@ -199,8 +201,12 @@ $red: #ff3b30;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   transition: background 0.15s ease;
   user-select: none;
+  // Prevent any scroll-related jitter
+  will-change: transform;
+  contain: layout style;
 
   &.pending {
+    position: fixed; // Pending marker stays fixed to viewport
     background: $blue;
   }
 

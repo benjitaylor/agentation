@@ -65,6 +65,7 @@ const cssAnimationStyles = `
 }
 
 /* Marker animations - only for newly added markers */
+/* Note: markers use position: absolute with transform: translate(-50%, -50%) for centering */
 @keyframes agentation-marker-in {
   from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
   to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -651,7 +652,11 @@ export function PageFeedbackToolbarCSS() {
   if (!mounted) return null;
 
   const hasAnnotations = annotations.length > 0;
-  const toViewportY = (absoluteY: number) => absoluteY - scrollY;
+  // Check if marker is visible in viewport (for culling off-screen markers)
+  const isInViewport = (absoluteY: number) => {
+    const viewportY = absoluteY - scrollY;
+    return viewportY > -30 && viewportY < window.innerHeight + 30;
+  };
 
   return createPortal(
     <>
@@ -721,16 +726,15 @@ export function PageFeedbackToolbarCSS() {
         )}
       </div>
 
-      {/* Markers layer */}
+      {/* Markers layer - uses absolute positioning for scroll-locked markers */}
       <div
         className={`${styles.markersLayer} agentation-markers-layer ${markersHiding ? 'hiding' : ''}`}
         data-feedback-toolbar
       >
         {isActive && showMarkers &&
           annotations.map((annotation, index) => {
-            const viewportY = toViewportY(annotation.y);
-            const isVisible = viewportY > -30 && viewportY < window.innerHeight + 30;
-            if (!isVisible) return null;
+            // Only render markers visible in viewport (optimization)
+            if (!isInViewport(annotation.y)) return null;
 
             const isHovered = hoveredMarkerId === annotation.id;
             const isExiting = exitingIds.has(annotation.id);
@@ -748,7 +752,7 @@ export function PageFeedbackToolbarCSS() {
                 data-annotation-marker
                 style={{
                   left: `${annotation.x}%`,
-                  top: viewportY,
+                  top: annotation.y, // Absolute document position - browser handles scroll
                 }}
                 onMouseEnter={() => !isExiting && annotation.id !== recentlyAddedIdRef.current && setHoveredMarkerId(annotation.id)}
                 onMouseLeave={() => setHoveredMarkerId(null)}
