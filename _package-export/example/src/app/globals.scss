@@ -250,13 +250,21 @@ button {
       }
 
       &.active {
-        background: #1a1a1a;
         color: white;
       }
 
-      // Forensic button gets red when active
-      &:last-child.active {
-        background: #dc2626;
+      // Each format button gets a fitting active color
+      &:nth-child(1).active {
+        background: #6b7280; // Compact: gray (minimal)
+      }
+      &:nth-child(2).active {
+        background: #1a1a1a; // Standard: black (default)
+      }
+      &:nth-child(3).active {
+        background: #2563eb; // Detailed: blue (informative)
+      }
+      &:nth-child(4).active {
+        background: #dc2626; // Forensic: red (critical/debug)
       }
     }
   }
