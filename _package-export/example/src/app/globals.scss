@@ -57,30 +57,32 @@ body {
 
 // Typography
 h1, h2, h3, h4, h5, h6 {
-  color: var(--heading-color);
+  color: rgba(0, 0, 0, 0.85);
   position: relative;
 }
 
 h1 {
   font-size: 1.125rem;
-  font-weight: 600;
+  font-weight: 550;
   line-height: normal;
   letter-spacing: -0.02rem;
 }
 
 h2 {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.8125rem;
+  font-weight: 550;
   line-height: normal;
-  letter-spacing: -0.01rem;
-  margin-bottom: 0.75rem;
+  letter-spacing: -0.005rem;
+  margin-bottom: 0.625rem;
+  color: rgba(0, 0, 0, 0.7);
 }
 
 h3 {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   line-height: normal;
-  letter-spacing: -0.01rem;
+  letter-spacing: -0.005rem;
+  color: rgba(0, 0, 0, 0.7);
 }
 
 a {

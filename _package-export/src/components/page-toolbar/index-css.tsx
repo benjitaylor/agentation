@@ -166,34 +166,88 @@ type MarkerWithState = Annotation & { exiting?: boolean };
 // Utils
 // =============================================================================
 
-function generateOutput(annotations: Annotation[], pathname: string): string {
+type OutputFormat = 'standard' | 'detailed' | 'compact';
+
+function generateOutput(annotations: Annotation[], pathname: string, format: OutputFormat = 'standard'): string {
   if (annotations.length === 0) return "";
 
   const viewport = typeof window !== "undefined"
     ? `${window.innerWidth}×${window.innerHeight}`
     : "unknown";
 
+  if (format === 'compact') {
+    // Compact: Just the essentials for quick fixes
+    let output = `## Feedback: ${pathname}\n\n`;
+    annotations.forEach((a, i) => {
+      const selector = a.cssClasses ? `.${a.cssClasses.split(' ')[0]}` : a.elementPath;
+      output += `${i + 1}. **${selector}**`;
+      if (a.selectedText) output += ` ("${a.selectedText.slice(0, 30)}...")`;
+      output += `\n   ${a.comment}\n\n`;
+    });
+    return output.trim();
+  }
+
+  if (format === 'detailed') {
+    // Detailed: Full context for complex debugging
+    let output = `## Page Feedback: ${pathname}\n`;
+    output += `**Viewport:** ${viewport}\n`;
+    output += `**URL:** ${typeof window !== "undefined" ? window.location.href : pathname}\n`;
+    output += `**User Agent:** ${typeof navigator !== "undefined" ? navigator.userAgent.split(' ').slice(-2).join(' ') : 'unknown'}\n\n`;
+    output += `---\n\n`;
+
+    annotations.forEach((a, i) => {
+      output += `### ${i + 1}. ${a.element}\n\n`;
+
+      // Searchable selectors
+      output += `**Selector:** \`${a.elementPath}\`\n`;
+      if (a.cssClasses) {
+        const classes = a.cssClasses.split(' ').map(c => `.${c}`).join(', ');
+        output += `**Classes:** \`${classes}\`\n`;
+      }
+
+      // Position info
+      if (a.boundingBox) {
+        output += `**Bounding box:** x:${Math.round(a.boundingBox.x)}, y:${Math.round(a.boundingBox.y)}, ${Math.round(a.boundingBox.width)}×${Math.round(a.boundingBox.height)}px\n`;
+      }
+
+      // Text context
+      if (a.selectedText) {
+        output += `**Selected text:** "${a.selectedText}"\n`;
+      }
+      if (a.nearbyText) {
+        output += `**Nearby text:** "${a.nearbyText.slice(0, 150)}"\n`;
+      }
+
+      output += `\n**Issue:** ${a.comment}\n\n`;
+      output += `---\n\n`;
+    });
+
+    // Add search hints
+    output += `**Search tips:** Use the class names or selectors above to find these elements in your codebase. Try \`grep -r "className.*submit-btn"\` or search for the nearby text content.\n`;
+
+    return output.trim();
+  }
+
+  // Standard format (default)
   let output = `## Page Feedback: ${pathname}\n`;
   output += `**Viewport:** ${viewport}\n\n`;
 
   annotations.forEach((a, i) => {
     output += `### ${i + 1}. ${a.element}\n`;
-    output += `**Location:** ${a.elementPath}\n`;
+    output += `**Selector:** \`${a.elementPath}\`\n`;
 
     if (a.cssClasses) {
-      output += `**Classes:** ${a.cssClasses}\n`;
+      output += `**Classes:** \`${a.cssClasses}\`\n`;
     }
 
     if (a.boundingBox) {
-      output += `**Position:** ${Math.round(a.boundingBox.x)}px, ${Math.round(a.boundingBox.y)}px (${Math.round(a.boundingBox.width)}×${Math.round(a.boundingBox.height)}px)\n`;
+      output += `**Position:** ${Math.round(a.boundingBox.x)}, ${Math.round(a.boundingBox.y)} (${Math.round(a.boundingBox.width)}×${Math.round(a.boundingBox.height)})\n`;
     }
 
     if (a.selectedText) {
-      output += `**Selected text:** "${a.selectedText}"\n`;
-    }
-
-    if (a.nearbyText && !a.selectedText) {
-      output += `**Context:** ${a.nearbyText.slice(0, 100)}\n`;
+      output += `**Selected:** "${a.selectedText}"\n`;
+    } else if (a.nearbyText) {
+      output += `**Context:** "${a.nearbyText.slice(0, 80)}"\n`;
     }
 
     output += `**Feedback:** ${a.comment}\n\n`;
@@ -313,18 +367,10 @@ export function PageFeedbackToolbarCSS() {
     else freezeAnimations();
   }, [isFrozen, freezeAnimations, unfreezeAnimations]);
 
-  // Handle closing toolbar - animate markers out first
+  // Handle closing toolbar - instant close
   const handleCloseToolbar = useCallback(() => {
-    if (markersWithState.length > 0) {
-      setMarkersExiting(true);
-      setTimeout(() => {
-        setMarkersExiting(false);
-        setIsActive(false);
-      }, 150);
-    } else {
-      setIsActive(false);
-    }
-  }, [markersWithState.length]);
+    setIsActive(false);
+  }, []);
 
   // Reset state when deactivating
   useEffect(() => {

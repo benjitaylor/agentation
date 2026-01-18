@@ -20,11 +20,13 @@ const cssAnimationStyles = `
 }
 
 @keyframes agentation-popup-shake {
-  0%, 100% { transform: translateX(-50%) translateX(0); }
-  20% { transform: translateX(-50%) translateX(-3px); }
-  40% { transform: translateX(-50%) translateX(3px); }
-  60% { transform: translateX(-50%) translateX(-2px); }
-  80% { transform: translateX(-50%) translateX(2px); }
+  0%, 100% { transform: translateX(-50%); }
+  15% { transform: translateX(-50%) translateX(-3px); }
+  30% { transform: translateX(-50%) translateX(3px); }
+  45% { transform: translateX(-50%) translateX(-2px); }
+  60% { transform: translateX(-50%) translateX(2px); }
+  75% { transform: translateX(-50%) translateX(-1px); }
+  90% { transform: translateX(-50%) translateX(1px); }
 }
 
 .agentation-popup-animate-in {
@@ -32,7 +34,7 @@ const cssAnimationStyles = `
 }
 
 .agentation-popup-shake {
-  animation: agentation-popup-shake 0.25s ease-out;
+  animation: agentation-popup-shake 0.3s ease-out forwards !important;
 }
 `;
 

@@ -69,23 +69,24 @@ export default function AgentationDocs() {
         <section>
           <h2>Output format</h2>
           <p>
-            When you copy, you get markdown like this that you can paste directly into your agent:
+            When you copy, you get structured markdown that agents can parse and act on:
           </p>
           <pre className="code-block">{`## Page Feedback: /dashboard
 **Viewport:** 1512×738
 
 ### 1. button.submit-btn
-**Location:** .form-container > .actions > button.submit-btn
-**Position:** 450px, 320px (120×40px)
+**Selector:** \`.form-container > .actions > button.submit-btn\`
+**Classes:** \`submit-btn primary\`
+**Position:** 450, 320 (120×40)
 **Feedback:** Button text should say "Save" not "Submit"
 
-### 2. Selected text
-**Location:** .sidebar > nav > .nav-item
-**Quote:** "Settigns"
+### 2. span.nav-label
+**Selector:** \`.sidebar > nav > .nav-item > span\`
+**Selected:** "Settigns"
 **Feedback:** Typo - should be "Settings"`}</pre>
           <p>
-            The agent can use the element selectors, positions, and context to understand
-            exactly what you&rsquo;re referring to.
+            The output includes searchable selectors and class names that agents can <code>grep</code> for
+            in your codebase to find the exact component.
           </p>
         </section>
 

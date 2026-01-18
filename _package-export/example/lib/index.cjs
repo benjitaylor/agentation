@@ -496,7 +496,7 @@ function saveAnnotations(pathname, annotations) {
 }
 
 // src/components/page-toolbar/styles.module.scss
-var css2 = '.styles-module__toolbar___50aIA {\n  position: fixed;\n  bottom: 1.25rem;\n  right: 1.25rem;\n  z-index: 100000;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n}\n\n.styles-module__toggleButton___kgnvI {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 44px;\n  height: 44px;\n  border-radius: 22px;\n  border: none;\n  background: white;\n  color: rgba(0, 0, 0, 0.5);\n  cursor: pointer;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(0, 0, 0, 0.06);\n  transition: color 0.15s ease;\n}\n.styles-module__toggleButton___kgnvI:hover {\n  color: rgba(0, 0, 0, 0.8);\n}\n\n.styles-module__badge___WRMxo {\n  position: absolute;\n  top: -4px;\n  right: -4px;\n  min-width: 18px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  background: #3c82f7;\n  color: white;\n  font-size: 0.625rem;\n  font-weight: 600;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);\n}\n\n.styles-module__controls___2-kD- {\n  display: flex;\n  align-items: center;\n  gap: 0.25rem;\n  padding: 0.375rem;\n  border-radius: 1.5rem;\n  background: white;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(0, 0, 0, 0.06);\n}\n\n.styles-module__controlButton___RB3R5 {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 34px;\n  height: 34px;\n  border-radius: 50%;\n  border: none;\n  background: transparent;\n  color: rgba(0, 0, 0, 0.5);\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n.styles-module__controlButton___RB3R5:hover:not(:disabled) {\n  background: rgba(0, 0, 0, 0.06);\n  color: rgba(0, 0, 0, 0.75);\n}\n.styles-module__controlButton___RB3R5:active:not(:disabled) {\n  transform: scale(0.92);\n}\n.styles-module__controlButton___RB3R5:disabled {\n  opacity: 0.3;\n  cursor: not-allowed;\n}\n.styles-module__controlButton___RB3R5[data-active=true] {\n  color: #3c82f7;\n  background: rgba(60, 130, 247, 0.1);\n}\n.styles-module__controlButton___RB3R5[data-danger]:hover:not(:disabled) {\n  background: rgba(255, 59, 48, 0.1);\n  color: #ff3b30;\n}\n\n.styles-module__divider___yO3YX {\n  width: 1px;\n  height: 20px;\n  background: rgba(0, 0, 0, 0.1);\n  margin: 0 0.125rem;\n}\n\n.styles-module__overlay___pQK74 {\n  position: fixed;\n  inset: 0;\n  z-index: 99999;\n  pointer-events: none;\n}\n.styles-module__overlay___pQK74 > * {\n  pointer-events: auto;\n}\n\n.styles-module__hoverHighlight___iUTDq {\n  position: fixed;\n  border: 2px solid rgba(60, 130, 247, 0.6);\n  border-radius: 4px;\n  pointer-events: none !important;\n  background: rgba(60, 130, 247, 0.06);\n  box-sizing: border-box;\n  transform-origin: center center;\n}\n\n.styles-module__hoverTooltip___eOid- {\n  position: fixed;\n  font-size: 0.6875rem;\n  font-weight: 500;\n  color: #fff;\n  background: rgba(0, 0, 0, 0.85);\n  padding: 0.35rem 0.6rem;\n  border-radius: 0.375rem;\n  pointer-events: none !important;\n  white-space: nowrap;\n  max-width: 200px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.styles-module__markersLayer___RFGiE {\n  position: fixed;\n  inset: 0;\n  z-index: 99998;\n  pointer-events: none;\n}\n.styles-module__markersLayer___RFGiE > * {\n  pointer-events: auto;\n}\n\n.styles-module__marker___XNegd {\n  position: fixed;\n  width: 22px;\n  height: 22px;\n  background: #3c82f7;\n  color: white;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 0.6875rem;\n  font-weight: 600;\n  transform: translate(-50%, -50%);\n  cursor: pointer;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n  transition: background 0.15s ease;\n  user-select: none;\n}\n.styles-module__marker___XNegd.styles-module__pending___h4sf4 {\n  background: #3c82f7;\n}\n.styles-module__marker___XNegd.styles-module__hovered___WMoLv {\n  background: #ff3b30;\n}\n\n.styles-module__markerTooltip___pbJGs {\n  position: absolute;\n  top: calc(100% + 10px);\n  left: 50%;\n  transform: translateX(-50%);\n  background: white;\n  padding: 0.625rem 0.75rem;\n  border-radius: 0.5rem;\n  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);\n  min-width: 160px;\n  max-width: 280px;\n  pointer-events: none;\n  cursor: default;\n}\n\n.styles-module__markerQuote___bZuZt {\n  display: block;\n  font-size: 0.6875rem;\n  font-style: italic;\n  color: rgba(0, 0, 0, 0.5);\n  margin-bottom: 0.375rem;\n  line-height: 1.4;\n}\n\n.styles-module__markerNote___AvTvH {\n  display: block;\n  font-size: 0.75rem;\n  font-weight: 450;\n  line-height: 1.4;\n  color: #333;\n  white-space: normal;\n}\n\n.styles-module__markerHint___drxqW {\n  display: block;\n  font-size: 0.625rem;\n  font-weight: 400;\n  color: rgba(0, 0, 0, 0.3);\n  margin-top: 0.375rem;\n}';
+var css2 = '.styles-module__toolbar___50aIA {\n  position: fixed;\n  bottom: 1.25rem;\n  right: 1.25rem;\n  z-index: 100000;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n}\n\n.styles-module__toggleButton___kgnvI {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 44px;\n  height: 44px;\n  border-radius: 22px;\n  border: none;\n  background: #1a1a1a;\n  color: rgba(255, 255, 255, 0.7);\n  cursor: pointer;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1);\n  transition: all 0.15s ease;\n}\n.styles-module__toggleButton___kgnvI:hover {\n  color: rgba(255, 255, 255, 0.95);\n  background: #2a2a2a;\n}\n\n.styles-module__badge___WRMxo {\n  position: absolute;\n  top: -4px;\n  right: -4px;\n  min-width: 18px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  background: #3c82f7;\n  color: white;\n  font-size: 0.625rem;\n  font-weight: 600;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);\n}\n\n.styles-module__controls___2-kD- {\n  display: flex;\n  align-items: center;\n  gap: 0.25rem;\n  padding: 0.375rem;\n  border-radius: 1.5rem;\n  background: #1a1a1a;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1);\n}\n\n.styles-module__controlButton___RB3R5 {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 34px;\n  height: 34px;\n  border-radius: 50%;\n  border: none;\n  background: transparent;\n  color: rgba(255, 255, 255, 0.6);\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n.styles-module__controlButton___RB3R5:hover:not(:disabled) {\n  background: rgba(255, 255, 255, 0.1);\n  color: rgba(255, 255, 255, 0.9);\n}\n.styles-module__controlButton___RB3R5:active:not(:disabled) {\n  transform: scale(0.92);\n}\n.styles-module__controlButton___RB3R5:disabled {\n  opacity: 0.3;\n  cursor: not-allowed;\n}\n.styles-module__controlButton___RB3R5[data-active=true] {\n  color: #3c82f7;\n  background: rgba(60, 130, 247, 0.2);\n}\n.styles-module__controlButton___RB3R5[data-danger]:hover:not(:disabled) {\n  background: rgba(255, 59, 48, 0.2);\n  color: #ff3b30;\n}\n\n.styles-module__divider___yO3YX {\n  width: 1px;\n  height: 20px;\n  background: rgba(255, 255, 255, 0.15);\n  margin: 0 0.125rem;\n}\n\n.styles-module__overlay___pQK74 {\n  position: fixed;\n  inset: 0;\n  z-index: 99999;\n  pointer-events: none;\n}\n.styles-module__overlay___pQK74 > * {\n  pointer-events: auto;\n}\n\n.styles-module__hoverHighlight___iUTDq {\n  position: fixed;\n  border: 2px solid rgba(60, 130, 247, 0.5);\n  border-radius: 4px;\n  pointer-events: none !important;\n  background: rgba(60, 130, 247, 0.04);\n  box-sizing: border-box;\n  will-change: opacity;\n  contain: layout style;\n}\n\n.styles-module__hoverTooltip___eOid- {\n  position: fixed;\n  font-size: 0.6875rem;\n  font-weight: 500;\n  color: #fff;\n  background: rgba(0, 0, 0, 0.85);\n  padding: 0.35rem 0.6rem;\n  border-radius: 0.375rem;\n  pointer-events: none !important;\n  white-space: nowrap;\n  max-width: 200px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.styles-module__markersLayer___RFGiE {\n  position: fixed;\n  inset: 0;\n  z-index: 99998;\n  pointer-events: none;\n}\n.styles-module__markersLayer___RFGiE > * {\n  pointer-events: auto;\n}\n\n.styles-module__marker___XNegd {\n  position: fixed;\n  width: 22px;\n  height: 22px;\n  background: #3c82f7;\n  color: white;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 0.6875rem;\n  font-weight: 600;\n  transform: translate(-50%, -50%);\n  cursor: pointer;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n  transition: background 0.15s ease;\n  user-select: none;\n}\n.styles-module__marker___XNegd.styles-module__pending___h4sf4 {\n  background: #3c82f7;\n}\n.styles-module__marker___XNegd.styles-module__hovered___WMoLv {\n  background: #ff3b30;\n}\n\n.styles-module__markerTooltip___pbJGs {\n  position: absolute;\n  top: calc(100% + 10px);\n  left: 50%;\n  transform: translateX(-50%);\n  background: white;\n  padding: 0.625rem 0.75rem;\n  border-radius: 0.5rem;\n  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);\n  min-width: 160px;\n  max-width: 280px;\n  pointer-events: none;\n  cursor: default;\n}\n\n.styles-module__markerQuote___bZuZt {\n  display: block;\n  font-size: 0.6875rem;\n  font-style: italic;\n  color: rgba(0, 0, 0, 0.5);\n  margin-bottom: 0.375rem;\n  line-height: 1.4;\n}\n\n.styles-module__markerNote___AvTvH {\n  display: block;\n  font-size: 0.75rem;\n  font-weight: 450;\n  line-height: 1.4;\n  color: #333;\n  white-space: normal;\n}\n\n.styles-module__markerHint___drxqW {\n  display: block;\n  font-size: 0.625rem;\n  font-weight: 400;\n  color: rgba(0, 0, 0, 0.3);\n  margin-top: 0.375rem;\n}';
 var classNames2 = { "toolbar": "styles-module__toolbar___50aIA", "toggleButton": "styles-module__toggleButton___kgnvI", "badge": "styles-module__badge___WRMxo", "controls": "styles-module__controls___2-kD-", "controlButton": "styles-module__controlButton___RB3R5", "divider": "styles-module__divider___yO3YX", "overlay": "styles-module__overlay___pQK74", "hoverHighlight": "styles-module__hoverHighlight___iUTDq", "hoverTooltip": "styles-module__hoverTooltip___eOid-", "markersLayer": "styles-module__markersLayer___RFGiE", "marker": "styles-module__marker___XNegd", "pending": "styles-module__pending___h4sf4", "hovered": "styles-module__hovered___WMoLv", "markerTooltip": "styles-module__markerTooltip___pbJGs", "markerQuote": "styles-module__markerQuote___bZuZt", "markerNote": "styles-module__markerNote___AvTvH", "markerHint": "styles-module__markerHint___drxqW" };
 if (typeof document !== "undefined") {
   let style = document.getElementById("feedback-tool-styles-page-toolbar-styles");
@@ -1007,11 +1007,13 @@ var cssAnimationStyles = `
 }
 
 @keyframes agentation-popup-shake {
-  0%, 100% { transform: translateX(-50%) translateX(0); }
-  20% { transform: translateX(-50%) translateX(-3px); }
-  40% { transform: translateX(-50%) translateX(3px); }
-  60% { transform: translateX(-50%) translateX(-2px); }
-  80% { transform: translateX(-50%) translateX(2px); }
+  0%, 100% { transform: translateX(-50%); }
+  15% { transform: translateX(-50%) translateX(-3px); }
+  30% { transform: translateX(-50%) translateX(3px); }
+  45% { transform: translateX(-50%) translateX(-2px); }
+  60% { transform: translateX(-50%) translateX(2px); }
+  75% { transform: translateX(-50%) translateX(-1px); }
+  90% { transform: translateX(-50%) translateX(1px); }
 }
 
 .agentation-popup-animate-in {
@@ -1019,7 +1021,7 @@ var cssAnimationStyles = `
 }
 
 .agentation-popup-shake {
-  animation: agentation-popup-shake 0.25s ease-out;
+  animation: agentation-popup-shake 0.3s ease-out forwards !important;
 }
 `;
 if (typeof document !== "undefined") {
@@ -1340,9 +1342,72 @@ if (typeof document !== "undefined") {
     document.head.appendChild(style);
   }
 }
-function generateOutput2(annotations, pathname) {
+function generateOutput2(annotations, pathname, format = "standard") {
   if (annotations.length === 0) return "";
   const viewport = typeof window !== "undefined" ? `${window.innerWidth}\xD7${window.innerHeight}` : "unknown";
+  if (format === "compact") {
+    let output2 = `## Feedback: ${pathname}
+
+`;
+    annotations.forEach((a, i) => {
+      const selector = a.cssClasses ? `.${a.cssClasses.split(" ")[0]}` : a.elementPath;
+      output2 += `${i + 1}. **${selector}**`;
+      if (a.selectedText) output2 += ` ("${a.selectedText.slice(0, 30)}...")`;
+      output2 += `
+   ${a.comment}
+
+`;
+    });
+    return output2.trim();
+  }
+  if (format === "detailed") {
+    let output2 = `## Page Feedback: ${pathname}
+`;
+    output2 += `**Viewport:** ${viewport}
+`;
+    output2 += `**URL:** ${typeof window !== "undefined" ? window.location.href : pathname}
+`;
+    output2 += `**User Agent:** ${typeof navigator !== "undefined" ? navigator.userAgent.split(" ").slice(-2).join(" ") : "unknown"}
+
+`;
+    output2 += `---
+
+`;
+    annotations.forEach((a, i) => {
+      output2 += `### ${i + 1}. ${a.element}
+
+`;
+      output2 += `**Selector:** \`${a.elementPath}\`
+`;
+      if (a.cssClasses) {
+        const classes = a.cssClasses.split(" ").map((c) => `.${c}`).join(", ");
+        output2 += `**Classes:** \`${classes}\`
+`;
+      }
+      if (a.boundingBox) {
+        output2 += `**Bounding box:** x:${Math.round(a.boundingBox.x)}, y:${Math.round(a.boundingBox.y)}, ${Math.round(a.boundingBox.width)}\xD7${Math.round(a.boundingBox.height)}px
+`;
+      }
+      if (a.selectedText) {
+        output2 += `**Selected text:** "${a.selectedText}"
+`;
+      }
+      if (a.nearbyText) {
+        output2 += `**Nearby text:** "${a.nearbyText.slice(0, 150)}"
+`;
+      }
+      output2 += `
+**Issue:** ${a.comment}
+
+`;
+      output2 += `---
+
+`;
+    });
+    output2 += `**Search tips:** Use the class names or selectors above to find these elements in your codebase. Try \`grep -r "className.*submit-btn"\` or search for the nearby text content.
+`;
+    return output2.trim();
+  }
   let output = `## Page Feedback: ${pathname}
 `;
   output += `**Viewport:** ${viewport}
@@ -1351,22 +1416,21 @@ function generateOutput2(annotations, pathname) {
   annotations.forEach((a, i) => {
     output += `### ${i + 1}. ${a.element}
 `;
-    output += `**Location:** ${a.elementPath}
+    output += `**Selector:** \`${a.elementPath}\`
 `;
     if (a.cssClasses) {
-      output += `**Classes:** ${a.cssClasses}
+      output += `**Classes:** \`${a.cssClasses}\`
 `;
     }
     if (a.boundingBox) {
-      output += `**Position:** ${Math.round(a.boundingBox.x)}px, ${Math.round(a.boundingBox.y)}px (${Math.round(a.boundingBox.width)}\xD7${Math.round(a.boundingBox.height)}px)
+      output += `**Position:** ${Math.round(a.boundingBox.x)}, ${Math.round(a.boundingBox.y)} (${Math.round(a.boundingBox.width)}\xD7${Math.round(a.boundingBox.height)})
 `;
     }
     if (a.selectedText) {
-      output += `**Selected text:** "${a.selectedText}"
+      output += `**Selected:** "${a.selectedText}"
 `;
-    }
-    if (a.nearbyText && !a.selectedText) {
-      output += `**Context:** ${a.nearbyText.slice(0, 100)}
+    } else if (a.nearbyText) {
+      output += `**Context:** "${a.nearbyText.slice(0, 80)}"
 `;
     }
     output += `**Feedback:** ${a.comment}
@@ -1450,16 +1514,8 @@ function PageFeedbackToolbarCSS() {
     else freezeAnimations();
   }, [isFrozen, freezeAnimations, unfreezeAnimations]);
   const handleCloseToolbar = (0, import_react4.useCallback)(() => {
-    if (markersWithState.length > 0) {
-      setMarkersExiting(true);
-      setTimeout(() => {
-        setMarkersExiting(false);
-        setIsActive(false);
-      }, 150);
-    } else {
-      setIsActive(false);
-    }
-  }, [markersWithState.length]);
+    setIsActive(false);
+  }, []);
   (0, import_react4.useEffect)(() => {
     if (!isActive) {
       setPendingAnnotation(null);
