@@ -34,73 +34,54 @@ import styles from "./styles.module.scss";
 // =============================================================================
 
 const cssAnimationStyles = `
-/* Toolbar morphing */
-.agentation-toolbar-container {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.3125rem;
-  border-radius: 1.5rem;
-  background: white;
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.08),
-    0 4px 16px rgba(0, 0, 0, 0.04),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.06);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
+/* Toolbar toggle button - fade in */
+@keyframes agentation-toggle-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-.agentation-toolbar-container[data-expanded="false"] {
-  padding: 0;
+@keyframes agentation-toggle-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.9); }
 }
 
-/* Control buttons fade in/out */
-.agentation-control-btn {
-  opacity: 0;
-  transform: scale(0.8);
-  transition: opacity 0.15s ease, transform 0.15s ease;
+.agentation-toggle-enter {
+  animation: agentation-toggle-in 0.15s ease-out forwards;
 }
 
-.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn {
-  opacity: 1;
-  transform: scale(1);
+.agentation-toggle-exit {
+  animation: agentation-toggle-out 0.12s ease-in forwards;
+  pointer-events: none;
 }
 
-.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(1) { transition-delay: 0.02s; }
-.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(2) { transition-delay: 0.04s; }
-.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(3) { transition-delay: 0.06s; }
-.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(4) { transition-delay: 0.08s; }
-.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(5) { transition-delay: 0.1s; }
-.agentation-toolbar-container[data-expanded="true"] .agentation-control-btn:nth-child(6) { transition-delay: 0.12s; }
-
-/* Main button */
-.agentation-main-btn {
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+/* Controls bar - fade in */
+@keyframes agentation-controls-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-.agentation-toolbar-container[data-expanded="true"] .agentation-main-btn {
-  transform: scale(0);
-  width: 0;
-  padding: 0;
-  margin: 0;
-  opacity: 0;
+@keyframes agentation-controls-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.95); }
 }
 
-/* Hover highlight - more noticeable animation */
-@keyframes agentation-highlight-in {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.agentation-controls-enter {
+  animation: agentation-controls-in 0.15s ease-out forwards;
 }
 
+.agentation-controls-exit {
+  animation: agentation-controls-out 0.12s ease-in forwards;
+  pointer-events: none;
+}
+
+/* Hover highlight - simple fast fade */
 .agentation-highlight-animate {
-  animation: agentation-highlight-in 0.15s ease-out forwards;
-  transform-origin: center center;
+  animation: agentation-fade-in 0.08s ease-out forwards;
+}
+
+@keyframes agentation-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Marker animations */
@@ -145,8 +126,8 @@ const cssAnimationStyles = `
 
 /* Tooltip animations */
 @keyframes agentation-tooltip-in {
-  from { opacity: 0; transform: translateX(-50%) translateY(4px) scale(0.95); }
-  to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 .agentation-tooltip-animate {
@@ -154,29 +135,8 @@ const cssAnimationStyles = `
 }
 
 /* Hover tooltip fade */
-@keyframes agentation-hover-tooltip-in {
-  from { opacity: 0; transform: translateY(2px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 .agentation-hover-tooltip-animate {
-  animation: agentation-hover-tooltip-in 0.1s ease-out forwards;
-}
-
-/* Button active state */
-.agentation-btn-active:active {
-  transform: scale(0.95);
-}
-
-/* Divider */
-.agentation-divider {
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.agentation-toolbar-container[data-expanded="true"] .agentation-divider {
-  opacity: 1;
-  transition-delay: 0.1s;
+  animation: agentation-fade-in 0.08s ease-out forwards;
 }
 `;
 
@@ -582,74 +542,70 @@ export function PageFeedbackToolbarCSS() {
 
   return createPortal(
     <>
-      {/* Unified Toolbar - morphs between collapsed and expanded */}
+      {/* Toolbar */}
       <div className={styles.toolbar} data-feedback-toolbar>
-        <div
-          className="agentation-toolbar-container"
-          data-expanded={isActive}
-        >
-          {/* Main feedback button - visible when collapsed */}
+        {/* Toggle button - shown when collapsed */}
+        {!isActive && (
           <button
-            className={`${styles.toggleButton} agentation-main-btn`}
+            className={`${styles.toggleButton} agentation-toggle-enter`}
             onClick={(e) => { e.stopPropagation(); setIsActive(true); }}
             title="Start feedback mode (⌘⇧A)"
-            style={{ display: isActive ? 'none' : 'flex' }}
           >
             <IconFeedback size={18} />
             {hasAnnotations && <span className={styles.badge}>{annotations.length}</span>}
           </button>
+        )}
 
-          {/* Control buttons - visible when expanded */}
-          {isActive && (
-            <>
-              <button
-                className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
-                onClick={(e) => { e.stopPropagation(); toggleFreeze(); }}
-                title={isFrozen ? "Resume animations (P)" : "Pause animations (P)"}
-                data-active={isFrozen}
-              >
-                {isFrozen ? <IconPlay size={16} /> : <IconPause size={16} />}
-              </button>
+        {/* Controls bar - shown when expanded */}
+        {isActive && (
+          <div className={`${styles.controls} agentation-controls-enter`}>
+            <button
+              className={styles.controlButton}
+              onClick={(e) => { e.stopPropagation(); toggleFreeze(); }}
+              title={isFrozen ? "Resume animations (P)" : "Pause animations (P)"}
+              data-active={isFrozen}
+            >
+              {isFrozen ? <IconPlay size={16} /> : <IconPause size={16} />}
+            </button>
 
-              <button
-                className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
-                onClick={(e) => { e.stopPropagation(); setShowMarkers(!showMarkers); }}
-                title={showMarkers ? "Hide markers (H)" : "Show markers (H)"}
-              >
-                <EyeMorphIcon size={16} visible={showMarkers} />
-              </button>
+            <button
+              className={styles.controlButton}
+              onClick={(e) => { e.stopPropagation(); setShowMarkers(!showMarkers); }}
+              title={showMarkers ? "Hide markers (H)" : "Show markers (H)"}
+            >
+              <EyeMorphIcon size={16} visible={showMarkers} />
+            </button>
 
-              <button
-                className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
-                onClick={(e) => { e.stopPropagation(); copyOutput(); }}
-                disabled={!hasAnnotations}
-                title="Copy feedback (C)"
-              >
-                <CopyMorphIcon size={16} checked={copied} />
-              </button>
+            <button
+              className={styles.controlButton}
+              onClick={(e) => { e.stopPropagation(); copyOutput(); }}
+              disabled={!hasAnnotations}
+              title="Copy feedback (C)"
+            >
+              <CopyMorphIcon size={16} checked={copied} />
+            </button>
 
-              <button
-                className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
-                onClick={(e) => { e.stopPropagation(); clearAll(); }}
-                disabled={!hasAnnotations}
-                title="Clear all (X)"
-                data-danger
-              >
-                <TrashMorphIcon size={16} checked={cleared} />
-              </button>
+            <button
+              className={styles.controlButton}
+              onClick={(e) => { e.stopPropagation(); clearAll(); }}
+              disabled={!hasAnnotations}
+              title="Clear all (X)"
+              data-danger
+            >
+              <TrashMorphIcon size={16} checked={cleared} />
+            </button>
 
-              <div className={`${styles.divider} agentation-divider`} />
+            <div className={styles.divider} />
 
-              <button
-                className={`${styles.controlButton} agentation-control-btn agentation-btn-active`}
-                onClick={(e) => { e.stopPropagation(); handleCloseToolbar(); }}
-                title="Exit feedback mode (Esc)"
-              >
-                <IconChevronDown size={16} />
-              </button>
-            </>
-          )}
-        </div>
+            <button
+              className={styles.controlButton}
+              onClick={(e) => { e.stopPropagation(); handleCloseToolbar(); }}
+              title="Exit feedback mode (Esc)"
+            >
+              <IconChevronDown size={16} />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Markers layer */}
