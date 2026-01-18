@@ -72,6 +72,10 @@ $green: #34C759;
     border-color: $blue;
   }
 
+  &.green:focus {
+    border-color: $green;
+  }
+
   &::placeholder {
     color: rgba(0, 0, 0, 0.35);
   }

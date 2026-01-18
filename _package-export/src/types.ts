@@ -5,7 +5,7 @@
 export type Annotation = {
   id: string;
   x: number; // % of viewport width
-  y: number; // px from top of document (absolute)
+  y: number; // px from top of document (absolute) OR viewport (if isFixed)
   comment: string;
   element: string;
   elementPath: string;
@@ -18,6 +18,8 @@ export type Annotation = {
   computedStyles?: string;
   fullPath?: string;
   accessibility?: string;
+  isMultiSelect?: boolean; // true if created via drag selection
+  isFixed?: boolean; // true if element has fixed/sticky positioning (marker stays fixed)
 };
 
 // TODO: Add configuration types when abstracting config

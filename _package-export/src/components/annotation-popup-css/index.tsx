@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
-import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import styles from "./styles.module.scss";
 
 // =============================================================================
 // Types
 // =============================================================================
 
-export interface AnnotationPopupProps {
+export interface AnnotationPopupCSSProps {
   /** Element name to display in header */
   element: string;
   /** Optional timestamp display (e.g., "@ 1.23s" for animation feedback) */
@@ -23,11 +22,11 @@ export interface AnnotationPopupProps {
   onCancel: () => void;
   /** Position styles (left, top) */
   style?: React.CSSProperties;
-  /** Color variant for submit button */
-  variant?: "blue" | "green";
+  /** Custom color for submit button and textarea focus (hex) */
+  accentColor?: string;
 }
 
-export interface AnnotationPopupHandle {
+export interface AnnotationPopupCSSHandle {
   /** Shake the popup (e.g., when user clicks outside) */
   shake: () => void;
 }
@@ -36,8 +35,18 @@ export interface AnnotationPopupHandle {
 // Component
 // =============================================================================
 
-export const AnnotationPopup = forwardRef<AnnotationPopupHandle, AnnotationPopupProps>(
-  function AnnotationPopup(
+// Darken a hex color by a percentage
+function darkenColor(hex: string, percent: number): string {
+  const num = parseInt(hex.replace("#", ""), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = Math.max((num >> 16) - amt, 0);
+  const G = Math.max((num >> 8 & 0x00FF) - amt, 0);
+  const B = Math.max((num & 0x0000FF) - amt, 0);
+  return `#${(0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1)}`;
+}
+
+export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, AnnotationPopupCSSProps>(
+  function AnnotationPopupCSS(
     {
       element,
       timestamp,
@@ -46,36 +55,57 @@ export const AnnotationPopup = forwardRef<AnnotationPopupHandle, AnnotationPopup
       onSubmit,
       onCancel,
       style,
-      variant = "blue",
+      accentColor = "#3c82f7",
     },
     ref
   ) {
     const [text, setText] = useState("");
+    const [isShaking, setIsShaking] = useState(false);
+    const [animState, setAnimState] = useState<"initial" | "enter" | "entered" | "exit">("initial");
+    const [isFocused, setIsFocused] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const controls = useAnimation();
+    const popupRef = useRef<HTMLDivElement>(null);
 
     // Animate in on mount and focus textarea
     useEffect(() => {
-      controls.start({ opacity: 1, scale: 1, y: 0 });
-      const timer = setTimeout(() => textareaRef.current?.focus(), 10);
-      return () => clearTimeout(timer);
-    }, [controls]);
-
-    // Shake animation - subtle shake for the popup container
-    const shake = useCallback(async () => {
-      await controls.start({
-        x: [0, -3, 3, -2, 2, 0],
-        transition: { duration: 0.25, ease: "easeOut" },
+      // Start enter animation
+      requestAnimationFrame(() => {
+        setAnimState("enter");
       });
-      textareaRef.current?.focus();
-    }, [controls]);
+      // Transition to entered state after animation completes
+      const enterTimer = setTimeout(() => {
+        setAnimState("entered");
+      }, 200); // Match animation duration
+      const focusTimer = setTimeout(() => textareaRef.current?.focus(), 50);
+      return () => {
+        clearTimeout(enterTimer);
+        clearTimeout(focusTimer);
+      };
+    }, []);
 
-    // Expose shake to parent via ref (for click-outside behavior)
+    // Shake animation
+    const shake = useCallback(() => {
+      setIsShaking(true);
+      setTimeout(() => {
+        setIsShaking(false);
+        textareaRef.current?.focus();
+      }, 250);
+    }, []);
+
+    // Expose shake to parent via ref
     useImperativeHandle(ref, () => ({
       shake,
     }), [shake]);
 
-    // Handle submit - only submits if there's text
+    // Handle cancel with exit animation
+    const handleCancel = useCallback(() => {
+      setAnimState("exit");
+      setTimeout(() => {
+        onCancel();
+      }, 150); // Match exit animation duration
+    }, [onCancel]);
+
+    // Handle submit
     const handleSubmit = useCallback(() => {
       if (!text.trim()) return;
       onSubmit(text.trim());
@@ -89,21 +119,25 @@ export const AnnotationPopup = forwardRef<AnnotationPopupHandle, AnnotationPopup
           handleSubmit();
         }
         if (e.key === "Escape") {
-          // Escape always closes
-          onCancel();
+          handleCancel();
         }
       },
-      [handleSubmit, onCancel]
+      [handleSubmit, handleCancel]
     );
 
+    const popupClassName = [
+      styles.popup,
+      animState === "enter" ? styles.enter : "",
+      animState === "entered" ? styles.entered : "",
+      animState === "exit" ? styles.exit : "",
+      isShaking ? styles.shake : "",
+    ].filter(Boolean).join(" ");
+
     return (
-      <motion.div
-        className={styles.popup}
+      <div
+        ref={popupRef}
+        className={popupClassName}
         data-annotation-popup
-        initial={{ opacity: 0, scale: 0.95, y: 4 }}
-        animate={controls}
-        exit={{ opacity: 0, scale: 0.95, y: 4 }}
-        transition={{ type: "spring", stiffness: 500, damping: 35 }}
         style={style}
         onClick={(e) => e.stopPropagation()}
       >
@@ -121,44 +155,36 @@ export const AnnotationPopup = forwardRef<AnnotationPopupHandle, AnnotationPopup
 
         <textarea
           ref={textareaRef}
-          className={`${styles.textarea} ${variant === "green" ? styles.green : ""}`}
+          className={styles.textarea}
+          style={{ borderColor: isFocused ? accentColor : undefined }}
           placeholder={placeholder}
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           rows={2}
           onKeyDown={handleKeyDown}
         />
 
         <div className={styles.actions}>
-          <button className={styles.cancel} onClick={onCancel}>
+          <button className={styles.cancel} onClick={handleCancel}>
             Cancel
           </button>
           <button
-            className={`${styles.submit} ${variant === "green" ? styles.green : ""}`}
+            className={styles.submit}
+            style={{
+              backgroundColor: accentColor,
+              opacity: text.trim() ? 1 : 0.4,
+            }}
             onClick={handleSubmit}
             disabled={!text.trim()}
           >
             Add
           </button>
         </div>
-      </motion.div>
+      </div>
     );
   }
 );
 
-// =============================================================================
-// Wrapper for AnimatePresence (convenience export)
-// =============================================================================
-
-export function AnnotationPopupPresence({
-  isOpen,
-  ...props
-}: AnnotationPopupProps & { isOpen: boolean }) {
-  return (
-    <AnimatePresence>
-      {isOpen && <AnnotationPopup {...props} />}
-    </AnimatePresence>
-  );
-}
-
-export default AnnotationPopup;
+export default AnnotationPopupCSS;
