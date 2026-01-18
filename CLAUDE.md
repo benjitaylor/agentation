@@ -58,15 +58,24 @@ agentation/
 
 ## Development
 
-```bash
-cd _package-export
-pnpm install
-pnpm build      # Build the package
-pnpm dev        # Watch mode
+The project uses pnpm workspaces for local development with hot reloading.
 
-# Test with example app
-cd example && pnpm install && pnpm dev
+```bash
+# Install all workspace dependencies (run from root)
+pnpm install
+
+# Start both watch mode and dev server
+pnpm dev
+
+# Or run separately:
+pnpm --filter agentation watch        # Watch mode for library
+pnpm --filter feedback-tool-example dev  # Dev server for example app
+
+# Build the library only
+pnpm build
 ```
+
+The example app now imports directly from the `agentation` package via workspace linking, so changes to the library source automatically trigger rebuilds that the Next.js dev server picks up.
 
 ## Key Implementation Details
 

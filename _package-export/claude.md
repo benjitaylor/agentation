@@ -15,21 +15,27 @@ Group changes under the current date and appropriate category:
 - `src/components/page-toolbar/` - Main toolbar component
 - `src/components/annotation-popup/` - Annotation input popup
 - `src/components/icons.tsx` - Icon components
-- `example/` - Next.js demo app
-- `example/lib/` - Built library for example app (copy from `dist/`)
+- `example/` - Next.js demo app (imports via workspace)
 
 ## Build & Development
 
+The project uses pnpm workspaces with hot reloading. The example app imports directly from the `agentation` package.
+
 ```bash
-# Build library
-npm run build
+# From repository root:
+pnpm install       # Install all workspace dependencies
+pnpm dev           # Start watch mode + dev server
 
-# Copy to example
-cp dist/* example/lib/
+# Or from _package-export:
+pnpm build         # Build once
+pnpm watch         # Watch mode (rebuilds on changes)
+pnpm dev           # Build once + watch
 
-# Run example
-cd example && npm run dev
+# Run example separately:
+cd example && pnpm dev
 ```
+
+Changes to library source files automatically trigger rebuilds, and Next.js dev server picks up the changes.
 
 ## Key Features
 

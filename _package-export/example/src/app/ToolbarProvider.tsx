@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Agentation, AgentationCSS } from "../../lib";
-import type { DemoAnnotation } from "../../lib";
+import { Agentation, AgentationCSS } from "agentation";
+import type { DemoAnnotation } from "agentation";
 
 // Example annotations that animate in on page load
 const demoAnnotations: DemoAnnotation[] = [
