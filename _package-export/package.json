@@ -1,5 +1,5 @@
 {
-  "name": "@benji/feedback-tool",
+  "name": "agentation",
   "version": "0.0.1",
   "description": "A floating toolbar for annotating web pages and collecting structured feedback",
   "type": "module",

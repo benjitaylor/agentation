@@ -1,4 +1,4 @@
-# @benji/feedback-tool
+# agentation
 
 A floating toolbar for annotating web pages and collecting structured feedback.
 
@@ -14,13 +14,13 @@ A floating toolbar for annotating web pages and collecting structured feedback.
 ## Installation
 
 ```bash
-pnpm add @benji/feedback-tool framer-motion
+pnpm add agentation framer-motion
 ```
 
 ## Usage
 
 ```tsx
-import { FeedbackToolbar } from '@benji/feedback-tool';
+import { FeedbackToolbar } from 'agentation';
 
 function App() {
   return (
