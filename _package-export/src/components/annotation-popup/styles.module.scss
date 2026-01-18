@@ -110,7 +110,7 @@ $green: #34C759;
   color: white;
 
   &:hover:not(:disabled) {
-    background: darken($blue, 8%);
+    background: #2d6fdf; // $blue darkened 8%
   }
 
   &:disabled {
@@ -122,7 +122,7 @@ $green: #34C759;
     background: $green;
 
     &:hover:not(:disabled) {
-      background: darken($green, 8%);
+      background: #2db84d; // $green darkened 8%
     }
   }
 }

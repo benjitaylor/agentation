@@ -8,10 +8,11 @@
     "start": "next start"
   },
   "dependencies": {
+    "@benji/feedback-tool": "link:..",
+    "framer-motion": "^11.0.0",
     "next": "^14.0.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "framer-motion": "^11.0.0"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
