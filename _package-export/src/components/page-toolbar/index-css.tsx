@@ -191,8 +191,29 @@ type HoverInfo = {
 // =============================================================================
 
 type OutputFormat = 'standard' | 'detailed' | 'compact';
+type FeedbackStyle = 'direct' | 'instructional' | 'contextual';
 
-function generateOutput(annotations: Annotation[], pathname: string, format: OutputFormat = 'standard'): string {
+// Transform feedback text based on style
+function stylizeFeedback(comment: string, element: string, style: FeedbackStyle): string {
+  if (style === 'direct') {
+    return comment; // As-is
+  }
+  if (style === 'instructional') {
+    // Make it sound like an instruction
+    const lower = comment.toLowerCase();
+    if (lower.startsWith('fix') || lower.startsWith('change') || lower.startsWith('update') || lower.startsWith('add') || lower.startsWith('remove')) {
+      return comment; // Already instructional
+    }
+    return `Update ${element}: ${comment}`;
+  }
+  if (style === 'contextual') {
+    // Add context framing
+    return `In ${element}: ${comment}. This affects user experience.`;
+  }
+  return comment;
+}
+
+function generateOutput(annotations: Annotation[], pathname: string, format: OutputFormat = 'standard', style: FeedbackStyle = 'direct'): string {
   if (annotations.length === 0) return "";
 
   const viewport = typeof window !== "undefined"
@@ -206,7 +227,7 @@ function generateOutput(annotations: Annotation[], pathname: string, format: Out
       const selector = a.cssClasses ? `.${a.cssClasses.split(',')[0].trim()}` : a.elementPath;
       output += `${i + 1}. **${a.element}** (\`${selector}\`)`;
       if (a.selectedText) output += `\n   > "${a.selectedText.slice(0, 50)}..."`;
-      output += `\n   ${a.comment}\n\n`;
+      output += `\n   ${stylizeFeedback(a.comment, a.element, style)}\n\n`;
     });
     return output.trim();
   }
@@ -247,7 +268,7 @@ function generateOutput(annotations: Annotation[], pathname: string, format: Out
         output += `**Siblings:** ${a.nearbyElements}\n`;
       }
 
-      output += `\n**Issue:** ${a.comment}\n\n`;
+      output += `\n**Issue:** ${stylizeFeedback(a.comment, a.element, style)}\n\n`;
       output += `---\n\n`;
     });
 
@@ -283,7 +304,7 @@ function generateOutput(annotations: Annotation[], pathname: string, format: Out
       output += `**Siblings:** ${a.nearbyElements}\n`;
     }
 
-    output += `**Feedback:** ${a.comment}\n\n`;
+    output += `**Feedback:** ${stylizeFeedback(a.comment, a.element, style)}\n\n`;
   });
 
   return output.trim();
@@ -321,6 +342,7 @@ export function PageFeedbackToolbarCSS() {
   const [isFrozen, setIsFrozen] = useState(false);
   const [exitingIds, setExitingIds] = useState<Set<string>>(new Set()); // IDs currently animating out
   const [outputFormat, setOutputFormat] = useState<OutputFormat>('standard');
+  const [feedbackStyle, setFeedbackStyle] = useState<FeedbackStyle>('direct');
 
   const popupRef = useRef<AnnotationPopupHandle>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -341,10 +363,14 @@ export function PageFeedbackToolbarCSS() {
     const stored = loadAnnotations<Annotation>(pathname);
     setAnnotations(stored);
 
-    // Load saved output format
+    // Load saved output format and style
     const savedFormat = localStorage.getItem('agentation-output-format');
     if (savedFormat && ['compact', 'standard', 'detailed'].includes(savedFormat)) {
       setOutputFormat(savedFormat as OutputFormat);
+    }
+    const savedStyle = localStorage.getItem('agentation-feedback-style');
+    if (savedStyle && ['direct', 'instructional', 'contextual'].includes(savedStyle)) {
+      setFeedbackStyle(savedStyle as FeedbackStyle);
     }
   }, [pathname]);
 
@@ -355,6 +381,15 @@ export function PageFeedbackToolbarCSS() {
     };
     window.addEventListener('agentation-format-change', handleFormatChange as EventListener);
     return () => window.removeEventListener('agentation-format-change', handleFormatChange as EventListener);
+  }, []);
+
+  // Listen for style changes from the page
+  useEffect(() => {
+    const handleStyleChange = (e: CustomEvent<FeedbackStyle>) => {
+      setFeedbackStyle(e.detail);
+    };
+    window.addEventListener('agentation-style-change', handleStyleChange as EventListener);
+    return () => window.removeEventListener('agentation-style-change', handleStyleChange as EventListener);
   }, []);
 
   // Track scroll - hide hover elements during scroll for clean UX
@@ -640,13 +675,13 @@ export function PageFeedbackToolbarCSS() {
 
   // Copy output
   const copyOutput = useCallback(async () => {
-    const output = generateOutput(annotations, pathname, outputFormat);
+    const output = generateOutput(annotations, pathname, outputFormat, feedbackStyle);
     if (!output) return;
 
     await navigator.clipboard.writeText(output);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, [annotations, pathname, outputFormat]);
+  }, [annotations, pathname, outputFormat, feedbackStyle]);
 
   // Clear all
   const clearAll = useCallback(() => {

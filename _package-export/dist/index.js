@@ -1358,7 +1358,23 @@ if (typeof document !== "undefined") {
     document.head.appendChild(style);
   }
 }
-function generateOutput2(annotations, pathname, format = "standard") {
+function stylizeFeedback(comment, element, style) {
+  if (style === "direct") {
+    return comment;
+  }
+  if (style === "instructional") {
+    const lower = comment.toLowerCase();
+    if (lower.startsWith("fix") || lower.startsWith("change") || lower.startsWith("update") || lower.startsWith("add") || lower.startsWith("remove")) {
+      return comment;
+    }
+    return `Update ${element}: ${comment}`;
+  }
+  if (style === "contextual") {
+    return `In ${element}: ${comment}. This affects user experience.`;
+  }
+  return comment;
+}
+function generateOutput2(annotations, pathname, format = "standard", style = "direct") {
   if (annotations.length === 0) return "";
   const viewport = typeof window !== "undefined" ? `${window.innerWidth}\xD7${window.innerHeight}` : "unknown";
   if (format === "compact") {
@@ -1371,7 +1387,7 @@ function generateOutput2(annotations, pathname, format = "standard") {
       if (a.selectedText) output2 += `
    > "${a.selectedText.slice(0, 50)}..."`;
       output2 += `
-   ${a.comment}
+   ${stylizeFeedback(a.comment, a.element, style)}
 
 `;
     });
@@ -1418,7 +1434,7 @@ function generateOutput2(annotations, pathname, format = "standard") {
 `;
       }
       output2 += `
-**Issue:** ${a.comment}
+**Issue:** ${stylizeFeedback(a.comment, a.element, style)}
 
 `;
       output2 += `---
@@ -1458,7 +1474,7 @@ function generateOutput2(annotations, pathname, format = "standard") {
       output += `**Siblings:** ${a.nearbyElements}
 `;
     }
-    output += `**Feedback:** ${a.comment}
+    output += `**Feedback:** ${stylizeFeedback(a.comment, a.element, style)}
 
 `;
   });
@@ -1481,6 +1497,7 @@ function PageFeedbackToolbarCSS() {
   const [isFrozen, setIsFrozen] = useState4(false);
   const [exitingIds, setExitingIds] = useState4(/* @__PURE__ */ new Set());
   const [outputFormat, setOutputFormat] = useState4("standard");
+  const [feedbackStyle, setFeedbackStyle] = useState4("direct");
   const popupRef = useRef4(null);
   const overlayRef = useRef4(null);
   const isScrollingRef = useRef4(false);
@@ -1497,6 +1514,10 @@ function PageFeedbackToolbarCSS() {
     if (savedFormat && ["compact", "standard", "detailed"].includes(savedFormat)) {
       setOutputFormat(savedFormat);
     }
+    const savedStyle = localStorage.getItem("agentation-feedback-style");
+    if (savedStyle && ["direct", "instructional", "contextual"].includes(savedStyle)) {
+      setFeedbackStyle(savedStyle);
+    }
   }, [pathname]);
   useEffect4(() => {
     const handleFormatChange = (e) => {
@@ -1504,6 +1525,13 @@ function PageFeedbackToolbarCSS() {
     };
     window.addEventListener("agentation-format-change", handleFormatChange);
     return () => window.removeEventListener("agentation-format-change", handleFormatChange);
+  }, []);
+  useEffect4(() => {
+    const handleStyleChange = (e) => {
+      setFeedbackStyle(e.detail);
+    };
+    window.addEventListener("agentation-style-change", handleStyleChange);
+    return () => window.removeEventListener("agentation-style-change", handleStyleChange);
   }, []);
   useEffect4(() => {
     const handleScroll = () => {
@@ -1720,12 +1748,12 @@ function PageFeedbackToolbarCSS() {
     }, 150);
   }, []);
   const copyOutput = useCallback4(async () => {
-    const output = generateOutput2(annotations, pathname, outputFormat);
+    const output = generateOutput2(annotations, pathname, outputFormat, feedbackStyle);
     if (!output) return;
     await navigator.clipboard.writeText(output);
     setCopied(true);
     setTimeout(() => setCopied(false), 2e3);
-  }, [annotations, pathname, outputFormat]);
+  }, [annotations, pathname, outputFormat, feedbackStyle]);
   const clearAll = useCallback4(() => {
     setAnnotations([]);
     localStorage.removeItem(getStorageKey(pathname));

@@ -8,6 +8,7 @@ type OutputFormat = 'standard' | 'detailed' | 'compact';
 type FeedbackStyle = 'direct' | 'instructional' | 'contextual';
 
 const FORMAT_STORAGE_KEY = 'agentation-output-format';
+const STYLE_STORAGE_KEY = 'agentation-feedback-style';
 
 // Code block with syntax highlighting
 function CodeBlock({ code, language = "tsx" }: { code: string; language?: string }) {
@@ -122,11 +123,15 @@ export default function AgentationDocs() {
   const [outputFormat, setOutputFormat] = useState<OutputFormat>('standard');
   const [feedbackStyle, setFeedbackStyle] = useState<FeedbackStyle>('direct');
 
-  // Load saved format on mount
+  // Load saved format and style on mount
   useEffect(() => {
-    const saved = localStorage.getItem(FORMAT_STORAGE_KEY);
-    if (saved && ['compact', 'standard', 'detailed'].includes(saved)) {
-      setOutputFormat(saved as OutputFormat);
+    const savedFormat = localStorage.getItem(FORMAT_STORAGE_KEY);
+    if (savedFormat && ['compact', 'standard', 'detailed'].includes(savedFormat)) {
+      setOutputFormat(savedFormat as OutputFormat);
+    }
+    const savedStyle = localStorage.getItem(STYLE_STORAGE_KEY);
+    if (savedStyle && ['direct', 'instructional', 'contextual'].includes(savedStyle)) {
+      setFeedbackStyle(savedStyle as FeedbackStyle);
     }
   }, []);
 
@@ -134,8 +139,13 @@ export default function AgentationDocs() {
   const handleFormatChange = useCallback((format: OutputFormat) => {
     setOutputFormat(format);
     localStorage.setItem(FORMAT_STORAGE_KEY, format);
-    // Dispatch custom event for toolbar to listen to
     window.dispatchEvent(new CustomEvent('agentation-format-change', { detail: format }));
+  }, []);
+
+  const handleStyleChange = useCallback((style: FeedbackStyle) => {
+    setFeedbackStyle(style);
+    localStorage.setItem(STYLE_STORAGE_KEY, style);
+    window.dispatchEvent(new CustomEvent('agentation-style-change', { detail: style }));
   }, []);
 
   return (
@@ -255,19 +265,19 @@ export default function AgentationDocs() {
           <div className="format-toggle">
             <button
               className={feedbackStyle === 'direct' ? 'active' : ''}
-              onClick={() => setFeedbackStyle('direct')}
+              onClick={() => handleStyleChange('direct')}
             >
               Direct
             </button>
             <button
               className={feedbackStyle === 'instructional' ? 'active' : ''}
-              onClick={() => setFeedbackStyle('instructional')}
+              onClick={() => handleStyleChange('instructional')}
             >
               Instructional
             </button>
             <button
               className={feedbackStyle === 'contextual' ? 'active' : ''}
-              onClick={() => setFeedbackStyle('contextual')}
+              onClick={() => handleStyleChange('contextual')}
             >
               Contextual
             </button>
