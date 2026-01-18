@@ -1189,44 +1189,24 @@ var IconPlus2 = ({ size = 16 }) => /* @__PURE__ */ jsx5("svg", { width: size, he
 // src/components/page-toolbar/index-css.tsx
 import { Fragment as Fragment2, jsx as jsx6, jsxs as jsxs6 } from "react/jsx-runtime";
 var cssAnimationStyles2 = `
-/* Toolbar toggle button - fade in */
+/* Toolbar toggle button - calmer animation */
 @keyframes agentation-toggle-in {
-  from { opacity: 0; transform: scale(0.9); }
+  from { opacity: 0; transform: scale(0.92); }
   to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes agentation-toggle-out {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(0.9); }
 }
 
 .agentation-toggle-enter {
-  animation: agentation-toggle-in 0.15s ease-out forwards;
+  animation: agentation-toggle-in 0.2s ease-out forwards;
 }
 
-.agentation-toggle-exit {
-  animation: agentation-toggle-out 0.12s ease-in forwards;
-  pointer-events: none;
-}
-
-/* Controls bar - fade in */
+/* Controls bar - calmer animation */
 @keyframes agentation-controls-in {
-  from { opacity: 0; transform: scale(0.95); }
+  from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes agentation-controls-out {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(0.95); }
-}
-
 .agentation-controls-enter {
-  animation: agentation-controls-in 0.15s ease-out forwards;
-}
-
-.agentation-controls-exit {
-  animation: agentation-controls-out 0.12s ease-in forwards;
-  pointer-events: none;
+  animation: agentation-controls-in 0.2s ease-out forwards;
 }
 
 /* Hover highlight - simple fast fade */
@@ -1411,6 +1391,7 @@ function PageFeedbackToolbarCSS() {
   const [copied, setCopied] = useState4(false);
   const [cleared, setCleared] = useState4(false);
   const [hoveredMarkerId, setHoveredMarkerId] = useState4(null);
+  const [recentlyAddedId, setRecentlyAddedId] = useState4(null);
   const [scrollY, setScrollY] = useState4(0);
   const [mounted, setMounted] = useState4(false);
   const [isFrozen, setIsFrozen] = useState4(false);
@@ -1474,8 +1455,15 @@ function PageFeedbackToolbarCSS() {
     else freezeAnimations();
   }, [isFrozen, freezeAnimations, unfreezeAnimations]);
   const handleCloseToolbar = useCallback4(() => {
-    setIsActive(false);
-  }, []);
+    if (markersWithState.length > 0) {
+      setMarkersWithState((prev) => prev.map((m) => ({ ...m, exiting: true })));
+      setTimeout(() => {
+        setIsActive(false);
+      }, 150);
+    } else {
+      setIsActive(false);
+    }
+  }, [markersWithState.length]);
   useEffect4(() => {
     if (!isActive) {
       setPendingAnnotation(null);
@@ -1544,8 +1532,9 @@ function PageFeedbackToolbarCSS() {
   }, [isActive, pendingAnnotation]);
   const addAnnotation = useCallback4((comment) => {
     if (!pendingAnnotation) return;
+    const newId = Date.now().toString();
     const newAnnotation = {
-      id: Date.now().toString(),
+      id: newId,
       x: pendingAnnotation.x,
       y: pendingAnnotation.y,
       comment,
@@ -1560,6 +1549,8 @@ function PageFeedbackToolbarCSS() {
     setAnnotations((prev) => [...prev, newAnnotation]);
     setPendingAnnotation(null);
     window.getSelection()?.removeAllRanges();
+    setRecentlyAddedId(newId);
+    setTimeout(() => setRecentlyAddedId(null), 300);
   }, [pendingAnnotation]);
   const cancelAnnotation = useCallback4(() => {
     setPendingExiting(true);
@@ -1742,7 +1733,7 @@ function PageFeedbackToolbarCSS() {
               top: viewportY,
               animationDelay: isExiting ? "0s" : `${index * 0.03}s`
             },
-            onMouseEnter: () => !isExiting && setHoveredMarkerId(annotation.id),
+            onMouseEnter: () => !isExiting && annotation.id !== recentlyAddedId && setHoveredMarkerId(annotation.id),
             onMouseLeave: () => setHoveredMarkerId(null),
             onClick: (e) => {
               e.stopPropagation();

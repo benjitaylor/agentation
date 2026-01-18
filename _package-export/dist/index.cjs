@@ -1235,44 +1235,24 @@ var IconPlus2 = ({ size = 16 }) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
 // src/components/page-toolbar/index-css.tsx
 var import_jsx_runtime6 = require("react/jsx-runtime");
 var cssAnimationStyles2 = `
-/* Toolbar toggle button - fade in */
+/* Toolbar toggle button - calmer animation */
 @keyframes agentation-toggle-in {
-  from { opacity: 0; transform: scale(0.9); }
+  from { opacity: 0; transform: scale(0.92); }
   to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes agentation-toggle-out {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(0.9); }
 }
 
 .agentation-toggle-enter {
-  animation: agentation-toggle-in 0.15s ease-out forwards;
+  animation: agentation-toggle-in 0.2s ease-out forwards;
 }
 
-.agentation-toggle-exit {
-  animation: agentation-toggle-out 0.12s ease-in forwards;
-  pointer-events: none;
-}
-
-/* Controls bar - fade in */
+/* Controls bar - calmer animation */
 @keyframes agentation-controls-in {
-  from { opacity: 0; transform: scale(0.95); }
+  from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes agentation-controls-out {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(0.95); }
-}
-
 .agentation-controls-enter {
-  animation: agentation-controls-in 0.15s ease-out forwards;
-}
-
-.agentation-controls-exit {
-  animation: agentation-controls-out 0.12s ease-in forwards;
-  pointer-events: none;
+  animation: agentation-controls-in 0.2s ease-out forwards;
 }
 
 /* Hover highlight - simple fast fade */
@@ -1457,6 +1437,7 @@ function PageFeedbackToolbarCSS() {
   const [copied, setCopied] = (0, import_react4.useState)(false);
   const [cleared, setCleared] = (0, import_react4.useState)(false);
   const [hoveredMarkerId, setHoveredMarkerId] = (0, import_react4.useState)(null);
+  const [recentlyAddedId, setRecentlyAddedId] = (0, import_react4.useState)(null);
   const [scrollY, setScrollY] = (0, import_react4.useState)(0);
   const [mounted, setMounted] = (0, import_react4.useState)(false);
   const [isFrozen, setIsFrozen] = (0, import_react4.useState)(false);
@@ -1520,8 +1501,15 @@ function PageFeedbackToolbarCSS() {
     else freezeAnimations();
   }, [isFrozen, freezeAnimations, unfreezeAnimations]);
   const handleCloseToolbar = (0, import_react4.useCallback)(() => {
-    setIsActive(false);
-  }, []);
+    if (markersWithState.length > 0) {
+      setMarkersWithState((prev) => prev.map((m) => ({ ...m, exiting: true })));
+      setTimeout(() => {
+        setIsActive(false);
+      }, 150);
+    } else {
+      setIsActive(false);
+    }
+  }, [markersWithState.length]);
   (0, import_react4.useEffect)(() => {
     if (!isActive) {
       setPendingAnnotation(null);
@@ -1590,8 +1578,9 @@ function PageFeedbackToolbarCSS() {
   }, [isActive, pendingAnnotation]);
   const addAnnotation = (0, import_react4.useCallback)((comment) => {
     if (!pendingAnnotation) return;
+    const newId = Date.now().toString();
     const newAnnotation = {
-      id: Date.now().toString(),
+      id: newId,
       x: pendingAnnotation.x,
       y: pendingAnnotation.y,
       comment,
@@ -1606,6 +1595,8 @@ function PageFeedbackToolbarCSS() {
     setAnnotations((prev) => [...prev, newAnnotation]);
     setPendingAnnotation(null);
     window.getSelection()?.removeAllRanges();
+    setRecentlyAddedId(newId);
+    setTimeout(() => setRecentlyAddedId(null), 300);
   }, [pendingAnnotation]);
   const cancelAnnotation = (0, import_react4.useCallback)(() => {
     setPendingExiting(true);
@@ -1788,7 +1779,7 @@ function PageFeedbackToolbarCSS() {
               top: viewportY,
               animationDelay: isExiting ? "0s" : `${index * 0.03}s`
             },
-            onMouseEnter: () => !isExiting && setHoveredMarkerId(annotation.id),
+            onMouseEnter: () => !isExiting && annotation.id !== recentlyAddedId && setHoveredMarkerId(annotation.id),
             onMouseLeave: () => setHoveredMarkerId(null),
             onClick: (e) => {
               e.stopPropagation();

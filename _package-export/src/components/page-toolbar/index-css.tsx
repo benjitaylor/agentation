@@ -34,44 +34,24 @@ import styles from "./styles.module.scss";
 // =============================================================================
 
 const cssAnimationStyles = `
-/* Toolbar toggle button - fade in */
+/* Toolbar toggle button - calmer animation */
 @keyframes agentation-toggle-in {
-  from { opacity: 0; transform: scale(0.9); }
+  from { opacity: 0; transform: scale(0.92); }
   to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes agentation-toggle-out {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(0.9); }
 }
 
 .agentation-toggle-enter {
-  animation: agentation-toggle-in 0.15s ease-out forwards;
+  animation: agentation-toggle-in 0.2s ease-out forwards;
 }
 
-.agentation-toggle-exit {
-  animation: agentation-toggle-out 0.12s ease-in forwards;
-  pointer-events: none;
-}
-
-/* Controls bar - fade in */
+/* Controls bar - calmer animation */
 @keyframes agentation-controls-in {
-  from { opacity: 0; transform: scale(0.95); }
+  from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes agentation-controls-out {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(0.95); }
-}
-
 .agentation-controls-enter {
-  animation: agentation-controls-in 0.15s ease-out forwards;
-}
-
-.agentation-controls-exit {
-  animation: agentation-controls-out 0.12s ease-in forwards;
-  pointer-events: none;
+  animation: agentation-controls-in 0.2s ease-out forwards;
 }
 
 /* Hover highlight - simple fast fade */
@@ -282,6 +262,7 @@ export function PageFeedbackToolbarCSS() {
   const [copied, setCopied] = useState(false);
   const [cleared, setCleared] = useState(false);
   const [hoveredMarkerId, setHoveredMarkerId] = useState<string | null>(null);
+  const [recentlyAddedId, setRecentlyAddedId] = useState<string | null>(null);
   const [scrollY, setScrollY] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [isFrozen, setIsFrozen] = useState(false);
@@ -367,10 +348,19 @@ export function PageFeedbackToolbarCSS() {
     else freezeAnimations();
   }, [isFrozen, freezeAnimations, unfreezeAnimations]);
 
-  // Handle closing toolbar - instant close
+  // Handle closing toolbar - animate markers out, then close
   const handleCloseToolbar = useCallback(() => {
-    setIsActive(false);
-  }, []);
+    if (markersWithState.length > 0) {
+      // Trigger exit animation on all markers
+      setMarkersWithState(prev => prev.map(m => ({ ...m, exiting: true })));
+      // Wait for animation then close
+      setTimeout(() => {
+        setIsActive(false);
+      }, 150);
+    } else {
+      setIsActive(false);
+    }
+  }, [markersWithState.length]);
 
   // Reset state when deactivating
   useEffect(() => {
@@ -462,8 +452,9 @@ export function PageFeedbackToolbarCSS() {
   const addAnnotation = useCallback((comment: string) => {
     if (!pendingAnnotation) return;
 
+    const newId = Date.now().toString();
     const newAnnotation: Annotation = {
-      id: Date.now().toString(),
+      id: newId,
       x: pendingAnnotation.x,
       y: pendingAnnotation.y,
       comment,
@@ -479,6 +470,10 @@ export function PageFeedbackToolbarCSS() {
     setAnnotations((prev) => [...prev, newAnnotation]);
     setPendingAnnotation(null);
     window.getSelection()?.removeAllRanges();
+
+    // Prevent immediate hover on the new marker
+    setRecentlyAddedId(newId);
+    setTimeout(() => setRecentlyAddedId(null), 300);
   }, [pendingAnnotation]);
 
   // Cancel annotation with exit animation
@@ -675,7 +670,7 @@ export function PageFeedbackToolbarCSS() {
                   top: viewportY,
                   animationDelay: isExiting ? '0s' : `${index * 0.03}s`,
                 }}
-                onMouseEnter={() => !isExiting && setHoveredMarkerId(annotation.id)}
+                onMouseEnter={() => !isExiting && annotation.id !== recentlyAddedId && setHoveredMarkerId(annotation.id)}
                 onMouseLeave={() => setHoveredMarkerId(null)}
                 onClick={(e) => {
                   e.stopPropagation();
