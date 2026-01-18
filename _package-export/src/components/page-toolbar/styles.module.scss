@@ -141,6 +141,7 @@ $red: #ff3b30;
   pointer-events: none !important;
   background: rgba($blue, 0.06);
   box-sizing: border-box;
+  transform-origin: center center;
 }
 
 .hoverTooltip {

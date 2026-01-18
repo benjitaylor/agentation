@@ -61,11 +61,11 @@ export const AnnotationPopup = forwardRef<AnnotationPopupHandle, AnnotationPopup
       return () => clearTimeout(timer);
     }, [controls]);
 
-    // Shake animation - shakes the whole popup container
+    // Shake animation - subtle shake for the popup container
     const shake = useCallback(async () => {
       await controls.start({
-        x: [0, -8, 8, -6, 6, -4, 4, 0],
-        transition: { duration: 0.4, ease: "easeOut" },
+        x: [0, -3, 3, -2, 2, 0],
+        transition: { duration: 0.25, ease: "easeOut" },
       });
       textareaRef.current?.focus();
     }, [controls]);

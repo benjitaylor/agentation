@@ -358,10 +358,15 @@ export function PageFeedbackToolbar() {
               key="toggle"
               className={styles.toggleButton}
               onClick={(e) => { e.stopPropagation(); setIsActive(true); }}
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.15 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{
+                type: "spring",
+                stiffness: 500,
+                damping: 30,
+                mass: 0.8,
+              }}
               title="Start feedback mode"
             >
               <IconFeedback size={18} />
@@ -371,10 +376,15 @@ export function PageFeedbackToolbar() {
             <motion.div
               key="controls"
               className={styles.controls}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.15 }}
+              initial={{ opacity: 0, scale: 0.85, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.85, y: 8 }}
+              transition={{
+                type: "spring",
+                stiffness: 600,
+                damping: 35,
+                mass: 0.6,
+              }}
             >
               <motion.button
                 className={styles.controlButton}
@@ -513,10 +523,10 @@ export function PageFeedbackToolbar() {
               <motion.div
                 key="hover-highlight"
                 className={styles.hoverHighlight}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.1 }}
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.12, ease: "easeOut" }}
                 style={{
                   left: hoverInfo.rect.left,
                   top: hoverInfo.rect.top,
@@ -533,10 +543,10 @@ export function PageFeedbackToolbar() {
               <motion.div
                 key="hover-tooltip"
                 className={styles.hoverTooltip}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.1 }}
+                initial={{ opacity: 0, scale: 0.95, y: 4 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 4 }}
+                transition={{ duration: 0.1, ease: "easeOut" }}
                 style={{
                   left: Math.min(hoverPosition.x, window.innerWidth - 150),
                   top: Math.max(hoverPosition.y - 32, 8),
@@ -553,9 +563,9 @@ export function PageFeedbackToolbar() {
               <>
                 <motion.div
                   className={`${styles.marker} ${styles.pending}`}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 0 }}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0, transition: { duration: 0.15, ease: "easeIn" } }}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   style={{
                     left: `${pendingAnnotation.x}%`,
