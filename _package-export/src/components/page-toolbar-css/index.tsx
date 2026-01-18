@@ -193,6 +193,7 @@ export function PageFeedbackToolbarCSS({
   const [isClearing, setIsClearing] = useState(false);
   const [hoveredMarkerId, setHoveredMarkerId] = useState<string | null>(null);
   const [deletingMarkerId, setDeletingMarkerId] = useState<string | null>(null);
+  const [editingAnnotation, setEditingAnnotation] = useState<Annotation | null>(null);
   const [scrollY, setScrollY] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -207,19 +208,20 @@ export function PageFeedbackToolbarCSS({
   const [exitingMarkers, setExitingMarkers] = useState<Set<string>>(new Set());
   const [pendingExiting, setPendingExiting] = useState(false);
 
-  // Multi-select drag state - use refs for drag rect to avoid re-renders
+  // Multi-select drag state - use refs for all drag visuals to avoid re-renders
   const [isDragging, setIsDragging] = useState(false);
-  const [selectedElements, setSelectedElements] = useState<{ element: HTMLElement; rect: DOMRect }[]>([]);
   const mouseDownPosRef = useRef<{ x: number; y: number } | null>(null);
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
   const dragRectRef = useRef<HTMLDivElement | null>(null);
+  const highlightsContainerRef = useRef<HTMLDivElement | null>(null);
   const justFinishedDragRef = useRef(false);
   const lastElementUpdateRef = useRef(0);
   const recentlyAddedIdRef = useRef<string | null>(null);
   const DRAG_THRESHOLD = 8;
-  const ELEMENT_UPDATE_THROTTLE = 100;
+  const ELEMENT_UPDATE_THROTTLE = 50; // Faster updates since no React re-renders
 
   const popupRef = useRef<AnnotationPopupCSSHandle>(null);
+  const editPopupRef = useRef<AnnotationPopupCSSHandle>(null);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
@@ -440,6 +442,7 @@ export function PageFeedbackToolbarCSS({
   useEffect(() => {
     if (!isActive) {
       setPendingAnnotation(null);
+      setEditingAnnotation(null);
       setHoverInfo(null);
       setShowSettings(false); // Close settings when toolbar closes
       if (isFrozen) {
@@ -547,6 +550,15 @@ export function PageFeedbackToolbarCSS({
         return;
       }
 
+      if (editingAnnotation) {
+        if (isInteractive && !settings.blockInteractions) {
+          return;
+        }
+        e.preventDefault();
+        editPopupRef.current?.shake();
+        return;
+      }
+
       e.preventDefault();
 
       const elementUnder = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement;
@@ -588,7 +600,7 @@ export function PageFeedbackToolbarCSS({
     // Use capture phase to intercept before element handlers
     document.addEventListener("click", handleClick, true);
     return () => document.removeEventListener("click", handleClick, true);
-  }, [isActive, pendingAnnotation, settings.blockInteractions]);
+  }, [isActive, pendingAnnotation, editingAnnotation, settings.blockInteractions]);
 
   // Multi-select drag - mousedown
   useEffect(() => {
@@ -617,7 +629,7 @@ export function PageFeedbackToolbarCSS({
     return () => document.removeEventListener("mousedown", handleMouseDown);
   }, [isActive, pendingAnnotation]);
 
-  // Multi-select drag - mousemove (performance optimized with direct DOM updates)
+  // Multi-select drag - mousemove (fully optimized with direct DOM updates)
   useEffect(() => {
     if (!isActive || pendingAnnotation) return;
 
@@ -635,7 +647,7 @@ export function PageFeedbackToolbarCSS({
       }
 
       if ((isDragging || distance >= thresholdSq) && dragStartRef.current) {
-        // Direct DOM update for smooth 60fps - no React state
+        // Direct DOM update for drag rectangle - no React state
         if (dragRectRef.current) {
           const left = Math.min(dragStartRef.current.x, e.clientX);
           const top = Math.min(dragStartRef.current.y, e.clientY);
@@ -646,7 +658,7 @@ export function PageFeedbackToolbarCSS({
           dragRectRef.current.style.height = `${height}px`;
         }
 
-        // Throttle element detection heavily (doesn't affect drag rect smoothness)
+        // Throttle element detection (still no React re-renders)
         const now = Date.now();
         if (now - lastElementUpdateRef.current < ELEMENT_UPDATE_THROTTLE) {
           return;
@@ -677,7 +689,7 @@ export function PageFeedbackToolbarCSS({
           }
         }
 
-        const allMatching: { element: HTMLElement; rect: DOMRect }[] = [];
+        const allMatching: DOMRect[] = [];
         const meaningfulTags = new Set(["BUTTON", "A", "INPUT", "IMG", "P", "H1", "H2", "H3", "H4", "H5", "H6", "LI", "LABEL", "TD", "TH"]);
 
         for (const el of candidateElements) {
@@ -689,16 +701,40 @@ export function PageFeedbackToolbarCSS({
 
           if (rect.left < right && rect.right > left && rect.top < bottom && rect.bottom > top) {
             if (meaningfulTags.has(el.tagName)) {
-              allMatching.push({ element: el, rect });
+              // Check if any existing match contains this element (filter children)
+              let dominated = false;
+              for (const existingRect of allMatching) {
+                if (existingRect.left <= rect.left && existingRect.right >= rect.right &&
+                    existingRect.top <= rect.top && existingRect.bottom >= rect.bottom) {
+                  // Existing rect contains this one - keep the smaller one
+                  dominated = true;
+                  break;
+                }
+              }
+              if (!dominated) allMatching.push(rect);
             }
           }
         }
 
-        const result = allMatching.filter(({ element: el }) =>
-          !allMatching.some(({ element: other }) => other !== el && el.contains(other))
-        );
-
-        setSelectedElements(result);
+        // Direct DOM update for highlights - no React state
+        if (highlightsContainerRef.current) {
+          const container = highlightsContainerRef.current;
+          // Reuse existing divs or create new ones
+          while (container.children.length > allMatching.length) {
+            container.removeChild(container.lastChild!);
+          }
+          allMatching.forEach((rect, i) => {
+            let div = container.children[i] as HTMLDivElement;
+            if (!div) {
+              div = document.createElement("div");
+              div.className = styles.selectedElementHighlight;
+              container.appendChild(div);
+            }
+            div.style.transform = `translate(${rect.left}px, ${rect.top}px)`;
+            div.style.width = `${rect.width}px`;
+            div.style.height = `${rect.height}px`;
+          });
+        }
       }
     };
 
@@ -811,7 +847,10 @@ export function PageFeedbackToolbarCSS({
       mouseDownPosRef.current = null;
       dragStartRef.current = null;
       setIsDragging(false);
-      setSelectedElements([]);
+      // Clear highlights container
+      if (highlightsContainerRef.current) {
+        highlightsContainerRef.current.innerHTML = "";
+      }
     };
 
     document.addEventListener("mouseup", handleMouseUp);
@@ -847,8 +886,15 @@ export function PageFeedbackToolbarCSS({
     // Mark as needing animation (will be set to animated after animation completes)
     setTimeout(() => {
       setAnimatedMarkers((prev) => new Set(prev).add(newAnnotation.id));
-    }, 250); // After animation duration
-    setPendingAnnotation(null);
+    }, 250);
+
+    // Animate out the pending annotation UI
+    setPendingExiting(true);
+    setTimeout(() => {
+      setPendingAnnotation(null);
+      setPendingExiting(false);
+    }, 150);
+
     window.getSelection()?.removeAllRanges();
   }, [pendingAnnotation]);
 
@@ -876,6 +922,29 @@ export function PageFeedbackToolbarCSS({
       });
       setDeletingMarkerId(null);
     }, 150);
+  }, []);
+
+  // Start editing an annotation (right-click)
+  const startEditAnnotation = useCallback((annotation: Annotation) => {
+    setEditingAnnotation(annotation);
+    setHoveredMarkerId(null);
+  }, []);
+
+  // Update annotation (edit mode submit)
+  const updateAnnotation = useCallback((newComment: string) => {
+    if (!editingAnnotation) return;
+
+    setAnnotations((prev) =>
+      prev.map((a) =>
+        a.id === editingAnnotation.id ? { ...a, comment: newComment } : a
+      )
+    );
+    setEditingAnnotation(null);
+  }, [editingAnnotation]);
+
+  // Cancel editing
+  const cancelEditAnnotation = useCallback(() => {
+    setEditingAnnotation(null);
   }, []);
 
   // Clear all with staggered animation
@@ -1120,9 +1189,14 @@ export function PageFeedbackToolbarCSS({
                   e.stopPropagation();
                   if (!markersExiting) deleteAnnotation(annotation.id);
                 }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!markersExiting) startEditAnnotation(annotation);
+                }}
               >
                 {showDeleteState ? <IconClose size={isMulti ? 12 : 10} /> : globalIndex + 1}
-                {isHovered && (
+                {isHovered && !editingAnnotation && (
                   <div className={`${styles.markerTooltip} ${styles.enter}`}>
                     {annotation.selectedText && (
                       <span className={styles.markerQuote}>
@@ -1131,7 +1205,7 @@ export function PageFeedbackToolbarCSS({
                       </span>
                     )}
                     <span className={styles.markerNote}>{annotation.comment}</span>
-                    <span className={styles.markerHint}>Click to remove</span>
+                    <span className={styles.markerHint}>Click to remove · Right-click to edit</span>
                   </div>
                 )}
               </div>
@@ -1189,9 +1263,14 @@ export function PageFeedbackToolbarCSS({
                   e.stopPropagation();
                   if (!markersExiting) deleteAnnotation(annotation.id);
                 }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!markersExiting) startEditAnnotation(annotation);
+                }}
               >
                 {showDeleteState ? <IconClose size={isMulti ? 12 : 10} /> : globalIndex + 1}
-                {isHovered && (
+                {isHovered && !editingAnnotation && (
                   <div className={`${styles.markerTooltip} ${styles.enter}`}>
                     {annotation.selectedText && (
                       <span className={styles.markerQuote}>
@@ -1200,7 +1279,7 @@ export function PageFeedbackToolbarCSS({
                       </span>
                     )}
                     <span className={styles.markerNote}>{annotation.comment}</span>
-                    <span className={styles.markerHint}>Click to remove</span>
+                    <span className={styles.markerHint}>Click to remove · Right-click to edit</span>
                   </div>
                 )}
               </div>
@@ -1284,6 +1363,23 @@ export function PageFeedbackToolbarCSS({
           {/* Pending annotation marker + popup */}
           {pendingAnnotation && (
             <>
+              {/* Show element/area outline while adding annotation */}
+              {pendingAnnotation.boundingBox && (
+                <div
+                  className={`${pendingAnnotation.isMultiSelect ? styles.multiSelectOutline : styles.singleSelectOutline} ${pendingExiting ? styles.exit : styles.enter}`}
+                  style={{
+                    left: pendingAnnotation.boundingBox.x,
+                    top: pendingAnnotation.boundingBox.y - scrollY,
+                    width: pendingAnnotation.boundingBox.width,
+                    height: pendingAnnotation.boundingBox.height,
+                    ...(pendingAnnotation.isMultiSelect ? {} : {
+                      borderColor: `${settings.annotationColor}99`,
+                      backgroundColor: `${settings.annotationColor}0D`,
+                    }),
+                  }}
+                />
+              )}
+
               <div
                 className={`${styles.marker} ${styles.pending} ${pendingAnnotation.isMultiSelect ? styles.multiSelect : ""} ${pendingExiting ? styles.exit : styles.enter}`}
                 style={{
@@ -1311,27 +1407,52 @@ export function PageFeedbackToolbarCSS({
             </>
           )}
 
-          {/* Drag selection rectangle - uses ref for smooth 60fps updates */}
-          {isDragging && (
+          {/* Edit annotation popup */}
+          {editingAnnotation && (
             <>
-              <div
-                ref={dragRectRef}
-                className={styles.dragSelection}
-              />
-
-              {/* Highlight selected elements */}
-              {selectedElements.map(({ element, rect }, i) => (
+              {/* Show element/area outline while editing */}
+              {editingAnnotation.boundingBox && (
                 <div
-                  key={`${element.tagName}-${i}`}
-                  className={styles.selectedElementHighlight}
+                  className={`${editingAnnotation.isMultiSelect ? styles.multiSelectOutline : styles.singleSelectOutline} ${styles.enter}`}
                   style={{
-                    left: rect.left,
-                    top: rect.top,
-                    width: rect.width,
-                    height: rect.height,
+                    left: editingAnnotation.boundingBox.x,
+                    top: editingAnnotation.boundingBox.y - scrollY,
+                    width: editingAnnotation.boundingBox.width,
+                    height: editingAnnotation.boundingBox.height,
+                    ...(editingAnnotation.isMultiSelect ? {} : {
+                      borderColor: `${settings.annotationColor}99`,
+                      backgroundColor: `${settings.annotationColor}0D`,
+                    }),
                   }}
                 />
-              ))}
+              )}
+
+              <AnnotationPopupCSS
+                ref={editPopupRef}
+                element={editingAnnotation.element}
+                selectedText={editingAnnotation.selectedText}
+                placeholder="Edit your feedback..."
+                initialValue={editingAnnotation.comment}
+                submitLabel="Save"
+                onSubmit={updateAnnotation}
+                onCancel={cancelEditAnnotation}
+                accentColor={editingAnnotation.isMultiSelect ? "#34C759" : settings.annotationColor}
+                style={{
+                  left: `${Math.min(Math.max(editingAnnotation.x, 15), 85)}%`,
+                  top: Math.min(
+                    (editingAnnotation.isFixed ? editingAnnotation.y : editingAnnotation.y - scrollY) + 20,
+                    window.innerHeight - 180
+                  ),
+                }}
+              />
+            </>
+          )}
+
+          {/* Drag selection - all visuals use refs for smooth 60fps */}
+          {isDragging && (
+            <>
+              <div ref={dragRectRef} className={styles.dragSelection} />
+              <div ref={highlightsContainerRef} className={styles.highlightsContainer} />
             </>
           )}
         </div>

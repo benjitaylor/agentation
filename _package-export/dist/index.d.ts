@@ -67,6 +67,10 @@ interface AnnotationPopupCSSProps {
     selectedText?: string;
     /** Placeholder text for the textarea */
     placeholder?: string;
+    /** Initial value for textarea (for edit mode) */
+    initialValue?: string;
+    /** Label for submit button (default: "Add") */
+    submitLabel?: string;
     /** Called when annotation is submitted with text */
     onSubmit: (text: string) => void;
     /** Called when popup is cancelled/dismissed */
