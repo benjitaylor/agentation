@@ -101,7 +101,7 @@ const outputExamples: Record<OutputFormat, string> = {
 2. **.nav-label** ("Settigns...")
    Typo - should be "Settings"`,
 
-  forensic: `## 🔍 Forensic Page Analysis: /dashboard
+  forensic: `## Page Feedback: /dashboard
 
 **Environment:**
 - Viewport: 1440×900

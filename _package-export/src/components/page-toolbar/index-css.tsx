@@ -338,7 +338,7 @@ function generateOutput(annotations: Annotation[], pathname: string, format: Out
 
   if (format === 'forensic') {
     // Forensic: Maximum context for complex debugging
-    let output = `## 🔍 Forensic Page Analysis: ${pathname}\n\n`;
+    let output = `## Page Feedback: ${pathname}\n\n`;
     output += `**Environment:**\n`;
     output += `- Viewport: ${viewport}\n`;
     output += `- URL: ${typeof window !== "undefined" ? window.location.href : pathname}\n`;

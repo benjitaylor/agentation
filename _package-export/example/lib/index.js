@@ -1547,7 +1547,7 @@ function generateOutput2(annotations, pathname, format = "standard", style = "di
     return output2.trim();
   }
   if (format === "forensic") {
-    let output2 = `## \u{1F50D} Forensic Page Analysis: ${pathname}
+    let output2 = `## Page Feedback: ${pathname}
 
 `;
     output2 += `**Environment:**
