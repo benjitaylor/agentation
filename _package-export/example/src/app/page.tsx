@@ -1,180 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Highlight, themes } from "prism-react-renderer";
-import { motion, AnimatePresence } from "framer-motion";
-
-type OutputFormat = 'compact' | 'standard' | 'detailed' | 'forensic';
-type FeedbackStyle = 'direct' | 'instructional' | 'contextual';
-
-const FORMAT_STORAGE_KEY = 'agentation-output-format';
-const STYLE_STORAGE_KEY = 'agentation-feedback-style';
-
-// Code block with syntax highlighting
-function CodeBlock({ code, language = "tsx" }: { code: string; language?: string }) {
-  return (
-    <Highlight theme={themes.github} code={code.trim()} language={language}>
-      {({ style, tokens, getLineProps, getTokenProps }) => (
-        <pre className="code-block" style={{ ...style, background: 'transparent' }}>
-          {tokens.map((line, i) => (
-            <div key={i} {...getLineProps({ line })}>
-              {line.map((token, key) => (
-                <span key={key} {...getTokenProps({ token })} />
-              ))}
-            </div>
-          ))}
-        </pre>
-      )}
-    </Highlight>
-  );
-}
-
-// Animated code block with smooth height transitions
-function AnimatedCodeBlock({ code, language, formatKey }: { code: string; language?: string; formatKey: string }) {
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={formatKey}
-        initial={{ opacity: 0, height: 'auto' }}
-        animate={{ opacity: 1, height: 'auto' }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.15, ease: 'easeOut' }}
-        layout
-      >
-        <CodeBlock code={code} language={language} />
-      </motion.div>
-    </AnimatePresence>
-  );
-}
-
-const outputExamples: Record<OutputFormat, string> = {
-  standard: `## Page Feedback: /dashboard
-**Viewport:** 1512×738
-
-### 1. button.submit-btn
-**Selector:** \`.form-container > .actions > button.submit-btn\`
-**Classes:** \`submit-btn primary\`
-**Position:** 450, 320 (120×40)
-**Feedback:** Button text should say "Save" not "Submit"
-
-### 2. span.nav-label
-**Selector:** \`.sidebar > nav > .nav-item > span\`
-**Selected:** "Settigns"
-**Feedback:** Typo - should be "Settings"`,
-
-  detailed: `## Page Feedback: /dashboard
-**Viewport:** 1512×738
-**URL:** https://myapp.com/dashboard
-**User Agent:** Chrome/120.0
-
----
-
-### 1. button.submit-btn
-
-**Selector:** \`.form-container > .actions > button.submit-btn\`
-**Classes:** \`.submit-btn\`, \`.primary\`
-**Bounding box:** x:450, y:320, 120×40px
-**Nearby text:** "Cancel Save Changes"
-
-**Issue:** Button text should say "Save" not "Submit"
-
----
-
-### 2. span.nav-label
-
-**Selector:** \`.sidebar > nav > .nav-item > span\`
-**Classes:** \`.nav-label\`
-**Selected text:** "Settigns"
-**Nearby text:** "Dashboard Settigns Profile"
-
-**Issue:** Typo - should be "Settings"
-
----
-
-**Search tips:** Use the class names or selectors above to find these elements. Try \`grep -r "className.*submit-btn"\` or search for the nearby text.`,
-
-  compact: `## Feedback: /dashboard
-
-1. **.submit-btn**
-   Button text should say "Save" not "Submit"
-
-2. **.nav-label** ("Settigns...")
-   Typo - should be "Settings"`,
-
-  forensic: `## Page Feedback: /dashboard
-
-**Environment:**
-- Viewport: 1440×900
-- URL: http://localhost:3000/dashboard
-- User Agent: Mozilla/5.0 Chrome/142.0.0.0
-- Timestamp: 2024-01-15T10:30:00.000Z
-- Device Pixel Ratio: 2
-
----
-
-### 1. button.submit-btn
-
-**Full DOM Path:**
-\`\`\`
-body > div.app > main.dashboard > div.form-container > div.actions > button.submit-btn
-\`\`\`
-
-**CSS Classes:** \`submit-btn, primary\`
-**Position:**
-- Bounding box: x:450, y:320
-- Dimensions: 120×40px
-- Annotation at: 45.2% from left, 320px from top
-**Computed Styles:** bg: rgb(59, 130, 246), font: 14px, weight: 600, padding: 8px 16px, radius: 6px
-**Accessibility:** focusable
-
-**Issue:** Button text should say "Save" not "Submit"`,
-};
-
-// Experimental: Different feedback writing styles
-const styleExamples: Record<FeedbackStyle, { description: string; example: string }> = {
-  direct: {
-    description: "Your words, as written",
-    example: `**Feedback:** Typo: "Settigns" → "Settings"`,
-  },
-  instructional: {
-    description: "Adds action verb if needed",
-    example: `**Feedback:** Fix typo: Typo: "Settigns" → "Settings"`,
-  },
-  contextual: {
-    description: "Adds impact context when relevant",
-    example: `**Feedback:** Typo: "Settigns" → "Settings" — looks unprofessional`,
-  },
-};
+import { useState } from "react";
+import Link from "next/link";
 
 export default function AgentationDocs() {
   const [inputValue, setInputValue] = useState("");
-  const [outputFormat, setOutputFormat] = useState<OutputFormat>('standard');
-  const [feedbackStyle, setFeedbackStyle] = useState<FeedbackStyle>('direct');
-
-  // Load saved format and style on mount
-  useEffect(() => {
-    const savedFormat = localStorage.getItem(FORMAT_STORAGE_KEY);
-    if (savedFormat && ['compact', 'standard', 'detailed', 'forensic'].includes(savedFormat)) {
-      setOutputFormat(savedFormat as OutputFormat);
-    }
-    const savedStyle = localStorage.getItem(STYLE_STORAGE_KEY);
-    if (savedStyle && ['direct', 'instructional', 'contextual'].includes(savedStyle)) {
-      setFeedbackStyle(savedStyle as FeedbackStyle);
-    }
-  }, []);
-
-  // Save format to localStorage and notify toolbar
-  const handleFormatChange = useCallback((format: OutputFormat) => {
-    setOutputFormat(format);
-    localStorage.setItem(FORMAT_STORAGE_KEY, format);
-    window.dispatchEvent(new CustomEvent('agentation-format-change', { detail: format }));
-  }, []);
-
-  const handleStyleChange = useCallback((style: FeedbackStyle) => {
-    setFeedbackStyle(style);
-    localStorage.setItem(STYLE_STORAGE_KEY, style);
-    window.dispatchEvent(new CustomEvent('agentation-style-change', { detail: style }));
-  }, []);
 
   return (
     <>
@@ -201,7 +31,7 @@ export default function AgentationDocs() {
             Agentation (agent + annotation) is a dev tool that lets you annotate elements on your webpage
             and generate structured feedback for AI coding agents. Click elements,
             select text, add notes, and paste the output into Claude Code, Cursor, or
-            any agent that has access to your codebase.
+            any agent that has access to your codebase. Zero dependencies beyond React.
           </p>
           <p>
             The key insight: agents can find and fix code much faster when they
@@ -224,123 +54,6 @@ export default function AgentationDocs() {
         </section>
 
         <section>
-          <h2>Features</h2>
-          <ul>
-            <li><strong>Element annotation</strong> &mdash; Click any element to add feedback with automatic element identification (class names, IDs, semantic tags)</li>
-            <li><strong>Text selection</strong> &mdash; Select text to annotate specific content with the quoted text included in output</li>
-            <li><strong>Animation pause</strong> &mdash; Freeze CSS animations to annotate specific states</li>
-            <li><strong>Marker visibility</strong> &mdash; Toggle annotation markers on/off while working</li>
-            <li><strong>Structured output</strong> &mdash; Copies as markdown with page URL, viewport size, element details, and your notes</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2>Keyboard shortcuts</h2>
-          <ul>
-            <li><code>⌘⇧A</code> / <code>Ctrl+Shift+A</code> &mdash; Toggle feedback mode on/off</li>
-            <li><code>Esc</code> &mdash; Close toolbar or cancel annotation</li>
-            <li><code>P</code> &mdash; Pause/resume animations</li>
-            <li><code>H</code> &mdash; Hide/show annotation markers</li>
-            <li><code>C</code> &mdash; Copy feedback to clipboard</li>
-            <li><code>X</code> &mdash; Clear all annotations</li>
-          </ul>
-          <p>
-            Shortcuts are disabled when typing in an input field.
-          </p>
-        </section>
-
-        <section>
-          <h2>Output format</h2>
-          <p>
-            When you copy, you get structured markdown that agents can parse and act on.
-            Three formats are available:
-          </p>
-          <div className="format-toggle">
-            <button
-              className={outputFormat === 'compact' ? 'active' : ''}
-              onClick={() => handleFormatChange('compact')}
-            >
-              Compact
-            </button>
-            <button
-              className={outputFormat === 'standard' ? 'active' : ''}
-              onClick={() => handleFormatChange('standard')}
-            >
-              Standard
-            </button>
-            <button
-              className={outputFormat === 'detailed' ? 'active' : ''}
-              onClick={() => handleFormatChange('detailed')}
-            >
-              Detailed
-            </button>
-            <button
-              className={outputFormat === 'forensic' ? 'active' : ''}
-              onClick={() => handleFormatChange('forensic')}
-            >
-              Forensic
-            </button>
-          </div>
-          <AnimatedCodeBlock code={outputExamples[outputFormat]} language="markdown" formatKey={outputFormat} />
-          <p>
-            The output includes searchable selectors and class names that agents can <code>grep</code> for
-            in your codebase to find the exact component.
-          </p>
-          <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', marginTop: '0.5rem' }}>
-            Try it: changing format here updates the toolbar output.
-          </p>
-        </section>
-
-        <section>
-          <h2>Feedback style <span style={{ fontSize: '0.625rem', fontWeight: 400, color: 'rgba(0,0,0,0.4)', marginLeft: '0.5rem' }}>experimental — likely removing (redundant)</span></h2>
-          <p>
-            How you write feedback may affect agent results. We&rsquo;re testing different styles:
-          </p>
-          <div className="format-toggle">
-            <button
-              className={feedbackStyle === 'direct' ? 'active' : ''}
-              onClick={() => handleStyleChange('direct')}
-            >
-              Direct
-            </button>
-            <button
-              className={feedbackStyle === 'instructional' ? 'active' : ''}
-              onClick={() => handleStyleChange('instructional')}
-            >
-              Instructional
-            </button>
-            <button
-              className={feedbackStyle === 'contextual' ? 'active' : ''}
-              onClick={() => handleStyleChange('contextual')}
-            >
-              Contextual
-            </button>
-          </div>
-          <div style={{ marginTop: '0.5rem' }}>
-            <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', marginBottom: '0.375rem' }}>
-              {styleExamples[feedbackStyle].description}:
-            </p>
-            <AnimatedCodeBlock
-              code={styleExamples[feedbackStyle].example}
-              language="markdown"
-              formatKey={feedbackStyle}
-            />
-          </div>
-          <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', marginTop: '0.5rem' }}>
-            Style transforms output based on detected keywords (typo, missing, broken, etc).
-          </p>
-        </section>
-
-        <section>
-          <h2>What it is</h2>
-          <ul>
-            <li>A <strong>dev tool</strong> for communicating visual feedback to AI coding agents</li>
-            <li>A way to <strong>point at things</strong> in your running app so the agent can find them in code</li>
-            <li>A bridge between <strong>what you see</strong> in the browser and <strong>what the agent can search</strong> in your codebase</li>
-          </ul>
-        </section>
-
-        <section>
           <h2>How it works with agents</h2>
           <p>
             Agentation works best with AI tools that have access to your codebase
@@ -357,86 +70,6 @@ export default function AgentationDocs() {
             Without Agentation, you&rsquo;d have to describe the element (&ldquo;the blue button
             in the sidebar&rdquo;) and hope the agent guesses right. With Agentation, you give it
             <code>.sidebar &gt; .nav-actions &gt; button.primary</code> and it can grep for that directly.
-          </p>
-        </section>
-
-        <section>
-          <h2>What it isn&rsquo;t</h2>
-          <ul>
-            <li><strong>Not a bug tracker</strong> &mdash; annotations aren&rsquo;t persisted or synced</li>
-            <li><strong>Not a design tool</strong> &mdash; you can&rsquo;t edit styles or layouts</li>
-            <li><strong>Not a testing framework</strong> &mdash; no assertions or automation</li>
-            <li><strong>Not for production</strong> &mdash; dev-only, should not ship to users</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2>Limitations</h2>
-          <ul>
-            <li><strong>Session-only</strong> &mdash; annotations clear on page refresh</li>
-            <li><strong>Single page</strong> &mdash; annotations don&rsquo;t follow across navigation</li>
-            <li><strong>Static positions</strong> &mdash; markers don&rsquo;t update if layout changes</li>
-            <li><strong>No screenshots</strong> &mdash; output is text-only (paste alongside screenshots if needed)</li>
-            <li><strong>React only</strong> &mdash; currently requires React 18+</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2>Best practices</h2>
-          <ul>
-            <li><strong>Be specific</strong> &mdash; &ldquo;Button text unclear&rdquo; is better than &ldquo;fix this&rdquo;</li>
-            <li><strong>One issue per annotation</strong> &mdash; easier for the agent to address individually</li>
-            <li><strong>Include context</strong> &mdash; mention what you expected vs. what you see</li>
-            <li><strong>Use text selection</strong> &mdash; for typos or content issues, select the exact text</li>
-            <li><strong>Pause animations</strong> &mdash; to annotate a specific animation frame</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2>Installation</h2>
-          <CodeBlock code="npm install agentation" language="bash" />
-          <p>Add to your root layout (Next.js App Router):</p>
-          <CodeBlock
-            code={`// app/layout.tsx
-import { Agentation } from "agentation";
-
-export default function RootLayout({ children }) {
-  return (
-    <html>
-      <body>
-        {children}
-        {process.env.NODE_ENV === "development" && <Agentation />}
-      </body>
-    </html>
-  );
-}`}
-            language="tsx"
-          />
-          <p>
-            The <code>NODE_ENV</code> check ensures it only loads in development.
-          </p>
-          <p>
-            <strong>Zero dependencies</strong> &mdash; Agentation uses CSS-only animations
-            with no runtime dependencies beyond React.
-          </p>
-        </section>
-
-        <section>
-          <h2>Security notes</h2>
-          <p>
-            Agentation runs in your browser and reads DOM content to generate feedback.
-            It does <strong>not</strong> send data anywhere &mdash; everything stays local
-            until you manually copy and paste.
-          </p>
-          <ul>
-            <li><strong>No network requests</strong> &mdash; all processing is client-side</li>
-            <li><strong>No data collection</strong> &mdash; nothing is tracked or stored remotely</li>
-            <li><strong>Dev-only</strong> &mdash; use the NODE_ENV check to exclude from production</li>
-            <li><strong>Open source</strong> &mdash; review the source if you have concerns</li>
-          </ul>
-          <p>
-            Since it runs in the same context as your app, treat it like any dev dependency:
-            install from the official npm package or clone from the repo.
           </p>
         </section>
 
@@ -487,44 +120,28 @@ export default function RootLayout({ children }) {
         </section>
 
         <section>
-          <h2>Customizing output</h2>
-          <p>
-            The copied output is plain markdown. Feel free to edit it before pasting
-            into your agent:
-          </p>
+          <h2>Best practices</h2>
           <ul>
-            <li><strong>Add context</strong> &mdash; prepend with &ldquo;I&rsquo;m working on the dashboard page...&rdquo;</li>
-            <li><strong>Prioritize</strong> &mdash; reorder annotations by importance</li>
-            <li><strong>Remove noise</strong> &mdash; delete annotations that aren&rsquo;t relevant</li>
-            <li><strong>Add instructions</strong> &mdash; append &ldquo;Fix these issues and run the tests&rdquo;</li>
+            <li><strong>Be specific</strong> &mdash; &ldquo;Button text unclear&rdquo; is better than &ldquo;fix this&rdquo;</li>
+            <li><strong>One issue per annotation</strong> &mdash; easier for the agent to address individually</li>
+            <li><strong>Include context</strong> &mdash; mention what you expected vs. what you see</li>
+            <li><strong>Use text selection</strong> &mdash; for typos or content issues, select the exact text</li>
+            <li><strong>Pause animations</strong> &mdash; to annotate a specific animation frame</li>
           </ul>
-          <p>
-            The structured format helps the agent understand <em>what</em> you&rsquo;re pointing at.
-            Your edits help it understand <em>what to do</em>.
-          </p>
         </section>
 
         <section>
-          <h2>Why not just describe it?</h2>
-          <p>
-            You could type &ldquo;the blue button in the header is misaligned&rdquo; but:
-          </p>
+          <h2>Learn more</h2>
           <ul>
-            <li>Which blue button? There might be several.</li>
-            <li>What&rsquo;s the actual class name the agent can search for?</li>
-            <li>What component renders this element?</li>
-            <li>What&rsquo;s the parent container&rsquo;s class?</li>
+            <li><Link href="/install">Installation</Link> &mdash; Add Agentation to your project</li>
+            <li><Link href="/features">Features</Link> &mdash; Everything the toolbar can do</li>
+            <li><Link href="/output">Output Format</Link> &mdash; How feedback is structured for agents</li>
           </ul>
-          <p>
-            Agentation captures selectors that the agent can actually <code>grep</code> for in your codebase.
-            Instead of guessing which file to look at, it can search for <code>className=&quot;submit-btn&quot;</code>
-            and find the exact component.
-          </p>
         </section>
       </article>
 
       <footer className="footer">
-        <p>Created by <a href="https://benji.org" target="_blank" rel="noopener noreferrer">Benji Taylor</a></p>
+        <p>Made by <a href="https://benji.org" target="_blank" rel="noopener noreferrer">Benji Taylor</a> and <a href="https://dennisjin.com" target="_blank" rel="noopener noreferrer">Dennis Jin</a></p>
       </footer>
     </>
   );

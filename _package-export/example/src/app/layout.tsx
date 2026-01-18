@@ -11,9 +11,11 @@ export const metadata: Metadata = {
 function SideNav() {
   return (
     <nav className="side-nav">
-      <Link href="/" className="nav-link">Docs</Link>
+      <Link href="/" className="nav-link">Overview</Link>
+      <Link href="/install" className="nav-link">Install</Link>
+      <Link href="/features" className="nav-link">Features</Link>
+      <Link href="/output" className="nav-link">Output</Link>
       <Link href="/changelog" className="nav-link">Changelog</Link>
-      <Link href="/logic" className="nav-link">Logic</Link>
     </nav>
   );
 }
