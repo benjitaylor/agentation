@@ -345,10 +345,10 @@ export function PageFeedbackToolbarCSS() {
     const handleScroll = () => {
       setScrollY(window.scrollY);
 
-      // Immediately hide hover elements
+      // Immediately hide hover elements by clearing hover state
       if (!isScrollingRef.current) {
         isScrollingRef.current = true;
-        setIsScrolling(true);
+        setHoverInfo(null); // Clear immediately to hide highlight
       }
 
       // Clear existing timeout
@@ -359,8 +359,6 @@ export function PageFeedbackToolbarCSS() {
       // Restore after scrolling stops
       scrollTimeoutRef.current = setTimeout(() => {
         isScrollingRef.current = false;
-        setIsScrolling(false);
-        setHoverInfo(null); // Clear stale hover info
       }, 100);
     };
 
