@@ -1,3 +1,5 @@
+"use client";
+
 // src/components/page-toolbar/index.tsx
 import { useState as useState2, useCallback as useCallback2, useEffect as useEffect2, useRef as useRef2 } from "react";
 import { motion as motion3, AnimatePresence as AnimatePresence2 } from "framer-motion";

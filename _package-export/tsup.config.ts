@@ -83,4 +83,7 @@ export default defineConfig({
   clean: true,
   external: ["react", "react-dom", "framer-motion"],
   esbuildPlugins: [scssModulesPlugin()],
+  banner: {
+    js: '"use client";',
+  },
 });
