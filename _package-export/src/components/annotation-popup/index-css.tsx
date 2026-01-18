@@ -1,34 +1,69 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
-import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import styles from "./styles.module.scss";
+
+// =============================================================================
+// CSS Animation Styles (injected once)
+// =============================================================================
+
+const cssAnimationStyles = `
+@keyframes agentation-popup-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.95) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) translateY(0);
+  }
+}
+
+@keyframes agentation-popup-shake {
+  0%, 100% { transform: translateX(-50%); }
+  15% { transform: translateX(-50%) translateX(-3px); }
+  30% { transform: translateX(-50%) translateX(3px); }
+  45% { transform: translateX(-50%) translateX(-2px); }
+  60% { transform: translateX(-50%) translateX(2px); }
+  75% { transform: translateX(-50%) translateX(-1px); }
+  90% { transform: translateX(-50%) translateX(1px); }
+}
+
+.agentation-popup-animate-in {
+  animation: agentation-popup-in 0.2s ease-out forwards;
+}
+
+.agentation-popup-shake {
+  animation: agentation-popup-shake 0.3s ease-out forwards !important;
+}
+`;
+
+// Inject styles once
+if (typeof document !== "undefined") {
+  if (!document.getElementById("agentation-popup-css-animations")) {
+    const style = document.createElement("style");
+    style.id = "agentation-popup-css-animations";
+    style.textContent = cssAnimationStyles;
+    document.head.appendChild(style);
+  }
+}
 
 // =============================================================================
 // Types
 // =============================================================================
 
 export interface AnnotationPopupProps {
-  /** Element name to display in header */
   element: string;
-  /** Optional timestamp display (e.g., "@ 1.23s" for animation feedback) */
   timestamp?: string;
-  /** Optional selected/highlighted text */
   selectedText?: string;
-  /** Placeholder text for the textarea */
   placeholder?: string;
-  /** Called when annotation is submitted with text */
   onSubmit: (text: string) => void;
-  /** Called when popup is cancelled/dismissed */
   onCancel: () => void;
-  /** Position styles (left, top) */
   style?: React.CSSProperties;
-  /** Color variant for submit button */
   variant?: "blue" | "green";
 }
 
 export interface AnnotationPopupHandle {
-  /** Shake the popup (e.g., when user clicks outside) */
   shake: () => void;
 }
 
@@ -36,8 +71,8 @@ export interface AnnotationPopupHandle {
 // Component
 // =============================================================================
 
-export const AnnotationPopup = forwardRef<AnnotationPopupHandle, AnnotationPopupProps>(
-  function AnnotationPopup(
+export const AnnotationPopupCSS = forwardRef<AnnotationPopupHandle, AnnotationPopupProps>(
+  function AnnotationPopupCSS(
     {
       element,
       timestamp,
@@ -51,31 +86,42 @@ export const AnnotationPopup = forwardRef<AnnotationPopupHandle, AnnotationPopup
     ref
   ) {
     const [text, setText] = useState("");
+    const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const controls = useAnimation();
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    // Animate in on mount and focus textarea
+    // Focus textarea on mount
     useEffect(() => {
-      controls.start({ opacity: 1, scale: 1, y: 0 });
       const timer = setTimeout(() => textareaRef.current?.focus(), 10);
       return () => clearTimeout(timer);
-    }, [controls]);
+    }, []);
 
-    // Shake animation - subtle shake for the popup container
-    const shake = useCallback(async () => {
-      await controls.start({
-        x: [0, -3, 3, -2, 2, 0],
-        transition: { duration: 0.25, ease: "easeOut" },
-      });
-      textareaRef.current?.focus();
-    }, [controls]);
+    // Shake animation - use CSS directly to avoid re-render flash
+    const shake = useCallback(() => {
+      const el = containerRef.current;
+      if (!el) return;
 
-    // Expose shake to parent via ref (for click-outside behavior)
-    useImperativeHandle(ref, () => ({
-      shake,
-    }), [shake]);
+      // Remove and re-add shake class to restart animation
+      el.classList.remove('agentation-popup-shake');
+      // Force reflow
+      void el.offsetWidth;
+      el.classList.add('agentation-popup-shake');
+    }, []);
 
-    // Handle submit - only submits if there's text
+    // Handle animation end
+    const handleAnimationEnd = useCallback((e: React.AnimationEvent) => {
+      if (e.animationName === 'agentation-popup-in') {
+        setHasAnimatedIn(true);
+      }
+      if (e.animationName === 'agentation-popup-shake') {
+        textareaRef.current?.focus();
+      }
+    }, []);
+
+    // Expose shake to parent
+    useImperativeHandle(ref, () => ({ shake }), [shake]);
+
+    // Handle submit
     const handleSubmit = useCallback(() => {
       if (!text.trim()) return;
       onSubmit(text.trim());
@@ -89,7 +135,6 @@ export const AnnotationPopup = forwardRef<AnnotationPopupHandle, AnnotationPopup
           handleSubmit();
         }
         if (e.key === "Escape") {
-          // Escape always closes
           onCancel();
         }
       },
@@ -97,15 +142,13 @@ export const AnnotationPopup = forwardRef<AnnotationPopupHandle, AnnotationPopup
     );
 
     return (
-      <motion.div
-        className={styles.popup}
+      <div
+        ref={containerRef}
+        className={`${styles.popup} ${!hasAnimatedIn ? "agentation-popup-animate-in" : ""}`}
         data-annotation-popup
-        initial={{ opacity: 0, scale: 0.95, y: 4 }}
-        animate={controls}
-        exit={{ opacity: 0, scale: 0.95, y: 4 }}
-        transition={{ type: "spring", stiffness: 500, damping: 35 }}
         style={style}
         onClick={(e) => e.stopPropagation()}
+        onAnimationEnd={handleAnimationEnd}
       >
         <div className={styles.header}>
           <span className={styles.element}>{element}</span>
@@ -141,24 +184,9 @@ export const AnnotationPopup = forwardRef<AnnotationPopupHandle, AnnotationPopup
             Add
           </button>
         </div>
-      </motion.div>
+      </div>
     );
   }
 );
 
-// =============================================================================
-// Wrapper for AnimatePresence (convenience export)
-// =============================================================================
-
-export function AnnotationPopupPresence({
-  isOpen,
-  ...props
-}: AnnotationPopupProps & { isOpen: boolean }) {
-  return (
-    <AnimatePresence>
-      {isOpen && <AnnotationPopup {...props} />}
-    </AnimatePresence>
-  );
-}
-
-export default AnnotationPopup;
+export default AnnotationPopupCSS;

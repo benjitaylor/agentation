@@ -1,15 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-
 // =============================================================================
-// Shared transition for morphing icons
-// =============================================================================
-
-const transition = { type: "spring" as const, stiffness: 500, damping: 30 };
-
-// =============================================================================
-// Icons
+// CSS-only icons (no framer-motion dependency)
 // =============================================================================
 
 // Feedback/comment bubble with plus (Material Design style)
@@ -39,68 +31,54 @@ export const IconPause = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
-// Eye icon with morph animation (Material Design filled style)
+// Eye icon with CSS transition (Material Design style)
 export const EyeMorphIcon = ({ size = 16, visible }: { size?: number; visible: boolean }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    {/* Eye shape - Material Design style */}
     <path d="M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-    {/* Slash line for hidden state */}
-    <motion.g
-      initial={false}
-      animate={{ opacity: visible ? 0 : 1 }}
-      transition={{ duration: 0.15 }}
-    >
+    <g style={{ opacity: visible ? 0 : 1, transition: "opacity 0.15s ease" }}>
       <line x1="4" y1="20" x2="20" y2="4" stroke="white" strokeWidth="4" strokeLinecap="round" />
       <line x1="4" y1="20" x2="20" y2="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </motion.g>
+    </g>
   </svg>
 );
 
-// Document/save icon that morphs to checkmark (Material Design style)
+// Document/save icon with CSS transition (Material Design style)
 export const CopyMorphIcon = ({ size = 16, checked }: { size?: number; checked: boolean }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <motion.path
+    <path
       d="M14.17,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V9.83c0-0.53-0.21-1.04-0.59-1.41l-4.83-4.83 C15.21,3.21,14.7,3,14.17,3L14.17,3z M8,15h8c0.55,0,1,0.45,1,1v0c0,0.55-0.45,1-1,1H8c-0.55,0-1-0.45-1-1v0C7,15.45,7.45,15,8,15z M8,11h8c0.55,0,1,0.45,1,1v0c0,0.55-0.45,1-1,1H8c-0.55,0-1-0.45-1-1v0C7,11.45,7.45,11,8,11z M8,7h5c0.55,0,1,0.45,1,1v0 c0,0.55-0.45,1-1,1H8C7.45,9,7,8.55,7,8v0C7,7.45,7.45,7,8,7z"
-      initial={false}
-      animate={{ opacity: checked ? 0 : 1 }}
-      transition={{ duration: 0.15 }}
+      style={{ opacity: checked ? 0 : 1, transition: "opacity 0.15s ease" }}
     />
-    <motion.path
+    <path
       d="M6 12.5l3.5 3.5L18 7"
       stroke="currentColor"
       strokeWidth="2.5"
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
-      initial={false}
-      animate={{ opacity: checked ? 1 : 0, scale: checked ? 1 : 0.5 }}
-      transition={transition}
-      style={{ transformOrigin: "12px 12px" }}
+      style={{
+        opacity: checked ? 1 : 0,
+        transform: checked ? "scale(1)" : "scale(0.5)",
+        transformOrigin: "12px 12px",
+        transition: "opacity 0.2s ease, transform 0.2s ease",
+      }}
     />
   </svg>
 );
 
-// Refresh/reset icon that morphs to checkmark (Material Design style)
+// Refresh/reset icon with spin animation (Material Design style)
 export const TrashMorphIcon = ({ size = 16, checked }: { size?: number; checked: boolean }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <motion.path
-      d="M17.65 6.35c-1.63-1.63-3.94-2.57-6.48-2.31-3.67.37-6.69 3.35-7.1 7.02C3.52 15.91 7.27 20 12 20c3.19 0 5.93-1.87 7.21-4.56.32-.67-.16-1.44-.9-1.44-.37 0-.72.2-.88.53-1.13 2.43-3.84 3.97-6.8 3.31-2.22-.49-4.01-2.3-4.48-4.52C5.31 9.44 8.26 6 12 6c1.66 0 3.14.69 4.22 1.78l-1.51 1.51c-.63.63-.19 1.71.7 1.71H19c.55 0 1-.45 1-1V6.41c0-.89-1.08-1.34-1.71-.71l-.64.65z"
-      initial={false}
-      animate={{ opacity: checked ? 0 : 1 }}
-      transition={{ duration: 0.15 }}
-    />
-    <motion.path
-      d="M6 12.5l3.5 3.5L18 7"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      fill="none"
-      initial={false}
-      animate={{ opacity: checked ? 1 : 0, scale: checked ? 1 : 0.5 }}
-      transition={transition}
-      style={{ transformOrigin: "12px 12px" }}
-    />
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    style={{
+      transform: checked ? "rotate(360deg)" : "rotate(0deg)",
+      transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+    }}
+  >
+    <path d="M17.65 6.35c-1.63-1.63-3.94-2.57-6.48-2.31-3.67.37-6.69 3.35-7.1 7.02C3.52 15.91 7.27 20 12 20c3.19 0 5.93-1.87 7.21-4.56.32-.67-.16-1.44-.9-1.44-.37 0-.72.2-.88.53-1.13 2.43-3.84 3.97-6.8 3.31-2.22-.49-4.01-2.3-4.48-4.52C5.31 9.44 8.26 6 12 6c1.66 0 3.14.69 4.22 1.78l-1.51 1.51c-.63.63-.19 1.71.7 1.71H19c.55 0 1-.45 1-1V6.41c0-.89-1.08-1.34-1.71-.71l-.64.65z" />
   </svg>
 );
 

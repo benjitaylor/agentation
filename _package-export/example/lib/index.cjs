@@ -21,7 +21,10 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var index_exports = {};
 __export(index_exports, {
+  Agentation: () => PageFeedbackToolbar,
+  AgentationCSS: () => PageFeedbackToolbarCSS,
   AnnotationPopup: () => AnnotationPopup,
+  AnnotationPopupCSS: () => AnnotationPopupCSS,
   AnnotationPopupPresence: () => AnnotationPopupPresence,
   CopyMorphIcon: () => CopyMorphIcon,
   EyeMorphIcon: () => EyeMorphIcon,
@@ -33,7 +36,9 @@ __export(index_exports, {
   IconPause: () => IconPause,
   IconPlay: () => IconPlay,
   IconPlus: () => IconPlus,
+  IconsCSS: () => icons_css_exports,
   PageFeedbackToolbar: () => PageFeedbackToolbar,
+  PageFeedbackToolbarCSS: () => PageFeedbackToolbarCSS,
   TrashMorphIcon: () => TrashMorphIcon,
   getElementClasses: () => getElementClasses,
   getElementPath: () => getElementPath,
@@ -59,10 +64,10 @@ var import_framer_motion = require("framer-motion");
 var css = '.styles-module__popup___MBQDV {\n  position: fixed;\n  transform: translateX(-50%);\n  width: 280px;\n  padding: 0.75rem;\n  background: white;\n  border-radius: 0.75rem;\n  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.04);\n  cursor: default;\n  z-index: 100;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n}\n\n.styles-module__header___1q-wa {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 0.5rem;\n}\n\n.styles-module__element___tPxVO {\n  font-size: 0.75rem;\n  font-weight: 500;\n  color: rgba(0, 0, 0, 0.65);\n  max-width: 100%;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  flex: 1;\n}\n\n.styles-module__timestamp___t7PEZ {\n  font-size: 0.625rem;\n  font-weight: 500;\n  color: rgba(0, 0, 0, 0.35);\n  font-variant-numeric: tabular-nums;\n  margin-left: 0.5rem;\n  flex-shrink: 0;\n}\n\n.styles-module__quote___uFJyr {\n  font-size: 0.6875rem;\n  font-style: italic;\n  color: rgba(0, 0, 0, 0.5);\n  margin-bottom: 0.5rem;\n  padding: 0.4rem 0.5rem;\n  background: rgba(0, 0, 0, 0.03);\n  border-radius: 0.25rem;\n  line-height: 1.45;\n}\n\n.styles-module__textarea___Pw6C4 {\n  width: 100%;\n  padding: 0.5rem 0.625rem;\n  font-size: 0.8125rem;\n  font-family: inherit;\n  border: 1px solid rgba(0, 0, 0, 0.12);\n  border-radius: 0.375rem;\n  resize: none;\n  outline: none;\n  transition: border-color 0.15s ease;\n}\n.styles-module__textarea___Pw6C4:focus {\n  border-color: #3c82f7;\n}\n.styles-module__textarea___Pw6C4::placeholder {\n  color: rgba(0, 0, 0, 0.35);\n}\n\n.styles-module__actions___bxQCu {\n  display: flex;\n  justify-content: flex-end;\n  gap: 0.375rem;\n  margin-top: 0.5rem;\n}\n\n.styles-module__cancel___-xAEc,\n.styles-module__submit___nnXO9 {\n  padding: 0.4rem 0.875rem;\n  font-size: 0.75rem;\n  font-weight: 500;\n  border-radius: 1rem;\n  border: none;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n.styles-module__cancel___-xAEc {\n  background: transparent;\n  color: rgba(0, 0, 0, 0.5);\n}\n.styles-module__cancel___-xAEc:hover {\n  background: rgba(0, 0, 0, 0.05);\n  color: rgba(0, 0, 0, 0.7);\n}\n\n.styles-module__submit___nnXO9 {\n  background: #3c82f7;\n  color: white;\n}\n.styles-module__submit___nnXO9:hover:not(:disabled) {\n  background: #2d6fdf;\n}\n.styles-module__submit___nnXO9:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n.styles-module__submit___nnXO9.styles-module__green___zdmke {\n  background: #34C759;\n}\n.styles-module__submit___nnXO9.styles-module__green___zdmke:hover:not(:disabled) {\n  background: #2db84d;\n}';
 var classNames = { "popup": "styles-module__popup___MBQDV", "header": "styles-module__header___1q-wa", "element": "styles-module__element___tPxVO", "timestamp": "styles-module__timestamp___t7PEZ", "quote": "styles-module__quote___uFJyr", "textarea": "styles-module__textarea___Pw6C4", "actions": "styles-module__actions___bxQCu", "cancel": "styles-module__cancel___-xAEc", "submit": "styles-module__submit___nnXO9", "green": "styles-module__green___zdmke" };
 if (typeof document !== "undefined") {
-  let style = document.getElementById("feedback-tool-styles-styles");
+  let style = document.getElementById("feedback-tool-styles-annotation-popup-styles");
   if (!style) {
     style = document.createElement("style");
-    style.id = "feedback-tool-styles-styles";
+    style.id = "feedback-tool-styles-annotation-popup-styles";
     style.textContent = css;
     document.head.appendChild(style);
   }
@@ -92,8 +97,8 @@ var AnnotationPopup = (0, import_react.forwardRef)(
     }, [controls]);
     const shake = (0, import_react.useCallback)(async () => {
       await controls.start({
-        x: [0, -8, 8, -6, 6, -4, 4, 0],
-        transition: { duration: 0.4, ease: "easeOut" }
+        x: [0, -3, 3, -2, 2, 0],
+        transition: { duration: 0.25, ease: "easeOut" }
       });
       textareaRef.current?.focus();
     }, [controls]);
@@ -178,15 +183,10 @@ function AnnotationPopupPresence({
 var import_framer_motion2 = require("framer-motion");
 var import_jsx_runtime2 = require("react/jsx-runtime");
 var transition = { type: "spring", stiffness: 500, damping: 30 };
-var IconFeedback = ({ size = 18 }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("svg", { width: size, height: size, viewBox: "0 0 18 18", fill: "none", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
-  "path",
-  {
-    d: "M3 4h12v8H5l-2 2V4z",
-    stroke: "currentColor",
-    strokeWidth: "1.5",
-    strokeLinejoin: "round"
-  }
-) });
+var IconFeedback = ({ size = 18 }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", children: [
+  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "M12,4c4.97,0,8.9,4.56,7.82,9.72c-0.68,3.23-3.4,5.74-6.67,6.2c-1.59,0.22-3.14-0.01-4.58-0.7 c-0.27-0.13-0.56-0.19-0.86-0.19c-0.19,0-0.38,0.03-0.56,0.08l-2.31,0.68c-0.38,0.11-0.74-0.24-0.63-0.63l0.7-2.39 c0.13-0.45,0.07-0.92-0.14-1.35C4.26,14.34,4,13.18,4,12C4,7.59,7.59,4,12,4 M12,2C6.48,2,2,6.48,2,12c0,1.54,0.36,2.98,0.97,4.29 l-1.46,4.96C1.29,22,2,22.71,2.76,22.48l4.96-1.46c1.66,0.79,3.56,1.15,5.58,0.89c4.56-0.59,8.21-4.35,8.66-8.92 C22.53,7.03,17.85,2,12,2L12,2z" }),
+  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "M12,8L12,8c-0.55,0-1,0.45-1,1v2H9c-0.55,0-1,0.45-1,1v0c0,0.55,0.45,1,1,1h2v2 c0,0.55,0.45,1,1,1h0c0.55,0,1-0.45,1-1v-2h2c0.55,0,1-0.45,1-1v0c0-0.55-0.45-1-1-1h-2V9C13,8.45,12.55,8,12,8z", fillRule: "evenodd" })
+] });
 var IconPlay = ({ size = 16 }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
   "path",
   {
@@ -198,7 +198,7 @@ var IconPlay = ({ size = 16 }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("
 ) });
 var IconPause = ({ size = 16 }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "M5.5 4v8M10.5 4v8", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round" }) });
 var EyeMorphIcon = ({ size = 16, visible }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", children: [
-  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" }),
+  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" }),
   /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
     import_framer_motion2.motion.g,
     {
@@ -212,45 +212,55 @@ var EyeMorphIcon = ({ size = 16, visible }) => /* @__PURE__ */ (0, import_jsx_ru
     }
   )
 ] });
-var CopyMorphIcon = ({ size = 16, checked }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: [
-  /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(import_framer_motion2.motion.g, { initial: false, animate: { opacity: checked ? 0 : 1 }, transition: { duration: 0.15 }, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("rect", { x: "3", y: "2", width: "7", height: "9", rx: "1", stroke: "currentColor", strokeWidth: "1.5", fill: "none" }),
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("rect", { x: "6", y: "5", width: "7", height: "9", rx: "1", stroke: "currentColor", strokeWidth: "1.5", fill: "white" })
-  ] }),
+var CopyMorphIcon = ({ size = 16, checked }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", children: [
   /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
     import_framer_motion2.motion.path,
     {
-      d: "M4 8.5l2.5 2.5L12 5",
+      d: "M14.17,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V9.83c0-0.53-0.21-1.04-0.59-1.41l-4.83-4.83 C15.21,3.21,14.7,3,14.17,3L14.17,3z M8,15h8c0.55,0,1,0.45,1,1v0c0,0.55-0.45,1-1,1H8c-0.55,0-1-0.45-1-1v0C7,15.45,7.45,15,8,15z M8,11h8c0.55,0,1,0.45,1,1v0c0,0.55-0.45,1-1,1H8c-0.55,0-1-0.45-1-1v0C7,11.45,7.45,11,8,11z M8,7h5c0.55,0,1,0.45,1,1v0 c0,0.55-0.45,1-1,1H8C7.45,9,7,8.55,7,8v0C7,7.45,7.45,7,8,7z",
+      initial: false,
+      animate: { opacity: checked ? 0 : 1 },
+      transition: { duration: 0.15 }
+    }
+  ),
+  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+    import_framer_motion2.motion.path,
+    {
+      d: "M6 12.5l3.5 3.5L18 7",
       stroke: "currentColor",
-      strokeWidth: "1.75",
+      strokeWidth: "2.5",
       strokeLinecap: "round",
       strokeLinejoin: "round",
       fill: "none",
       initial: false,
       animate: { opacity: checked ? 1 : 0, scale: checked ? 1 : 0.5 },
       transition,
-      style: { transformOrigin: "8px 8px" }
+      style: { transformOrigin: "12px 12px" }
     }
   )
 ] });
-var TrashMorphIcon = ({ size = 16, checked }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: [
-  /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(import_framer_motion2.motion.g, { initial: false, animate: { opacity: checked ? 0 : 1 }, transition: { duration: 0.15 }, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "M3 4h10M6 4V3a1 1 0 011-1h2a1 1 0 011 1v1", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round" }),
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "M4.5 4.5l.7 8.5a1 1 0 001 .9h3.6a1 1 0 001-.9l.7-8.5", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round" })
-  ] }),
+var TrashMorphIcon = ({ size = 16, checked }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", children: [
   /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
     import_framer_motion2.motion.path,
     {
-      d: "M4 8.5l2.5 2.5L12 5",
+      d: "M17.65 6.35c-1.63-1.63-3.94-2.57-6.48-2.31-3.67.37-6.69 3.35-7.1 7.02C3.52 15.91 7.27 20 12 20c3.19 0 5.93-1.87 7.21-4.56.32-.67-.16-1.44-.9-1.44-.37 0-.72.2-.88.53-1.13 2.43-3.84 3.97-6.8 3.31-2.22-.49-4.01-2.3-4.48-4.52C5.31 9.44 8.26 6 12 6c1.66 0 3.14.69 4.22 1.78l-1.51 1.51c-.63.63-.19 1.71.7 1.71H19c.55 0 1-.45 1-1V6.41c0-.89-1.08-1.34-1.71-.71l-.64.65z",
+      initial: false,
+      animate: { opacity: checked ? 0 : 1 },
+      transition: { duration: 0.15 }
+    }
+  ),
+  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+    import_framer_motion2.motion.path,
+    {
+      d: "M6 12.5l3.5 3.5L18 7",
       stroke: "currentColor",
-      strokeWidth: "1.75",
+      strokeWidth: "2.5",
       strokeLinecap: "round",
       strokeLinejoin: "round",
       fill: "none",
       initial: false,
       animate: { opacity: checked ? 1 : 0, scale: checked ? 1 : 0.5 },
       transition,
-      style: { transformOrigin: "8px 8px" }
+      style: { transformOrigin: "12px 12px" }
     }
   )
 ] });
@@ -486,13 +496,13 @@ function saveAnnotations(pathname, annotations) {
 }
 
 // src/components/page-toolbar/styles.module.scss
-var css2 = '.styles-module__toolbar___50aIA {\n  position: fixed;\n  bottom: 1.25rem;\n  right: 1.25rem;\n  z-index: 100000;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n}\n\n.styles-module__toggleButton___kgnvI {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 44px;\n  height: 44px;\n  border-radius: 22px;\n  border: none;\n  background: white;\n  color: rgba(0, 0, 0, 0.5);\n  cursor: pointer;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(0, 0, 0, 0.06);\n  transition: color 0.15s ease;\n}\n.styles-module__toggleButton___kgnvI:hover {\n  color: rgba(0, 0, 0, 0.8);\n}\n\n.styles-module__badge___WRMxo {\n  position: absolute;\n  top: -4px;\n  right: -4px;\n  min-width: 18px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  background: #3c82f7;\n  color: white;\n  font-size: 0.625rem;\n  font-weight: 600;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);\n}\n\n.styles-module__controls___2-kD- {\n  display: flex;\n  align-items: center;\n  gap: 0.25rem;\n  padding: 0.375rem;\n  border-radius: 1.5rem;\n  background: white;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(0, 0, 0, 0.06);\n}\n\n.styles-module__controlButton___RB3R5 {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 34px;\n  height: 34px;\n  border-radius: 50%;\n  border: none;\n  background: transparent;\n  color: rgba(0, 0, 0, 0.5);\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n.styles-module__controlButton___RB3R5:hover:not(:disabled) {\n  background: rgba(0, 0, 0, 0.06);\n  color: rgba(0, 0, 0, 0.75);\n}\n.styles-module__controlButton___RB3R5:active:not(:disabled) {\n  transform: scale(0.92);\n}\n.styles-module__controlButton___RB3R5:disabled {\n  opacity: 0.3;\n  cursor: not-allowed;\n}\n.styles-module__controlButton___RB3R5[data-active=true] {\n  color: #3c82f7;\n  background: rgba(60, 130, 247, 0.1);\n}\n.styles-module__controlButton___RB3R5[data-danger]:hover:not(:disabled) {\n  background: rgba(255, 59, 48, 0.1);\n  color: #ff3b30;\n}\n\n.styles-module__divider___yO3YX {\n  width: 1px;\n  height: 20px;\n  background: rgba(0, 0, 0, 0.1);\n  margin: 0 0.125rem;\n}\n\n.styles-module__overlay___pQK74 {\n  position: fixed;\n  inset: 0;\n  z-index: 99999;\n  pointer-events: none;\n}\n.styles-module__overlay___pQK74 > * {\n  pointer-events: auto;\n}\n\n.styles-module__hoverHighlight___iUTDq {\n  position: fixed;\n  border: 2px solid rgba(60, 130, 247, 0.6);\n  border-radius: 4px;\n  pointer-events: none !important;\n  background: rgba(60, 130, 247, 0.06);\n  box-sizing: border-box;\n}\n\n.styles-module__hoverTooltip___eOid- {\n  position: fixed;\n  font-size: 0.6875rem;\n  font-weight: 500;\n  color: #fff;\n  background: rgba(0, 0, 0, 0.85);\n  padding: 0.35rem 0.6rem;\n  border-radius: 0.375rem;\n  pointer-events: none !important;\n  white-space: nowrap;\n  max-width: 200px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.styles-module__markersLayer___RFGiE {\n  position: fixed;\n  inset: 0;\n  z-index: 99998;\n  pointer-events: none;\n}\n.styles-module__markersLayer___RFGiE > * {\n  pointer-events: auto;\n}\n\n.styles-module__marker___XNegd {\n  position: fixed;\n  width: 22px;\n  height: 22px;\n  background: #3c82f7;\n  color: white;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 0.6875rem;\n  font-weight: 600;\n  transform: translate(-50%, -50%);\n  cursor: pointer;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n  transition: background 0.15s ease;\n  user-select: none;\n}\n.styles-module__marker___XNegd.styles-module__pending___h4sf4 {\n  background: #3c82f7;\n}\n.styles-module__marker___XNegd.styles-module__hovered___WMoLv {\n  background: #ff3b30;\n}\n\n.styles-module__markerTooltip___pbJGs {\n  position: absolute;\n  top: calc(100% + 10px);\n  left: 50%;\n  transform: translateX(-50%);\n  background: white;\n  padding: 0.625rem 0.75rem;\n  border-radius: 0.5rem;\n  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);\n  min-width: 160px;\n  max-width: 280px;\n  pointer-events: none;\n  cursor: default;\n}\n\n.styles-module__markerQuote___bZuZt {\n  display: block;\n  font-size: 0.6875rem;\n  font-style: italic;\n  color: rgba(0, 0, 0, 0.5);\n  margin-bottom: 0.375rem;\n  line-height: 1.4;\n}\n\n.styles-module__markerNote___AvTvH {\n  display: block;\n  font-size: 0.75rem;\n  font-weight: 450;\n  line-height: 1.4;\n  color: #333;\n  white-space: normal;\n}\n\n.styles-module__markerHint___drxqW {\n  display: block;\n  font-size: 0.625rem;\n  font-weight: 400;\n  color: rgba(0, 0, 0, 0.3);\n  margin-top: 0.375rem;\n}';
+var css2 = '.styles-module__toolbar___50aIA {\n  position: fixed;\n  bottom: 1.25rem;\n  right: 1.25rem;\n  z-index: 100000;\n  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n}\n\n.styles-module__toggleButton___kgnvI {\n  position: relative;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 44px;\n  height: 44px;\n  border-radius: 22px;\n  border: none;\n  background: #1a1a1a;\n  color: #fff;\n  cursor: pointer;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1);\n  transition: all 0.15s ease;\n}\n.styles-module__toggleButton___kgnvI svg {\n  margin-top: -1px;\n}\n.styles-module__toggleButton___kgnvI:hover {\n  background: #2a2a2a;\n}\n\n.styles-module__badge___WRMxo {\n  position: absolute;\n  top: -4px;\n  right: -4px;\n  min-width: 18px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  background: #3c82f7;\n  color: white;\n  font-size: 0.625rem;\n  font-weight: 600;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);\n}\n\n.styles-module__controls___2-kD- {\n  display: flex;\n  align-items: center;\n  gap: 0.25rem;\n  padding: 0.375rem;\n  border-radius: 1.5rem;\n  background: #1a1a1a;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1);\n}\n\n.styles-module__controlButton___RB3R5 {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 34px;\n  height: 34px;\n  border-radius: 50%;\n  border: none;\n  background: transparent;\n  color: rgba(255, 255, 255, 0.85);\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n.styles-module__controlButton___RB3R5:hover:not(:disabled) {\n  background: rgba(255, 255, 255, 0.12);\n  color: #fff;\n}\n.styles-module__controlButton___RB3R5:active:not(:disabled) {\n  transform: scale(0.92);\n}\n.styles-module__controlButton___RB3R5:disabled {\n  opacity: 0.35;\n  cursor: not-allowed;\n}\n.styles-module__controlButton___RB3R5[data-active=true] {\n  color: #3c82f7;\n  background: rgba(60, 130, 247, 0.25);\n}\n.styles-module__controlButton___RB3R5[data-danger]:hover:not(:disabled) {\n  background: rgba(255, 59, 48, 0.25);\n  color: #ff3b30;\n}\n\n.styles-module__divider___yO3YX {\n  width: 1px;\n  height: 20px;\n  background: rgba(255, 255, 255, 0.15);\n  margin: 0 0.125rem;\n}\n\n.styles-module__overlay___pQK74 {\n  position: fixed;\n  inset: 0;\n  z-index: 99999;\n  pointer-events: none;\n}\n.styles-module__overlay___pQK74 > * {\n  pointer-events: auto;\n}\n\n.styles-module__hoverHighlight___iUTDq {\n  position: fixed;\n  border: 2px solid rgba(60, 130, 247, 0.5);\n  border-radius: 4px;\n  pointer-events: none !important;\n  background: rgba(60, 130, 247, 0.04);\n  box-sizing: border-box;\n  will-change: opacity;\n  contain: layout style;\n}\n\n.styles-module__hoverTooltip___eOid- {\n  position: fixed;\n  font-size: 0.6875rem;\n  font-weight: 500;\n  color: #fff;\n  background: rgba(0, 0, 0, 0.85);\n  padding: 0.35rem 0.6rem;\n  border-radius: 0.375rem;\n  pointer-events: none !important;\n  white-space: nowrap;\n  max-width: 200px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.styles-module__markersLayer___RFGiE {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  z-index: 99998;\n  pointer-events: none;\n}\n.styles-module__markersLayer___RFGiE > * {\n  pointer-events: auto;\n}\n\n.styles-module__marker___XNegd {\n  position: absolute;\n  width: 22px;\n  height: 22px;\n  background: #3c82f7;\n  color: white;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 0.6875rem;\n  font-weight: 600;\n  transform: translate(-50%, -50%);\n  cursor: pointer;\n  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n  transition: background 0.15s ease;\n  user-select: none;\n  will-change: transform;\n  contain: layout style;\n}\n.styles-module__marker___XNegd.styles-module__pending___h4sf4 {\n  position: fixed;\n  background: #3c82f7;\n}\n.styles-module__marker___XNegd.styles-module__hovered___WMoLv {\n  background: #ff3b30;\n}\n\n.styles-module__markerTooltip___pbJGs {\n  position: absolute;\n  top: calc(100% + 10px);\n  left: 50%;\n  transform: translateX(-50%);\n  background: white;\n  padding: 0.625rem 0.75rem;\n  border-radius: 0.5rem;\n  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);\n  min-width: 160px;\n  max-width: 280px;\n  pointer-events: none;\n  cursor: default;\n}\n\n.styles-module__markerQuote___bZuZt {\n  display: block;\n  font-size: 0.6875rem;\n  font-style: italic;\n  color: rgba(0, 0, 0, 0.5);\n  margin-bottom: 0.375rem;\n  line-height: 1.4;\n}\n\n.styles-module__markerNote___AvTvH {\n  display: block;\n  font-size: 0.75rem;\n  font-weight: 450;\n  line-height: 1.4;\n  color: #333;\n  white-space: normal;\n}\n\n.styles-module__markerHint___drxqW {\n  display: block;\n  font-size: 0.625rem;\n  font-weight: 400;\n  color: rgba(0, 0, 0, 0.3);\n  margin-top: 0.375rem;\n}';
 var classNames2 = { "toolbar": "styles-module__toolbar___50aIA", "toggleButton": "styles-module__toggleButton___kgnvI", "badge": "styles-module__badge___WRMxo", "controls": "styles-module__controls___2-kD-", "controlButton": "styles-module__controlButton___RB3R5", "divider": "styles-module__divider___yO3YX", "overlay": "styles-module__overlay___pQK74", "hoverHighlight": "styles-module__hoverHighlight___iUTDq", "hoverTooltip": "styles-module__hoverTooltip___eOid-", "markersLayer": "styles-module__markersLayer___RFGiE", "marker": "styles-module__marker___XNegd", "pending": "styles-module__pending___h4sf4", "hovered": "styles-module__hovered___WMoLv", "markerTooltip": "styles-module__markerTooltip___pbJGs", "markerQuote": "styles-module__markerQuote___bZuZt", "markerNote": "styles-module__markerNote___AvTvH", "markerHint": "styles-module__markerHint___drxqW" };
 if (typeof document !== "undefined") {
-  let style = document.getElementById("feedback-tool-styles-styles");
+  let style = document.getElementById("feedback-tool-styles-page-toolbar-styles");
   if (!style) {
     style = document.createElement("style");
-    style.id = "feedback-tool-styles-styles";
+    style.id = "feedback-tool-styles-page-toolbar-styles";
     style.textContent = css2;
     document.head.appendChild(style);
   }
@@ -738,10 +748,15 @@ function PageFeedbackToolbar() {
             e.stopPropagation();
             setIsActive(true);
           },
-          initial: { opacity: 0, scale: 0.9 },
+          initial: { opacity: 0, scale: 0.8 },
           animate: { opacity: 1, scale: 1 },
-          exit: { opacity: 0, scale: 0.9 },
-          transition: { duration: 0.15 },
+          exit: { opacity: 0, scale: 0.8 },
+          transition: {
+            type: "spring",
+            stiffness: 500,
+            damping: 30,
+            mass: 0.8
+          },
           title: "Start feedback mode",
           children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(IconFeedback, { size: 18 }),
@@ -753,10 +768,15 @@ function PageFeedbackToolbar() {
         import_framer_motion3.motion.div,
         {
           className: styles_module_default2.controls,
-          initial: { opacity: 0, scale: 0.9 },
-          animate: { opacity: 1, scale: 1 },
-          exit: { opacity: 0, scale: 0.9 },
-          transition: { duration: 0.15 },
+          initial: { opacity: 0, scale: 0.85, y: 8 },
+          animate: { opacity: 1, scale: 1, y: 0 },
+          exit: { opacity: 0, scale: 0.85, y: 8 },
+          transition: {
+            type: "spring",
+            stiffness: 600,
+            damping: 35,
+            mass: 0.6
+          },
           children: [
             /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
               import_framer_motion3.motion.button,
@@ -901,10 +921,10 @@ function PageFeedbackToolbar() {
           import_framer_motion3.motion.div,
           {
             className: styles_module_default2.hoverHighlight,
-            initial: { opacity: 0 },
-            animate: { opacity: 1 },
-            exit: { opacity: 0 },
-            transition: { duration: 0.1 },
+            initial: { opacity: 0, scale: 0.98 },
+            animate: { opacity: 1, scale: 1 },
+            exit: { opacity: 0, scale: 0.98 },
+            transition: { duration: 0.12, ease: "easeOut" },
             style: {
               left: hoverInfo.rect.left,
               top: hoverInfo.rect.top,
@@ -918,10 +938,10 @@ function PageFeedbackToolbar() {
           import_framer_motion3.motion.div,
           {
             className: styles_module_default2.hoverTooltip,
-            initial: { opacity: 0 },
-            animate: { opacity: 1 },
-            exit: { opacity: 0 },
-            transition: { duration: 0.1 },
+            initial: { opacity: 0, scale: 0.95, y: 4 },
+            animate: { opacity: 1, scale: 1, y: 0 },
+            exit: { opacity: 0, scale: 0.95, y: 4 },
+            transition: { duration: 0.1, ease: "easeOut" },
             style: {
               left: Math.min(hoverPosition.x, window.innerWidth - 150),
               top: Math.max(hoverPosition.y - 32, 8)
@@ -935,9 +955,9 @@ function PageFeedbackToolbar() {
             import_framer_motion3.motion.div,
             {
               className: `${styles_module_default2.marker} ${styles_module_default2.pending}`,
-              initial: { scale: 0 },
-              animate: { scale: 1 },
-              exit: { scale: 0 },
+              initial: { scale: 0, opacity: 0 },
+              animate: { scale: 1, opacity: 1 },
+              exit: { scale: 0, opacity: 0, transition: { duration: 0.15, ease: "easeIn" } },
               transition: { type: "spring", stiffness: 500, damping: 30 },
               style: {
                 left: `${pendingAnnotation.x}%`,
@@ -966,9 +986,964 @@ function PageFeedbackToolbar() {
     document.body
   );
 }
+
+// src/components/page-toolbar/index-css.tsx
+var import_react4 = require("react");
+var import_react_dom2 = require("react-dom");
+
+// src/components/annotation-popup/index-css.tsx
+var import_react3 = require("react");
+var import_jsx_runtime4 = require("react/jsx-runtime");
+var cssAnimationStyles = `
+@keyframes agentation-popup-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.95) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) translateY(0);
+  }
+}
+
+@keyframes agentation-popup-shake {
+  0%, 100% { transform: translateX(-50%); }
+  15% { transform: translateX(-50%) translateX(-3px); }
+  30% { transform: translateX(-50%) translateX(3px); }
+  45% { transform: translateX(-50%) translateX(-2px); }
+  60% { transform: translateX(-50%) translateX(2px); }
+  75% { transform: translateX(-50%) translateX(-1px); }
+  90% { transform: translateX(-50%) translateX(1px); }
+}
+
+.agentation-popup-animate-in {
+  animation: agentation-popup-in 0.2s ease-out forwards;
+}
+
+.agentation-popup-shake {
+  animation: agentation-popup-shake 0.3s ease-out forwards !important;
+}
+`;
+if (typeof document !== "undefined") {
+  if (!document.getElementById("agentation-popup-css-animations")) {
+    const style = document.createElement("style");
+    style.id = "agentation-popup-css-animations";
+    style.textContent = cssAnimationStyles;
+    document.head.appendChild(style);
+  }
+}
+var AnnotationPopupCSS = (0, import_react3.forwardRef)(
+  function AnnotationPopupCSS2({
+    element,
+    timestamp,
+    selectedText,
+    placeholder = "What should change?",
+    onSubmit,
+    onCancel,
+    style,
+    variant = "blue"
+  }, ref) {
+    const [text, setText] = (0, import_react3.useState)("");
+    const [hasAnimatedIn, setHasAnimatedIn] = (0, import_react3.useState)(false);
+    const textareaRef = (0, import_react3.useRef)(null);
+    const containerRef = (0, import_react3.useRef)(null);
+    (0, import_react3.useEffect)(() => {
+      const timer = setTimeout(() => textareaRef.current?.focus(), 10);
+      return () => clearTimeout(timer);
+    }, []);
+    const shake = (0, import_react3.useCallback)(() => {
+      const el = containerRef.current;
+      if (!el) return;
+      el.classList.remove("agentation-popup-shake");
+      void el.offsetWidth;
+      el.classList.add("agentation-popup-shake");
+    }, []);
+    const handleAnimationEnd = (0, import_react3.useCallback)((e) => {
+      if (e.animationName === "agentation-popup-in") {
+        setHasAnimatedIn(true);
+      }
+      if (e.animationName === "agentation-popup-shake") {
+        textareaRef.current?.focus();
+      }
+    }, []);
+    (0, import_react3.useImperativeHandle)(ref, () => ({ shake }), [shake]);
+    const handleSubmit = (0, import_react3.useCallback)(() => {
+      if (!text.trim()) return;
+      onSubmit(text.trim());
+    }, [text, onSubmit]);
+    const handleKeyDown = (0, import_react3.useCallback)(
+      (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          handleSubmit();
+        }
+        if (e.key === "Escape") {
+          onCancel();
+        }
+      },
+      [handleSubmit, onCancel]
+    );
+    return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
+      "div",
+      {
+        ref: containerRef,
+        className: `${styles_module_default.popup} ${!hasAnimatedIn ? "agentation-popup-animate-in" : ""}`,
+        "data-annotation-popup": true,
+        style,
+        onClick: (e) => e.stopPropagation(),
+        onAnimationEnd: handleAnimationEnd,
+        children: [
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: styles_module_default.header, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("span", { className: styles_module_default.element, children: element }),
+            timestamp && /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("span", { className: styles_module_default.timestamp, children: timestamp })
+          ] }),
+          selectedText && /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: styles_module_default.quote, children: [
+            "\u201C",
+            selectedText.slice(0, 80),
+            selectedText.length > 80 ? "..." : "",
+            "\u201D"
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+            "textarea",
+            {
+              ref: textareaRef,
+              className: styles_module_default.textarea,
+              placeholder,
+              value: text,
+              onChange: (e) => setText(e.target.value),
+              rows: 2,
+              onKeyDown: handleKeyDown
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: styles_module_default.actions, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("button", { className: styles_module_default.cancel, onClick: onCancel, children: "Cancel" }),
+            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+              "button",
+              {
+                className: `${styles_module_default.submit} ${variant === "green" ? styles_module_default.green : ""}`,
+                onClick: handleSubmit,
+                disabled: !text.trim(),
+                children: "Add"
+              }
+            )
+          ] })
+        ]
+      }
+    );
+  }
+);
+
+// src/components/icons-css.tsx
+var icons_css_exports = {};
+__export(icons_css_exports, {
+  CopyMorphIcon: () => CopyMorphIcon2,
+  EyeMorphIcon: () => EyeMorphIcon2,
+  IconChevronDown: () => IconChevronDown2,
+  IconClose: () => IconClose2,
+  IconExternal: () => IconExternal2,
+  IconFeedback: () => IconFeedback2,
+  IconPause: () => IconPause2,
+  IconPlay: () => IconPlay2,
+  IconPlus: () => IconPlus2,
+  TrashMorphIcon: () => TrashMorphIcon2
+});
+var import_jsx_runtime5 = require("react/jsx-runtime");
+var IconFeedback2 = ({ size = 18 }) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", children: [
+  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("path", { d: "M12,4c4.97,0,8.9,4.56,7.82,9.72c-0.68,3.23-3.4,5.74-6.67,6.2c-1.59,0.22-3.14-0.01-4.58-0.7 c-0.27-0.13-0.56-0.19-0.86-0.19c-0.19,0-0.38,0.03-0.56,0.08l-2.31,0.68c-0.38,0.11-0.74-0.24-0.63-0.63l0.7-2.39 c0.13-0.45,0.07-0.92-0.14-1.35C4.26,14.34,4,13.18,4,12C4,7.59,7.59,4,12,4 M12,2C6.48,2,2,6.48,2,12c0,1.54,0.36,2.98,0.97,4.29 l-1.46,4.96C1.29,22,2,22.71,2.76,22.48l4.96-1.46c1.66,0.79,3.56,1.15,5.58,0.89c4.56-0.59,8.21-4.35,8.66-8.92 C22.53,7.03,17.85,2,12,2L12,2z" }),
+  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("path", { d: "M12,8L12,8c-0.55,0-1,0.45-1,1v2H9c-0.55,0-1,0.45-1,1v0c0,0.55,0.45,1,1,1h2v2 c0,0.55,0.45,1,1,1h0c0.55,0,1-0.45,1-1v-2h2c0.55,0,1-0.45,1-1v0c0-0.55-0.45-1-1-1h-2V9C13,8.45,12.55,8,12,8z", fillRule: "evenodd" })
+] });
+var IconPlay2 = ({ size = 16 }) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+  "path",
+  {
+    d: "M5 3.5v9l7-4.5-7-4.5z",
+    stroke: "currentColor",
+    strokeWidth: "1.5",
+    strokeLinejoin: "round"
+  }
+) });
+var IconPause2 = ({ size = 16 }) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("path", { d: "M5.5 4v8M10.5 4v8", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round" }) });
+var EyeMorphIcon2 = ({ size = 16, visible }) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", children: [
+  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("path", { d: "M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" }),
+  /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("g", { style: { opacity: visible ? 0 : 1, transition: "opacity 0.15s ease" }, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("line", { x1: "4", y1: "20", x2: "20", y2: "4", stroke: "white", strokeWidth: "4", strokeLinecap: "round" }),
+    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("line", { x1: "4", y1: "20", x2: "20", y2: "4", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round" })
+  ] })
+] });
+var CopyMorphIcon2 = ({ size = 16, checked }) => /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", children: [
+  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+    "path",
+    {
+      d: "M14.17,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V9.83c0-0.53-0.21-1.04-0.59-1.41l-4.83-4.83 C15.21,3.21,14.7,3,14.17,3L14.17,3z M8,15h8c0.55,0,1,0.45,1,1v0c0,0.55-0.45,1-1,1H8c-0.55,0-1-0.45-1-1v0C7,15.45,7.45,15,8,15z M8,11h8c0.55,0,1,0.45,1,1v0c0,0.55-0.45,1-1,1H8c-0.55,0-1-0.45-1-1v0C7,11.45,7.45,11,8,11z M8,7h5c0.55,0,1,0.45,1,1v0 c0,0.55-0.45,1-1,1H8C7.45,9,7,8.55,7,8v0C7,7.45,7.45,7,8,7z",
+      style: { opacity: checked ? 0 : 1, transition: "opacity 0.15s ease" }
+    }
+  ),
+  /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+    "path",
+    {
+      d: "M6 12.5l3.5 3.5L18 7",
+      stroke: "currentColor",
+      strokeWidth: "2.5",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      fill: "none",
+      style: {
+        opacity: checked ? 1 : 0,
+        transform: checked ? "scale(1)" : "scale(0.5)",
+        transformOrigin: "12px 12px",
+        transition: "opacity 0.2s ease, transform 0.2s ease"
+      }
+    }
+  )
+] });
+var TrashMorphIcon2 = ({ size = 16, checked }) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+  "svg",
+  {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "currentColor",
+    style: {
+      transform: checked ? "rotate(360deg)" : "rotate(0deg)",
+      transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+    children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("path", { d: "M17.65 6.35c-1.63-1.63-3.94-2.57-6.48-2.31-3.67.37-6.69 3.35-7.1 7.02C3.52 15.91 7.27 20 12 20c3.19 0 5.93-1.87 7.21-4.56.32-.67-.16-1.44-.9-1.44-.37 0-.72.2-.88.53-1.13 2.43-3.84 3.97-6.8 3.31-2.22-.49-4.01-2.3-4.48-4.52C5.31 9.44 8.26 6 12 6c1.66 0 3.14.69 4.22 1.78l-1.51 1.51c-.63.63-.19 1.71.7 1.71H19c.55 0 1-.45 1-1V6.41c0-.89-1.08-1.34-1.71-.71l-.64.65z" })
+  }
+);
+var IconExternal2 = ({ size = 16 }) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+  "path",
+  {
+    d: "M6 3h7v7M13 3L6 10",
+    stroke: "currentColor",
+    strokeWidth: "1.5",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }
+) });
+var IconChevronDown2 = ({ size = 16 }) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+  "path",
+  {
+    d: "M4 6l4 4 4-4",
+    stroke: "currentColor",
+    strokeWidth: "1.75",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }
+) });
+var IconClose2 = ({ size = 16 }) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("path", { d: "M4 4l8 8M12 4l-8 8", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round" }) });
+var IconPlus2 = ({ size = 16 }) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("path", { d: "M8 3v10M3 8h10", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round" }) });
+
+// src/components/page-toolbar/index-css.tsx
+var import_jsx_runtime6 = require("react/jsx-runtime");
+var cssAnimationStyles2 = `
+/* Toolbar toggle button - calmer animation */
+@keyframes agentation-toggle-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.agentation-toggle-enter {
+  animation: agentation-toggle-in 0.2s ease-out forwards;
+}
+
+/* Controls bar - calmer animation */
+@keyframes agentation-controls-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.agentation-controls-enter {
+  animation: agentation-controls-in 0.2s ease-out forwards;
+}
+
+/* Hover highlight - simple fast fade */
+.agentation-highlight-animate {
+  animation: agentation-fade-in 0.08s ease-out forwards;
+}
+
+@keyframes agentation-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Marker animations - only for newly added markers */
+/* Note: markers use position: absolute with transform: translate(-50%, -50%) for centering */
+@keyframes agentation-marker-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes agentation-marker-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+}
+
+.agentation-marker-new {
+  animation: agentation-marker-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.agentation-marker-exit {
+  animation: agentation-marker-out 0.15s ease-in forwards;
+  pointer-events: none;
+}
+
+/* Markers layer fade for visibility toggle and toolbar close */
+.agentation-markers-layer {
+  transition: opacity 0.15s ease-out;
+}
+
+.agentation-markers-layer.hiding {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Pending marker animation */
+@keyframes agentation-pending-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes agentation-pending-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+}
+
+.agentation-pending-enter {
+  animation: agentation-pending-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.agentation-pending-exit {
+  animation: agentation-pending-out 0.15s ease-in forwards;
+  pointer-events: none;
+}
+
+/* Tooltip animations */
+@keyframes agentation-tooltip-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.agentation-tooltip-animate {
+  animation: agentation-tooltip-in 0.1s ease-out forwards;
+}
+
+/* Hover tooltip fade */
+.agentation-hover-tooltip-animate {
+  animation: agentation-fade-in 0.08s ease-out forwards;
+}
+
+/* Cursor styles for annotation mode */
+.agentation-active-cursor {
+  cursor: crosshair !important;
+}
+
+.agentation-active-cursor *:not([data-feedback-toolbar] *):not([data-annotation-popup] *):not([data-annotation-marker]) {
+  cursor: crosshair !important;
+}
+
+/* Allow text cursor for text selection */
+.agentation-active-cursor p,
+.agentation-active-cursor span,
+.agentation-active-cursor a,
+.agentation-active-cursor h1,
+.agentation-active-cursor h2,
+.agentation-active-cursor h3,
+.agentation-active-cursor h4,
+.agentation-active-cursor h5,
+.agentation-active-cursor h6,
+.agentation-active-cursor li,
+.agentation-active-cursor label,
+.agentation-active-cursor blockquote,
+.agentation-active-cursor code,
+.agentation-active-cursor pre {
+  cursor: text !important;
+}
+`;
+if (typeof document !== "undefined") {
+  if (!document.getElementById("agentation-toolbar-css-animations")) {
+    const style = document.createElement("style");
+    style.id = "agentation-toolbar-css-animations";
+    style.textContent = cssAnimationStyles2;
+    document.head.appendChild(style);
+  }
+}
+function generateOutput2(annotations, pathname, format = "standard") {
+  if (annotations.length === 0) return "";
+  const viewport = typeof window !== "undefined" ? `${window.innerWidth}\xD7${window.innerHeight}` : "unknown";
+  if (format === "compact") {
+    let output2 = `## Feedback: ${pathname}
+
+`;
+    annotations.forEach((a, i) => {
+      const selector = a.cssClasses ? `.${a.cssClasses.split(" ")[0]}` : a.elementPath;
+      output2 += `${i + 1}. **${selector}**`;
+      if (a.selectedText) output2 += ` ("${a.selectedText.slice(0, 30)}...")`;
+      output2 += `
+   ${a.comment}
+
+`;
+    });
+    return output2.trim();
+  }
+  if (format === "detailed") {
+    let output2 = `## Page Feedback: ${pathname}
+`;
+    output2 += `**Viewport:** ${viewport}
+`;
+    output2 += `**URL:** ${typeof window !== "undefined" ? window.location.href : pathname}
+`;
+    output2 += `**User Agent:** ${typeof navigator !== "undefined" ? navigator.userAgent.split(" ").slice(-2).join(" ") : "unknown"}
+
+`;
+    output2 += `---
+
+`;
+    annotations.forEach((a, i) => {
+      output2 += `### ${i + 1}. ${a.element}
+
+`;
+      output2 += `**Selector:** \`${a.elementPath}\`
+`;
+      if (a.cssClasses) {
+        const classes = a.cssClasses.split(" ").map((c) => `.${c}`).join(", ");
+        output2 += `**Classes:** \`${classes}\`
+`;
+      }
+      if (a.boundingBox) {
+        output2 += `**Bounding box:** x:${Math.round(a.boundingBox.x)}, y:${Math.round(a.boundingBox.y)}, ${Math.round(a.boundingBox.width)}\xD7${Math.round(a.boundingBox.height)}px
+`;
+      }
+      if (a.selectedText) {
+        output2 += `**Selected text:** "${a.selectedText}"
+`;
+      }
+      if (a.nearbyText) {
+        output2 += `**Nearby text:** "${a.nearbyText.slice(0, 150)}"
+`;
+      }
+      output2 += `
+**Issue:** ${a.comment}
+
+`;
+      output2 += `---
+
+`;
+    });
+    output2 += `**Search tips:** Use the class names or selectors above to find these elements in your codebase. Try \`grep -r "className.*submit-btn"\` or search for the nearby text content.
+`;
+    return output2.trim();
+  }
+  let output = `## Page Feedback: ${pathname}
+`;
+  output += `**Viewport:** ${viewport}
+
+`;
+  annotations.forEach((a, i) => {
+    output += `### ${i + 1}. ${a.element}
+`;
+    output += `**Selector:** \`${a.elementPath}\`
+`;
+    if (a.cssClasses) {
+      output += `**Classes:** \`${a.cssClasses}\`
+`;
+    }
+    if (a.boundingBox) {
+      output += `**Position:** ${Math.round(a.boundingBox.x)}, ${Math.round(a.boundingBox.y)} (${Math.round(a.boundingBox.width)}\xD7${Math.round(a.boundingBox.height)})
+`;
+    }
+    if (a.selectedText) {
+      output += `**Selected:** "${a.selectedText}"
+`;
+    } else if (a.nearbyText) {
+      output += `**Context:** "${a.nearbyText.slice(0, 80)}"
+`;
+    }
+    output += `**Feedback:** ${a.comment}
+
+`;
+  });
+  return output.trim();
+}
+function PageFeedbackToolbarCSS() {
+  const [isActive, setIsActive] = (0, import_react4.useState)(false);
+  const [annotations, setAnnotations] = (0, import_react4.useState)([]);
+  const [showMarkers, setShowMarkers] = (0, import_react4.useState)(true);
+  const [markersHiding, setMarkersHiding] = (0, import_react4.useState)(false);
+  const [hoverInfo, setHoverInfo] = (0, import_react4.useState)(null);
+  const [hoverPosition, setHoverPosition] = (0, import_react4.useState)({ x: 0, y: 0 });
+  const [pendingAnnotation, setPendingAnnotation] = (0, import_react4.useState)(null);
+  const [pendingExiting, setPendingExiting] = (0, import_react4.useState)(false);
+  const [copied, setCopied] = (0, import_react4.useState)(false);
+  const [cleared, setCleared] = (0, import_react4.useState)(false);
+  const [hoveredMarkerId, setHoveredMarkerId] = (0, import_react4.useState)(null);
+  const [scrollY, setScrollY] = (0, import_react4.useState)(0);
+  const [mounted, setMounted] = (0, import_react4.useState)(false);
+  const [isFrozen, setIsFrozen] = (0, import_react4.useState)(false);
+  const [exitingIds, setExitingIds] = (0, import_react4.useState)(/* @__PURE__ */ new Set());
+  const popupRef = (0, import_react4.useRef)(null);
+  const animatedIdsRef = (0, import_react4.useRef)(/* @__PURE__ */ new Set());
+  const recentlyAddedIdRef = (0, import_react4.useRef)(null);
+  const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
+  (0, import_react4.useEffect)(() => {
+    setMounted(true);
+    setScrollY(window.scrollY);
+    const stored = loadAnnotations(pathname);
+    setAnnotations(stored);
+  }, [pathname]);
+  (0, import_react4.useEffect)(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  (0, import_react4.useEffect)(() => {
+    if (mounted && annotations.length > 0) {
+      saveAnnotations(pathname, annotations);
+    } else if (mounted && annotations.length === 0) {
+      localStorage.removeItem(getStorageKey(pathname));
+    }
+  }, [annotations, pathname, mounted]);
+  const freezeAnimations = (0, import_react4.useCallback)(() => {
+    if (isFrozen) return;
+    const style = document.createElement("style");
+    style.id = "feedback-freeze-styles";
+    style.textContent = `
+      *:not([data-feedback-toolbar] *):not([data-annotation-popup] *):not([data-annotation-marker] *),
+      *:not([data-feedback-toolbar] *)::before,
+      *:not([data-feedback-toolbar] *)::after {
+        animation-play-state: paused !important;
+        transition: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+    document.querySelectorAll("video").forEach((video) => {
+      if (!video.paused) {
+        video.dataset.wasPaused = "false";
+        video.pause();
+      }
+    });
+    setIsFrozen(true);
+  }, [isFrozen]);
+  const unfreezeAnimations = (0, import_react4.useCallback)(() => {
+    if (!isFrozen) return;
+    const style = document.getElementById("feedback-freeze-styles");
+    if (style) style.remove();
+    document.querySelectorAll("video").forEach((video) => {
+      if (video.dataset.wasPaused === "false") {
+        video.play();
+        delete video.dataset.wasPaused;
+      }
+    });
+    setIsFrozen(false);
+  }, [isFrozen]);
+  const toggleFreeze = (0, import_react4.useCallback)(() => {
+    if (isFrozen) unfreezeAnimations();
+    else freezeAnimations();
+  }, [isFrozen, freezeAnimations, unfreezeAnimations]);
+  const handleCloseToolbar = (0, import_react4.useCallback)(() => {
+    if (annotations.length > 0) {
+      setMarkersHiding(true);
+      setTimeout(() => {
+        setIsActive(false);
+        setMarkersHiding(false);
+      }, 150);
+    } else {
+      setIsActive(false);
+    }
+  }, [annotations.length]);
+  const toggleMarkersVisibility = (0, import_react4.useCallback)(() => {
+    if (showMarkers) {
+      setMarkersHiding(true);
+      setTimeout(() => {
+        setShowMarkers(false);
+        setMarkersHiding(false);
+      }, 150);
+    } else {
+      setShowMarkers(true);
+    }
+  }, [showMarkers]);
+  (0, import_react4.useEffect)(() => {
+    if (!isActive) {
+      setPendingAnnotation(null);
+      setHoverInfo(null);
+      if (isFrozen) unfreezeAnimations();
+      animatedIdsRef.current.clear();
+    }
+  }, [isActive, isFrozen, unfreezeAnimations]);
+  (0, import_react4.useEffect)(() => {
+    if (isActive) {
+      document.body.classList.add("agentation-active-cursor");
+    } else {
+      document.body.classList.remove("agentation-active-cursor");
+    }
+    return () => {
+      document.body.classList.remove("agentation-active-cursor");
+    };
+  }, [isActive]);
+  (0, import_react4.useEffect)(() => {
+    if (!isActive || pendingAnnotation) return;
+    const handleMouseMove = (e) => {
+      if (e.target.closest("[data-feedback-toolbar]")) {
+        setHoverInfo(null);
+        return;
+      }
+      const elementUnder = document.elementFromPoint(e.clientX, e.clientY);
+      if (!elementUnder || elementUnder.closest("[data-feedback-toolbar]")) {
+        setHoverInfo(null);
+        return;
+      }
+      const { name, path } = identifyElement(elementUnder);
+      const rect = elementUnder.getBoundingClientRect();
+      setHoverInfo({ element: name, elementPath: path, rect });
+      setHoverPosition({ x: e.clientX, y: e.clientY });
+    };
+    document.addEventListener("mousemove", handleMouseMove);
+    return () => document.removeEventListener("mousemove", handleMouseMove);
+  }, [isActive, pendingAnnotation]);
+  (0, import_react4.useEffect)(() => {
+    if (!isActive) return;
+    const handleClick = (e) => {
+      const target = e.target;
+      if (target.closest("[data-feedback-toolbar]")) return;
+      if (target.closest("[data-annotation-popup]")) return;
+      if (target.closest("[data-annotation-marker]")) return;
+      e.preventDefault();
+      if (pendingAnnotation) {
+        popupRef.current?.shake();
+        return;
+      }
+      const elementUnder = document.elementFromPoint(e.clientX, e.clientY);
+      if (!elementUnder) return;
+      const { name, path } = identifyElement(elementUnder);
+      const rect = elementUnder.getBoundingClientRect();
+      const x = e.clientX / window.innerWidth * 100;
+      const y = e.clientY + window.scrollY;
+      const selection = window.getSelection();
+      let selectedText;
+      if (selection && selection.toString().trim().length > 0) {
+        selectedText = selection.toString().trim().slice(0, 500);
+      }
+      setPendingAnnotation({
+        x,
+        y,
+        clientY: e.clientY,
+        element: name,
+        elementPath: path,
+        selectedText,
+        boundingBox: { x: rect.left, y: rect.top + window.scrollY, width: rect.width, height: rect.height },
+        nearbyText: getNearbyText(elementUnder),
+        cssClasses: getElementClasses(elementUnder)
+      });
+      setHoverInfo(null);
+    };
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, [isActive, pendingAnnotation]);
+  const addAnnotation = (0, import_react4.useCallback)((comment) => {
+    if (!pendingAnnotation) return;
+    const newId = Date.now().toString();
+    const newAnnotation = {
+      id: newId,
+      x: pendingAnnotation.x,
+      y: pendingAnnotation.y,
+      comment,
+      element: pendingAnnotation.element,
+      elementPath: pendingAnnotation.elementPath,
+      timestamp: Date.now(),
+      selectedText: pendingAnnotation.selectedText,
+      boundingBox: pendingAnnotation.boundingBox,
+      nearbyText: pendingAnnotation.nearbyText,
+      cssClasses: pendingAnnotation.cssClasses
+    };
+    setAnnotations((prev) => [...prev, newAnnotation]);
+    setPendingAnnotation(null);
+    window.getSelection()?.removeAllRanges();
+    recentlyAddedIdRef.current = newId;
+    setTimeout(() => {
+      recentlyAddedIdRef.current = null;
+    }, 300);
+  }, [pendingAnnotation]);
+  const cancelAnnotation = (0, import_react4.useCallback)(() => {
+    setPendingExiting(true);
+    setTimeout(() => {
+      setPendingExiting(false);
+      setPendingAnnotation(null);
+    }, 150);
+  }, []);
+  const deleteAnnotation = (0, import_react4.useCallback)((id) => {
+    setExitingIds((prev) => new Set(prev).add(id));
+    setTimeout(() => {
+      setAnnotations((prev) => prev.filter((a) => a.id !== id));
+      setExitingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      animatedIdsRef.current.delete(id);
+    }, 150);
+  }, []);
+  const copyOutput = (0, import_react4.useCallback)(async () => {
+    const output = generateOutput2(annotations, pathname);
+    if (!output) return;
+    await navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2e3);
+  }, [annotations, pathname]);
+  const clearAll = (0, import_react4.useCallback)(() => {
+    setAnnotations([]);
+    localStorage.removeItem(getStorageKey(pathname));
+    setCleared(true);
+    setTimeout(() => setCleared(false), 1500);
+  }, [pathname]);
+  (0, import_react4.useEffect)(() => {
+    const handleKeyDown = (e) => {
+      const target = e.target;
+      const isTyping = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === "a") {
+        e.preventDefault();
+        if (isActive) {
+          handleCloseToolbar();
+        } else {
+          setIsActive(true);
+        }
+        return;
+      }
+      if (e.key === "Escape") {
+        if (pendingAnnotation) {
+        } else if (isActive) {
+          handleCloseToolbar();
+        }
+        return;
+      }
+      if (isActive && !isTyping && !pendingAnnotation) {
+        switch (e.key.toLowerCase()) {
+          case "p":
+            e.preventDefault();
+            toggleFreeze();
+            break;
+          case "h":
+            e.preventDefault();
+            toggleMarkersVisibility();
+            break;
+          case "c":
+            if (annotations.length > 0) {
+              e.preventDefault();
+              copyOutput();
+            }
+            break;
+          case "x":
+            if (annotations.length > 0) {
+              e.preventDefault();
+              clearAll();
+            }
+            break;
+        }
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isActive, pendingAnnotation, handleCloseToolbar, toggleFreeze, toggleMarkersVisibility, annotations.length, copyOutput, clearAll]);
+  if (!mounted) return null;
+  const hasAnnotations = annotations.length > 0;
+  const isInViewport = (absoluteY) => {
+    const viewportY = absoluteY - scrollY;
+    return viewportY > -30 && viewportY < window.innerHeight + 30;
+  };
+  return (0, import_react_dom2.createPortal)(
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_jsx_runtime6.Fragment, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: styles_module_default2.toolbar, "data-feedback-toolbar": true, children: [
+        !isActive && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
+          "button",
+          {
+            className: `${styles_module_default2.toggleButton} agentation-toggle-enter`,
+            onClick: (e) => {
+              e.stopPropagation();
+              setIsActive(true);
+            },
+            title: "Start feedback mode (\u2318\u21E7A)",
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconFeedback2, { size: 18 }),
+              hasAnnotations && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: styles_module_default2.badge, children: annotations.length })
+            ]
+          }
+        ),
+        isActive && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: `${styles_module_default2.controls} agentation-controls-enter`, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+            "button",
+            {
+              className: styles_module_default2.controlButton,
+              onClick: (e) => {
+                e.stopPropagation();
+                toggleFreeze();
+              },
+              title: isFrozen ? "Resume animations (P)" : "Pause animations (P)",
+              "data-active": isFrozen,
+              children: isFrozen ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconPlay2, { size: 16 }) : /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconPause2, { size: 16 })
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+            "button",
+            {
+              className: styles_module_default2.controlButton,
+              onClick: (e) => {
+                e.stopPropagation();
+                toggleMarkersVisibility();
+              },
+              title: showMarkers ? "Hide markers (H)" : "Show markers (H)",
+              children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(EyeMorphIcon2, { size: 16, visible: showMarkers })
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+            "button",
+            {
+              className: styles_module_default2.controlButton,
+              onClick: (e) => {
+                e.stopPropagation();
+                copyOutput();
+              },
+              disabled: !hasAnnotations,
+              title: "Copy feedback (C)",
+              children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(CopyMorphIcon2, { size: 16, checked: copied })
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+            "button",
+            {
+              className: styles_module_default2.controlButton,
+              onClick: (e) => {
+                e.stopPropagation();
+                clearAll();
+              },
+              disabled: !hasAnnotations,
+              title: "Clear all (X)",
+              "data-danger": true,
+              children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(TrashMorphIcon2, { size: 16, checked: cleared })
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("div", { className: styles_module_default2.divider }),
+          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+            "button",
+            {
+              className: styles_module_default2.controlButton,
+              onClick: (e) => {
+                e.stopPropagation();
+                handleCloseToolbar();
+              },
+              title: "Exit feedback mode (Esc)",
+              children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconChevronDown2, { size: 16 })
+            }
+          )
+        ] })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+        "div",
+        {
+          className: `${styles_module_default2.markersLayer} agentation-markers-layer ${markersHiding ? "hiding" : ""}`,
+          "data-feedback-toolbar": true,
+          children: isActive && showMarkers && annotations.map((annotation, index) => {
+            if (!isInViewport(annotation.y)) return null;
+            const isHovered = hoveredMarkerId === annotation.id;
+            const isExiting = exitingIds.has(annotation.id);
+            const isNew = !animatedIdsRef.current.has(annotation.id) && !isExiting;
+            if (isNew) {
+              animatedIdsRef.current.add(annotation.id);
+            }
+            return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
+              "div",
+              {
+                className: `${styles_module_default2.marker} ${isHovered ? styles_module_default2.hovered : ""} ${isExiting ? "agentation-marker-exit" : ""} ${isNew ? "agentation-marker-new" : ""}`,
+                "data-annotation-marker": true,
+                style: {
+                  left: `${annotation.x}%`,
+                  top: annotation.y
+                  // Absolute document position - browser handles scroll
+                },
+                onMouseEnter: () => !isExiting && annotation.id !== recentlyAddedIdRef.current && setHoveredMarkerId(annotation.id),
+                onMouseLeave: () => setHoveredMarkerId(null),
+                onClick: (e) => {
+                  e.stopPropagation();
+                  if (!isExiting) deleteAnnotation(annotation.id);
+                },
+                children: [
+                  isHovered ? /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconClose2, { size: 10 }) : index + 1,
+                  isHovered && !isExiting && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: `${styles_module_default2.markerTooltip} agentation-tooltip-animate`, children: [
+                    annotation.selectedText && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("span", { className: styles_module_default2.markerQuote, children: [
+                      "\u201C",
+                      annotation.selectedText.slice(0, 50),
+                      annotation.selectedText.length > 50 ? "..." : "",
+                      "\u201D"
+                    ] }),
+                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: styles_module_default2.markerNote, children: annotation.comment }),
+                    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("span", { className: styles_module_default2.markerHint, children: "Click to remove" })
+                  ] })
+                ]
+              },
+              annotation.id
+            );
+          })
+        }
+      ),
+      isActive && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("div", { className: styles_module_default2.overlay, "data-feedback-toolbar": true, children: [
+        hoverInfo?.rect && !pendingAnnotation && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+          "div",
+          {
+            className: `${styles_module_default2.hoverHighlight} agentation-highlight-animate`,
+            style: {
+              left: hoverInfo.rect.left,
+              top: hoverInfo.rect.top,
+              width: hoverInfo.rect.width,
+              height: hoverInfo.rect.height
+            }
+          },
+          `${hoverInfo.rect.left}-${hoverInfo.rect.top}-${hoverInfo.rect.width}`
+        ),
+        hoverInfo && !pendingAnnotation && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+          "div",
+          {
+            className: `${styles_module_default2.hoverTooltip} agentation-hover-tooltip-animate`,
+            style: {
+              left: Math.min(hoverPosition.x, window.innerWidth - 150),
+              top: Math.max(hoverPosition.y - 32, 8)
+            },
+            children: hoverInfo.element
+          }
+        ),
+        (pendingAnnotation || pendingExiting) && /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_jsx_runtime6.Fragment, { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+            "div",
+            {
+              className: `${styles_module_default2.marker} ${styles_module_default2.pending} ${pendingExiting ? "agentation-pending-exit" : "agentation-pending-enter"}`,
+              style: {
+                left: `${pendingAnnotation?.x ?? 0}%`,
+                top: pendingAnnotation?.clientY ?? 0
+              },
+              children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(IconPlus2, { size: 12 })
+            }
+          ),
+          pendingAnnotation && !pendingExiting && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+            AnnotationPopupCSS,
+            {
+              ref: popupRef,
+              element: pendingAnnotation.element,
+              selectedText: pendingAnnotation.selectedText,
+              onSubmit: addAnnotation,
+              onCancel: cancelAnnotation,
+              style: {
+                left: `${Math.min(Math.max(pendingAnnotation.x, 15), 85)}%`,
+                top: Math.min(pendingAnnotation.clientY + 20, window.innerHeight - 180)
+              }
+            }
+          )
+        ] })
+      ] })
+    ] }),
+    document.body
+  );
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  Agentation,
+  AgentationCSS,
   AnnotationPopup,
+  AnnotationPopupCSS,
   AnnotationPopupPresence,
   CopyMorphIcon,
   EyeMorphIcon,
@@ -980,7 +1955,9 @@ function PageFeedbackToolbar() {
   IconPause,
   IconPlay,
   IconPlus,
+  IconsCSS,
   PageFeedbackToolbar,
+  PageFeedbackToolbarCSS,
   TrashMorphIcon,
   getElementClasses,
   getElementPath,
