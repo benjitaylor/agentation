@@ -962,12 +962,10 @@ var cssAnimationStyles = `
 
 @keyframes agentation-popup-shake {
   0%, 100% { transform: translateX(-50%) translateX(0); }
-  12.5% { transform: translateX(-50%) translateX(-8px); }
-  25% { transform: translateX(-50%) translateX(8px); }
-  37.5% { transform: translateX(-50%) translateX(-6px); }
-  50% { transform: translateX(-50%) translateX(6px); }
-  62.5% { transform: translateX(-50%) translateX(-4px); }
-  75% { transform: translateX(-50%) translateX(4px); }
+  20% { transform: translateX(-50%) translateX(-3px); }
+  40% { transform: translateX(-50%) translateX(3px); }
+  60% { transform: translateX(-50%) translateX(-2px); }
+  80% { transform: translateX(-50%) translateX(2px); }
 }
 
 .agentation-popup-animate-in {
@@ -975,7 +973,7 @@ var cssAnimationStyles = `
 }
 
 .agentation-popup-shake {
-  animation: agentation-popup-shake 0.4s ease-out;
+  animation: agentation-popup-shake 0.25s ease-out;
 }
 `;
 if (typeof document !== "undefined") {
@@ -1010,7 +1008,7 @@ var AnnotationPopupCSS = forwardRef2(
       setTimeout(() => {
         setIsShaking(false);
         textareaRef.current?.focus();
-      }, 400);
+      }, 250);
     }, []);
     useImperativeHandle2(ref, () => ({ shake }), [shake]);
     const handleSubmit = useCallback3(() => {
@@ -1093,15 +1091,10 @@ __export(icons_css_exports, {
   TrashMorphIcon: () => TrashMorphIcon2
 });
 import { jsx as jsx5, jsxs as jsxs5 } from "react/jsx-runtime";
-var IconFeedback2 = ({ size = 18 }) => /* @__PURE__ */ jsx5("svg", { width: size, height: size, viewBox: "0 0 18 18", fill: "none", children: /* @__PURE__ */ jsx5(
-  "path",
-  {
-    d: "M3 4h12v8H5l-2 2V4z",
-    stroke: "currentColor",
-    strokeWidth: "1.5",
-    strokeLinejoin: "round"
-  }
-) });
+var IconFeedback2 = ({ size = 18 }) => /* @__PURE__ */ jsxs5("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", children: [
+  /* @__PURE__ */ jsx5("path", { d: "M12,4c4.97,0,8.9,4.56,7.82,9.72c-0.68,3.23-3.4,5.74-6.67,6.2c-1.59,0.22-3.14-0.01-4.58-0.7 c-0.27-0.13-0.56-0.19-0.86-0.19c-0.19,0-0.38,0.03-0.56,0.08l-2.31,0.68c-0.38,0.11-0.74-0.24-0.63-0.63l0.7-2.39 c0.13-0.45,0.07-0.92-0.14-1.35C4.26,14.34,4,13.18,4,12C4,7.59,7.59,4,12,4 M12,2C6.48,2,2,6.48,2,12c0,1.54,0.36,2.98,0.97,4.29 l-1.46,4.96C1.29,22,2,22.71,2.76,22.48l4.96-1.46c1.66,0.79,3.56,1.15,5.58,0.89c4.56-0.59,8.21-4.35,8.66-8.92 C22.53,7.03,17.85,2,12,2L12,2z" }),
+  /* @__PURE__ */ jsx5("path", { d: "M12,8L12,8c-0.55,0-1,0.45-1,1v2H9c-0.55,0-1,0.45-1,1v0c0,0.55,0.45,1,1,1h2v2 c0,0.55,0.45,1,1,1h0c0.55,0,1-0.45,1-1v-2h2c0.55,0,1-0.45,1-1v0c0-0.55-0.45-1-1-1h-2V9C13,8.45,12.55,8,12,8z", fillRule: "evenodd" })
+] });
 var IconPlay2 = ({ size = 16 }) => /* @__PURE__ */ jsx5("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: /* @__PURE__ */ jsx5(
   "path",
   {
@@ -1113,53 +1106,59 @@ var IconPlay2 = ({ size = 16 }) => /* @__PURE__ */ jsx5("svg", { width: size, he
 ) });
 var IconPause2 = ({ size = 16 }) => /* @__PURE__ */ jsx5("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: /* @__PURE__ */ jsx5("path", { d: "M5.5 4v8M10.5 4v8", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round" }) });
 var EyeMorphIcon2 = ({ size = 16, visible }) => /* @__PURE__ */ jsxs5("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", children: [
-  /* @__PURE__ */ jsx5("path", { d: "M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" }),
+  /* @__PURE__ */ jsx5("path", { d: "M12 4C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" }),
   /* @__PURE__ */ jsxs5("g", { style: { opacity: visible ? 0 : 1, transition: "opacity 0.15s ease" }, children: [
     /* @__PURE__ */ jsx5("line", { x1: "4", y1: "20", x2: "20", y2: "4", stroke: "white", strokeWidth: "4", strokeLinecap: "round" }),
     /* @__PURE__ */ jsx5("line", { x1: "4", y1: "20", x2: "20", y2: "4", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round" })
   ] })
 ] });
-var CopyMorphIcon2 = ({ size = 16, checked }) => /* @__PURE__ */ jsxs5("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: [
-  /* @__PURE__ */ jsxs5("g", { style: { opacity: checked ? 0 : 1, transition: "opacity 0.15s ease" }, children: [
-    /* @__PURE__ */ jsx5("rect", { x: "3", y: "2", width: "7", height: "9", rx: "1", stroke: "currentColor", strokeWidth: "1.5", fill: "none" }),
-    /* @__PURE__ */ jsx5("rect", { x: "6", y: "5", width: "7", height: "9", rx: "1", stroke: "currentColor", strokeWidth: "1.5", fill: "white" })
-  ] }),
+var CopyMorphIcon2 = ({ size = 16, checked }) => /* @__PURE__ */ jsxs5("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", children: [
   /* @__PURE__ */ jsx5(
     "path",
     {
-      d: "M4 8.5l2.5 2.5L12 5",
+      d: "M14.17,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V9.83c0-0.53-0.21-1.04-0.59-1.41l-4.83-4.83 C15.21,3.21,14.7,3,14.17,3L14.17,3z M8,15h8c0.55,0,1,0.45,1,1v0c0,0.55-0.45,1-1,1H8c-0.55,0-1-0.45-1-1v0C7,15.45,7.45,15,8,15z M8,11h8c0.55,0,1,0.45,1,1v0c0,0.55-0.45,1-1,1H8c-0.55,0-1-0.45-1-1v0C7,11.45,7.45,11,8,11z M8,7h5c0.55,0,1,0.45,1,1v0 c0,0.55-0.45,1-1,1H8C7.45,9,7,8.55,7,8v0C7,7.45,7.45,7,8,7z",
+      style: { opacity: checked ? 0 : 1, transition: "opacity 0.15s ease" }
+    }
+  ),
+  /* @__PURE__ */ jsx5(
+    "path",
+    {
+      d: "M6 12.5l3.5 3.5L18 7",
       stroke: "currentColor",
-      strokeWidth: "1.75",
+      strokeWidth: "2.5",
       strokeLinecap: "round",
       strokeLinejoin: "round",
       fill: "none",
       style: {
         opacity: checked ? 1 : 0,
         transform: checked ? "scale(1)" : "scale(0.5)",
-        transformOrigin: "8px 8px",
+        transformOrigin: "12px 12px",
         transition: "opacity 0.2s ease, transform 0.2s ease"
       }
     }
   )
 ] });
-var TrashMorphIcon2 = ({ size = 16, checked }) => /* @__PURE__ */ jsxs5("svg", { width: size, height: size, viewBox: "0 0 16 16", fill: "none", children: [
-  /* @__PURE__ */ jsxs5("g", { style: { opacity: checked ? 0 : 1, transition: "opacity 0.15s ease" }, children: [
-    /* @__PURE__ */ jsx5("path", { d: "M3 4h10M6 4V3a1 1 0 011-1h2a1 1 0 011 1v1", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round" }),
-    /* @__PURE__ */ jsx5("path", { d: "M4.5 4.5l.7 8.5a1 1 0 001 .9h3.6a1 1 0 001-.9l.7-8.5", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round" })
-  ] }),
+var TrashMorphIcon2 = ({ size = 16, checked }) => /* @__PURE__ */ jsxs5("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", children: [
   /* @__PURE__ */ jsx5(
     "path",
     {
-      d: "M4 8.5l2.5 2.5L12 5",
+      d: "M17.65 6.35c-1.63-1.63-3.94-2.57-6.48-2.31-3.67.37-6.69 3.35-7.1 7.02C3.52 15.91 7.27 20 12 20c3.19 0 5.93-1.87 7.21-4.56.32-.67-.16-1.44-.9-1.44-.37 0-.72.2-.88.53-1.13 2.43-3.84 3.97-6.8 3.31-2.22-.49-4.01-2.3-4.48-4.52C5.31 9.44 8.26 6 12 6c1.66 0 3.14.69 4.22 1.78l-1.51 1.51c-.63.63-.19 1.71.7 1.71H19c.55 0 1-.45 1-1V6.41c0-.89-1.08-1.34-1.71-.71l-.64.65z",
+      style: { opacity: checked ? 0 : 1, transition: "opacity 0.15s ease" }
+    }
+  ),
+  /* @__PURE__ */ jsx5(
+    "path",
+    {
+      d: "M6 12.5l3.5 3.5L18 7",
       stroke: "currentColor",
-      strokeWidth: "1.75",
+      strokeWidth: "2.5",
       strokeLinecap: "round",
       strokeLinejoin: "round",
       fill: "none",
       style: {
         opacity: checked ? 1 : 0,
         transform: checked ? "scale(1)" : "scale(0.5)",
-        transformOrigin: "8px 8px",
+        transformOrigin: "12px 12px",
         transition: "opacity 0.2s ease, transform 0.2s ease"
       }
     }
@@ -1192,12 +1191,17 @@ var IconPlus2 = ({ size = 16 }) => /* @__PURE__ */ jsx5("svg", { width: size, he
 import { Fragment as Fragment2, jsx as jsx6, jsxs as jsxs6 } from "react/jsx-runtime";
 var cssAnimationStyles2 = `
 @keyframes agentation-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes agentation-fade-scale-in {
-  from { opacity: 0; transform: scale(0.9); }
+  from { opacity: 0; transform: scale(0.85) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes agentation-toggle-in {
+  from { opacity: 0; transform: scale(0.8); }
   to { opacity: 1; transform: scale(1); }
 }
 
@@ -1207,16 +1211,25 @@ var cssAnimationStyles2 = `
 }
 
 @keyframes agentation-tooltip-in {
-  from { opacity: 0; transform: translateX(-50%) translateY(2px) scale(0.98); }
+  from { opacity: 0; transform: translateX(-50%) translateY(4px) scale(0.95); }
   to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
+@keyframes agentation-hover-highlight-in {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 .agentation-fade-in {
-  animation: agentation-fade-in 0.15s ease-out forwards;
+  animation: agentation-fade-in 0.12s ease-out forwards;
 }
 
 .agentation-fade-scale-in {
-  animation: agentation-fade-scale-in 0.15s ease-out forwards;
+  animation: agentation-fade-scale-in 0.18s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
+}
+
+.agentation-toggle-in {
+  animation: agentation-toggle-in 0.15s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
 }
 
 .agentation-marker-in {
@@ -1225,6 +1238,11 @@ var cssAnimationStyles2 = `
 
 .agentation-tooltip-in {
   animation: agentation-tooltip-in 0.1s ease-out forwards;
+}
+
+.agentation-hover-highlight-in {
+  animation: agentation-hover-highlight-in 0.12s ease-out forwards;
+  transform-origin: center center;
 }
 
 .agentation-btn-active:active {
@@ -1466,7 +1484,7 @@ function PageFeedbackToolbarCSS() {
       /* @__PURE__ */ jsx6("div", { className: styles_module_default2.toolbar, "data-feedback-toolbar": true, children: !isActive ? /* @__PURE__ */ jsxs6(
         "button",
         {
-          className: `${styles_module_default2.toggleButton} agentation-fade-scale-in`,
+          className: `${styles_module_default2.toggleButton} agentation-toggle-in`,
           onClick: (e) => {
             e.stopPropagation();
             setIsActive(true);
@@ -1594,7 +1612,7 @@ function PageFeedbackToolbarCSS() {
         hoverInfo?.rect && !pendingAnnotation && /* @__PURE__ */ jsx6(
           "div",
           {
-            className: `${styles_module_default2.hoverHighlight} agentation-fade-in`,
+            className: `${styles_module_default2.hoverHighlight} agentation-hover-highlight-in`,
             style: {
               left: hoverInfo.rect.left,
               top: hoverInfo.rect.top,

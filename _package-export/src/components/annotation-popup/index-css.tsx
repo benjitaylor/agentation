@@ -21,12 +21,10 @@ const cssAnimationStyles = `
 
 @keyframes agentation-popup-shake {
   0%, 100% { transform: translateX(-50%) translateX(0); }
-  12.5% { transform: translateX(-50%) translateX(-8px); }
-  25% { transform: translateX(-50%) translateX(8px); }
-  37.5% { transform: translateX(-50%) translateX(-6px); }
-  50% { transform: translateX(-50%) translateX(6px); }
-  62.5% { transform: translateX(-50%) translateX(-4px); }
-  75% { transform: translateX(-50%) translateX(4px); }
+  20% { transform: translateX(-50%) translateX(-3px); }
+  40% { transform: translateX(-50%) translateX(3px); }
+  60% { transform: translateX(-50%) translateX(-2px); }
+  80% { transform: translateX(-50%) translateX(2px); }
 }
 
 .agentation-popup-animate-in {
@@ -34,7 +32,7 @@ const cssAnimationStyles = `
 }
 
 .agentation-popup-shake {
-  animation: agentation-popup-shake 0.4s ease-out;
+  animation: agentation-popup-shake 0.25s ease-out;
 }
 `;
 
@@ -96,13 +94,13 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupHandle, AnnotationPo
       return () => clearTimeout(timer);
     }, []);
 
-    // Shake animation
+    // Shake animation - subtle shake
     const shake = useCallback(() => {
       setIsShaking(true);
       setTimeout(() => {
         setIsShaking(false);
         textareaRef.current?.focus();
-      }, 400);
+      }, 250);
     }, []);
 
     // Expose shake to parent

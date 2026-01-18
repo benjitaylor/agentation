@@ -35,12 +35,17 @@ import styles from "./styles.module.scss";
 
 const cssAnimationStyles = `
 @keyframes agentation-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes agentation-fade-scale-in {
-  from { opacity: 0; transform: scale(0.9); }
+  from { opacity: 0; transform: scale(0.85) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes agentation-toggle-in {
+  from { opacity: 0; transform: scale(0.8); }
   to { opacity: 1; transform: scale(1); }
 }
 
@@ -50,16 +55,25 @@ const cssAnimationStyles = `
 }
 
 @keyframes agentation-tooltip-in {
-  from { opacity: 0; transform: translateX(-50%) translateY(2px) scale(0.98); }
+  from { opacity: 0; transform: translateX(-50%) translateY(4px) scale(0.95); }
   to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
+@keyframes agentation-hover-highlight-in {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 .agentation-fade-in {
-  animation: agentation-fade-in 0.15s ease-out forwards;
+  animation: agentation-fade-in 0.12s ease-out forwards;
 }
 
 .agentation-fade-scale-in {
-  animation: agentation-fade-scale-in 0.15s ease-out forwards;
+  animation: agentation-fade-scale-in 0.18s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
+}
+
+.agentation-toggle-in {
+  animation: agentation-toggle-in 0.15s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
 }
 
 .agentation-marker-in {
@@ -68,6 +82,11 @@ const cssAnimationStyles = `
 
 .agentation-tooltip-in {
   animation: agentation-tooltip-in 0.1s ease-out forwards;
+}
+
+.agentation-hover-highlight-in {
+  animation: agentation-hover-highlight-in 0.12s ease-out forwards;
+  transform-origin: center center;
 }
 
 .agentation-btn-active:active {
@@ -403,7 +422,7 @@ export function PageFeedbackToolbarCSS() {
         {!isActive ? (
           <button
             key="toggle"
-            className={`${styles.toggleButton} agentation-fade-scale-in`}
+            className={`${styles.toggleButton} agentation-toggle-in`}
             onClick={(e) => { e.stopPropagation(); setIsActive(true); }}
             title="Start feedback mode"
           >
@@ -515,7 +534,7 @@ export function PageFeedbackToolbarCSS() {
           {/* Hover highlight */}
           {hoverInfo?.rect && !pendingAnnotation && (
             <div
-              className={`${styles.hoverHighlight} agentation-fade-in`}
+              className={`${styles.hoverHighlight} agentation-hover-highlight-in`}
               style={{
                 left: hoverInfo.rect.left,
                 top: hoverInfo.rect.top,
