@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd _package-export/example && npm install && npm run build",
+  "outputDirectory": "_package-export/example/.next",
+  "framework": "nextjs",
+  "installCommand": "cd _package-export/example && npm install"
+}
