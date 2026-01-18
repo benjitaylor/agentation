@@ -34,19 +34,21 @@ function AnimatedBunny({ color = "#4C74FF" }: { color?: string }) {
           0%, 9% { transform: rotate(0deg); }
           12% { transform: rotate(-8deg); }
           16%, 34% { transform: rotate(0deg); }
-          38% { transform: rotate(-12deg); }
-          42% { transform: rotate(-6deg); }
-          48%, 100% { transform: rotate(0deg); }
+          38% { transform: rotate(15deg); }
+          44% { transform: rotate(8deg); }
+          50%, 71% { transform: rotate(0deg); }
+          74% { transform: rotate(-12deg); }
+          80%, 100% { transform: rotate(0deg); }
         }
         @keyframes rightEarTwitch {
           0%, 9% { transform: rotate(0deg); }
-          12% { transform: rotate(6deg); }
+          12% { transform: rotate(-6deg); }
           16%, 34% { transform: rotate(0deg); }
-          38% { transform: rotate(10deg); }
-          42% { transform: rotate(4deg); }
-          48%, 71% { transform: rotate(0deg); }
-          74% { transform: rotate(8deg); }
-          78%, 100% { transform: rotate(0deg); }
+          38% { transform: rotate(12deg); }
+          44% { transform: rotate(6deg); }
+          50%, 71% { transform: rotate(0deg); }
+          74% { transform: rotate(-10deg); }
+          80%, 100% { transform: rotate(0deg); }
         }
         .bunny-eye-left {
           animation: leftEyeLook 5s ease-in-out infinite;
