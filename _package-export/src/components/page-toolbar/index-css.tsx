@@ -130,6 +130,12 @@ const cssAnimationStyles = `
   animation: agentation-fade-in 0.08s ease-out forwards;
 }
 
+/* Hide hover elements during scroll - applied directly via DOM for instant response */
+.agentation-scrolling .agentation-hover-hide {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* Cursor styles for annotation mode */
 .agentation-active-cursor {
   cursor: crosshair !important;
@@ -299,7 +305,6 @@ export function PageFeedbackToolbarCSS() {
   const [cleared, setCleared] = useState(false);
   const [hoveredMarkerId, setHoveredMarkerId] = useState<string | null>(null);
   const [scrollY, setScrollY] = useState(0);
-  const [isScrolling, setIsScrolling] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isFrozen, setIsFrozen] = useState(false);
   const [exitingIds, setExitingIds] = useState<Set<string>>(new Set()); // IDs currently animating out
@@ -323,11 +328,13 @@ export function PageFeedbackToolbarCSS() {
   }, [pathname]);
 
   // Track scroll with debounced "scrolling" detection
+  // Uses direct DOM manipulation for instant visual feedback
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);
-      setIsScrolling(true);
-      setHoverInfo(null); // Clear hover while scrolling
+
+      // Instantly hide hover via CSS class (no React render delay)
+      document.body.classList.add('agentation-scrolling');
 
       // Clear existing timeout
       if (scrollTimeoutRef.current) {
@@ -336,13 +343,15 @@ export function PageFeedbackToolbarCSS() {
 
       // Set timeout to detect when scrolling stops
       scrollTimeoutRef.current = setTimeout(() => {
-        setIsScrolling(false);
+        document.body.classList.remove('agentation-scrolling');
+        setHoverInfo(null); // Clear stale hover info
       }, 150);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      document.body.classList.remove('agentation-scrolling');
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
@@ -465,8 +474,8 @@ export function PageFeedbackToolbarCSS() {
     if (!isActive || pendingAnnotation) return;
 
     const handleMouseMove = (e: MouseEvent) => {
-      // Don't update hover while scrolling
-      if (isScrolling) return;
+      // Don't update hover while scrolling (check DOM class for instant response)
+      if (document.body.classList.contains('agentation-scrolling')) return;
 
       if ((e.target as HTMLElement).closest("[data-feedback-toolbar]")) {
         setHoverInfo(null);
@@ -488,7 +497,7 @@ export function PageFeedbackToolbarCSS() {
 
     document.addEventListener("mousemove", handleMouseMove);
     return () => document.removeEventListener("mousemove", handleMouseMove);
-  }, [isActive, pendingAnnotation, isScrolling]);
+  }, [isActive, pendingAnnotation]);
 
   // Handle click
   useEffect(() => {
@@ -810,11 +819,11 @@ export function PageFeedbackToolbarCSS() {
       {/* Interactive overlay */}
       {isActive && (
         <div className={styles.overlay} data-feedback-toolbar>
-          {/* Hover highlight - more noticeable animation */}
+          {/* Hover highlight - hidden during scroll via CSS class on body */}
           {hoverInfo?.rect && !pendingAnnotation && (
             <div
               key={`${hoverInfo.rect.left}-${hoverInfo.rect.top}-${hoverInfo.rect.width}`}
-              className={`${styles.hoverHighlight} agentation-highlight-animate`}
+              className={`${styles.hoverHighlight} agentation-highlight-animate agentation-hover-hide`}
               style={{
                 left: hoverInfo.rect.left,
                 top: hoverInfo.rect.top,
@@ -824,10 +833,10 @@ export function PageFeedbackToolbarCSS() {
             />
           )}
 
-          {/* Hover tooltip */}
+          {/* Hover tooltip - hidden during scroll via CSS class on body */}
           {hoverInfo && !pendingAnnotation && (
             <div
-              className={`${styles.hoverTooltip} agentation-hover-tooltip-animate`}
+              className={`${styles.hoverTooltip} agentation-hover-tooltip-animate agentation-hover-hide`}
               style={{
                 left: Math.min(hoverPosition.x, window.innerWidth - 150),
                 top: Math.max(hoverPosition.y - 32, 8),
