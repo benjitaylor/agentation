@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.scss";
 
-// Import the feedback toolbar from local lib
-import { FeedbackToolbar } from "../../lib";
+// Import from local lib - using CSS version (no framer-motion dep)
+// Switch to { Agentation } for framer-motion version
+import { AgentationCSS as Agentation } from "../../lib";
 
 export const metadata: Metadata = {
   title: "Agentation",
-  description: "Visual feedback for AI-assisted development",
+  description: "Visual feedback for AI coding agents",
 };
 
 export default function RootLayout({
@@ -18,8 +19,8 @@ export default function RootLayout({
     <html lang="en">
       <body>
         {children}
-        {/* The feedback toolbar - renders in bottom-right corner */}
-        <FeedbackToolbar />
+        {/* Agentation toolbar - renders in bottom-right corner */}
+        <Agentation />
       </body>
     </html>
   );

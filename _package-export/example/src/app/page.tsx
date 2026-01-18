@@ -10,20 +10,20 @@ export default function AgentationDocs() {
       <article className="article">
         <header>
           <h1>Agentation</h1>
-          <p className="tagline">Visual feedback for AI-assisted development</p>
+          <p className="tagline">Visual feedback for AI coding agents</p>
         </header>
 
         <section>
           <p>
             Agentation is a dev tool that lets you annotate elements on your webpage
-            and generate structured feedback for AI coding assistants. Click elements,
+            and generate structured feedback for AI coding agents. Click elements,
             select text, add notes, and paste the output into Claude Code, Cursor, or
-            any AI tool that has access to your codebase.
+            any agent that has access to your codebase.
           </p>
           <p>
-            The key insight: AI assistants can find and fix code much faster when they
+            The key insight: agents can find and fix code much faster when they
             know exactly which element you&rsquo;re referring to. Agentation captures
-            class names, selectors, and positions so the AI can locate the corresponding
+            class names, selectors, and positions so the agent can locate the corresponding
             source files.
           </p>
         </section>
@@ -36,7 +36,7 @@ export default function AgentationDocs() {
             <li><strong>Click</strong> any element to add an annotation</li>
             <li>Write your feedback and click <strong>Add</strong></li>
             <li>Click the <strong>copy button</strong> to get formatted markdown</li>
-            <li>Paste into your AI assistant</li>
+            <li>Paste into your agent</li>
           </ol>
         </section>
 
@@ -54,7 +54,7 @@ export default function AgentationDocs() {
         <section>
           <h2>Output Format</h2>
           <p>
-            When you copy, you get markdown like this that you can paste directly into an AI chat:
+            When you copy, you get markdown like this that you can paste directly into your agent:
           </p>
           <pre className="code-block">{`## Page Feedback: /dashboard
 **Viewport:** 1512×738
@@ -69,7 +69,7 @@ export default function AgentationDocs() {
 **Quote:** "Settigns"
 **Feedback:** Typo - should be "Settings"`}</pre>
           <p>
-            The AI can use the element selectors, positions, and context to understand
+            The agent can use the element selectors, positions, and context to understand
             exactly what you&rsquo;re referring to.
           </p>
         </section>
@@ -77,14 +77,14 @@ export default function AgentationDocs() {
         <section>
           <h2>What It Is</h2>
           <ul>
-            <li>A <strong>dev tool</strong> for communicating visual feedback to AI coding assistants</li>
-            <li>A way to <strong>point at things</strong> in your running app so AI can find them in code</li>
-            <li>A bridge between <strong>what you see</strong> in the browser and <strong>what AI can search</strong> in your codebase</li>
+            <li>A <strong>dev tool</strong> for communicating visual feedback to AI coding agents</li>
+            <li>A way to <strong>point at things</strong> in your running app so the agent can find them in code</li>
+            <li>A bridge between <strong>what you see</strong> in the browser and <strong>what the agent can search</strong> in your codebase</li>
           </ul>
         </section>
 
         <section>
-          <h2>How It Works With AI</h2>
+          <h2>How It Works With Agents</h2>
           <p>
             Agentation works best with AI tools that have access to your codebase
             (Claude Code, Cursor, Windsurf, etc.):
@@ -92,13 +92,13 @@ export default function AgentationDocs() {
           <ol>
             <li>You see a bug or want a change in your running app</li>
             <li>Use Agentation to annotate the element with your feedback</li>
-            <li>Copy the output and paste it into your AI assistant</li>
-            <li>The AI uses the class names and selectors to <strong>search your codebase</strong></li>
+            <li>Copy the output and paste it into your agent</li>
+            <li>The agent uses the class names and selectors to <strong>search your codebase</strong></li>
             <li>It finds the relevant component/file and makes the fix</li>
           </ol>
           <p>
             Without Agentation, you&rsquo;d have to describe the element (&ldquo;the blue button
-            in the sidebar&rdquo;) and hope the AI guesses right. With Agentation, you give it
+            in the sidebar&rdquo;) and hope the agent guesses right. With Agentation, you give it
             <code>.sidebar &gt; .nav-actions &gt; button.primary</code> and it can grep for that directly.
           </p>
         </section>
@@ -120,7 +120,7 @@ export default function AgentationDocs() {
             <li><strong>Single page</strong> &mdash; annotations don&rsquo;t follow across navigation</li>
             <li><strong>Static positions</strong> &mdash; markers don&rsquo;t update if layout changes</li>
             <li><strong>No screenshots</strong> &mdash; output is text-only (paste alongside screenshots if needed)</li>
-            <li><strong>React only</strong> &mdash; currently requires React 18+ and framer-motion</li>
+            <li><strong>React only</strong> &mdash; currently requires React 18+</li>
           </ul>
         </section>
 
@@ -128,7 +128,7 @@ export default function AgentationDocs() {
           <h2>Best Practices</h2>
           <ul>
             <li><strong>Be specific</strong> &mdash; &ldquo;Button text unclear&rdquo; is better than &ldquo;fix this&rdquo;</li>
-            <li><strong>One issue per annotation</strong> &mdash; easier for AI to address individually</li>
+            <li><strong>One issue per annotation</strong> &mdash; easier for the agent to address individually</li>
             <li><strong>Include context</strong> &mdash; mention what you expected vs. what you see</li>
             <li><strong>Use text selection</strong> &mdash; for typos or content issues, select the exact text</li>
             <li><strong>Pause animations</strong> &mdash; to annotate a specific animation frame</li>
@@ -141,6 +141,7 @@ export default function AgentationDocs() {
           <p>Add to your root layout (Next.js App Router):</p>
           <pre className="code-block">{`// app/layout.tsx
 import { Agentation } from "agentation";
+// or use AgentationCSS for zero-dep version (no framer-motion)
 
 export default function RootLayout({ children }) {
   return (
@@ -155,6 +156,13 @@ export default function RootLayout({ children }) {
           <p>
             The <code>NODE_ENV</code> check ensures it only loads in development.
           </p>
+          <p>
+            <strong>Two versions available:</strong>
+          </p>
+          <ul>
+            <li><code>Agentation</code> &mdash; Smoother animations, requires framer-motion peer dependency</li>
+            <li><code>AgentationCSS</code> &mdash; CSS-only animations, zero runtime dependencies</li>
+          </ul>
         </section>
 
         <section>
@@ -226,7 +234,7 @@ export default function RootLayout({ children }) {
           <h2>Customizing Output</h2>
           <p>
             The copied output is plain markdown. Feel free to edit it before pasting
-            into your AI assistant:
+            into your agent:
           </p>
           <ul>
             <li><strong>Add context</strong> &mdash; prepend with &ldquo;I&rsquo;m working on the dashboard page...&rdquo;</li>
@@ -235,7 +243,7 @@ export default function RootLayout({ children }) {
             <li><strong>Add instructions</strong> &mdash; append &ldquo;Fix these issues and run the tests&rdquo;</li>
           </ul>
           <p>
-            The structured format helps AI understand <em>what</em> you&rsquo;re pointing at.
+            The structured format helps the agent understand <em>what</em> you&rsquo;re pointing at.
             Your edits help it understand <em>what to do</em>.
           </p>
         </section>
@@ -247,12 +255,12 @@ export default function RootLayout({ children }) {
           </p>
           <ul>
             <li>Which blue button? There might be several.</li>
-            <li>What&rsquo;s the actual class name the AI can search for?</li>
+            <li>What&rsquo;s the actual class name the agent can search for?</li>
             <li>What component renders this element?</li>
             <li>What&rsquo;s the parent container&rsquo;s class?</li>
           </ul>
           <p>
-            Agentation captures selectors that AI can actually <code>grep</code> for in your codebase.
+            Agentation captures selectors that the agent can actually <code>grep</code> for in your codebase.
             Instead of guessing which file to look at, it can search for <code>className=&quot;submit-btn&quot;</code>
             and find the exact component.
           </p>
@@ -260,7 +268,7 @@ export default function RootLayout({ children }) {
       </article>
 
       <footer className="footer">
-        <p>Agentation &middot; Visual feedback for AI-assisted development</p>
+        <p>Agentation &middot; Visual feedback for AI coding agents</p>
       </footer>
     </>
   );
