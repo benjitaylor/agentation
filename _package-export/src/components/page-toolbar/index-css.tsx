@@ -130,6 +130,13 @@ const cssAnimationStyles = `
   animation: agentation-fade-in 0.08s ease-out forwards;
 }
 
+/* Hide hover elements during scroll - applied to body */
+body.agentation-scrolling .agentation-hover-highlight,
+body.agentation-scrolling .agentation-hover-tooltip {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* Cursor styles for annotation mode */
 .agentation-active-cursor {
   cursor: crosshair !important;
@@ -299,7 +306,6 @@ export function PageFeedbackToolbarCSS() {
   const [cleared, setCleared] = useState(false);
   const [hoveredMarkerId, setHoveredMarkerId] = useState<string | null>(null);
   const [scrollY, setScrollY] = useState(0);
-  const [isScrolling, setIsScrolling] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isFrozen, setIsFrozen] = useState(false);
   const [exitingIds, setExitingIds] = useState<Set<string>>(new Set()); // IDs currently animating out
@@ -345,10 +351,10 @@ export function PageFeedbackToolbarCSS() {
     const handleScroll = () => {
       setScrollY(window.scrollY);
 
-      // Immediately hide hover elements by clearing hover state
+      // Immediately hide hover elements via CSS (instant, no React render needed)
       if (!isScrollingRef.current) {
         isScrollingRef.current = true;
-        setHoverInfo(null); // Clear immediately to hide highlight
+        document.body.classList.add('agentation-scrolling');
       }
 
       // Clear existing timeout
@@ -359,12 +365,15 @@ export function PageFeedbackToolbarCSS() {
       // Restore after scrolling stops
       scrollTimeoutRef.current = setTimeout(() => {
         isScrollingRef.current = false;
+        document.body.classList.remove('agentation-scrolling');
+        setHoverInfo(null); // Clear stale hover info
       }, 100);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      document.body.classList.remove('agentation-scrolling');
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
@@ -836,11 +845,11 @@ export function PageFeedbackToolbarCSS() {
           className={styles.overlay}
           data-feedback-toolbar
         >
-          {/* Hover highlight - hidden during scroll */}
-          {hoverInfo?.rect && !pendingAnnotation && !isScrolling && (
+          {/* Hover highlight - hidden during scroll via body class */}
+          {hoverInfo?.rect && !pendingAnnotation && (
             <div
               key={`${hoverInfo.rect.left}-${hoverInfo.rect.top}-${hoverInfo.rect.width}`}
-              className={`${styles.hoverHighlight} agentation-highlight-animate`}
+              className={`${styles.hoverHighlight} agentation-highlight-animate agentation-hover-highlight`}
               style={{
                 left: hoverInfo.rect.left,
                 top: hoverInfo.rect.top,
@@ -850,10 +859,10 @@ export function PageFeedbackToolbarCSS() {
             />
           )}
 
-          {/* Hover tooltip - hidden during scroll */}
-          {hoverInfo && !pendingAnnotation && !isScrolling && (
+          {/* Hover tooltip - hidden during scroll via body class */}
+          {hoverInfo && !pendingAnnotation && (
             <div
-              className={`${styles.hoverTooltip} agentation-hover-tooltip-animate`}
+              className={`${styles.hoverTooltip} agentation-hover-tooltip-animate agentation-hover-tooltip`}
               style={{
                 left: Math.min(hoverPosition.x, window.innerWidth - 150),
                 top: Math.max(hoverPosition.y - 32, 8),
