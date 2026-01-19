@@ -167,6 +167,24 @@ export default function AgentationDocs() {
           </p>
         </section>
 
+        <section>
+          <h2>Why not just use screenshots?</h2>
+          <p>
+            Screenshots seem like a natural way to show an agent what you&rsquo;re looking at,
+            but they add friction and lose information:
+          </p>
+          <ul>
+            <li>You take a screenshot, then annotate it with arrows or circles anyway</li>
+            <li>The agent has to <em>guess</em> which element you mean from pixels alone</li>
+            <li>No class names, no selectors, no way to search your codebase</li>
+            <li>If the agent guesses wrong, you go back and forth describing it differently</li>
+          </ul>
+          <p>
+            With Agentation, you click directly on the element. The output includes
+            everything the agent needs to find it in your code&mdash;no guessing, no extra steps.
+          </p>
+        </section>
+
         {/* Interactive Demo Section */}
         <section className="demo-section">
           <h2>Try it</h2>
