@@ -1,70 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { AnimatedBunny } from "agentation";
 import { Footer } from "./Footer";
-
-function TypedTitle() {
-  const text = "/agentation";
-  const [showBunny, setShowBunny] = useState(false);
-
-  // Truly staggered delays - variable timing like human typing
-  // /agent + ation (pause between "agent" and "ation")
-  const delays = [
-    0.1,    // /
-    0.4,    // a (pause after slash)
-    0.48,   // g
-    0.54,   // e
-    0.62,   // n
-    0.7,    // t
-    1.0,    // a (longer pause - "agent" + "ation")
-    1.08,   // t
-    1.14,   // i
-    1.22,   // o
-    1.3,    // n
-  ];
-
-  const totalTypingTime = delays[delays.length - 1] + 0.2;
-
-  useEffect(() => {
-    const timer = setTimeout(() => setShowBunny(true), totalTypingTime * 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  return (
-    <h1 style={{ position: 'relative' }}>
-      <style>{`
-        @keyframes typeChar {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .typed-char {
-          opacity: 0;
-          display: inline-block;
-          animation: typeChar 0.1s ease-out forwards;
-        }
-      `}</style>
-      {text.split('').map((char, i) => (
-        <span
-          key={i}
-          className="typed-char"
-          style={{
-            color: i === 0 ? '#4C74FF' : 'inherit',
-            animationDelay: `${delays[i]}s`,
-          }}
-        >
-          {char}
-        </span>
-      ))}
-      {showBunny && (
-        <span style={{ position: 'absolute', marginLeft: '0.3rem', bottom: '-3px' }}>
-          <AnimatedBunny size={26} />
-        </span>
-      )}
-    </h1>
-  );
-}
 
 export default function AgentationDocs() {
   const [inputValue, setInputValue] = useState("");
@@ -73,7 +11,7 @@ export default function AgentationDocs() {
     <>
       <article className="article">
         <header>
-          <TypedTitle />
+          <h1>Overview</h1>
           <p className="tagline">Visual feedback for AI coding agents</p>
         </header>
 

@@ -126,13 +126,22 @@ button {
 
 .side-nav {
   position: fixed;
-  top: 4.125rem;
+  top: 3.75rem;
   // Position relative to centered content (36rem = 576px max-width)
   left: calc(50% - 18rem - 7.5rem);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  cursor: pointer;
+
+  .side-nav-logo {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.85);
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
   .nav-link {
     font-size: 0.75rem;
@@ -521,7 +530,7 @@ button {
 
 // Mobile Notice
 .mobile-notice {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
@@ -532,6 +541,10 @@ button {
   font-weight: 500;
   color: rgba(0, 0, 0, 0.5);
   letter-spacing: 0.01em;
+
+  @media (max-width: 900px) {
+    display: flex;
+  }
 
   .mobile-notice-icon {
     display: flex;
@@ -548,7 +561,13 @@ button {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    padding: 1rem 1.5rem 0;
+    padding: 1rem 1.5rem 0.375rem;
+  }
+
+  .mobile-nav-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .mobile-nav-toggle {
@@ -591,6 +610,7 @@ button {
     display: grid;
     grid-template-rows: 0fr;
     transition: grid-template-rows 0.2s ease;
+    margin-top: 0.5rem;
 
     &.open {
       grid-template-rows: 1fr;
