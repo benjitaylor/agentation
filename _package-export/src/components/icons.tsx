@@ -1,7 +1,6 @@
 "use client";
 
-import { useId, useRef, useEffect } from "react";
-import { motion, useAnimate, type AnimationSequence } from "framer-motion";
+import { motion } from "framer-motion";
 
 // =============================================================================
 // Shared transition for morphing icons
@@ -87,141 +86,35 @@ export const EyeMorphIcon = ({
   </svg>
 );
 
-// Copy icon that morphs to checkmark with beautiful animation
+// Document/save icon that morphs to checkmark (Material Design style)
 export const CopyMorphIcon = ({
   size = 16,
   checked,
 }: {
   size?: number;
   checked: boolean;
-}) => {
-  const [scope, animate] = useAnimate();
-  const maskId = useId();
-
-  const inSequence: AnimationSequence = [
-    ['[data-part="square-front"]', { y: [0, -4] }, { duration: 0.175, ease: 'easeOut' }],
-    ['[data-part="square-back"]', { x: [0, -4] }, { at: '<', duration: 0.175, ease: 'easeOut' }],
-    [
-      '[data-part="square-front"], [data-part="square-back"]',
-      { rx: [2, 7.25], width: [10.5, 14.5], height: [10.5, 14.5], rotate: [0, -45] },
-      { at: '<', duration: 0.175, ease: 'easeOut' },
-    ],
-    ['[data-part="check"]', { opacity: [0, 1], pathOffset: [1, 0] }, { at: '-0.05', duration: 0 }],
-    ['[data-part="check"]', { pathLength: [0, 1] }, { duration: 0.15 }],
-  ];
-
-  const outSequence: AnimationSequence = [
-    ['[data-part="check"]', { pathOffset: [0, 1] }, { duration: 0.15, ease: 'easeOut' }],
-    ['[data-part="check"]', { opacity: [1, 0], pathLength: [1, 0] }, { duration: 0 }],
-    [
-      '[data-part="square-front"], [data-part="square-back"]',
-      { rx: [7.25, 2], width: [14.5, 10.5], height: [14.5, 10.5], rotate: [-45, 0] },
-      { at: '+0.05', duration: 0.175, ease: 'easeOut' },
-    ],
-    ['[data-part="square-front"]', { y: [-4, 0] }, { at: '<', duration: 0.175, ease: 'easeOut' }],
-    ['[data-part="square-back"]', { x: [-4, 0] }, { at: '<', duration: 0.175, ease: 'easeOut' }],
-  ];
-
-  const isFirstRender = useRef(true);
-  const hasAnimatedIn = useRef(false);
-  const inAnimation = useRef<ReturnType<typeof animate> | null>(null);
-  const outAnimation = useRef<ReturnType<typeof animate> | null>(null);
-
-  const animateIn = async () => {
-    if (!inAnimation.current && !outAnimation.current && !hasAnimatedIn.current) {
-      const animation = animate(inSequence);
-      inAnimation.current = animation;
-      await animation;
-      inAnimation.current = null;
-      if (animation.speed === 1) hasAnimatedIn.current = true;
-    } else if (outAnimation.current) {
-      outAnimation.current.speed = -1;
-    } else if (inAnimation.current) {
-      inAnimation.current.speed = 1;
-    }
-  };
-
-  const animateOut = async () => {
-    if (inAnimation.current) {
-      inAnimation.current.speed = -1;
-    } else if (hasAnimatedIn.current && !outAnimation.current) {
-      const animation = animate(outSequence);
-      outAnimation.current = animation;
-      await animation;
-      outAnimation.current = null;
-      if (animation.speed === 1) hasAnimatedIn.current = false;
-    } else if (outAnimation.current) {
-      outAnimation.current.speed = 1;
-    }
-  };
-
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    checked ? animateIn() : animateOut();
-  }, [checked]);
-
-  return (
-    <svg
-      ref={scope}
-      style={{ overflow: 'visible' }}
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
+}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <motion.path
+      d="M14.17,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V9.83c0-0.53-0.21-1.04-0.59-1.41l-4.83-4.83 C15.21,3.21,14.7,3,14.17,3L14.17,3z M8,15h8c0.55,0,1,0.45,1,1v0c0,0.55-0.45,1-1,1H8c-0.55,0-1-0.45-1-1v0C7,15.45,7.45,15,8,15z M8,11h8c0.55,0,1,0.45,1,1v0c0,0.55-0.45,1-1,1H8c-0.55,0-1-0.45-1-1v0C7,11.45,7.45,11,8,11z M8,7h5c0.55,0,1,0.45,1,1v0 c0,0.55-0.45,1-1,1H8C7.45,9,7,8.55,7,8v0C7,7.45,7.45,7,8,7z"
+      initial={false}
+      animate={{ opacity: checked ? 0 : 1 }}
+      transition={{ duration: 0.15 }}
+    />
+    <motion.path
+      d="M6 12.5l3.5 3.5L18 7"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
-      aria-hidden="true"
-    >
-      <motion.rect
-        data-part="square-front"
-        x="4.75"
-        y="8.75"
-        width="10.5"
-        height="10.5"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <g mask={`url(#${maskId})`}>
-        <motion.rect
-          data-part="square-back"
-          x="8.75"
-          y="4.75"
-          width="10.5"
-          height="10.5"
-          rx="2"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-      </g>
-      <motion.path
-        data-part="check"
-        initial={{ pathLength: 0, opacity: 0 }}
-        d="M9.25 12.25L11 14.25L15 10"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <mask id={maskId} maskUnits="userSpaceOnUse">
-        <rect width="24" height="24" fill="#fff" />
-        <motion.rect
-          data-part="square-front"
-          x="4.75"
-          y="8.75"
-          width="10.5"
-          height="10.5"
-          rx="2"
-          fill="#000"
-          stroke="#000"
-          strokeWidth="1.5"
-        />
-      </mask>
-    </svg>
-  );
-};
+      initial={false}
+      animate={{ opacity: checked ? 1 : 0, scale: checked ? 1 : 0.5 }}
+      transition={transition}
+      style={{ transformOrigin: "12px 12px" }}
+    />
+  </svg>
+);
 
 // Refresh/reset icon that morphs to checkmark (Material Design style)
 export const TrashMorphIcon = ({

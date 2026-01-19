@@ -1,17 +1,83 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId, useRef, useEffect } from "react";
 import { Highlight, themes } from "prism-react-renderer";
 import { Footer } from "../Footer";
+import { motion, useAnimate, type AnimationSequence } from "framer-motion";
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
-  const [animKey, setAnimKey] = useState(0);
+  const [scope, animate] = useAnimate();
+  const maskId = useId();
+
+  const inSequence: AnimationSequence = [
+    ['[data-part="square-front"]', { y: [0, -4] }, { duration: 0.12, ease: 'easeOut' }],
+    ['[data-part="square-back"]', { x: [0, -4] }, { at: '<', duration: 0.12, ease: 'easeOut' }],
+    [
+      '[data-part="square-front"], [data-part="square-back"]',
+      { rx: [2, 7.25], width: [10.5, 14.5], height: [10.5, 14.5], rotate: [0, -45] },
+      { at: '<', duration: 0.12, ease: 'easeOut' },
+    ],
+    ['[data-part="check"]', { opacity: [0, 1], pathOffset: [1, 0] }, { at: '-0.03', duration: 0 }],
+    ['[data-part="check"]', { pathLength: [0, 1] }, { duration: 0.1 }],
+  ];
+
+  const outSequence: AnimationSequence = [
+    ['[data-part="check"]', { pathOffset: [0, 1] }, { duration: 0.1, ease: 'easeOut' }],
+    ['[data-part="check"]', { opacity: [1, 0], pathLength: [1, 0] }, { duration: 0 }],
+    [
+      '[data-part="square-front"], [data-part="square-back"]',
+      { rx: [7.25, 2], width: [14.5, 10.5], height: [14.5, 10.5], rotate: [-45, 0] },
+      { at: '+0.03', duration: 0.12, ease: 'easeOut' },
+    ],
+    ['[data-part="square-front"]', { y: [-4, 0] }, { at: '<', duration: 0.12, ease: 'easeOut' }],
+    ['[data-part="square-back"]', { x: [-4, 0] }, { at: '<', duration: 0.12, ease: 'easeOut' }],
+  ];
+
+  const isFirstRender = useRef(true);
+  const hasAnimatedIn = useRef(false);
+  const inAnimation = useRef<ReturnType<typeof animate> | null>(null);
+  const outAnimation = useRef<ReturnType<typeof animate> | null>(null);
+
+  const animateIn = async () => {
+    if (!inAnimation.current && !outAnimation.current && !hasAnimatedIn.current) {
+      const animation = animate(inSequence);
+      inAnimation.current = animation;
+      await animation;
+      inAnimation.current = null;
+      if (animation.speed === 1) hasAnimatedIn.current = true;
+    } else if (outAnimation.current) {
+      outAnimation.current.speed = -1;
+    } else if (inAnimation.current) {
+      inAnimation.current.speed = 1;
+    }
+  };
+
+  const animateOut = async () => {
+    if (inAnimation.current) {
+      inAnimation.current.speed = -1;
+    } else if (hasAnimatedIn.current && !outAnimation.current) {
+      const animation = animate(outSequence);
+      outAnimation.current = animation;
+      await animation;
+      outAnimation.current = null;
+      if (animation.speed === 1) hasAnimatedIn.current = false;
+    } else if (outAnimation.current) {
+      outAnimation.current.speed = 1;
+    }
+  };
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    copied ? animateIn() : animateOut();
+  }, [copied]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(text);
     setCopied(true);
-    setAnimKey(k => k + 1);
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -26,75 +92,72 @@ function CopyButton({ text }: { text: string }) {
         right: '0.75rem',
         transform: 'translateY(-50%)',
         padding: '0.375rem',
-        background: copied ? 'rgba(0,0,0,0.08)' : 'transparent',
+        background: 'transparent',
         border: 'none',
         borderRadius: '0.25rem',
         cursor: 'pointer',
-        color: copied ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.35)',
-        transition: 'all 0.15s ease',
+        color: 'rgba(0,0,0,0.35)',
+        transition: 'color 0.15s ease',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
       }}
     >
-      <style>{`
-        @keyframes drawCheck {
-          0% { stroke-dashoffset: 24; }
-          100% { stroke-dashoffset: 0; }
-        }
-        @keyframes fadeOutCopy {
-          0% { opacity: 1; transform: scale(1); }
-          100% { opacity: 0; transform: scale(0.8); }
-        }
-        @keyframes fadeInCopy {
-          0% { opacity: 0; transform: scale(0.8); }
-          100% { opacity: 1; transform: scale(1); }
-        }
-      `}</style>
-      {/* Clipboard icon */}
       <svg
-        width="14"
-        height="14"
+        ref={scope}
+        style={{ overflow: 'visible' }}
+        width={20}
+        height={20}
         viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
         fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{
-          position: 'absolute',
-          opacity: copied ? 0 : 1,
-          transform: copied ? 'scale(0.8)' : 'scale(1)',
-          transition: 'opacity 0.15s ease, transform 0.15s ease',
-        }}
+        aria-hidden="true"
       >
-        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-      </svg>
-      {/* Checkmark icon with draw animation */}
-      <svg
-        key={animKey}
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{
-          opacity: copied ? 1 : 0,
-          transition: copied ? 'none' : 'opacity 0.15s ease',
-        }}
-      >
-        <polyline
-          points="20 6 9 17 4 12"
-          style={{
-            strokeDasharray: 24,
-            strokeDashoffset: copied ? 0 : 24,
-            animation: copied ? 'drawCheck 0.25s ease-out forwards' : 'none',
-          }}
+        <motion.rect
+          data-part="square-front"
+          x="4.75"
+          y="8.75"
+          width="10.5"
+          height="10.5"
+          rx="2"
+          stroke="currentColor"
+          strokeWidth="1.5"
         />
+        <g mask={`url(#${maskId})`}>
+          <motion.rect
+            data-part="square-back"
+            x="8.75"
+            y="4.75"
+            width="10.5"
+            height="10.5"
+            rx="2"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+        </g>
+        <motion.path
+          data-part="check"
+          initial={{ pathLength: 0, opacity: 0 }}
+          d="M9.25 12.25L11 14.25L15 10"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <mask id={maskId} maskUnits="userSpaceOnUse">
+          <rect width="24" height="24" fill="#fff" />
+          <motion.rect
+            data-part="square-front"
+            x="4.75"
+            y="8.75"
+            width="10.5"
+            height="10.5"
+            rx="2"
+            fill="#000"
+            stroke="#000"
+            strokeWidth="1.5"
+          />
+        </mask>
       </svg>
     </button>
   );
