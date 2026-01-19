@@ -105,6 +105,7 @@ export default function TodoPage() {
           <li><strong>Improved element identification</strong> &mdash; Could enhance <code>element-identification.ts</code> but current approach is already smart</li>
           <li><strong>Annotation persistence</strong> &mdash; JSON export/import is low-risk; URL sharing needs design decisions</li>
           <li><strong>Multi-page support</strong> &mdash; Already stores per-pathname; &ldquo;combined output&rdquo; would need UI work</li>
+          <li><strong>Arrow annotations</strong> &mdash; Draw arrows to point at specific things. Medium complexity: SVG rendering is easy, but adds mode switching complexity. Output could be element-aware (&ldquo;Arrow from Button &rarr; Input&rdquo;) or coordinate-based. Simpler alternative: &ldquo;points to&rdquo; second-click on existing annotations.</li>
         </ul>
       </section>
     </article>
