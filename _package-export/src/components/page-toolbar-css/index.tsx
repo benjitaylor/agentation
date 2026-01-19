@@ -1316,14 +1316,14 @@ export function PageFeedbackToolbarCSS({
                   <span
                     className={styles.settingsBrand}
                     style={{
-                      color: "#4C74FF",
+                      color: "#fff",
                     }}
                   >
                     /
                   </span>
                   agentation
                 </span>
-                <AnimatedBunny color="#4C74FF" />
+                <AnimatedBunny color="#fff" />
                 <span className={styles.settingsVersion}>v1.0.0</span>
               </div>
 

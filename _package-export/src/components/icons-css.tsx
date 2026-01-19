@@ -208,6 +208,9 @@ export const AnimatedBunny = ({
     viewBox="0 0 28 28"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    style={{
+      cursor: "none",
+    }}
   >
     <style>{`
       @keyframes leftEyeLook {
@@ -321,7 +324,7 @@ export const AnimatedBunny = ({
     <text
       className="bunny-happy-face"
       x="14"
-      y="24"
+      y="26"
       textAnchor="middle"
       fontSize="12"
       fontWeight="bold"

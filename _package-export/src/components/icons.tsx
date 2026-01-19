@@ -357,7 +357,7 @@ export const AnimatedBunny = ({
     <text
       className="bunny-happy-face"
       x="14"
-      y="24"
+      y="26"
       textAnchor="middle"
       fontSize="12"
       fontWeight="bold"
