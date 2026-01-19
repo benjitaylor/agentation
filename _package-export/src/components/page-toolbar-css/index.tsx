@@ -240,7 +240,7 @@ export function PageFeedbackToolbarCSS({
     if (showSettings) {
       setShowSettingsVisible(true);
     } else {
-      const timer = setTimeout(() => setShowSettingsVisible(false), 150);
+      const timer = setTimeout(() => setShowSettingsVisible(false), 0);
       return () => clearTimeout(timer);
     }
   }, [showSettings]);
@@ -1306,105 +1306,103 @@ export function PageFeedbackToolbarCSS({
           </div>
 
           {/* Settings Panel - always dark themed */}
-          {showSettingsVisible && (
-            <div
-              className={`${styles.settingsPanel} ${styles.dark} ${showSettings ? styles.enter : styles.exit}`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className={styles.settingsHeader}>
-                <span className={styles.settingsBrand}>
-                  <span
-                    className={styles.settingsBrand}
-                    style={{
-                      color: "#fff",
-                    }}
-                  >
-                    /
-                  </span>
-                  agentation
+          <div
+            className={`${styles.settingsPanel} ${styles.dark} ${showSettingsVisible ? styles.enter : styles.exit}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.settingsHeader}>
+              <span className={styles.settingsBrand}>
+                <span
+                  className={styles.settingsBrand}
+                  style={{
+                    color: "#fff",
+                  }}
+                >
+                  /
                 </span>
-                <AnimatedBunny color="#fff" />
-                <span className={styles.settingsVersion}>v1.0.0</span>
-              </div>
+                agentation
+              </span>
+              <AnimatedBunny color="#fff" />
+              <span className={styles.settingsVersion}>v1.0.0</span>
+            </div>
 
-              <div className={styles.settingsSection}>
-                <div className={styles.settingsLabel}>Output Detail</div>
-                <div className={styles.settingsOptions}>
-                  {OUTPUT_DETAIL_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      className={`${styles.settingsOption} ${settings.outputDetail === option.value ? styles.selected : ""}`}
-                      onClick={() =>
-                        setSettings((s) => ({
-                          ...s,
-                          outputDetail: option.value,
-                        }))
-                      }
-                    >
-                      {settings.outputDetail === option.value && (
-                        <IconCheck size={10} />
-                      )}
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className={styles.settingsSection}>
-                <div className={styles.settingsLabel}>Marker Color</div>
-                <div className={styles.colorOptions}>
-                  {COLOR_OPTIONS.map((color) => (
-                    <button
-                      key={color.value}
-                      className={`${styles.colorOption} ${settings.annotationColor === color.value ? styles.selected : ""}`}
-                      style={{ backgroundColor: color.value }}
-                      onClick={() =>
-                        setSettings((s) => ({
-                          ...s,
-                          annotationColor: color.value,
-                        }))
-                      }
-                      title={color.label}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div className={styles.settingsSection}>
-                <label className={styles.settingsToggle}>
-                  <input
-                    type="checkbox"
-                    checked={settings.autoClearAfterCopy}
-                    onChange={(e) =>
+            <div className={styles.settingsSection}>
+              <div className={styles.settingsLabel}>Output Detail</div>
+              <div className={styles.settingsOptions}>
+                {OUTPUT_DETAIL_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    className={`${styles.settingsOption} ${settings.outputDetail === option.value ? styles.selected : ""}`}
+                    onClick={() =>
                       setSettings((s) => ({
                         ...s,
-                        autoClearAfterCopy: e.target.checked,
+                        outputDetail: option.value,
                       }))
                     }
-                  />
-                  <span className={styles.toggleLabel}>Clear after copy</span>
-                </label>
-              </div>
-
-              <div className={styles.settingsSection}>
-                <label className={styles.settingsToggle}>
-                  <input
-                    type="checkbox"
-                    checked={settings.blockInteractions}
-                    onChange={(e) =>
-                      setSettings((s) => ({
-                        ...s,
-                        blockInteractions: e.target.checked,
-                      }))
-                    }
-                  />
-                  <span className={styles.toggleLabel}>
-                    Block page interactions
-                  </span>
-                </label>
+                  >
+                    {settings.outputDetail === option.value && (
+                      <IconCheck size={10} />
+                    )}
+                    {option.label}
+                  </button>
+                ))}
               </div>
             </div>
-          )}
+
+            <div className={styles.settingsSection}>
+              <div className={styles.settingsLabel}>Marker Color</div>
+              <div className={styles.colorOptions}>
+                {COLOR_OPTIONS.map((color) => (
+                  <button
+                    key={color.value}
+                    className={`${styles.colorOption} ${settings.annotationColor === color.value ? styles.selected : ""}`}
+                    style={{ backgroundColor: color.value }}
+                    onClick={() =>
+                      setSettings((s) => ({
+                        ...s,
+                        annotationColor: color.value,
+                      }))
+                    }
+                    title={color.label}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.settingsSection}>
+              <label className={styles.settingsToggle}>
+                <input
+                  type="checkbox"
+                  checked={settings.autoClearAfterCopy}
+                  onChange={(e) =>
+                    setSettings((s) => ({
+                      ...s,
+                      autoClearAfterCopy: e.target.checked,
+                    }))
+                  }
+                />
+                <span className={styles.toggleLabel}>Clear after copy</span>
+              </label>
+            </div>
+
+            <div className={styles.settingsSection}>
+              <label className={styles.settingsToggle}>
+                <input
+                  type="checkbox"
+                  checked={settings.blockInteractions}
+                  onChange={(e) =>
+                    setSettings((s) => ({
+                      ...s,
+                      blockInteractions: e.target.checked,
+                    }))
+                  }
+                />
+                <span className={styles.toggleLabel}>
+                  Block page interactions
+                </span>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
 
