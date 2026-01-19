@@ -6,10 +6,12 @@ import { Footer } from "../Footer";
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
+  const [animKey, setAnimKey] = useState(0);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(text);
     setCopied(true);
+    setAnimKey(k => k + 1);
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -35,6 +37,20 @@ function CopyButton({ text }: { text: string }) {
         justifyContent: 'center',
       }}
     >
+      <style>{`
+        @keyframes drawCheck {
+          0% { stroke-dashoffset: 24; }
+          100% { stroke-dashoffset: 0; }
+        }
+        @keyframes fadeOutCopy {
+          0% { opacity: 1; transform: scale(1); }
+          100% { opacity: 0; transform: scale(0.8); }
+        }
+        @keyframes fadeInCopy {
+          0% { opacity: 0; transform: scale(0.8); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
       {/* Clipboard icon */}
       <svg
         width="14"
@@ -49,29 +65,36 @@ function CopyButton({ text }: { text: string }) {
           position: 'absolute',
           opacity: copied ? 0 : 1,
           transform: copied ? 'scale(0.8)' : 'scale(1)',
-          transition: 'opacity 0.2s ease, transform 0.2s ease',
+          transition: 'opacity 0.15s ease, transform 0.15s ease',
         }}
       >
         <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
       </svg>
-      {/* Checkmark icon */}
+      {/* Checkmark icon with draw animation */}
       <svg
+        key={animKey}
         width="14"
         height="14"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
         style={{
           opacity: copied ? 1 : 0,
-          transform: copied ? 'scale(1)' : 'scale(0.8)',
-          transition: 'opacity 0.2s ease, transform 0.2s ease',
+          transition: copied ? 'none' : 'opacity 0.15s ease',
         }}
       >
-        <polyline points="20 6 9 17 4 12" />
+        <polyline
+          points="20 6 9 17 4 12"
+          style={{
+            strokeDasharray: 24,
+            strokeDashoffset: copied ? 0 : 24,
+            animation: copied ? 'drawCheck 0.25s ease-out forwards' : 'none',
+          }}
+        />
       </svg>
     </button>
   );
@@ -199,7 +222,7 @@ function App() {
         <ul>
           <li><strong>No network requests</strong> &mdash; all processing is client-side</li>
           <li><strong>No data collection</strong> &mdash; nothing is tracked or stored remotely</li>
-          <li><strong>Dev-only</strong> &mdash; use the NODE_ENV check to exclude from production</li>
+          <li><strong>Dev-only</strong> &mdash; use the <code>NODE_ENV</code> check to exclude from production</li>
         </ul>
       </section>
     </article>

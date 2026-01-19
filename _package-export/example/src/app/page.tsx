@@ -21,7 +21,7 @@ export default function AgentationDocs() {
 
         <section>
           <p>
-            Agentation (agent + annotation) is a dev tool that lets you annotate elements on your webpage
+            Agentation (<span style={{ fontFamily: "'Cascadia Code', monospace", fontStyle: 'italic', color: 'rgba(0,0,0,0.5)' }}>agent + annotation</span>) is a dev tool that lets you annotate elements on your webpage
             and generate structured feedback for AI coding agents. Click elements,
             select text, add notes, and paste the output into Claude Code, Cursor, or
             any agent that has access to your codebase. Zero dependencies beyond React.
@@ -108,8 +108,8 @@ export default function AgentationDocs() {
             Click the pause button in the toolbar to freeze this animation:
           </p>
           <div className="animation-demo">
-            <div className="slider-track">
-              <div className="slider-circle" />
+            <div className="progress-bar-demo">
+              <div className="progress-bar" />
             </div>
           </div>
         </section>
@@ -126,13 +126,13 @@ export default function AgentationDocs() {
         </section>
 
         <section>
-          <h2>Learn more</h2>
-          <ul>
-            <li><Link href="/install">Installation</Link> &mdash; Add Agentation to your project</li>
-            <li><Link href="/features">Features</Link> &mdash; Everything the toolbar can do</li>
-            <li><Link href="/output">Output Format</Link> &mdash; How feedback is structured for agents</li>
-          </ul>
+          <h2>Background</h2>
+          <p>
+            Agentation grew out of <a href="https://benji.org/annotating" className="styled-link" target="_blank" rel="noopener noreferrer">a post by Benji Taylor</a> exploring
+            how to give better feedback to AI coding agents.
+          </p>
         </section>
+
       </article>
 
       <Footer />

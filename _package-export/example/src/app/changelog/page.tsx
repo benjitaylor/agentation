@@ -2,125 +2,70 @@
 
 import { Footer } from "../Footer";
 
-export default function ChangelogPage() {
+export default function TodoPage() {
   return (
     <>
       <article className="article">
       <header>
-        <h1>Changelog</h1>
-        <p className="tagline">Recent updates to Agentation</p>
+        <h1>To-Do</h1>
+        <p className="tagline">9 tasks &middot; 4 areas to explore</p>
       </header>
 
+      <div style={{
+        background: 'rgba(0,0,0,0.04)',
+        padding: '0.625rem 0.875rem',
+        borderRadius: '0.375rem',
+        fontSize: '0.75rem',
+        color: 'rgba(0,0,0,0.5)',
+        marginBottom: '0.5rem'
+      }}>
+        This is a temporary dev page and won&rsquo;t be published.
+      </div>
+
       <section>
-        <h2>January 18, 2026 - v1.0.0 (Stable)</h2>
-
-        <h3>Breaking Changes</h3>
+        <h2>Tasks</h2>
         <ul>
-          <li>CSS version is now the default - <code>AgentationCSS</code> is the recommended component
-            <ul>
-              <li>Zero runtime dependencies beyond React</li>
-              <li>Framer-motion version still available as <code>Agentation</code></li>
-            </ul>
-          </li>
-        </ul>
-
-        <h3>New Features</h3>
-        <ul>
-          <li>Area selection - Drag in empty space to annotate regions without elements</li>
-          <li>Right-click to edit - Edit existing annotations by right-clicking on markers</li>
-          <li>Marker hover outlines - Hovering annotation markers shows element bounding box
-            <ul>
-              <li>Blue solid outline for single elements</li>
-              <li>Green dashed outline for multi-select groups</li>
-            </ul>
-          </li>
-          <li>Element outline during annotation - Target element stays highlighted while typing feedback</li>
-          <li>Smooth exit animations - Element outline fades out when annotation is submitted</li>
-        </ul>
-
-        <h3>Bug Fixes</h3>
-        <ul>
-          <li>Drag selection detection - Fixed issue where not all elements inside the green boundary were being selected
-            <ul>
-              <li>Added missing element types (td, th, section, article, aside, nav, div, span)</li>
-              <li>Improved overlap detection using center-point and area-based calculations</li>
-              <li>Elements are now selected if their center is inside or if they overlap by more than 50%</li>
-              <li>Divs and spans with meaningful text content or interactive roles are now included</li>
-            </ul>
-          </li>
-        </ul>
-
-        <h3>Documentation</h3>
-        <ul>
-          <li>Navigation improvements - Active page now highlighted in sidebar</li>
-          <li>Consistent footer - Added footer with credits to all pages</li>
-        </ul>
-
-        <h3>Performance</h3>
-        <ul>
-          <li>60fps drag selection - Drag rectangle and element highlights use direct DOM updates
-            <ul>
-              <li>Zero React re-renders during drag</li>
-              <li>Pooled highlight divs to avoid DOM churn</li>
-              <li>Faster 50ms throttle for element detection</li>
-            </ul>
-          </li>
-          <li>Unified marker animations - Single effect handles all marker show/hide states
-            <ul>
-              <li>Toolbar open/close and visibility toggle use same code path</li>
-              <li>Eliminates animation glitches and race conditions</li>
-            </ul>
-          </li>
-        </ul>
-
-        <h3>CSS Version Refinements</h3>
-        <ul>
-          <li>Exit animations - Popup and pending marker animate out when cancelling or submitting</li>
-          <li>Popup shake fix - Fixed flash after shake animation by using stable "entered" state</li>
-          <li>Accurate element count - Drag selection uses querySelectorAll for precise counting</li>
-          <li>Text selection priority - Starting on text elements allows native selection; drag-to-select only from non-text</li>
-          <li>Multi-select placeholder - Custom placeholder text for group annotations</li>
-          <li>Area selection placeholder - "What should change in this area?" for empty regions</li>
-          <li>Settings always dark - Settings panel uses dark theme for consistency</li>
-          <li>Block interactions fix - Properly prevents clicks using capture phase</li>
-        </ul>
-
-        <h3>Core Features</h3>
-        <ul>
-          <li>Drag selection - Click and drag to select multiple elements (green selection box)</li>
-          <li>Settings panel - Gear icon opens settings
-            <ul>
-              <li>Output detail (Compact, Standard, Detailed)</li>
-              <li>Marker color (Blue, Green, Orange, Purple, Pink)</li>
-              <li>Auto-clear after copy</li>
-              <li>Block page interactions</li>
-            </ul>
-          </li>
-          <li>Demo annotations - <code>demoAnnotations</code> prop shows examples on load</li>
-          <li>Smart cursor - Text cursor for text elements, crosshair for others</li>
-          <li>Animation pause - Freeze CSS animations to capture specific states</li>
-        </ul>
-
-        <h3>Bug Fixes</h3>
-        <ul>
-          <li>Fixed marker positioning during scroll</li>
-          <li>Fixed markers re-animating when adding new annotations</li>
-          <li>Fixed exit animation flashing on toolbar close</li>
-          <li>Fixed visibility toggle animation not working</li>
+          <li>Check mobile</li>
+          <li>Make sure popup annotations show on top layer</li>
+          <li>Make sure popup annotations always show (e.g. if they are right at the edge of the screen)</li>
+          <li>Make the toolbar movable</li>
+          <li>Improve the toolbar settings</li>
+          <li>Improve toolbar icons/animations</li>
+          <li>Improve performance</li>
+          <li>Improve performance for drag annotations</li>
+          <li>Add bunny logo artwork when installing <code>/agentation</code> :)</li>
         </ul>
       </section>
 
       <section>
-        <h2>Initial Release</h2>
+        <h2>Things to Explore</h2>
+
+        <h3>Auto-paste Integration</h3>
+        <p>Explore ways to integrate with AI coding tools:</p>
         <ul>
-          <li>Click-to-annotate any element</li>
-          <li>Text selection support</li>
-          <li>Animation pause/resume</li>
-          <li>Marker visibility toggle</li>
-          <li>Copy to clipboard as structured markdown</li>
-          <li>Clear all annotations</li>
-          <li>localStorage persistence (7-day expiry)</li>
-          <li>Smart element identification</li>
+          <li><strong>Cursor/VS Code</strong> &mdash; Check if there&rsquo;s a clipboard API or extension API</li>
+          <li><strong>Claude Code</strong> &mdash; Investigate if there&rsquo;s a way to send directly to the CLI</li>
+          <li><strong>Fallback</strong> &mdash; Add a &ldquo;Copy &amp; Open&rdquo; button that copies and opens the tool&rsquo;s URL</li>
+        </ul>
+
+        <h3>Improved Element Identification</h3>
+        <ul>
+          <li>Capture React component names from <code>data-*</code> attributes or devtools</li>
+          <li>Include more context about parent components</li>
+          <li>Better handling of dynamically generated class names (CSS-in-JS)</li>
+        </ul>
+
+        <h3>Annotation Persistence Options</h3>
+        <ul>
+          <li>Export/import annotations as JSON</li>
+          <li>URL-based sharing (encode annotations in URL hash)</li>
+        </ul>
+
+        <h3>Multi-page Support</h3>
+        <ul>
+          <li>Track annotations per-route automatically</li>
+          <li>Show combined output for all pages</li>
+          <li>Navigation detection to prompt save</li>
         </ul>
       </section>
     </article>

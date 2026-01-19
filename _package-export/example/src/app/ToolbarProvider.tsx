@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { AgentationCSS } from "agentation";
 import type { DemoAnnotation } from "agentation";
 
@@ -20,5 +21,16 @@ const demoAnnotations: DemoAnnotation[] = [
 ];
 
 export function ToolbarProvider() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  if (isMobile) return null;
+
   return <AgentationCSS demoAnnotations={demoAnnotations} demoDelay={1500} />;
 }

@@ -11,7 +11,7 @@ export function SideNav() {
     { href: "/install", label: "Install" },
     { href: "/features", label: "Features" },
     { href: "/output", label: "Output" },
-    { href: "/changelog", label: "Changelog" },
+    { href: "/changelog", label: "To-Do", badge: "(Temp)" },
   ];
 
   return (
@@ -23,6 +23,7 @@ export function SideNav() {
           className={`nav-link ${pathname === link.href ? "active" : ""}`}
         >
           {link.label}
+          {link.badge && <span className="nav-badge">{link.badge}</span>}
         </Link>
       ))}
     </nav>

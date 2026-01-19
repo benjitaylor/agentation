@@ -270,10 +270,7 @@ const outputExamples: Record<OutputFormat, string> = {
 
 ### 1. button.submit-btn
 
-**Full DOM Path:**
-\`\`\`
-body > div.app > main.dashboard > div.form-container > div.actions > button.submit-btn
-\`\`\`
+**Full DOM Path:** \`body > div.app > main.dashboard > div.form-container > div.actions > button.submit-btn\`
 
 **CSS Classes:** \`submit-btn, primary\`
 **Position:**
@@ -283,7 +280,24 @@ body > div.app > main.dashboard > div.form-container > div.actions > button.subm
 **Computed Styles:** bg: rgb(59, 130, 246), font: 14px, weight: 600, padding: 8px 16px, radius: 6px
 **Accessibility:** focusable
 
-**Issue:** Button text should say "Save" not "Submit"`,
+**Issue:** Button text should say "Save" not "Submit"
+
+---
+
+### 2. span.nav-label
+
+**Full DOM Path:** \`body > div.app > aside.sidebar > nav > div.nav-item:nth-child(2) > span.nav-label\`
+
+**CSS Classes:** \`nav-label\`
+**Selected text:** "Settigns"
+**Position:**
+- Bounding box: x:24, y:156
+- Dimensions: 64x20px
+- Annotation at: 3.2% from left, 156px from top
+**Computed Styles:** font: 13px, weight: 500, color: rgb(55, 65, 81)
+**Accessibility:** none
+
+**Issue:** Typo - should be "Settings"`,
 };
 
 export default function OutputPage() {
