@@ -283,6 +283,8 @@ export const AnimatedBunny = ({
         opacity: 1;
       }
     `}</style>
+    {/* Invisible hover area to catch all hover events */}
+    <rect width="28" height="28" fill="transparent" />
     {/* Left ear */}
     <path
       className="bunny-ear-left"
@@ -319,9 +321,10 @@ export const AnimatedBunny = ({
     <text
       className="bunny-happy-face"
       x="14"
-      y="23"
+      y="24"
       textAnchor="middle"
-      fontSize="8"
+      fontSize="12"
+      fontWeight="bold"
       fill={color}
       fontFamily="system-ui, -apple-system, sans-serif"
     >
