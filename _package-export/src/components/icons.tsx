@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useId, useRef, useEffect } from "react";
+import { motion, useAnimate, type AnimationSequence } from "framer-motion";
 
 // =============================================================================
 // Shared transition for morphing icons
@@ -86,7 +87,7 @@ export const EyeMorphIcon = ({
   </svg>
 );
 
-// Copy icon that morphs to checkmark using animated line coordinates
+// Copy icon that morphs to checkmark with beautiful animation
 export const CopyMorphIcon = ({
   size = 16,
   checked,
@@ -94,106 +95,130 @@ export const CopyMorphIcon = ({
   size?: number;
   checked: boolean;
 }) => {
-  const t = { duration: 0.3, ease: [0.33, 1, 0.68, 1] } as const;
+  const [scope, animate] = useAnimate();
+  const maskId = useId();
+
+  const inSequence: AnimationSequence = [
+    ['[data-part="square-front"]', { y: [0, -4] }, { duration: 0.175, ease: 'easeOut' }],
+    ['[data-part="square-back"]', { x: [0, -4] }, { at: '<', duration: 0.175, ease: 'easeOut' }],
+    [
+      '[data-part="square-front"], [data-part="square-back"]',
+      { rx: [2, 7.25], width: [10.5, 14.5], height: [10.5, 14.5], rotate: [0, -45] },
+      { at: '<', duration: 0.175, ease: 'easeOut' },
+    ],
+    ['[data-part="check"]', { opacity: [0, 1], pathOffset: [1, 0] }, { at: '-0.05', duration: 0 }],
+    ['[data-part="check"]', { pathLength: [0, 1] }, { duration: 0.15 }],
+  ];
+
+  const outSequence: AnimationSequence = [
+    ['[data-part="check"]', { pathOffset: [0, 1] }, { duration: 0.15, ease: 'easeOut' }],
+    ['[data-part="check"]', { opacity: [1, 0], pathLength: [1, 0] }, { duration: 0 }],
+    [
+      '[data-part="square-front"], [data-part="square-back"]',
+      { rx: [7.25, 2], width: [14.5, 10.5], height: [14.5, 10.5], rotate: [-45, 0] },
+      { at: '+0.05', duration: 0.175, ease: 'easeOut' },
+    ],
+    ['[data-part="square-front"]', { y: [-4, 0] }, { at: '<', duration: 0.175, ease: 'easeOut' }],
+    ['[data-part="square-back"]', { x: [-4, 0] }, { at: '<', duration: 0.175, ease: 'easeOut' }],
+  ];
+
+  const isFirstRender = useRef(true);
+  const hasAnimatedIn = useRef(false);
+  const inAnimation = useRef<ReturnType<typeof animate> | null>(null);
+  const outAnimation = useRef<ReturnType<typeof animate> | null>(null);
+
+  const animateIn = async () => {
+    if (!inAnimation.current && !outAnimation.current && !hasAnimatedIn.current) {
+      const animation = animate(inSequence);
+      inAnimation.current = animation;
+      await animation;
+      inAnimation.current = null;
+      if (animation.speed === 1) hasAnimatedIn.current = true;
+    } else if (outAnimation.current) {
+      outAnimation.current.speed = -1;
+    } else if (inAnimation.current) {
+      inAnimation.current.speed = 1;
+    }
+  };
+
+  const animateOut = async () => {
+    if (inAnimation.current) {
+      inAnimation.current.speed = -1;
+    } else if (hasAnimatedIn.current && !outAnimation.current) {
+      const animation = animate(outSequence);
+      outAnimation.current = animation;
+      await animation;
+      outAnimation.current = null;
+      if (animation.speed === 1) hasAnimatedIn.current = false;
+    } else if (outAnimation.current) {
+      outAnimation.current.speed = 1;
+    }
+  };
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    checked ? animateIn() : animateOut();
+  }, [checked]);
 
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      {/* Back rectangle top -> checkmark long arm */}
-      <motion.line
+    <svg
+      ref={scope}
+      style={{ overflow: 'visible' }}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      aria-hidden="true"
+    >
+      <motion.rect
+        data-part="square-front"
+        x="4.75"
+        y="8.75"
+        width="10.5"
+        height="10.5"
+        rx="2"
         stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        initial={false}
-        animate={{
-          x1: checked ? 10 : 9, y1: checked ? 17 : 5,
-          x2: checked ? 19 : 19, y2: checked ? 6 : 5,
-        }}
-        transition={t}
+        strokeWidth="1.5"
       />
-      {/* Back rectangle right */}
-      <motion.line
+      <g mask={`url(#${maskId})`}>
+        <motion.rect
+          data-part="square-back"
+          x="8.75"
+          y="4.75"
+          width="10.5"
+          height="10.5"
+          rx="2"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
+      </g>
+      <motion.path
+        data-part="check"
+        initial={{ pathLength: 0, opacity: 0 }}
+        d="M9.25 12.25L11 14.25L15 10"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1.5"
         strokeLinecap="round"
-        initial={false}
-        animate={{
-          x1: checked ? 10 : 19, y1: checked ? 17 : 5,
-          x2: checked ? 10 : 19, y2: checked ? 17 : 15,
-        }}
-        transition={t}
+        strokeLinejoin="round"
       />
-      {/* Back rectangle bottom */}
-      <motion.line
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        initial={false}
-        animate={{
-          x1: checked ? 10 : 19, y1: checked ? 17 : 15,
-          x2: checked ? 10 : 9, y2: checked ? 17 : 15,
-        }}
-        transition={t}
-      />
-      {/* Back rectangle left */}
-      <motion.line
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        initial={false}
-        animate={{
-          x1: checked ? 10 : 9, y1: checked ? 17 : 15,
-          x2: checked ? 10 : 9, y2: checked ? 17 : 5,
-        }}
-        transition={t}
-      />
-      {/* Front rectangle top -> checkmark short arm */}
-      <motion.line
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        initial={false}
-        animate={{
-          x1: checked ? 5 : 5, y1: checked ? 13 : 9,
-          x2: checked ? 10 : 15, y2: checked ? 17 : 9,
-        }}
-        transition={t}
-      />
-      {/* Front rectangle right */}
-      <motion.line
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        initial={false}
-        animate={{
-          x1: checked ? 10 : 15, y1: checked ? 17 : 9,
-          x2: checked ? 10 : 15, y2: checked ? 17 : 19,
-        }}
-        transition={t}
-      />
-      {/* Front rectangle bottom */}
-      <motion.line
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        initial={false}
-        animate={{
-          x1: checked ? 10 : 15, y1: checked ? 17 : 19,
-          x2: checked ? 10 : 5, y2: checked ? 17 : 19,
-        }}
-        transition={t}
-      />
-      {/* Front rectangle left */}
-      <motion.line
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        initial={false}
-        animate={{
-          x1: checked ? 10 : 5, y1: checked ? 17 : 19,
-          x2: checked ? 5 : 5, y2: checked ? 13 : 9,
-        }}
-        transition={t}
-      />
+      <mask id={maskId} maskUnits="userSpaceOnUse">
+        <rect width="24" height="24" fill="#fff" />
+        <motion.rect
+          data-part="square-front"
+          x="4.75"
+          y="8.75"
+          width="10.5"
+          height="10.5"
+          rx="2"
+          fill="#000"
+          stroke="#000"
+          strokeWidth="1.5"
+        />
+      </mask>
     </svg>
   );
 };
