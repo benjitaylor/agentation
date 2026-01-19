@@ -236,6 +236,18 @@ export const AnimatedBunny = ({ size = 20, color = "#4C74FF" }: { size?: number;
         transform-origin: bottom center;
         transform-box: fill-box;
       }
+      svg:hover .bunny-eye-left,
+      svg:hover .bunny-eye-right {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      .bunny-happy-face {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      svg:hover .bunny-happy-face {
+        opacity: 1;
+      }
     `}</style>
     {/* Left ear */}
     <path className="bunny-ear-left" d="M3.738 10.2164L7.224 2.007H9.167L5.676 10.2164H3.738ZM10.791 6.42705C10.791 5.90346 10.726 5.42764 10.596 4.99959C10.47 4.57155 10.292 4.16643 10.063 3.78425C9.833 3.39825 9.56 3.01797 9.243 2.64343C8.926 2.26507 8.767 2.07589 8.767 2.07589L10.24 0.957996C10.24 0.957996 10.433 1.17203 10.819 1.60007C11.209 2.0243 11.559 2.49056 11.869 2.99886C12.178 3.50717 12.413 4.04222 12.574 4.60403C12.734 5.16584 12.814 5.77352 12.814 6.42705C12.814 7.10734 12.73 7.7303 12.562 8.29593C12.394 8.85774 12.153 9.3966 11.84 9.9126C11.526 10.4247 11.181 10.8833 10.802 11.2884C10.428 11.6974 10.24 11.9018 10.24 11.9018L8.767 10.7839C8.767 10.7839 8.924 10.5948 9.237 10.2164C9.554 9.8419 9.83 9.4597 10.063 9.06985C10.3 8.6762 10.479 8.26726 10.602 7.84304C10.728 7.41499 10.791 6.943 10.791 6.42705Z" fill={color}/>
@@ -246,5 +258,17 @@ export const AnimatedBunny = ({ size = 20, color = "#4C74FF" }: { size?: number;
     {/* Animated bunny eyes */}
     <circle className="bunny-eye-left" cx="8.277" cy="20.466" r="1.8" fill={color}/>
     <circle className="bunny-eye-right" cx="19.878" cy="20.466" r="1.8" fill={color}/>
+    {/* Happy face on hover */}
+    <text
+      className="bunny-happy-face"
+      x="14"
+      y="23"
+      textAnchor="middle"
+      fontSize="8"
+      fill={color}
+      fontFamily="system-ui, -apple-system, sans-serif"
+    >
+      ˃ ᵕ ˂
+    </text>
   </svg>
 );

@@ -270,6 +270,18 @@ export const AnimatedBunny = ({
         transform-origin: bottom center;
         transform-box: fill-box;
       }
+      svg:hover .bunny-eye-left,
+      svg:hover .bunny-eye-right {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      .bunny-happy-face {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      svg:hover .bunny-happy-face {
+        opacity: 1;
+      }
     `}</style>
     {/* Left ear */}
     <path
@@ -303,5 +315,17 @@ export const AnimatedBunny = ({
       r="1.8"
       fill={color}
     />
+    {/* Happy face on hover */}
+    <text
+      className="bunny-happy-face"
+      x="14"
+      y="23"
+      textAnchor="middle"
+      fontSize="8"
+      fill={color}
+      fontFamily="system-ui, -apple-system, sans-serif"
+    >
+      ˃ ᵕ ˂
+    </text>
   </svg>
 );
