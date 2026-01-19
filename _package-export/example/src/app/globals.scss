@@ -553,12 +553,7 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0.25rem;
     margin-left: -0.125rem;
-
-    &:active {
-      background: rgba(0, 0, 0, 0.06);
-    }
   }
 
   .mobile-nav-icon {
