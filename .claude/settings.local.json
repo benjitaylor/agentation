@@ -15,7 +15,9 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(pnpm build:*)",
-      "Bash(pnpm dev:*)"
+      "Bash(pnpm dev:*)",
+      "Bash(pnpm --filter agentation build:*)",
+      "Bash(tsup:*)"
     ]
   }
 }
