@@ -94,7 +94,7 @@ export default function TodoPage() {
         <h3><span style={{ display: 'inline-block', background: '#ef4444', color: 'white', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.6875rem', fontWeight: 500 }}>Higher-Risk / Needs Input</span></h3>
         <ul>
           <li><strong>Improve toolbar settings</strong> &mdash; Visual improvements, one for Dennis.</li>
-          <li><strong>Improve icons/animations</strong> &mdash; Already has nice framer-motion animations. &ldquo;Improvements&rdquo; are subjective&mdash;need specific feedback on what feels wrong before changing.</li>
+          <li><strong>Improve icons/animations</strong> &mdash; Already has nice animations. &ldquo;Improvements&rdquo; are subjective&mdash;need specific feedback on what feels wrong before changing.</li>
           <li><strong>General performance</strong> &mdash; Needs profiling first to identify actual bottlenecks. The component is ~1500 lines with many effects&mdash;could benefit from extraction, but this is exactly the kind of thing that could lead to overengineering. Tread carefully.</li>
         </ul>
 
