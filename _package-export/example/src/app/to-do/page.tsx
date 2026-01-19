@@ -8,7 +8,7 @@ export default function TodoPage() {
       <article className="article">
       <header>
         <h1>To-Do</h1>
-        <p className="tagline">9 tasks &middot; 4 areas to explore</p>
+        <p className="tagline">11 tasks &middot; 4 areas to explore</p>
       </header>
 
       <div style={{
@@ -29,11 +29,13 @@ export default function TodoPage() {
           <li>Make sure popup annotations show on top layer</li>
           <li>Make sure popup annotations always show (e.g. if they are right at the edge of the screen)</li>
           <li>Make the toolbar movable</li>
-          <li>Improve the toolbar settings</li>
+          <li>Improve the toolbar settings (visual &mdash; Dennis)</li>
           <li>Improve toolbar icons/animations</li>
           <li>Improve performance</li>
           <li>Improve performance for drag annotations</li>
           <li>Add bunny logo artwork when installing <code>/agentation</code> :)</li>
+          <li>Add mobile nav for docs site</li>
+          <li>Decide on domain and create OG image for site</li>
         </ul>
       </section>
 
@@ -66,6 +68,42 @@ export default function TodoPage() {
           <li>Track annotations per-route automatically</li>
           <li>Show combined output for all pages</li>
           <li>Navigation detection to prompt save</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Implementation Plan</h2>
+        <p>Notes on approaching each task, keeping changes minimal and focused.</p>
+
+        <h3>Low-Risk, High-Value</h3>
+        <ul>
+          <li><strong>Check mobile</strong> &mdash; Research task: test toolbar on mobile viewport, document specific issues (touch events, positioning, popup sizing). Fixes would be targeted CSS, not architectural.</li>
+          <li><strong>Popup z-index issues</strong> &mdash; Verify z-index is high enough (currently 100000 base). Could also investigate <code>popover</code> attribute or CSS <code>@layer</code> if needed.</li>
+          <li><strong>Popup edge positioning</strong> &mdash; Already partially handled with <code>Math.min/max</code> clamping. Add similar logic for left/right edges and tall popups. Low risk&mdash;just math adjustments.</li>
+          <li><strong>Bunny artwork</strong> &mdash; Fun docs task, doesn&rsquo;t touch core library. Add ASCII art or animated SVG to install page.</li>
+          <li><strong>Mobile nav for docs</strong> &mdash; Docs site only, doesn&rsquo;t affect the toolbar package.</li>
+        </ul>
+
+        <h3>Medium-Risk (Require Care)</h3>
+        <ul>
+          <li><strong>Make toolbar movable</strong> &mdash; Doable but needs thoughtful UX (drag handle, persist position, snap to corners?). Keep it simple: just add drag handle and store position in localStorage. Modifies positioning logic but not core functionality.</li>
+          <li><strong>Drag annotation performance</strong> &mdash; Already has throttling (50ms). Could optimize by reducing DOM queries, using IntersectionObserver, caching bounding rects. Medium risk&mdash;performance work can introduce bugs if not careful.</li>
+        </ul>
+
+        <h3>Higher-Risk / Needs Input</h3>
+        <ul>
+          <li><strong>Improve toolbar settings</strong> &mdash; Visual improvements, one for Dennis.</li>
+          <li><strong>Improve icons/animations</strong> &mdash; Already has nice framer-motion animations. &ldquo;Improvements&rdquo; are subjective&mdash;need specific feedback on what feels wrong before changing.</li>
+          <li><strong>General performance</strong> &mdash; Needs profiling first to identify actual bottlenecks. The component is ~1500 lines with many effects&mdash;could benefit from extraction, but this is exactly the kind of thing that could lead to overengineering. Tread carefully.</li>
+        </ul>
+
+        <h3>Exploration Areas (Research Only)</h3>
+        <p>These are explicitly &ldquo;things to explore&rdquo;&mdash;won&rsquo;t start implementing without discussion:</p>
+        <ul>
+          <li><strong>Auto-paste integration</strong> &mdash; Would need to research Cursor/VS Code extension APIs</li>
+          <li><strong>Improved element identification</strong> &mdash; Could enhance <code>element-identification.ts</code> but current approach is already smart</li>
+          <li><strong>Annotation persistence</strong> &mdash; JSON export/import is low-risk; URL sharing needs design decisions</li>
+          <li><strong>Multi-page support</strong> &mdash; Already stores per-pathname; &ldquo;combined output&rdquo; would need UI work</li>
         </ul>
       </section>
     </article>

@@ -513,10 +513,21 @@ button {
 
 // Mobile Notice
 .mobile-notice {
-  background: #f5f5f5;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  padding: 0.75rem 1.5rem;
-  font-size: 0.8125rem;
-  color: rgba(0, 0, 0, 0.6);
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #f0f1f3 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 0.625rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.01em;
+
+  .mobile-notice-icon {
+    display: flex;
+    align-items: center;
+    opacity: 0.6;
+  }
 }
