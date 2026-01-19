@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.scss";
 import { ToolbarProvider } from "./ToolbarProvider";
 import { SideNav } from "./SideNav";
+import { MobileNav } from "./MobileNav";
 import { MobileNotice } from "./MobileNotice";
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export default function RootLayout({
       </head>
       <body>
         <MobileNotice />
+        <MobileNav />
         <SideNav />
         <main className="main-content">
           {children}

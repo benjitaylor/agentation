@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(lsof:*)",
+      "Bash(ps:*)",
+      "Bash(pkill:*)",
+      "Bash(pnpm dev)",
+      "Bash(kill:*)",
+      "Bash(open http://localhost:3000)",
+      "Bash(open http://localhost:3002)",
+      "Bash(open http://localhost:3001)",
+      "Bash(xargs:*)",
+      "Bash(git config:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}
