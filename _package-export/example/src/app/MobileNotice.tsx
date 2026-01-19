@@ -23,7 +23,7 @@ export function MobileNotice() {
           <line x1="12" y1="17" x2="12" y2="21"/>
         </svg>
       </span>
-      Desktop only
+      Agentation is currently desktop only.
     </div>
   );
 }
