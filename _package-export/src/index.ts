@@ -5,24 +5,14 @@
 // A floating toolbar for annotating web pages and collecting structured feedback
 // for AI coding agents.
 //
-// Usage (with framer-motion - smoother animations):
-//   import { Agentation } from 'agentation';
-//   <Agentation />
-//
-// Usage (CSS-only - zero runtime deps):
+// Usage:
 //   import { AgentationCSS } from 'agentation';
 //   <AgentationCSS />
 //
 // =============================================================================
 
 // Main components
-// Framer-motion version (default - smoother animations, requires framer-motion peer dep)
-export { PageFeedbackToolbar as Agentation } from "./components/page-toolbar";
-export { PageFeedbackToolbar as FeedbackToolbar } from "./components/page-toolbar"; // legacy alias
-export { PageFeedbackToolbar } from "./components/page-toolbar"; // legacy alias
-export type { DemoAnnotation } from "./components/page-toolbar";
-
-// CSS-only version (no framer-motion dependency)
+// CSS-only version (default - zero runtime deps)
 export { PageFeedbackToolbarCSS as AgentationCSS } from "./components/page-toolbar-css";
 export { PageFeedbackToolbarCSS } from "./components/page-toolbar-css";
 

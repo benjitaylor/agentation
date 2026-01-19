@@ -8,19 +8,22 @@ import {
   AnnotationPopupCSSHandle,
 } from "../annotation-popup-css";
 import {
-  IconFeedback,
-  IconPlay,
-  IconPause,
-  EyeMorphIcon,
-  CopyMorphIcon,
-  TrashMorphIcon,
-  IconChevronDown,
+  IconChatEllipsis,
+  IconPlayAlt,
+  IconPauseAlt,
   IconClose,
   IconPlus,
-  IconSettings,
+  IconGear,
   IconCheck,
   AnimatedBunny,
-} from "../icons-css";
+  IconEye,
+  IconEyeMinus,
+  IconCopyAlt,
+  IconTrashAlt,
+  IconXmark,
+  IconCheckmark,
+  IconCheckmarkLarge,
+} from "../icons";
 import {
   identifyElement,
   getNearbyText,
@@ -1216,7 +1219,7 @@ export function PageFeedbackToolbarCSS({
           <div
             className={`${styles.toggleContent} ${!isActive ? styles.visible : styles.hidden}`}
           >
-            <IconFeedback size={18} />
+            <IconChatEllipsis size={24} />
             {hasAnnotations && (
               <span
                 className={`${styles.badge} ${isActive ? styles.fadeOut : ""}`}
@@ -1240,7 +1243,11 @@ export function PageFeedbackToolbarCSS({
               title={isFrozen ? "Resume animations" : "Pause animations"}
               data-active={isFrozen}
             >
-              {isFrozen ? <IconPlay size={16} /> : <IconPause size={16} />}
+              {isFrozen ? (
+                <IconPlayAlt size={24} />
+              ) : (
+                <IconPauseAlt size={24} />
+              )}
             </button>
 
             <button
@@ -1251,7 +1258,7 @@ export function PageFeedbackToolbarCSS({
               }}
               title={showMarkers ? "Hide markers" : "Show markers"}
             >
-              <EyeMorphIcon size={16} visible={showMarkers} />
+              {showMarkers ? <IconEye size={24} /> : <IconEyeMinus size={24} />}
             </button>
 
             <button
@@ -1263,7 +1270,11 @@ export function PageFeedbackToolbarCSS({
               disabled={!hasAnnotations}
               title="Copy feedback"
             >
-              <CopyMorphIcon size={16} checked={copied} />
+              {!copied ? (
+                <IconCopyAlt size={24} />
+              ) : (
+                <IconCheckmarkLarge size={24} />
+              )}
             </button>
 
             <button
@@ -1276,7 +1287,7 @@ export function PageFeedbackToolbarCSS({
               title="Clear all"
               data-danger
             >
-              <TrashMorphIcon size={16} checked={cleared} />
+              <IconTrashAlt size={24} />
             </button>
 
             <button
@@ -1288,7 +1299,7 @@ export function PageFeedbackToolbarCSS({
               title="Settings"
               data-active={showSettings}
             >
-              <IconSettings size={16} />
+              <IconGear size={24} />
             </button>
 
             <div className={styles.divider} />
@@ -1301,7 +1312,7 @@ export function PageFeedbackToolbarCSS({
               }}
               title="Exit feedback mode"
             >
-              <IconClose size={16} />
+              <IconXmark size={24} />
             </button>
           </div>
 
@@ -1340,9 +1351,6 @@ export function PageFeedbackToolbarCSS({
                       }))
                     }
                   >
-                    {settings.outputDetail === option.value && (
-                      <IconCheck size={10} />
-                    )}
                     {option.label}
                   </button>
                 ))}
@@ -1462,7 +1470,7 @@ export function PageFeedbackToolbarCSS({
                   }}
                 >
                   {showDeleteState ? (
-                    <IconClose size={isMulti ? 12 : 10} />
+                    <IconXmark size={isMulti ? 18 : 16} />
                   ) : (
                     globalIndex + 1
                   )}
@@ -1504,7 +1512,7 @@ export function PageFeedbackToolbarCSS({
                     top: annotation.y,
                   }}
                 >
-                  <IconClose size={isMulti ? 12 : 10} />
+                  <IconXmark size={isMulti ? 12 : 10} />
                 </div>
               );
             })}

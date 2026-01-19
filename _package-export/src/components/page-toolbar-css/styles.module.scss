@@ -171,6 +171,7 @@ $green: #34c759;
 }
 
 .toolbarContainer {
+  user-select: none;
   margin-left: auto;
   display: flex;
   align-items: center;
@@ -212,6 +213,9 @@ $green: #34c759;
     height: 44px;
     border-radius: 1.5rem;
     padding: 0.375rem;
+    @supports not (width: calc-size(auto, size)) {
+      width: 257px;
+    }
   }
 }
 
@@ -588,7 +592,7 @@ $green: #34c759;
 
 .settingsPanel {
   position: absolute;
-  right: 8px;
+  right: 16px;
   bottom: calc(100% + 0.5rem);
   background: white;
   border-radius: 0.75rem;
