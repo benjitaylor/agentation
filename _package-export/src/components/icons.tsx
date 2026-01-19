@@ -86,7 +86,7 @@ export const EyeMorphIcon = ({
   </svg>
 );
 
-// Copy icon that morphs to checkmark - true path transformation
+// Copy icon that morphs to checkmark using animated line coordinates
 export const CopyMorphIcon = ({
   size = 16,
   checked,
@@ -94,41 +94,105 @@ export const CopyMorphIcon = ({
   size?: number;
   checked: boolean;
 }) => {
+  const t = { duration: 0.3, ease: [0.33, 1, 0.68, 1] } as const;
+
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      {/* Main shape morphs between copy icon and checkmark */}
-      {/* Copy: two overlapping rectangles | Check: checkmark */}
-
-      {/* Back rectangle -> morphs to checkmark long stroke */}
-      <motion.path
+      {/* Back rectangle top -> checkmark long arm */}
+      <motion.line
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
         initial={false}
         animate={{
-          d: checked
-            ? "M 9 12 L 9 17 L 19 5"
-            : "M 9 6 L 9 15 L 19 15 L 19 6 L 9 6"
+          x1: checked ? 10 : 9, y1: checked ? 17 : 5,
+          x2: checked ? 19 : 19, y2: checked ? 6 : 5,
         }}
-        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+        transition={t}
       />
-
-      {/* Front rectangle -> morphs to checkmark short stroke */}
-      <motion.path
+      {/* Back rectangle right */}
+      <motion.line
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
         initial={false}
         animate={{
-          d: checked
-            ? "M 5 12 L 9 17 L 9 17 L 9 17 L 5 12"
-            : "M 5 9 L 5 19 L 15 19 L 15 9 L 5 9"
+          x1: checked ? 10 : 19, y1: checked ? 17 : 5,
+          x2: checked ? 10 : 19, y2: checked ? 17 : 15,
         }}
-        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+        transition={t}
+      />
+      {/* Back rectangle bottom */}
+      <motion.line
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        initial={false}
+        animate={{
+          x1: checked ? 10 : 19, y1: checked ? 17 : 15,
+          x2: checked ? 10 : 9, y2: checked ? 17 : 15,
+        }}
+        transition={t}
+      />
+      {/* Back rectangle left */}
+      <motion.line
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        initial={false}
+        animate={{
+          x1: checked ? 10 : 9, y1: checked ? 17 : 15,
+          x2: checked ? 10 : 9, y2: checked ? 17 : 5,
+        }}
+        transition={t}
+      />
+      {/* Front rectangle top -> checkmark short arm */}
+      <motion.line
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        initial={false}
+        animate={{
+          x1: checked ? 5 : 5, y1: checked ? 13 : 9,
+          x2: checked ? 10 : 15, y2: checked ? 17 : 9,
+        }}
+        transition={t}
+      />
+      {/* Front rectangle right */}
+      <motion.line
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        initial={false}
+        animate={{
+          x1: checked ? 10 : 15, y1: checked ? 17 : 9,
+          x2: checked ? 10 : 15, y2: checked ? 17 : 19,
+        }}
+        transition={t}
+      />
+      {/* Front rectangle bottom */}
+      <motion.line
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        initial={false}
+        animate={{
+          x1: checked ? 10 : 15, y1: checked ? 17 : 19,
+          x2: checked ? 10 : 5, y2: checked ? 17 : 19,
+        }}
+        transition={t}
+      />
+      {/* Front rectangle left */}
+      <motion.line
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        initial={false}
+        animate={{
+          x1: checked ? 10 : 5, y1: checked ? 17 : 19,
+          x2: checked ? 5 : 5, y2: checked ? 13 : 9,
+        }}
+        transition={t}
       />
     </svg>
   );
