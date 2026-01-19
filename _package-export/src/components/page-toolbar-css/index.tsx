@@ -76,6 +76,7 @@ const COLOR_OPTIONS = [
   { value: "#FF9500", label: "Orange" },
   { value: "#AF52DE", label: "Purple" },
   { value: "#FF2D55", label: "Pink" },
+  { value: "#FFD60A", label: "Yellow" },
 ];
 
 // =============================================================================
@@ -1394,6 +1395,9 @@ export function PageFeedbackToolbarCSS({
                     }))
                   }
                 />
+                <span className={styles.customCheckbox}>
+                  {settings.autoClearAfterCopy && <IconCheck size={12} />}
+                </span>
                 <span className={styles.toggleLabel}>Clear after copy</span>
               </label>
             </div>
@@ -1410,6 +1414,9 @@ export function PageFeedbackToolbarCSS({
                     }))
                   }
                 />
+                <span className={styles.customCheckbox}>
+                  {settings.blockInteractions && <IconCheck size={12} />}
+                </span>
                 <span className={styles.toggleLabel}>
                   Block page interactions
                 </span>

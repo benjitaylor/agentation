@@ -640,8 +640,8 @@ $green: #34c759;
       }
 
       &.selected {
-        background: rgba($blue, 0.25);
-        color: #7ab3ff;
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
       }
     }
 
@@ -837,10 +837,37 @@ $green: #34c759;
   cursor: pointer;
 
   input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: $blue;
-    cursor: pointer;
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+}
+
+.customCheckbox {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+
+  svg {
+    color: #fff;
+    opacity: 1;
+    transition: opacity 0.15s ease;
+  }
+
+  input[type="checkbox"]:checked + & {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
   }
 }
 
