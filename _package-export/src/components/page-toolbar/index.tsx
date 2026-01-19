@@ -17,6 +17,7 @@ import {
   IconPlus,
   IconSettings,
   IconCheck,
+  AnimatedBunny,
 } from "../icons";
 import {
   identifyElement,
@@ -1094,6 +1095,12 @@ export function PageFeedbackToolbar({
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
               onClick={(e) => e.stopPropagation()}
             >
+              <div className={styles.settingsHeader}>
+                <AnimatedBunny color="#4C74FF" />
+                <span className={styles.settingsBrand}>agentation</span>
+                <span className={styles.settingsVersion}>v1.0.0</span>
+              </div>
+
               <div className={styles.settingsSection}>
                 <div className={styles.settingsLabel}>Output Detail</div>
                 <div className={styles.settingsOptions}>
