@@ -169,6 +169,26 @@ button {
     font-weight: 450;
   }
 
+  .nav-version {
+    font-size: 0.625rem;
+    color: rgba(0, 0, 0, 0.25);
+    font-weight: 450;
+    margin-top: 0.75rem;
+    animation: navVersionFadeIn 0.4s ease-out forwards;
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  @keyframes navVersionFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
   // Hide on smaller screens where it would overlap content
   @media (max-width: 900px) {
     display: none;

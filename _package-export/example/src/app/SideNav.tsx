@@ -320,6 +320,15 @@ function TypedLogo({ isForensic }: { isForensic: boolean }) {
 export function SideNav() {
   const pathname = usePathname();
   const [isForensic, setIsForensic] = useState(false);
+  const [npmVersion, setNpmVersion] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fetch published npm version
+    fetch('https://registry.npmjs.org/agentation')
+      .then(res => res.json())
+      .then(data => setNpmVersion(data['dist-tags']?.latest))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     // Check initial format from localStorage
@@ -356,6 +365,16 @@ export function SideNav() {
           {link.badge && <span className="nav-badge">{link.badge}</span>}
         </Link>
       ))}
+      {npmVersion && (
+        <a
+          href="https://www.npmjs.com/package/agentation"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="nav-version"
+        >
+          v{npmVersion}
+        </a>
+      )}
     </nav>
   );
 }
