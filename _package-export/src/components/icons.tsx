@@ -277,6 +277,18 @@ export const AnimatedBunny = ({
     xmlns="http://www.w3.org/2000/svg"
   >
     <style>{`
+      @keyframes bunnyEnterEar {
+        0% { opacity: 0; transform: scale(0.8); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+      @keyframes bunnyEnterFace {
+        0% { opacity: 0; transform: scale(0.9); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+      @keyframes bunnyEnterEye {
+        0% { opacity: 0; transform: scale(0.5); }
+        100% { opacity: 1; transform: scale(1); }
+      }
       @keyframes leftEyeLook {
         0%, 8% { transform: translate(0, 0); }
         10%, 18% { transform: translate(1.5px, 0); }
@@ -318,23 +330,33 @@ export const AnimatedBunny = ({
         78%, 100% { transform: rotate(0deg); }
       }
       .bunny-eye-left {
-        animation: leftEyeLook 5s ease-in-out infinite;
+        opacity: 0;
+        animation: bunnyEnterEye 0.3s ease-out 0.35s forwards, leftEyeLook 5s ease-in-out 0.65s infinite;
         transform-origin: center;
         transform-box: fill-box;
       }
       .bunny-eye-right {
-        animation: rightEyeLook 5s ease-in-out infinite;
+        opacity: 0;
+        animation: bunnyEnterEye 0.3s ease-out 0.4s forwards, rightEyeLook 5s ease-in-out 0.7s infinite;
         transform-origin: center;
         transform-box: fill-box;
       }
       .bunny-ear-left {
-        animation: leftEarTwitch 5s ease-in-out infinite;
+        opacity: 0;
+        animation: bunnyEnterEar 0.3s ease-out 0.1s forwards, leftEarTwitch 5s ease-in-out 0.4s infinite;
         transform-origin: bottom center;
         transform-box: fill-box;
       }
       .bunny-ear-right {
-        animation: rightEarTwitch 5s ease-in-out infinite;
+        opacity: 0;
+        animation: bunnyEnterEar 0.3s ease-out 0.15s forwards, rightEarTwitch 5s ease-in-out 0.45s infinite;
         transform-origin: bottom center;
+        transform-box: fill-box;
+      }
+      .bunny-face {
+        opacity: 0;
+        animation: bunnyEnterFace 0.3s ease-out 0.25s forwards;
+        transform-origin: center;
         transform-box: fill-box;
       }
       svg:hover .bunny-eye-left,
@@ -366,6 +388,7 @@ export const AnimatedBunny = ({
     />
     {/* Face outline */}
     <path
+      className="bunny-face"
       d="M2.03 20.4328C2.03 20.9564 2.093 21.4322 2.219 21.8602C2.345 22.2883 2.523 22.6953 2.752 23.0813C2.981 23.4635 3.254 23.8419 3.572 24.2164C3.889 24.5948 4.047 24.7839 4.047 24.7839L2.574 25.9018C2.574 25.9018 2.379 25.6878 1.989 25.2598C1.603 24.8355 1.256 24.3693 0.946 23.861C0.636 23.3527 0.401 22.8176 0.241 22.2558C0.08 21.694 0 21.0863 0 20.4328C0 19.7525 0.084 19.1314 0.252 18.5696C0.421 18.004 0.661 17.4651 0.975 16.953C1.288 16.4371 1.632 15.9765 2.007 15.5714C2.385 15.1625 2.574 14.958 2.574 14.958L4.047 16.0759C4.047 16.0759 3.889 16.2651 3.572 16.6434C3.258 17.018 2.983 17.4021 2.746 17.7957C2.513 18.1855 2.335 18.5945 2.213 19.0225C2.091 19.4467 2.03 19.9168 2.03 20.4328ZM23.687 20.4271C23.687 19.9035 23.622 19.4276 23.492 18.9996C23.366 18.5715 23.188 18.1664 22.959 17.7843C22.729 17.3982 22.456 17.018 22.139 16.6434C21.822 16.2651 21.663 16.0759 21.663 16.0759L23.136 14.958C23.136 14.958 23.329 15.172 23.715 15.6001C24.105 16.0243 24.455 16.4906 24.765 16.9989C25.074 17.5072 25.309 18.0422 25.47 18.604C25.63 19.1658 25.71 19.7735 25.71 20.4271C25.71 21.1073 25.626 21.7303 25.458 22.2959C25.29 22.8577 25.049 23.3966 24.736 23.9126C24.422 24.4247 24.077 24.8833 23.698 25.2884C23.324 25.6974 23.136 25.9018 23.136 25.9018L21.663 24.7839C21.663 24.7839 21.82 24.5948 22.133 24.2164C22.45 23.8419 22.726 23.4597 22.959 23.0698C23.196 22.6762 23.375 22.2673 23.498 21.843C23.624 21.415 23.687 20.943 23.687 20.4271Z"
       fill={color}
     />

@@ -1,5 +1,12 @@
 # Agentation - Project Notes
 
+## CRITICAL: No Dependencies in Package
+
+**UNDER NO CIRCUMSTANCES can anything be added to the package (`src/`) that requires external dependencies like framer-motion.** The package must remain zero-dependency (beyond React peer deps).
+
+- `src/` = Package code. **NO external dependencies allowed.** CSS-only animations are fine.
+- `example/` = Docs website. Framer-motion and other deps are fine here.
+
 ## Changelog Updates
 
 When making changes to the agentation library, update the changelog page at `example/src/app/changelog/page.tsx` with a summary of changes.

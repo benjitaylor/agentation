@@ -126,7 +126,7 @@ button {
 
 .side-nav {
   position: fixed;
-  top: 4rem;
+  top: 4.125rem;
   // Position relative to centered content (36rem = 576px max-width)
   left: calc(50% - 18rem - 7.5rem);
   display: flex;
@@ -349,7 +349,7 @@ button {
         background: #6b7280; // Compact: gray (minimal)
       }
       &:nth-child(2).active {
-        background: #1a1a1a; // Standard: black (default)
+        background: #16a34a; // Standard: green
       }
       &:nth-child(3).active {
         background: #2563eb; // Detailed: blue (informative)

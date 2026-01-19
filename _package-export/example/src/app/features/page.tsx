@@ -103,6 +103,7 @@ export default function FeaturesPage() {
           <li><strong>Single page</strong> &mdash; Annotations don&rsquo;t follow across navigation</li>
           <li><strong>Static positions</strong> &mdash; Markers don&rsquo;t update if layout changes</li>
           <li><strong>No screenshots</strong> &mdash; Output is text-only (paste alongside screenshots if needed)</li>
+          <li><strong>CSS animations only</strong> &mdash; Pause works on CSS animations, not JS-driven animations (framer-motion, GSAP, etc.)</li>
           <li><strong>React only</strong> &mdash; Currently requires React 18+</li>
         </ul>
       </section>

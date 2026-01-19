@@ -2,25 +2,26 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Highlight, themes } from "prism-react-renderer";
-import { motion, AnimatePresence } from "framer-motion";
 import { Footer } from "../Footer";
 
 type OutputFormat = 'compact' | 'standard' | 'detailed' | 'forensic';
 
 const FORMAT_STORAGE_KEY = 'agentation-output-format';
 
-function CodeBlock({ code, language = "tsx" }: { code: string; language?: string }) {
+function CodeBlock({ code, language = "tsx", textOpacity = 1 }: { code: string; language?: string; textOpacity?: number }) {
   return (
     <Highlight theme={themes.github} code={code.trim()} language={language}>
       {({ style, tokens, getLineProps, getTokenProps }) => (
         <pre className="code-block" style={{ ...style, background: 'transparent' }}>
-          {tokens.map((line, i) => (
-            <div key={i} {...getLineProps({ line })}>
-              {line.map((token, key) => (
-                <span key={key} {...getTokenProps({ token })} />
-              ))}
-            </div>
-          ))}
+          <div style={{ opacity: textOpacity, transition: 'opacity 0.15s ease-out' }}>
+            {tokens.map((line, i) => (
+              <div key={i} {...getLineProps({ line })}>
+                {line.map((token, key) => (
+                  <span key={key} {...getTokenProps({ token })} />
+                ))}
+              </div>
+            ))}
+          </div>
         </pre>
       )}
     </Highlight>
@@ -29,7 +30,7 @@ function CodeBlock({ code, language = "tsx" }: { code: string; language?: string
 
 const FORMAT_COLORS: Record<OutputFormat, string> = {
   compact: '#6b7280',
-  standard: '#1a1a1a',
+  standard: '#16a34a',
   detailed: '#2563eb',
   forensic: '#dc2626',
 };
@@ -186,20 +187,32 @@ function ModeIndicatorBunny({ format }: { format: OutputFormat }) {
   );
 }
 
-function AnimatedCodeBlock({ code, language, formatKey }: { code: string; language?: string; formatKey: string }) {
+function AnimatedCodeBlock({ code, language }: { code: string; language?: string }) {
+  const [textOpacity, setTextOpacity] = useState(1);
+  const [displayedCode, setDisplayedCode] = useState(code);
+  const pendingCode = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (code === displayedCode) return;
+
+    // Store the target and fade out
+    pendingCode.current = code;
+    setTextOpacity(0);
+
+    // After fade, swap content and fade back in
+    const timer = setTimeout(() => {
+      if (pendingCode.current) {
+        setDisplayedCode(pendingCode.current);
+        pendingCode.current = null;
+        setTimeout(() => setTextOpacity(1), 20);
+      }
+    }, 150);
+
+    return () => clearTimeout(timer);
+  }, [code, displayedCode]);
+
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={formatKey}
-        initial={{ opacity: 0, height: 'auto' }}
-        animate={{ opacity: 1, height: 'auto' }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.15, ease: 'easeOut' }}
-        layout
-      >
-        <CodeBlock code={code} language={language} />
-      </motion.div>
-    </AnimatePresence>
+    <CodeBlock code={displayedCode} language={language} textOpacity={textOpacity} />
   );
 }
 
@@ -362,7 +375,7 @@ export default function OutputPage() {
               </div>
               <ModeIndicatorBunny format={outputFormat} />
             </div>
-            <AnimatedCodeBlock code={outputExamples[outputFormat]} language="markdown" formatKey={outputFormat} />
+            <AnimatedCodeBlock code={outputExamples[outputFormat]} language="markdown" />
           </>
         )}
         <p style={{ fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', marginTop: '0.5rem' }}>
