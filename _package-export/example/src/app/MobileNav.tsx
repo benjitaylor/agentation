@@ -9,6 +9,7 @@ const links = [
   { href: "/install", label: "Install" },
   { href: "/features", label: "Features" },
   { href: "/output", label: "Output" },
+  { href: "/faq", label: "FAQ" },
   { href: "/to-do", label: "To-Do" },
 ];
 
@@ -265,44 +266,6 @@ function MobileTypedLogo({ isForensic }: { isForensic: boolean }) {
 
   return (
     <div className="mobile-typed-logo">
-      <style>{`
-        @keyframes mobileTypeChar {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes mobileBunnyFadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .mobile-typed-char {
-          opacity: 0;
-          display: inline-block;
-          animation: mobileTypeChar 0.1s ease-out forwards;
-        }
-        .mobile-bunny-container {
-          width: 32px;
-          height: 32px;
-          margin-right: 0.375rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          opacity: 0;
-        }
-        .mobile-bunny-container.show {
-          animation: mobileBunnyFadeIn 0.4s ease-out forwards;
-        }
-        .mobile-typed-logo {
-          display: flex;
-          align-items: center;
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: rgba(0, 0, 0, 0.85);
-          min-height: 32px;
-        }
-        .mobile-typed-logo > div:last-child {
-          transform: translateY(1px);
-        }
-      `}</style>
       <div className={`mobile-bunny-container${showBunny ? ' show' : ''}`}>
         {showBunny && <MobileForensicBunny isForensic={isForensic} />}
       </div>

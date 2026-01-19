@@ -72,8 +72,18 @@ h2 {
   font-weight: 550;
   line-height: normal;
   letter-spacing: -0.005rem;
-  margin-bottom: 0.625rem;
-  color: rgba(0, 0, 0, 0.7);
+  margin-bottom: 1.125rem;
+  color: rgba(0, 0, 0, 0.78);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.08);
+  }
 }
 
 h3 {
@@ -141,6 +151,14 @@ button {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    cursor: default;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    cursor: pointer;
   }
 
   .nav-link {
@@ -169,12 +187,18 @@ button {
     font-weight: 450;
   }
 
+  .nav-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: 0.75rem;
+    animation: navVersionFadeIn 0.4s ease-out forwards;
+  }
+
   .nav-version {
     font-size: 0.625rem;
     color: rgba(0, 0, 0, 0.25);
     font-weight: 450;
-    margin-top: 0.75rem;
-    animation: navVersionFadeIn 0.4s ease-out forwards;
     text-decoration: underline dotted;
     text-underline-offset: 2px;
     transition: color 0.15s ease;
@@ -182,6 +206,12 @@ button {
     &:hover {
       color: rgba(0, 0, 0, 0.4);
     }
+  }
+
+  .nav-size {
+    font-size: 0.625rem;
+    color: rgba(0, 0, 0, 0.2);
+    font-weight: 450;
   }
 
   @keyframes navVersionFadeIn {
@@ -250,8 +280,6 @@ button {
 
     & + section {
       margin-top: 1.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid rgba(0, 0, 0, 0.06);
     }
   }
 
@@ -395,8 +423,7 @@ button {
 // =============================================================================
 
 .demo-section {
-  padding: 2rem 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 2rem 0 0;
   margin-top: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -658,5 +685,49 @@ button {
       color: rgba(0, 0, 0, 0.8);
       font-variation-settings: 'wght' 550;
     }
+  }
+}
+
+// Mobile typed logo animations
+@keyframes mobileTypeChar {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes mobileBunnyFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.mobile-typed-char {
+  opacity: 0;
+  display: inline-block;
+  animation: mobileTypeChar 0.1s ease-out forwards;
+}
+
+.mobile-bunny-container {
+  width: 32px;
+  height: 32px;
+  margin-right: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+
+  &.show {
+    animation: mobileBunnyFadeIn 0.4s ease-out forwards;
+  }
+}
+
+.mobile-typed-logo {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.85);
+  min-height: 32px;
+
+  & > div:last-child {
+    transform: translateY(1px);
   }
 }

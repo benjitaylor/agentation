@@ -17,7 +17,7 @@ export default function AgentationDocs() {
 
         <section>
           <p>
-            Agentation (<span style={{ fontFamily: "'Cascadia Code', monospace", fontStyle: 'italic', color: 'rgba(0,0,0,0.5)' }}>agent + annotation</span>) is a dev tool that lets you annotate elements on your webpage
+            Agentation (<span style={{ color: 'rgba(0,0,0,0.5)' }}>agent + annotation</span>) is a dev tool that lets you annotate elements on your webpage
             and generate structured feedback for AI coding agents.
           </p>
           <p>

@@ -317,16 +317,30 @@ function TypedLogo({ isForensic }: { isForensic: boolean }) {
   );
 }
 
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return bytes + ' B';
+  const kb = bytes / 1024;
+  return kb.toFixed(1) + ' kB';
+}
+
 export function SideNav() {
   const pathname = usePathname();
   const [isForensic, setIsForensic] = useState(false);
   const [npmVersion, setNpmVersion] = useState<string | null>(null);
+  const [packageSize, setPackageSize] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch published npm version
+    // Fetch published npm version and size from registry
     fetch('https://registry.npmjs.org/agentation')
       .then(res => res.json())
-      .then(data => setNpmVersion(data['dist-tags']?.latest))
+      .then(data => {
+        const latest = data['dist-tags']?.latest;
+        setNpmVersion(latest);
+        // Get unpacked size from the latest version
+        if (latest && data.versions?.[latest]?.dist?.unpackedSize) {
+          setPackageSize(formatBytes(data.versions[latest].dist.unpackedSize));
+        }
+      })
       .catch(() => {});
   }, []);
 
@@ -349,31 +363,39 @@ export function SideNav() {
     { href: "/install", label: "Install" },
     { href: "/features", label: "Features" },
     { href: "/output", label: "Output" },
+    { href: "/faq", label: "FAQ" },
     { href: "/to-do", label: "To-Do", badge: "(Temp)" },
   ];
 
   return (
     <nav className="side-nav">
       <TypedLogo isForensic={isForensic} />
-      {links.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className={`nav-link ${pathname === link.href ? "active" : ""}`}
-        >
-          {link.label}
-          {link.badge && <span className="nav-badge">{link.badge}</span>}
-        </Link>
-      ))}
-      {npmVersion && (
-        <a
-          href="https://www.npmjs.com/package/agentation"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="nav-version"
-        >
-          v{npmVersion}
-        </a>
+      <div className="nav-links">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={`nav-link ${pathname === link.href ? "active" : ""}`}
+          >
+            {link.label}
+            {link.badge && <span className="nav-badge">{link.badge}</span>}
+          </Link>
+        ))}
+      </div>
+      {(npmVersion || packageSize) && (
+        <div className="nav-meta">
+          {npmVersion && (
+            <a
+              href="https://www.npmjs.com/package/agentation"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-version"
+            >
+              v{npmVersion}
+            </a>
+          )}
+          {packageSize && <span className="nav-size">{packageSize}</span>}
+        </div>
       )}
     </nav>
   );
