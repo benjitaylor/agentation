@@ -73,29 +73,31 @@ export default function AgentationDocs() {
             The toolbar is active on this page. Try annotating these demo elements:
           </p>
 
-          <div className="button-group" style={{ marginTop: "1rem" }}>
-            <button className="demo-button" onClick={() => alert("Primary clicked!")}>
-              Primary Button
-            </button>
-            <button className="demo-button secondary" onClick={() => alert("Secondary clicked!")}>
-              Secondary Button
-            </button>
-          </div>
+          <div className="demo-elements">
+            <div className="button-group">
+              <button className="demo-button" onClick={() => alert("Primary clicked!")}>
+                Primary Button
+              </button>
+              <button className="demo-button secondary" onClick={() => alert("Secondary clicked!")}>
+                Secondary Button
+              </button>
+            </div>
 
-          <input
-            type="text"
-            className="demo-input"
-            placeholder="Try selecting this text..."
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-          />
+            <input
+              type="text"
+              className="demo-input"
+              placeholder="Try selecting this text..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+            />
 
-          <div className="demo-card">
-            <h3>Example Card</h3>
-            <p>
-              Click on this card or select this text to create an annotation.
-              The output will include the element path and your feedback.
-            </p>
+            <div className="demo-card">
+              <h3>Example Card</h3>
+              <p>
+                Click on this card or select this text to create an annotation.
+                The output will include the element path and your feedback.
+              </p>
+            </div>
           </div>
         </section>
 

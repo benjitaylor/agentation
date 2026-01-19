@@ -1,23 +1,100 @@
 "use client";
 
+import { useState } from "react";
 import { Highlight, themes } from "prism-react-renderer";
 import { Footer } from "../Footer";
 
-function CodeBlock({ code, language = "tsx" }: { code: string; language?: string }) {
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <Highlight theme={themes.github} code={code.trim()} language={language}>
-      {({ style, tokens, getLineProps, getTokenProps }) => (
-        <pre className="code-block" style={{ ...style, background: 'transparent' }}>
-          {tokens.map((line, i) => (
-            <div key={i} {...getLineProps({ line })}>
-              {line.map((token, key) => (
-                <span key={key} {...getTokenProps({ token })} />
-              ))}
-            </div>
-          ))}
-        </pre>
-      )}
-    </Highlight>
+    <button
+      onClick={handleCopy}
+      className="copy-button"
+      title="Copy to clipboard"
+      style={{
+        position: 'absolute',
+        top: '50%',
+        right: '0.75rem',
+        transform: 'translateY(-50%)',
+        padding: '0.375rem',
+        background: copied ? 'rgba(0,0,0,0.08)' : 'transparent',
+        border: 'none',
+        borderRadius: '0.25rem',
+        cursor: 'pointer',
+        color: copied ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.35)',
+        transition: 'all 0.15s ease',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      {/* Clipboard icon */}
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{
+          position: 'absolute',
+          opacity: copied ? 0 : 1,
+          transform: copied ? 'scale(0.8)' : 'scale(1)',
+          transition: 'opacity 0.2s ease, transform 0.2s ease',
+        }}
+      >
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+      </svg>
+      {/* Checkmark icon */}
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{
+          opacity: copied ? 1 : 0,
+          transform: copied ? 'scale(1)' : 'scale(0.8)',
+          transition: 'opacity 0.2s ease, transform 0.2s ease',
+        }}
+      >
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+    </button>
+  );
+}
+
+function CodeBlock({ code, language = "tsx", copyable = false }: { code: string; language?: string; copyable?: boolean }) {
+  return (
+    <div style={{ position: 'relative' }}>
+      <Highlight theme={themes.github} code={code.trim()} language={language}>
+        {({ style, tokens, getLineProps, getTokenProps }) => (
+          <pre className="code-block" style={{ ...style, background: 'transparent' }}>
+            {tokens.map((line, i) => (
+              <div key={i} {...getLineProps({ line })}>
+                {line.map((token, key) => (
+                  <span key={key} {...getTokenProps({ token })} />
+                ))}
+              </div>
+            ))}
+          </pre>
+        )}
+      </Highlight>
+      {copyable && <CopyButton text={code.trim()} />}
+    </div>
   );
 }
 
@@ -32,7 +109,7 @@ export default function InstallPage() {
 
       <section>
         <h2>Install the package</h2>
-        <CodeBlock code="npm install agentation" language="bash" />
+        <CodeBlock code="npm install agentation" language="bash" copyable />
         <p style={{ fontSize: '0.875rem', color: 'rgba(0,0,0,0.5)', marginTop: '0.5rem' }}>
           Or use yarn, pnpm, or bun.
         </p>
