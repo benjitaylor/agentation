@@ -11,7 +11,7 @@ export function SideNav() {
     { href: "/install", label: "Install" },
     { href: "/features", label: "Features" },
     { href: "/output", label: "Output" },
-    { href: "/changelog", label: "To-Do", badge: "(Temp)" },
+    { href: "/to-do", label: "To-Do", badge: "(Temp)" },
   ];
 
   return (
