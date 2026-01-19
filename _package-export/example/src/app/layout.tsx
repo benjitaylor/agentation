@@ -7,7 +7,25 @@ import { MobileNotice } from "./MobileNotice";
 
 export const metadata: Metadata = {
   title: "Agentation",
-  description: "Visual feedback for AI coding agents",
+  description: "Visual feedback for AI coding agents.",
+  openGraph: {
+    title: "Agentation",
+    description: "Visual feedback for AI coding agents.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Agentation toolbar",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Agentation",
+    description: "Visual feedback for AI coding agents.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
