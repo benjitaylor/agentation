@@ -4,19 +4,27 @@ export function Footer() {
       <p>
         Made by{" "}
         <a
-          href="https://benji.org"
+          href="https://x.com/benjitaylor"
           target="_blank"
           rel="noopener noreferrer"
         >
           Benji Taylor
-        </a>{" "}
-        and{" "}
+        </a>
+        ,{" "}
         <a
-          href="https://dennisjin.com"
+          href="https://x.com/seldom"
           target="_blank"
           rel="noopener noreferrer"
         >
           Dennis Jin
+        </a>
+        , and{" "}
+        <a
+          href="https://x.com/alexvanderzon"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Alex Vanderzon
         </a>
       </p>
       <span>
