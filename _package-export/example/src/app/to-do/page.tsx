@@ -88,6 +88,7 @@ export default function TodoPage() {
         <ul>
           <li><strong>Make toolbar movable</strong> &mdash; Doable but needs thoughtful UX (drag handle, persist position, snap to corners?). Keep it simple: just add drag handle and store position in localStorage. Modifies positioning logic but not core functionality.</li>
           <li><strong>Drag annotation performance</strong> &mdash; Already has throttling (50ms). Could optimize by reducing DOM queries, using IntersectionObserver, caching bounding rects. Medium risk&mdash;performance work can introduce bugs if not careful.</li>
+          <li><strong>Drag selection container display</strong> &mdash; Fix the underlying containers display issue when doing drag-based annotations. Currently looks a bit funky&mdash;likely needs refinement of which elements get highlighted during selection.</li>
         </ul>
 
         <h3><span style={{ display: 'inline-block', background: '#ef4444', color: 'white', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.6875rem', fontWeight: 500 }}>Higher-Risk / Needs Input</span></h3>
