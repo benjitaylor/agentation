@@ -75,7 +75,7 @@ export default function TodoPage() {
         <h2>Implementation Plan</h2>
         <p>Notes on approaching each task, keeping changes minimal and focused.</p>
 
-        <h3>Low-Risk, High-Value</h3>
+        <h3><span style={{ display: 'inline-block', width: '0.5rem', height: '0.5rem', borderRadius: '50%', background: '#22c55e', marginRight: '0.5rem' }} />Low-Risk, High-Value</h3>
         <ul>
           <li><strong>Check mobile</strong> &mdash; Research task: test toolbar on mobile viewport, document specific issues (touch events, positioning, popup sizing). Fixes would be targeted CSS, not architectural.</li>
           <li><strong>Popup z-index issues</strong> &mdash; Verify z-index is high enough (currently 100000 base). Could also investigate <code>popover</code> attribute or CSS <code>@layer</code> if needed.</li>
@@ -84,20 +84,20 @@ export default function TodoPage() {
           <li><strong>Mobile nav for docs</strong> &mdash; Docs site only, doesn&rsquo;t affect the toolbar package.</li>
         </ul>
 
-        <h3>Medium-Risk (Require Care)</h3>
+        <h3><span style={{ display: 'inline-block', width: '0.5rem', height: '0.5rem', borderRadius: '50%', background: '#f59e0b', marginRight: '0.5rem' }} />Medium-Risk (Require Care)</h3>
         <ul>
           <li><strong>Make toolbar movable</strong> &mdash; Doable but needs thoughtful UX (drag handle, persist position, snap to corners?). Keep it simple: just add drag handle and store position in localStorage. Modifies positioning logic but not core functionality.</li>
           <li><strong>Drag annotation performance</strong> &mdash; Already has throttling (50ms). Could optimize by reducing DOM queries, using IntersectionObserver, caching bounding rects. Medium risk&mdash;performance work can introduce bugs if not careful.</li>
         </ul>
 
-        <h3>Higher-Risk / Needs Input</h3>
+        <h3><span style={{ display: 'inline-block', width: '0.5rem', height: '0.5rem', borderRadius: '50%', background: '#ef4444', marginRight: '0.5rem' }} />Higher-Risk / Needs Input</h3>
         <ul>
           <li><strong>Improve toolbar settings</strong> &mdash; Visual improvements, one for Dennis.</li>
           <li><strong>Improve icons/animations</strong> &mdash; Already has nice framer-motion animations. &ldquo;Improvements&rdquo; are subjective&mdash;need specific feedback on what feels wrong before changing.</li>
           <li><strong>General performance</strong> &mdash; Needs profiling first to identify actual bottlenecks. The component is ~1500 lines with many effects&mdash;could benefit from extraction, but this is exactly the kind of thing that could lead to overengineering. Tread carefully.</li>
         </ul>
 
-        <h3>Exploration Areas (Research Only)</h3>
+        <h3><span style={{ display: 'inline-block', width: '0.5rem', height: '0.5rem', borderRadius: '50%', background: '#8b5cf6', marginRight: '0.5rem' }} />Exploration Areas (Research Only)</h3>
         <p>These are explicitly &ldquo;things to explore&rdquo;&mdash;won&rsquo;t start implementing without discussion:</p>
         <ul>
           <li><strong>Auto-paste integration</strong> &mdash; Would need to research Cursor/VS Code extension APIs</li>
