@@ -86,7 +86,7 @@ export const EyeMorphIcon = ({
   </svg>
 );
 
-// Copy icon that morphs to checkmark using animated lines
+// Copy icon that morphs to checkmark - true path transformation
 export const CopyMorphIcon = ({
   size = 16,
   checked,
@@ -96,66 +96,39 @@ export const CopyMorphIcon = ({
 }) => {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      {/* Line 1: top line -> first part of checkmark */}
-      <motion.line
+      {/* Main shape morphs between copy icon and checkmark */}
+      {/* Copy: two overlapping rectangles | Check: checkmark */}
+
+      {/* Back rectangle -> morphs to checkmark long stroke */}
+      <motion.path
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
-        initial={false}
-        animate={{
-          x1: checked ? 5 : 9,
-          y1: checked ? 13 : 7,
-          x2: checked ? 10 : 15,
-          y2: checked ? 18 : 7,
-        }}
-        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-      />
-      {/* Line 2: middle line -> second part of checkmark */}
-      <motion.line
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        initial={false}
-        animate={{
-          x1: checked ? 10 : 9,
-          y1: checked ? 18 : 12,
-          x2: checked ? 19 : 15,
-          y2: checked ? 6 : 12,
-        }}
-        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-      />
-      {/* Line 3: bottom line -> fades out */}
-      <motion.line
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        initial={false}
-        animate={{
-          x1: 9,
-          y1: 17,
-          x2: 15,
-          y2: 17,
-          opacity: checked ? 0 : 1,
-        }}
-        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-      />
-      {/* Document outline - fades out */}
-      <motion.rect
-        x="6"
-        y="3"
-        width="12"
-        height="18"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="2"
+        strokeLinejoin="round"
         fill="none"
         initial={false}
         animate={{
-          opacity: checked ? 0 : 1,
-          scale: checked ? 0.9 : 1,
+          d: checked
+            ? "M 9 12 L 9 17 L 19 5"
+            : "M 9 6 L 9 15 L 19 15 L 19 6 L 9 6"
         }}
-        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-        style={{ transformOrigin: "12px 12px" }}
+        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+      />
+
+      {/* Front rectangle -> morphs to checkmark short stroke */}
+      <motion.path
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+        initial={false}
+        animate={{
+          d: checked
+            ? "M 5 12 L 9 17 L 9 17 L 9 17 L 5 12"
+            : "M 5 9 L 5 19 L 15 19 L 15 9 L 5 9"
+        }}
+        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
       />
     </svg>
   );
