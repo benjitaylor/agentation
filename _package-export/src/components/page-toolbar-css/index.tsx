@@ -1219,7 +1219,12 @@ export function PageFeedbackToolbarCSS({
           <div
             className={`${styles.toggleContent} ${!isActive ? styles.visible : styles.hidden}`}
           >
-            <IconChatEllipsis size={24} />
+            <IconChatEllipsis
+              size={24}
+              style={{
+                transform: "translateX(-1px)",
+              }}
+            />
             {hasAnnotations && (
               <span
                 className={`${styles.badge} ${isActive ? styles.fadeOut : ""}`}
