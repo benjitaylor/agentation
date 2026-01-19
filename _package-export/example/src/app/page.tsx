@@ -192,29 +192,37 @@ export default function AgentationDocs() {
             The toolbar is active on this page. Try annotating these demo elements:
           </p>
 
-          <div className="button-group" style={{ marginTop: "1rem" }}>
-            <button className="demo-button" onClick={() => alert("Primary clicked!")}>
-              Primary Button
-            </button>
-            <button className="demo-button secondary" onClick={() => alert("Secondary clicked!")}>
-              Secondary Button
-            </button>
-          </div>
+          <div className="demo-grid">
+            <div className="demo-grid-left">
+              <div className="button-group">
+                <button className="demo-button" onClick={() => alert("Primary clicked!")}>
+                  Primary Button
+                </button>
+                <button className="demo-button secondary" onClick={() => alert("Secondary clicked!")}>
+                  Secondary Button
+                </button>
+              </div>
 
-          <input
-            type="text"
-            className="demo-input"
-            placeholder="Try selecting this text..."
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-          />
+              <input
+                type="text"
+                className="demo-input"
+                placeholder="Try selecting this text..."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+              />
+            </div>
 
-          <div className="demo-card">
-            <h3>Example Card</h3>
-            <p>
-              Click on this card or select this text to create an annotation.
-              The output will include the element path and your feedback.
-            </p>
+            <div className="demo-card">
+              <div className="demo-card-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+              </div>
+              <h3>Example Card</h3>
+              <p>
+                Click on this card or select this text to create an annotation.
+              </p>
+            </div>
           </div>
         </section>
 
