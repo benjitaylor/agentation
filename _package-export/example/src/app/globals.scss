@@ -544,7 +544,7 @@ button {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    padding: 0.75rem 1.5rem 0;
+    padding: 1rem 1.5rem 0;
   }
 
   .mobile-nav-toggle {
@@ -554,7 +554,6 @@ button {
     align-items: center;
     justify-content: center;
     margin-left: -0.125rem;
-    transform: translateY(0.125rem);
   }
 
   .mobile-nav-icon {
