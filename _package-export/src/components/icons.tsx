@@ -86,7 +86,7 @@ export const EyeMorphIcon = ({
   </svg>
 );
 
-// Document/save icon that morphs to checkmark (Material Design style)
+// Copy icon that morphs to checkmark with smooth stroke animation
 export const CopyMorphIcon = ({
   size = 16,
   checked,
@@ -94,24 +94,57 @@ export const CopyMorphIcon = ({
   size?: number;
   checked: boolean;
 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <motion.path
-      d="M14.17,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V9.83c0-0.53-0.21-1.04-0.59-1.41l-4.83-4.83 C15.21,3.21,14.7,3,14.17,3L14.17,3z M8,15h8c0.55,0,1,0.45,1,1v0c0,0.55-0.45,1-1,1H8c-0.55,0-1-0.45-1-1v0C7,15.45,7.45,15,8,15z M8,11h8c0.55,0,1,0.45,1,1v0c0,0.55-0.45,1-1,1H8c-0.55,0-1-0.45-1-1v0C7,11.45,7.45,11,8,11z M8,7h5c0.55,0,1,0.45,1,1v0 c0,0.55-0.45,1-1,1H8C7.45,9,7,8.55,7,8v0C7,7.45,7.45,7,8,7z"
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    {/* Back rectangle */}
+    <motion.rect
+      x="8"
+      y="8"
+      width="12"
+      height="12"
+      rx="2"
+      strokeWidth="2"
+      fill="none"
       initial={false}
-      animate={{ opacity: checked ? 0 : 1 }}
-      transition={{ duration: 0.15 }}
+      animate={{
+        opacity: checked ? 0 : 1,
+        scale: checked ? 0.8 : 1,
+      }}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
+      style={{ transformOrigin: "14px 14px" }}
     />
+    {/* Front rectangle */}
+    <motion.rect
+      x="4"
+      y="4"
+      width="12"
+      height="12"
+      rx="2"
+      strokeWidth="2"
+      fill="none"
+      initial={false}
+      animate={{
+        opacity: checked ? 0 : 1,
+        scale: checked ? 0.8 : 1,
+      }}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
+      style={{ transformOrigin: "10px 10px" }}
+    />
+    {/* Checkmark */}
     <motion.path
-      d="M6 12.5l3.5 3.5L18 7"
-      stroke="currentColor"
+      d="M6 12.5l4 4L18 8"
       strokeWidth="2.5"
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
       initial={false}
-      animate={{ opacity: checked ? 1 : 0, scale: checked ? 1 : 0.5 }}
-      transition={transition}
-      style={{ transformOrigin: "12px 12px" }}
+      animate={{
+        pathLength: checked ? 1 : 0,
+        opacity: checked ? 1 : 0,
+      }}
+      transition={{
+        pathLength: { duration: 0.3, ease: "easeOut", delay: checked ? 0.1 : 0 },
+        opacity: { duration: 0.15 }
+      }}
     />
   </svg>
 );
