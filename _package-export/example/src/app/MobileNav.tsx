@@ -31,34 +31,27 @@ export function MobileNav() {
   if (!isMobile) return null;
 
   return (
-    <div className="mobile-nav">
-      <div className="mobile-nav-header">
-        <span className="mobile-nav-title">agentation</span>
-        <button
-          className={`mobile-nav-toggle ${isOpen ? "open" : ""}`}
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle navigation"
-        >
-          <span className="mobile-nav-icon">
-            <span />
-            <span />
-          </span>
-        </button>
-      </div>
+    <div className={`mobile-nav ${isOpen ? "open" : ""}`}>
+      <button
+        className={`mobile-nav-toggle ${isOpen ? "open" : ""}`}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle navigation"
+      >
+        <span className="mobile-nav-icon">
+          <span />
+          <span />
+        </span>
+      </button>
 
-      <div className={`mobile-nav-menu ${isOpen ? "open" : ""}`}>
-        <div className="mobile-nav-menu-inner">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`mobile-nav-link ${pathname === link.href ? "active" : ""}`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
-      </div>
+      {links.map((link) => (
+        <Link
+          key={link.href}
+          href={link.href}
+          className={`mobile-nav-link ${pathname === link.href ? "active" : ""}`}
+        >
+          {link.label}
+        </Link>
+      ))}
     </div>
   );
 }
