@@ -46,15 +46,27 @@ function ModeIndicatorBunny({ format }: { format: OutputFormat }) {
   const scale = FORMAT_SCALES[format];
   const isForensic = format === 'forensic';
   const [forensicKey, setForensicKey] = useState(0);
+  const [transitionDuration, setTransitionDuration] = useState(0.3);
   const prevForensicRef = useRef(isForensic);
+  const prevScaleRef = useRef(scale);
 
   useEffect(() => {
     if (isForensic && !prevForensicRef.current) {
       // Just switched to forensic - increment key to restart animation
       setForensicKey(k => k + 1);
     }
+
+    // Adjust transition speed based on scale distance
+    const scaleDiff = Math.abs(scale - prevScaleRef.current);
+    if (scaleDiff > 0.15) {
+      setTransitionDuration(0.12); // Fast for big jumps
+    } else {
+      setTransitionDuration(0.3); // Normal for small steps
+    }
+
     prevForensicRef.current = isForensic;
-  }, [isForensic]);
+    prevScaleRef.current = scale;
+  }, [isForensic, scale]);
 
   return (
     <svg
@@ -66,7 +78,7 @@ function ModeIndicatorBunny({ format }: { format: OutputFormat }) {
       style={{
         transform: `scale(${scale})`,
         transformOrigin: 'bottom center',
-        transition: 'transform 0.3s ease-out',
+        transition: `transform ${transitionDuration}s ease-out`,
       }}
     >
       <style>{`
