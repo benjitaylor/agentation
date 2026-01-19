@@ -80,7 +80,6 @@ export default function TodoPage() {
           <li><strong>Check mobile</strong> &mdash; Research task: test toolbar on mobile viewport, document specific issues (touch events, positioning, popup sizing). Fixes would be targeted CSS, not architectural.</li>
           <li><strong>Popup z-index issues</strong> &mdash; Verify z-index is high enough (currently 100000 base). Could also investigate <code>popover</code> attribute or CSS <code>@layer</code> if needed.</li>
           <li><strong>Popup edge positioning</strong> &mdash; Already partially handled with <code>Math.min/max</code> clamping. Add similar logic for left/right edges and tall popups. Low risk&mdash;just math adjustments.</li>
-          <li><strong>Bunny artwork</strong> &mdash; Fun docs task, doesn&rsquo;t touch core library. Add ASCII art or animated SVG to install page.</li>
           <li><strong>Mobile nav for docs</strong> &mdash; Docs site only, doesn&rsquo;t affect the toolbar package.</li>
         </ul>
 
