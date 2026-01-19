@@ -86,68 +86,80 @@ export const EyeMorphIcon = ({
   </svg>
 );
 
-// Copy icon that morphs to checkmark with smooth stroke animation
+// Copy icon that morphs to checkmark using animated lines
 export const CopyMorphIcon = ({
   size = 16,
   checked,
 }: {
   size?: number;
   checked: boolean;
-}) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-    {/* Back rectangle */}
-    <motion.rect
-      x="8"
-      y="8"
-      width="12"
-      height="12"
-      rx="2"
-      strokeWidth="2"
-      fill="none"
-      initial={false}
-      animate={{
-        opacity: checked ? 0 : 1,
-        scale: checked ? 0.8 : 1,
-      }}
-      transition={{ duration: 0.2, ease: "easeInOut" }}
-      style={{ transformOrigin: "14px 14px" }}
-    />
-    {/* Front rectangle */}
-    <motion.rect
-      x="4"
-      y="4"
-      width="12"
-      height="12"
-      rx="2"
-      strokeWidth="2"
-      fill="none"
-      initial={false}
-      animate={{
-        opacity: checked ? 0 : 1,
-        scale: checked ? 0.8 : 1,
-      }}
-      transition={{ duration: 0.2, ease: "easeInOut" }}
-      style={{ transformOrigin: "10px 10px" }}
-    />
-    {/* Checkmark */}
-    <motion.path
-      d="M6 12.5l4 4L18 8"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      fill="none"
-      initial={false}
-      animate={{
-        pathLength: checked ? 1 : 0,
-        opacity: checked ? 1 : 0,
-      }}
-      transition={{
-        pathLength: { duration: 0.3, ease: "easeOut", delay: checked ? 0.1 : 0 },
-        opacity: { duration: 0.15 }
-      }}
-    />
-  </svg>
-);
+}) => {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      {/* Line 1: top line -> first part of checkmark */}
+      <motion.line
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        initial={false}
+        animate={{
+          x1: checked ? 5 : 9,
+          y1: checked ? 13 : 7,
+          x2: checked ? 10 : 15,
+          y2: checked ? 18 : 7,
+        }}
+        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+      />
+      {/* Line 2: middle line -> second part of checkmark */}
+      <motion.line
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        initial={false}
+        animate={{
+          x1: checked ? 10 : 9,
+          y1: checked ? 18 : 12,
+          x2: checked ? 19 : 15,
+          y2: checked ? 6 : 12,
+        }}
+        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+      />
+      {/* Line 3: bottom line -> fades out */}
+      <motion.line
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        initial={false}
+        animate={{
+          x1: 9,
+          y1: 17,
+          x2: 15,
+          y2: 17,
+          opacity: checked ? 0 : 1,
+        }}
+        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+      />
+      {/* Document outline - fades out */}
+      <motion.rect
+        x="6"
+        y="3"
+        width="12"
+        height="18"
+        rx="2"
+        stroke="currentColor"
+        strokeWidth="2"
+        fill="none"
+        initial={false}
+        animate={{
+          opacity: checked ? 0 : 1,
+          scale: checked ? 0.9 : 1,
+        }}
+        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+        style={{ transformOrigin: "12px 12px" }}
+      />
+    </svg>
+  );
+};
 
 // Refresh/reset icon that morphs to checkmark (Material Design style)
 export const TrashMorphIcon = ({
