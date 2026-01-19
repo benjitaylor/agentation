@@ -98,6 +98,7 @@ export default function FeaturesPage() {
       <section>
         <h2>Limitations</h2>
         <ul>
+          <li><strong>Desktop only</strong> &mdash; The tool requires a desktop browser, but you can still request mobile changes in your feedback</li>
           <li><strong>Session-only</strong> &mdash; Annotations clear on page refresh</li>
           <li><strong>Single page</strong> &mdash; Annotations don&rsquo;t follow across navigation</li>
           <li><strong>Static positions</strong> &mdash; Markers don&rsquo;t update if layout changes</li>

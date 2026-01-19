@@ -232,6 +232,10 @@ button {
     line-height: 1.45rem;
     letter-spacing: -0.005rem;
     color: rgba(0, 0, 0, 0.8);
+
+    & + p {
+      margin-top: 0.75rem;
+    }
   }
 
   blockquote {

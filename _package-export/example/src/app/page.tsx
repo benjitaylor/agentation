@@ -22,8 +22,10 @@ export default function AgentationDocs() {
         <section>
           <p>
             Agentation (<span style={{ fontFamily: "'Cascadia Code', monospace", fontStyle: 'italic', color: 'rgba(0,0,0,0.5)' }}>agent + annotation</span>) is a dev tool that lets you annotate elements on your webpage
-            and generate structured feedback for AI coding agents. Click elements,
-            select text, add notes, and paste the output into Claude Code, Cursor, or
+            and generate structured feedback for AI coding agents.
+          </p>
+          <p>
+            Click elements, select text, add notes, and paste the output into Claude Code, Cursor, or
             any agent that has access to your codebase. Zero dependencies beyond React.
           </p>
           <p>
@@ -31,6 +33,10 @@ export default function AgentationDocs() {
             know exactly which element you&rsquo;re referring to. Agentation captures
             class names, selectors, and positions so the agent can locate the corresponding
             source files.
+          </p>
+          <p>
+            It grew out of <a href="https://benji.org/annotating" className="styled-link" target="_blank" rel="noopener noreferrer">a post by Benji Taylor</a> exploring
+            how to give better feedback to AI coding agents.
           </p>
         </section>
 
@@ -123,14 +129,6 @@ export default function AgentationDocs() {
             <li><strong>Use text selection</strong> &mdash; for typos or content issues, select the exact text</li>
             <li><strong>Pause animations</strong> &mdash; to annotate a specific animation frame</li>
           </ul>
-        </section>
-
-        <section>
-          <h2>Background</h2>
-          <p>
-            Agentation grew out of <a href="https://benji.org/annotating" className="styled-link" target="_blank" rel="noopener noreferrer">a post by Benji Taylor</a> exploring
-            how to give better feedback to AI coding agents.
-          </p>
         </section>
 
       </article>

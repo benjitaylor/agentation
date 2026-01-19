@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="footer">
+    <footer className="footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <p>
         Made by{" "}
         <a
@@ -19,6 +19,16 @@ export function Footer() {
           Dennis Jin
         </a>
       </p>
+      <span>
+        Icons by{" "}
+        <a
+          href="https://dip.benji.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Dip
+        </a>
+      </span>
     </footer>
   );
 }

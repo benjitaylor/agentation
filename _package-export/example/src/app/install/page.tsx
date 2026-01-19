@@ -271,6 +271,7 @@ function App() {
         <ul>
           <li><strong>React 18+</strong> &mdash; Uses modern React features</li>
           <li><strong>Client-side only</strong> &mdash; Requires DOM access</li>
+          <li><strong>Desktop only</strong> &mdash; Not optimized for mobile devices</li>
           <li><strong>Zero dependencies</strong> &mdash; No runtime deps beyond React</li>
         </ul>
       </section>

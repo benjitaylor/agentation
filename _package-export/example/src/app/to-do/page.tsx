@@ -8,7 +8,7 @@ export default function TodoPage() {
       <article className="article">
       <header>
         <h1>To-Do</h1>
-        <p className="tagline">11 tasks &middot; 4 areas to explore</p>
+        <p className="tagline">9 tasks &middot; 4 areas to explore</p>
       </header>
 
       <div style={{
@@ -25,17 +25,18 @@ export default function TodoPage() {
       <section>
         <h2>Tasks</h2>
         <ul>
-          <li>Check mobile</li>
           <li>Make sure popup annotations show on top layer</li>
           <li>Make sure popup annotations always show (e.g. if they are right at the edge of the screen)</li>
           <li>Make the toolbar movable</li>
           <li>Improve the toolbar settings (visual &mdash; Dennis)</li>
           <li>Improve toolbar icons/animations</li>
-          <li>Improve performance</li>
           <li>Improve performance for drag annotations</li>
-          <li>Add bunny logo artwork when installing <code>/agentation</code> :)</li>
-          <li>Add mobile nav for docs site</li>
-          <li>Decide on domain and create OG image for site</li>
+          <li>Clicking save on right-click to edit isn&rsquo;t animating out the container</li>
+          <li>Toolbar flashes in on page load &mdash; a simple scale animation might be nicer</li>
+          <li style={{ color: 'rgba(0,0,0,0.4)' }}><s>Check mobile</s></li>
+          <li style={{ color: 'rgba(0,0,0,0.4)' }}><s>Improve performance</s> (probably fine)</li>
+          <li style={{ color: 'rgba(0,0,0,0.4)' }}><s>Add mobile nav for docs site</s></li>
+          <li style={{ color: 'rgba(0,0,0,0.4)' }}><s>Decide on domain and create OG image for site</s></li>
         </ul>
       </section>
 
@@ -77,10 +78,8 @@ export default function TodoPage() {
 
         <h3><span style={{ display: 'inline-block', background: '#22c55e', color: 'white', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.6875rem', fontWeight: 500 }}>Low-Risk, High-Value</span></h3>
         <ul>
-          <li><strong>Check mobile</strong> &mdash; Research task: test toolbar on mobile viewport, document specific issues (touch events, positioning, popup sizing). Fixes would be targeted CSS, not architectural.</li>
           <li><strong>Popup z-index issues</strong> &mdash; Verify z-index is high enough (currently 100000 base). Could also investigate <code>popover</code> attribute or CSS <code>@layer</code> if needed.</li>
           <li><strong>Popup edge positioning</strong> &mdash; Already partially handled with <code>Math.min/max</code> clamping. Add similar logic for left/right edges and tall popups. Low risk&mdash;just math adjustments.</li>
-          <li><strong>Mobile nav for docs</strong> &mdash; Docs site only, doesn&rsquo;t affect the toolbar package.</li>
         </ul>
 
         <h3><span style={{ display: 'inline-block', background: '#f59e0b', color: 'white', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.6875rem', fontWeight: 500 }}>Medium-Risk (Require Care)</span></h3>
@@ -94,7 +93,6 @@ export default function TodoPage() {
         <ul>
           <li><strong>Improve toolbar settings</strong> &mdash; Visual improvements, one for Dennis.</li>
           <li><strong>Improve icons/animations</strong> &mdash; Already has nice animations. &ldquo;Improvements&rdquo; are subjective&mdash;need specific feedback on what feels wrong before changing.</li>
-          <li><strong>General performance</strong> &mdash; Needs profiling first to identify actual bottlenecks. The component is ~1500 lines with many effects&mdash;could benefit from extraction, but this is exactly the kind of thing that could lead to overengineering. Tread carefully.</li>
         </ul>
 
         <h3><span style={{ display: 'inline-block', background: '#8b5cf6', color: 'white', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.6875rem', fontWeight: 500 }}>Exploration Areas (Research Only)</span></h3>
