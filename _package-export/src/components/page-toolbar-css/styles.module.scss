@@ -199,13 +199,12 @@ $green: #34c759;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
-  color: rgba(0, 0, 0, 0.85);
+  background: #1a1a1a;
+  color: #fff;
   border: none;
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.08),
-    0 4px 16px rgba(0, 0, 0, 0.06),
-    0 0 0 1px rgba(0, 0, 0, 0.04);
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.1);
   pointer-events: auto;
 
   // Animated properties
@@ -229,7 +228,7 @@ $green: #34c759;
     }
 
     &:hover {
-      background: #f5f5f5;
+      background: #2a2a2a;
     }
 
     &:active {
@@ -336,7 +335,7 @@ $green: #34c759;
   border-radius: 50%;
   border: none;
   background: transparent;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.85);
   transition:
     background-color 0.15s ease,
     color 0.15s ease,
@@ -344,8 +343,8 @@ $green: #34c759;
     opacity 0.2s ease;
 
   &:hover:not(:disabled) {
-    background: rgba(0, 0, 0, 0.06);
-    color: rgba(0, 0, 0, 0.85);
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
   }
 
   &:active:not(:disabled) {
@@ -359,11 +358,11 @@ $green: #34c759;
 
   &[data-active="true"] {
     color: $blue;
-    background: rgba($blue, 0.15);
+    background: rgba($blue, 0.25);
   }
 
   &[data-danger]:hover:not(:disabled) {
-    background: rgba($red, 0.15);
+    background: rgba($red, 0.25);
     color: $red;
   }
 }
@@ -371,7 +370,7 @@ $green: #34c759;
 .divider {
   width: 1px;
   height: 12px;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   margin: 0 0.125rem;
 }
 
@@ -599,12 +598,12 @@ $green: #34c759;
   left: 50%;
   transform: translateX(-50%);
   z-index: 100002;
-  background: #fff;
+  background: #1a1a1a;
   padding: 0.625rem 0.75rem;
   border-radius: 0.75rem;
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.12),
-    0 0 0 1px rgba(0, 0, 0, 0.04);
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
   min-width: 120px;
   max-width: 200px;
   pointer-events: none;
@@ -619,7 +618,7 @@ $green: #34c759;
   display: block;
   font-size: 0.6875rem;
   font-style: italic;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.5);
   margin-bottom: 0.375rem;
   line-height: 1.4;
   white-space: nowrap;
@@ -632,7 +631,7 @@ $green: #34c759;
   font-size: 0.75rem;
   font-weight: 450;
   line-height: 1.4;
-  color: rgba(0, 0, 0, 0.85);
+  color: #fff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -643,7 +642,7 @@ $green: #34c759;
   display: block;
   font-size: 0.625rem;
   font-weight: 400;
-  color: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.3);
   margin-top: 0.375rem;
   white-space: nowrap;
 }
@@ -661,8 +660,7 @@ $green: #34c759;
   padding: 16px 1rem 16px;
   min-width: 205px;
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.08),
-    0 4px 16px rgba(0, 0, 0, 0.06),
+    0 1px 8px rgba(0, 0, 0, 0.25),
     0 0 0 1px rgba(0, 0, 0, 0.04);
 
   &.enter {
@@ -692,49 +690,8 @@ $green: #34c759;
       0 4px 20px rgba(0, 0, 0, 0.3),
       0 0 0 1px rgba(255, 255, 255, 0.08);
 
-    .settingsHeader {
-      border-bottom-color: rgba(255, 255, 255, 0.08);
-    }
-
-    .settingsBrand {
-      color: rgba(255, 255, 255, 0.9);
-    }
-
-    .settingsBrandSlash {
-      color: rgba(255, 255, 255, 0.4);
-    }
-
-    .settingsVersion {
-      color: rgba(255, 255, 255, 0.4);
-    }
-
-    .themeToggle {
-      color: rgba(255, 255, 255, 0.4);
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.8);
-      }
-    }
-
-    .settingsSection {
-      border-top-color: rgba(255, 255, 255, 0.08);
-    }
-
     .settingsLabel {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .cycleButton {
-      color: rgba(255, 255, 255, 0.85);
-    }
-
-    .cycleDot {
-      background: rgba(255, 255, 255, 0.2);
-
-      &.active {
-        background: rgba(255, 255, 255, 0.7);
-      }
+      color: rgba(255, 255, 255, 0.6);
     }
 
     .settingsOption {
@@ -751,25 +708,7 @@ $green: #34c759;
     }
 
     .toggleLabel {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .customCheckbox {
-      border-color: rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.05);
-
-      input[type="checkbox"]:checked + & {
-        border-color: rgba(255, 255, 255, 0.4);
-        background: rgba(255, 255, 255, 0.9);
-
-        svg {
-          color: #1a1a1a;
-        }
-      }
-    }
-
-    .helpIcon {
-      color: rgba(255, 255, 255, 0.3);
+      color: rgba(255, 255, 255, 0.85);
     }
   }
 }
@@ -781,53 +720,33 @@ $green: #34c759;
   min-height: 24px;
   margin-bottom: 0.5rem;
   padding-bottom: calc(0.5rem + 4px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .settingsBrand {
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: -0.0094em;
-  color: rgba(0, 0, 0, 0.85);
+  color: #fff;
 }
 
 .settingsBrandSlash {
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .settingsVersion {
   font-size: 0.6875rem;
   font-weight: 400;
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.4);
   margin-left: auto;
   letter-spacing: -0.0094em;
-}
-
-.themeToggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  margin-left: 0.5rem;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: rgba(0, 0, 0, 0.4);
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.06);
-    color: rgba(0, 0, 0, 0.7);
-  }
 }
 
 .settingsSection {
   & + & {
     margin-top: 0.5rem;
     padding-top: calc(0.5rem + 2px);
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
   }
 }
 
@@ -852,7 +771,7 @@ $green: #34c759;
   background: transparent;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: rgba(0, 0, 0, 0.85);
+  color: #fff;
   cursor: pointer;
   transition:
     background-color 0.15s ease,
@@ -860,7 +779,7 @@ $green: #34c759;
   letter-spacing: -0.0094em;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.08);
   }
 
   svg {
@@ -880,7 +799,7 @@ $green: #34c759;
   background: transparent;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.85);
+  color: #fff;
   cursor: pointer;
   letter-spacing: -0.0094em;
 }
@@ -911,12 +830,12 @@ $green: #34c759;
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.3);
   transform: scale(0.667);
   transition: background-color 0.25s ease-out, transform 0.25s ease-out;
 
   &.active {
-    background: rgba(0, 0, 0, 0.7);
+    background: #fff;
     transform: scale(1);
   }
 }
@@ -925,13 +844,13 @@ $green: #34c759;
   position: absolute;
   right: 0;
   top: calc(100% + 0.25rem);
-  background: #fff;
+  background: #1a1a1a;
   border-radius: 0.5rem;
   padding: 0.25rem;
   min-width: 120px;
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.12),
-    0 0 0 1px rgba(0, 0, 0, 0.06);
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
   z-index: 10;
   animation: scaleIn 0.15s ease-out;
 }
@@ -946,7 +865,7 @@ $green: #34c759;
   background: transparent;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.75);
+  color: rgba(255, 255, 255, 0.85);
   cursor: pointer;
   text-align: left;
   transition:
@@ -955,12 +874,12 @@ $green: #34c759;
   letter-spacing: -0.0094em;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.08);
   }
 
   &.selected {
-    background: rgba(0, 0, 0, 0.08);
-    color: rgba(0, 0, 0, 0.9);
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
     font-weight: 600;
   }
 }
@@ -969,7 +888,7 @@ $green: #34c759;
   font-size: 0.8125rem;
   font-weight: 400;
   letter-spacing: -0.0094em;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.5);
   display: flex;
   align-items: center;
   gap: 0.125rem;
@@ -1023,7 +942,7 @@ $green: #34c759;
   appearance: none;
   width: 100%;
   height: 4px;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 2px;
   outline: none;
   cursor: pointer;
@@ -1033,36 +952,36 @@ $green: #34c759;
     appearance: none;
     width: 14px;
     height: 14px;
-    background: #1a1a1a;
+    background: white;
     border-radius: 50%;
     cursor: pointer;
     transition:
       transform 0.15s ease,
       box-shadow 0.15s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 
   &::-moz-range-thumb {
     width: 14px;
     height: 14px;
-    background: #1a1a1a;
+    background: white;
     border: none;
     border-radius: 50%;
     cursor: pointer;
     transition:
       transform 0.15s ease,
       box-shadow 0.15s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 
   &:hover::-webkit-slider-thumb {
     transform: scale(1.15);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   }
 
   &:hover::-moz-range-thumb {
     transform: scale(1.15);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -1074,16 +993,16 @@ $green: #34c759;
 .sliderLabel {
   font-size: 0.625rem;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.4);
   cursor: pointer;
   transition: color 0.15s ease;
 
   &:hover {
-    color: rgba(0, 0, 0, 0.7);
+    color: rgba(255, 255, 255, 0.7);
   }
 
   &.active {
-    color: rgba(0, 0, 0, 0.9);
+    color: rgba(255, 255, 255, 0.9);
   }
 }
 
@@ -1147,9 +1066,9 @@ $green: #34c759;
   position: relative;
   width: 14px;
   height: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.03);
+  background: rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1159,21 +1078,21 @@ $green: #34c759;
     border-color 0.15s ease;
 
   svg {
-    color: #fff;
+    color: #1a1a1a;
     opacity: 1;
     transition: opacity 0.15s ease;
   }
 
   input[type="checkbox"]:checked + & {
-    border-color: rgba(0, 0, 0, 0.7);
-    background: rgba(0, 0, 0, 0.85);
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 1);
   }
 }
 
 .toggleLabel {
   font-size: 0.8125rem;
   font-weight: 400;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.5);
   letter-spacing: -0.0094em;
   display: flex;
   align-items: center;
@@ -1186,7 +1105,7 @@ $green: #34c759;
   align-items: center;
   justify-content: center;
   cursor: help;
-  color: rgba(0, 0, 0, 0.4);
+  color: #fff;
   margin-left: 0;
 
   svg {
@@ -1275,4 +1194,198 @@ $green: #34c759;
   pointer-events: none;
   will-change: transform, width, height;
   contain: layout style;
+}
+
+// =============================================================================
+// Light Mode
+// =============================================================================
+
+.light {
+  // Toolbar container
+  &.toolbarContainer {
+    background: #fff;
+    color: rgba(0, 0, 0, 0.85);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.08),
+      0 4px 16px rgba(0, 0, 0, 0.06),
+      0 0 0 1px rgba(0, 0, 0, 0.04);
+
+    &.collapsed:hover {
+      background: #f5f5f5;
+    }
+  }
+
+  // Control buttons in toolbar
+  &.controlButton {
+    color: rgba(0, 0, 0, 0.5);
+
+    &:hover:not(:disabled) {
+      background: rgba(0, 0, 0, 0.06);
+      color: rgba(0, 0, 0, 0.85);
+    }
+
+    &[data-active="true"] {
+      color: $blue;
+      background: rgba($blue, 0.15);
+    }
+
+    &[data-danger]:hover:not(:disabled) {
+      background: rgba($red, 0.15);
+      color: $red;
+    }
+  }
+
+  // Divider
+  &.divider {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  // Marker tooltip
+  &.markerTooltip {
+    background: #fff;
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.12),
+      0 0 0 1px rgba(0, 0, 0, 0.06);
+
+    .markerQuote {
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    .markerNote {
+      color: rgba(0, 0, 0, 0.85);
+    }
+
+    .markerHint {
+      color: rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  // Settings panel
+  &.settingsPanel {
+    background: #fff;
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.08),
+      0 4px 16px rgba(0, 0, 0, 0.06),
+      0 0 0 1px rgba(0, 0, 0, 0.04);
+
+    .settingsHeader {
+      border-bottom-color: rgba(0, 0, 0, 0.08);
+    }
+
+    .settingsBrand {
+      color: rgba(0, 0, 0, 0.85);
+    }
+
+    .settingsBrandSlash {
+      color: rgba(0, 0, 0, 0.4);
+    }
+
+    .settingsVersion {
+      color: rgba(0, 0, 0, 0.4);
+    }
+
+    .settingsSection {
+      border-top-color: rgba(0, 0, 0, 0.08);
+    }
+
+    .settingsLabel {
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    .cycleButton {
+      color: rgba(0, 0, 0, 0.85);
+    }
+
+    .cycleDot {
+      background: rgba(0, 0, 0, 0.2);
+
+      &.active {
+        background: rgba(0, 0, 0, 0.7);
+      }
+    }
+
+    .dropdownButton {
+      color: rgba(0, 0, 0, 0.85);
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+    }
+
+    .toggleLabel {
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    .customCheckbox {
+      border-color: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.03);
+
+      input[type="checkbox"]:checked + & {
+        border-color: rgba(0, 0, 0, 0.7);
+        background: rgba(0, 0, 0, 0.85);
+
+        svg {
+          color: #fff;
+        }
+      }
+    }
+
+    .sliderLabel {
+      color: rgba(0, 0, 0, 0.4);
+
+      &:hover {
+        color: rgba(0, 0, 0, 0.7);
+      }
+
+      &.active {
+        color: rgba(0, 0, 0, 0.9);
+      }
+    }
+
+    .slider {
+      background: rgba(0, 0, 0, 0.1);
+
+      &::-webkit-slider-thumb {
+        background: #1a1a1a;
+      }
+
+      &::-moz-range-thumb {
+        background: #1a1a1a;
+      }
+    }
+
+    .helpIcon {
+      color: rgba(0, 0, 0, 0.4);
+    }
+  }
+}
+
+// Theme toggle button (works in both modes)
+.themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .light & {
+    color: rgba(0, 0, 0, 0.4);
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.06);
+      color: rgba(0, 0, 0, 0.7);
+    }
+  }
 }

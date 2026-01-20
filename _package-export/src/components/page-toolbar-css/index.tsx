@@ -294,7 +294,7 @@ export function PageFeedbackToolbarCSS({
   const [showSettings, setShowSettings] = useState(false);
   const [showSettingsVisible, setShowSettingsVisible] = useState(false);
   const [settings, setSettings] = useState<ToolbarSettings>(DEFAULT_SETTINGS);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [showEntranceAnimation, setShowEntranceAnimation] = useState(false);
 
   // For animations - track which markers have animated in and which are exiting
@@ -1348,7 +1348,7 @@ export function PageFeedbackToolbarCSS({
       <div className={styles.toolbar} data-feedback-toolbar>
         {/* Morphing container */}
         <div
-          className={`${styles.toolbarContainer} ${isActive ? styles.expanded : styles.collapsed} ${showEntranceAnimation ? styles.entrance : ""}`}
+          className={`${styles.toolbarContainer} ${!isDarkMode ? styles.light : ""} ${isActive ? styles.expanded : styles.collapsed} ${showEntranceAnimation ? styles.entrance : ""}`}
           onClick={!isActive ? () => setIsActive(true) : undefined}
           role={!isActive ? "button" : undefined}
           tabIndex={!isActive ? 0 : -1}
@@ -1374,7 +1374,7 @@ export function PageFeedbackToolbarCSS({
             className={`${styles.controlsContent} ${isActive ? styles.visible : styles.hidden}`}
           >
             <button
-              className={styles.controlButton}
+              className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
               onClick={(e) => {
                 e.stopPropagation();
                 toggleFreeze();
@@ -1387,7 +1387,7 @@ export function PageFeedbackToolbarCSS({
             </button>
 
             <button
-              className={styles.controlButton}
+              className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
               onClick={(e) => {
                 e.stopPropagation();
                 setShowMarkers(!showMarkers);
@@ -1399,7 +1399,7 @@ export function PageFeedbackToolbarCSS({
             </button>
 
             <button
-              className={styles.controlButton}
+              className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
               onClick={(e) => {
                 e.stopPropagation();
                 copyOutput();
@@ -1413,7 +1413,7 @@ export function PageFeedbackToolbarCSS({
             </button>
 
             <button
-              className={styles.controlButton}
+              className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
               onClick={(e) => {
                 e.stopPropagation();
                 clearAll();
@@ -1426,7 +1426,7 @@ export function PageFeedbackToolbarCSS({
             </button>
 
             <button
-              className={styles.controlButton}
+              className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
               onClick={(e) => {
                 e.stopPropagation();
                 setShowSettings(!showSettings);
@@ -1438,10 +1438,10 @@ export function PageFeedbackToolbarCSS({
               <IconGear size={24} />
             </button>
 
-            <div className={styles.divider} />
+            <div className={`${styles.divider} ${!isDarkMode ? styles.light : ""}`} />
 
             <button
-              className={styles.controlButton}
+              className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
               onClick={(e) => {
                 e.stopPropagation();
                 setIsActive(false);
@@ -1454,7 +1454,7 @@ export function PageFeedbackToolbarCSS({
 
           {/* Settings Panel */}
           <div
-            className={`${styles.settingsPanel} ${isDarkMode ? styles.dark : ""} ${showSettingsVisible ? styles.enter : styles.exit}`}
+            className={`${styles.settingsPanel} ${!isDarkMode ? styles.light : ""} ${showSettingsVisible ? styles.enter : styles.exit}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className={styles.settingsHeader}>
@@ -1684,7 +1684,7 @@ export function PageFeedbackToolbarCSS({
                     </span>
                   )}
                   {isHovered && !editingAnnotation && (
-                    <div className={`${styles.markerTooltip} ${styles.enter}`}>
+                    <div className={`${styles.markerTooltip} ${!isDarkMode ? styles.light : ""} ${styles.enter}`}>
                       <span className={styles.markerQuote}>
                         {annotation.element}
                         {annotation.selectedText && ` "${annotation.selectedText.slice(0, 30)}${annotation.selectedText.length > 30 ? "..." : ""}"`}
@@ -1787,7 +1787,7 @@ export function PageFeedbackToolbarCSS({
                     </span>
                   )}
                   {isHovered && !editingAnnotation && (
-                    <div className={`${styles.markerTooltip} ${styles.enter}`}>
+                    <div className={`${styles.markerTooltip} ${!isDarkMode ? styles.light : ""} ${styles.enter}`}>
                       <span className={styles.markerQuote}>
                         {annotation.element}
                         {annotation.selectedText && ` "${annotation.selectedText.slice(0, 30)}${annotation.selectedText.length > 30 ? "..." : ""}"`}
@@ -1940,6 +1940,7 @@ export function PageFeedbackToolbarCSS({
                 onSubmit={addAnnotation}
                 onCancel={cancelAnnotation}
                 isExiting={pendingExiting}
+                lightMode={!isDarkMode}
                 accentColor={
                   pendingAnnotation.isMultiSelect
                     ? "#34C759"
@@ -1988,6 +1989,7 @@ export function PageFeedbackToolbarCSS({
                 onSubmit={updateAnnotation}
                 onCancel={cancelEditAnnotation}
                 isExiting={editExiting}
+                lightMode={!isDarkMode}
                 accentColor={
                   editingAnnotation.isMultiSelect
                     ? "#34C759"

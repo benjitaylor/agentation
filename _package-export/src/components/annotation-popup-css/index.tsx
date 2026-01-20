@@ -30,6 +30,8 @@ export interface AnnotationPopupCSSProps {
   accentColor?: string;
   /** External exit state (parent controls exit animation) */
   isExiting?: boolean;
+  /** Light mode styling */
+  lightMode?: boolean;
 }
 
 export interface AnnotationPopupCSSHandle {
@@ -65,6 +67,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
       style,
       accentColor = "#3c82f7",
       isExiting = false,
+      lightMode = false,
     },
     ref
   ) {
@@ -150,6 +153,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
 
     const popupClassName = [
       styles.popup,
+      lightMode ? styles.light : "",
       animState === "enter" ? styles.enter : "",
       animState === "entered" ? styles.entered : "",
       animState === "exit" ? styles.exit : "",

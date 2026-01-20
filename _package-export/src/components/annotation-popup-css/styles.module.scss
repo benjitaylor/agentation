@@ -1,6 +1,5 @@
 // Annotation Popup - CSS-only version (no framer-motion)
 // Uses CSS animations for all transitions
-// LIGHT MODE VARIANT
 
 $blue: #3c82f7;
 $green: #34C759;
@@ -58,11 +57,11 @@ $green: #34C759;
   transform: translateX(-50%);
   width: 280px;
   padding: 0.75rem 1rem 14px;
-  background: #ffffff;
+  background: #1a1a1a;
   border-radius: 16px;
   box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.12),
-    0 0 0 1px rgba(0, 0, 0, 0.06);
+    0 4px 24px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
   cursor: default;
   z-index: 100001;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -106,7 +105,7 @@ $green: #34C759;
 .element {
   font-size: 0.75rem;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.6);
+  color: rgba(255, 255, 255, 0.65);
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -117,7 +116,7 @@ $green: #34C759;
 .timestamp {
   font-size: 0.625rem;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.35);
   font-variant-numeric: tabular-nums;
   margin-left: 0.5rem;
   flex-shrink: 0;
@@ -130,10 +129,10 @@ $green: #34C759;
 .quote {
   font-size: 0.6875rem;
   font-style: italic;
-  color: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.5);
   margin-bottom: 0.5rem;
   padding: 0.4rem 0.5rem;
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 0.25rem;
   line-height: 1.45;
 }
@@ -147,9 +146,9 @@ $green: #34C759;
   padding: 0.5rem 0.625rem;
   font-size: 0.8125rem;
   font-family: inherit;
-  background: rgba(0, 0, 0, 0.03);
-  color: #1a1a1a;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   resize: none;
   outline: none;
@@ -164,7 +163,7 @@ $green: #34C759;
   }
 
   &::placeholder {
-    color: rgba(0, 0, 0, 0.4);
+    color: rgba(255, 255, 255, 0.35);
   }
 
   &::-webkit-scrollbar {
@@ -176,7 +175,7 @@ $green: #34C759;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 3px;
   }
 }
@@ -205,11 +204,11 @@ $green: #34C759;
 
 .cancel {
   background: transparent;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.5);
 
   &:hover {
-    background: rgba(0, 0, 0, 0.06);
-    color: rgba(0, 0, 0, 0.75);
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
   }
 }
 
@@ -222,5 +221,54 @@ $green: #34C759;
 
   &:disabled {
     cursor: not-allowed;
+  }
+}
+
+// =============================================================================
+// Light Mode
+// =============================================================================
+
+.light {
+  &.popup {
+    background: #fff;
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.12),
+      0 0 0 1px rgba(0, 0, 0, 0.06);
+  }
+
+  .element {
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .timestamp {
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+  .quote {
+    color: rgba(0, 0, 0, 0.55);
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  .textarea {
+    background: rgba(0, 0, 0, 0.03);
+    color: #1a1a1a;
+    border-color: rgba(0, 0, 0, 0.12);
+
+    &::placeholder {
+      color: rgba(0, 0, 0, 0.4);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .cancel {
+    color: rgba(0, 0, 0, 0.5);
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.06);
+      color: rgba(0, 0, 0, 0.75);
+    }
   }
 }
