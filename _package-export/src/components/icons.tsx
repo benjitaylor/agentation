@@ -607,6 +607,34 @@ export const IconXmark = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
+// Sun icon (light mode)
+export const IconSun = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M12 5V3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M12 21V19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M16.95 7.05L18.36 5.64" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M5.64 18.36L7.05 16.95" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M19 12H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M3 12H5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M16.95 16.95L18.36 18.36" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M5.64 5.64L7.05 7.05" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+// Moon icon (dark mode)
+export const IconMoon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <path
+      d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 // Animated Bunny mascot
 export const AnimatedBunny = ({
   size = 20,

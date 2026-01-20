@@ -661,7 +661,8 @@ $green: #34c759;
   padding: 16px 1rem 16px;
   min-width: 205px;
   box-shadow:
-    0 1px 8px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 4px 16px rgba(0, 0, 0, 0.06),
     0 0 0 1px rgba(0, 0, 0, 0.04);
 
   &.enter {
@@ -691,8 +692,49 @@ $green: #34c759;
       0 4px 20px rgba(0, 0, 0, 0.3),
       0 0 0 1px rgba(255, 255, 255, 0.08);
 
+    .settingsHeader {
+      border-bottom-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .settingsBrand {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .settingsBrandSlash {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .settingsVersion {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .themeToggle {
+      color: rgba(255, 255, 255, 0.4);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
+
+    .settingsSection {
+      border-top-color: rgba(255, 255, 255, 0.08);
+    }
+
     .settingsLabel {
-      color: rgba(255, 255, 255, 0.6);
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .cycleButton {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .cycleDot {
+      background: rgba(255, 255, 255, 0.2);
+
+      &.active {
+        background: rgba(255, 255, 255, 0.7);
+      }
     }
 
     .settingsOption {
@@ -709,7 +751,25 @@ $green: #34c759;
     }
 
     .toggleLabel {
-      color: rgba(255, 255, 255, 0.85);
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .customCheckbox {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+
+      input[type="checkbox"]:checked + & {
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.9);
+
+        svg {
+          color: #1a1a1a;
+        }
+      }
+    }
+
+    .helpIcon {
+      color: rgba(255, 255, 255, 0.3);
     }
   }
 }
@@ -741,6 +801,26 @@ $green: #34c759;
   color: rgba(0, 0, 0, 0.4);
   margin-left: auto;
   letter-spacing: -0.0094em;
+}
+
+.themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: rgba(0, 0, 0, 0.7);
+  }
 }
 
 .settingsSection {

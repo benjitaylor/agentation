@@ -31,6 +31,8 @@ import {
   IconPause,
   IconEyeAnimated,
   IconPausePlayAnimated,
+  IconSun,
+  IconMoon,
 } from "../icons";
 import {
   identifyElement,
@@ -1452,7 +1454,7 @@ export function PageFeedbackToolbarCSS({
 
           {/* Settings Panel */}
           <div
-            className={`${styles.settingsPanel} ${showSettingsVisible ? styles.enter : styles.exit}`}
+            className={`${styles.settingsPanel} ${isDarkMode ? styles.dark : ""} ${showSettingsVisible ? styles.enter : styles.exit}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className={styles.settingsHeader}>
@@ -1469,6 +1471,13 @@ export function PageFeedbackToolbarCSS({
                 agentation
               </span>
               <span className={styles.settingsVersion}>v1.0.1</span>
+              <button
+                className={styles.themeToggle}
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                {isDarkMode ? <IconSun size={14} /> : <IconMoon size={14} />}
+              </button>
             </div>
 
             <div className={styles.settingsSection}>
