@@ -266,6 +266,7 @@ export function PageFeedbackToolbarCSS({
   const [isClearing, setIsClearing] = useState(false);
   const [hoveredMarkerId, setHoveredMarkerId] = useState<string | null>(null);
   const [deletingMarkerId, setDeletingMarkerId] = useState<string | null>(null);
+  const [renumberFrom, setRenumberFrom] = useState<number | null>(null);
   const [editingAnnotation, setEditingAnnotation] = useState<Annotation | null>(
     null,
   );
@@ -1199,6 +1200,7 @@ export function PageFeedbackToolbarCSS({
 
   // Delete annotation with exit animation
   const deleteAnnotation = useCallback((id: string) => {
+    const deletedIndex = annotations.findIndex((a) => a.id === id);
     setDeletingMarkerId(id);
     setExitingMarkers((prev) => new Set(prev).add(id));
 
@@ -1211,8 +1213,14 @@ export function PageFeedbackToolbarCSS({
         return next;
       });
       setDeletingMarkerId(null);
+
+      // Trigger renumber animation for markers after deleted one
+      if (deletedIndex < annotations.length - 1) {
+        setRenumberFrom(deletedIndex);
+        setTimeout(() => setRenumberFrom(null), 200);
+      }
     }, 150);
-  }, []);
+  }, [annotations]);
 
   // Start editing an annotation (right-click)
   const startEditAnnotation = useCallback((annotation: Annotation) => {
@@ -1643,7 +1651,9 @@ export function PageFeedbackToolbarCSS({
                   {showDeleteState ? (
                     <IconXmark size={isMulti ? 18 : 16} />
                   ) : (
-                    globalIndex + 1
+                    <span className={renumberFrom !== null && globalIndex >= renumberFrom ? styles.renumber : undefined}>
+                      {globalIndex + 1}
+                    </span>
                   )}
                   {isHovered && !editingAnnotation && (
                     <div className={`${styles.markerTooltip} ${styles.enter}`}>
@@ -1750,7 +1760,9 @@ export function PageFeedbackToolbarCSS({
                   {showDeleteState ? (
                     <IconClose size={isMulti ? 12 : 10} />
                   ) : (
-                    globalIndex + 1
+                    <span className={renumberFrom !== null && globalIndex >= renumberFrom ? styles.renumber : undefined}>
+                      {globalIndex + 1}
+                    </span>
                   )}
                   {isHovered && !editingAnnotation && (
                     <div className={`${styles.markerTooltip} ${styles.enter}`}>
@@ -1798,7 +1810,11 @@ export function PageFeedbackToolbarCSS({
 
       {/* Interactive overlay */}
       {isActive && (
-        <div className={styles.overlay} data-feedback-toolbar>
+        <div
+          className={styles.overlay}
+          data-feedback-toolbar
+          style={(pendingAnnotation || editingAnnotation) ? { zIndex: 99999 } : undefined}
+        >
           {/* Hover highlight */}
           {hoverInfo?.rect &&
             !pendingAnnotation &&

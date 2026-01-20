@@ -26,7 +26,11 @@
       "Bash(git checkout:*)",
       "Bash(git merge:*)",
       "WebFetch(domain:localhost)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr edit:*)",
+      "WebFetch(domain:www.figma.com)",
+      "Bash(git fetch:*)"
     ]
   }
 }

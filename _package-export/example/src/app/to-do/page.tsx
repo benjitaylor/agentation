@@ -10,6 +10,57 @@ export default function TodoPage() {
   return (
     <>
       <style>{`
+        .todo-notice {
+          background: rgba(0,0,0,0.04);
+          padding: 0.625rem 0.875rem;
+          border-radius: 0.375rem;
+          font-size: 0.75rem;
+          color: rgba(0,0,0,0.5);
+          margin-bottom: 0.5rem;
+        }
+        .todo-badge {
+          display: inline-block;
+          padding: 0 0.4rem;
+          border: 1px solid rgba(0,0,0,0.18);
+          border-radius: 999px;
+          font-size: 0.5625rem;
+          font-weight: 450;
+          line-height: 1.4;
+          color: rgba(0,0,0,0.45);
+          margin-left: 0.375rem;
+          vertical-align: middle;
+        }
+        .todo-badge.progress {
+          border-color: rgba(59,130,246,0.35);
+          color: rgba(59,130,246,0.8);
+        }
+        .todo-badge.later {
+          border-color: rgba(0,0,0,0.12);
+          color: rgba(0,0,0,0.35);
+        }
+        .todo-badge.low {
+          border-color: rgba(34,197,94,0.35);
+          color: rgba(34,197,94,0.85);
+        }
+        .todo-badge.medium {
+          border-color: rgba(245,158,11,0.4);
+          color: rgba(180,116,0,0.85);
+        }
+        .todo-badge.high {
+          border-color: rgba(239,68,68,0.35);
+          color: rgba(239,68,68,0.8);
+        }
+        .todo-badge.explore {
+          border-color: rgba(139,92,246,0.35);
+          color: rgba(139,92,246,0.85);
+        }
+        .todo-deferred {
+          color: rgba(0,0,0,0.35);
+        }
+        .todo-done {
+          color: rgba(0,0,0,0.4);
+          margin-top: 0.5rem;
+        }
         .section-toggle {
           width: 100%;
           display: flex;
@@ -27,6 +78,9 @@ export default function TodoPage() {
           cursor: pointer;
           transition: color 0.15s ease;
           margin-top: 1.5rem;
+        }
+        .section-toggle:first-of-type {
+          margin-top: 0.5rem;
         }
         .section-toggle:hover {
           color: rgba(0, 0, 0, 0.65);
@@ -60,14 +114,7 @@ export default function TodoPage() {
         <p className="tagline">9 tasks &middot; 4 areas to explore</p>
       </header>
 
-      <div style={{
-        background: 'rgba(0,0,0,0.04)',
-        padding: '0.625rem 0.875rem',
-        borderRadius: '0.375rem',
-        fontSize: '0.75rem',
-        color: 'rgba(0,0,0,0.5)',
-        marginBottom: '0.5rem'
-      }}>
+      <div className="todo-notice">
         This is a temporary dev page and won&rsquo;t be published.
       </div>
 
@@ -76,17 +123,22 @@ export default function TodoPage() {
         <ul>
           <li>Make sure popup annotations always show (e.g. if they are right at the edge of the screen)</li>
           <li>Make the toolbar movable</li>
-          <li style={{ color: '#22c55e' }}>Improve performance for drag annotations <span style={{ opacity: 0.7 }}>(post-launch)</span></li>
-          <li>Missing forensic option in toolbar settings <span style={{ display: 'inline-block', background: '#3b82f6', color: 'white', padding: '0.125rem 0.375rem', borderRadius: '0.25rem', fontSize: '0.625rem', fontWeight: 500, marginLeft: '0.25rem' }}>In Progress</span></li>
+          <li className="todo-deferred">Improve performance for drag annotations <span className="todo-badge later">Post-launch</span></li>
+          <li>Missing forensic option in toolbar settings <span className="todo-badge progress">In progress</span></li>
           <li>Check whether output format setting is changing the output format for the toolbar</li>
           <li>Set toolbar to be closed by default in final package</li>
           <li>Create and run test package</li>
           <li>Clean up git history for clean slate, then open source</li>
           <li>Finalise domain and OG image</li>
+          <li>Edge case: hover container shape flashes when right-clicking to edit an annotation</li>
+          <li>Add light mode</li>
+          <li>Consider removing the "right click to edit/click to remove" hint text</li>
+          <li>Make sure the version number in settings always pulls (or builds with) the latest version</li>
+          <li><s>When deleting an annotation, animate the other annotation numbers vs static change</s></li>
         </ul>
       </section>
 
-      <button className="section-toggle" style={{ marginTop: '0.5rem' }} onClick={() => setIsDoneOpen(!isDoneOpen)}>
+      <button className="section-toggle" onClick={() => setIsDoneOpen(!isDoneOpen)}>
         <span>Done (9)</span>
         <span className={`section-toggle-icon ${isDoneOpen ? 'open' : ''}`}>
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -103,7 +155,7 @@ export default function TodoPage() {
 
       <div className={`section-content ${isDoneOpen ? 'open' : ''}`}>
         <div className="section-content-inner">
-          <ul style={{ color: 'rgba(0,0,0,0.4)', marginTop: '0.5rem' }}>
+          <ul className="todo-done">
             <li><s>Toolbar entrance animation on page load</s></li>
             <li><s>Edit popup exit animation when clicking Save</s></li>
             <li><s>Make sure popup annotations show on top layer</s></li>
@@ -170,26 +222,26 @@ export default function TodoPage() {
             <h2>Implementation Plan</h2>
             <p>Notes on approaching each task, keeping changes minimal and focused.</p>
 
-            <h3><span style={{ display: 'inline-block', background: '#22c55e', color: 'white', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.6875rem', fontWeight: 500 }}>Low-Risk, High-Value</span></h3>
+            <h3><span className="todo-badge low">Low-risk</span></h3>
             <ul>
               <li><strong>Popup z-index issues</strong> &mdash; Verify z-index is high enough (currently 100000 base). Could also investigate <code>popover</code> attribute or CSS <code>@layer</code> if needed.</li>
               <li><strong>Popup edge positioning</strong> &mdash; Already partially handled with <code>Math.min/max</code> clamping. Add similar logic for left/right edges and tall popups. Low risk&mdash;just math adjustments.</li>
             </ul>
 
-            <h3><span style={{ display: 'inline-block', background: '#f59e0b', color: 'white', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.6875rem', fontWeight: 500 }}>Medium-Risk (Require Care)</span></h3>
+            <h3><span className="todo-badge medium">Medium-risk</span></h3>
             <ul>
               <li><strong>Make toolbar movable</strong> &mdash; Doable but needs thoughtful UX (drag handle, persist position, snap to corners?). Keep it simple: just add drag handle and store position in localStorage. Modifies positioning logic but not core functionality.</li>
               <li><strong>Drag annotation performance</strong> &mdash; Already has throttling (50ms). Could optimize by reducing DOM queries, using IntersectionObserver, caching bounding rects. Medium risk&mdash;performance work can introduce bugs if not careful.</li>
               <li><strong>Drag selection container display</strong> &mdash; Fix the underlying containers display issue when doing drag-based annotations. Currently looks a bit funky&mdash;likely needs refinement of which elements get highlighted during selection.</li>
             </ul>
 
-            <h3><span style={{ display: 'inline-block', background: '#ef4444', color: 'white', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.6875rem', fontWeight: 500 }}>Higher-Risk / Needs Input</span></h3>
+            <h3><span className="todo-badge high">Higher-risk</span></h3>
             <ul>
               <li><strong>Improve toolbar settings</strong> &mdash; Visual improvements, one for Dennis.</li>
               <li><strong>Improve icons/animations</strong> &mdash; Already has nice animations. &ldquo;Improvements&rdquo; are subjective&mdash;need specific feedback on what feels wrong before changing.</li>
             </ul>
 
-            <h3><span style={{ display: 'inline-block', background: '#8b5cf6', color: 'white', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.6875rem', fontWeight: 500 }}>Exploration Areas (Research Only)</span></h3>
+            <h3><span className="todo-badge explore">Exploration</span></h3>
             <p>These are explicitly &ldquo;things to explore&rdquo;&mdash;won&rsquo;t start implementing without discussion:</p>
             <ul>
               <li><strong>Auto-paste integration</strong> &mdash; Would need to research Cursor/VS Code extension APIs</li>
