@@ -8,7 +8,7 @@ import {
   AnnotationPopupCSSHandle,
 } from "../annotation-popup-css";
 import {
-  IconChatEllipsis,
+  IconListSparkle,
   IconPlayAlt,
   IconPauseAlt,
   IconClose,
@@ -1229,12 +1229,7 @@ export function PageFeedbackToolbarCSS({
           <div
             className={`${styles.toggleContent} ${!isActive ? styles.visible : styles.hidden}`}
           >
-            <IconChatEllipsis
-              size={24}
-              style={{
-                transform: "translateX(-1px)",
-              }}
-            />
+            <IconListSparkle size={24} />
             {hasAnnotations && (
               <span
                 className={`${styles.badge} ${isActive ? styles.fadeOut : ""}`}
@@ -1330,7 +1325,16 @@ export function PageFeedbackToolbarCSS({
           >
             <div className={styles.settingsHeader}>
               <span className={styles.settingsBrand}>
-                <span className={styles.settingsBrandSlash} style={{ color: settings.annotationColor, transition: 'color 0.2s ease' }}>/</span>agentation
+                <span
+                  className={styles.settingsBrandSlash}
+                  style={{
+                    color: settings.annotationColor,
+                    transition: "color 0.2s ease",
+                  }}
+                >
+                  /
+                </span>
+                agentation
               </span>
               <span className={styles.settingsVersion}>v1.0.1</span>
             </div>
@@ -1339,7 +1343,10 @@ export function PageFeedbackToolbarCSS({
               <div className={styles.settingsRow}>
                 <div className={styles.settingsLabel}>
                   Output Detail
-                  <span className={styles.helpIcon} data-tooltip="Controls how much detail is included in the copied output">
+                  <span
+                    className={styles.helpIcon}
+                    data-tooltip="Controls how much detail is included in the copied output"
+                  >
                     <IconHelp size={20} />
                   </span>
                 </div>
@@ -1347,17 +1354,25 @@ export function PageFeedbackToolbarCSS({
                   className={styles.cycleButton}
                   onClick={() => {
                     const currentIndex = OUTPUT_DETAIL_OPTIONS.findIndex(
-                      (opt) => opt.value === settings.outputDetail
+                      (opt) => opt.value === settings.outputDetail,
                     );
-                    const nextIndex = (currentIndex + 1) % OUTPUT_DETAIL_OPTIONS.length;
+                    const nextIndex =
+                      (currentIndex + 1) % OUTPUT_DETAIL_OPTIONS.length;
                     setSettings((s) => ({
                       ...s,
                       outputDetail: OUTPUT_DETAIL_OPTIONS[nextIndex].value,
                     }));
                   }}
                 >
-                  <span key={settings.outputDetail} className={styles.cycleButtonText}>
-                    {OUTPUT_DETAIL_OPTIONS.find((opt) => opt.value === settings.outputDetail)?.label}
+                  <span
+                    key={settings.outputDetail}
+                    className={styles.cycleButtonText}
+                  >
+                    {
+                      OUTPUT_DETAIL_OPTIONS.find(
+                        (opt) => opt.value === settings.outputDetail,
+                      )?.label
+                    }
                   </span>
                   <span className={styles.cycleDots}>
                     {OUTPUT_DETAIL_OPTIONS.map((option, i) => (
@@ -1422,11 +1437,16 @@ export function PageFeedbackToolbarCSS({
                   className={styles.customCheckbox}
                   htmlFor="autoClearAfterCopy"
                 >
-                  {settings.autoClearAfterCopy && <IconCheckSmallAnimated size={14} />}
+                  {settings.autoClearAfterCopy && (
+                    <IconCheckSmallAnimated size={14} />
+                  )}
                 </label>
                 <span className={styles.toggleLabel}>
                   Clear after output
-                  <span className={styles.helpIcon} data-tooltip="Automatically clear annotations after copying">
+                  <span
+                    className={styles.helpIcon}
+                    data-tooltip="Automatically clear annotations after copying"
+                  >
                     <IconHelp size={20} />
                   </span>
                 </span>
@@ -1447,7 +1467,9 @@ export function PageFeedbackToolbarCSS({
                   className={styles.customCheckbox}
                   htmlFor="blockInteractions"
                 >
-                  {settings.blockInteractions && <IconCheckSmallAnimated size={14} />}
+                  {settings.blockInteractions && (
+                    <IconCheckSmallAnimated size={14} />
+                  )}
                 </label>
                 <span className={styles.toggleLabel}>
                   Block page interactions
