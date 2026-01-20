@@ -36,6 +36,10 @@ import {
   identifyElement,
   getNearbyText,
   getElementClasses,
+  getDetailedComputedStyles,
+  getFullElementPath,
+  getAccessibilityInfo,
+  getNearbyElements,
 } from "../../utils/element-identification";
 import {
   loadAnnotations,
@@ -59,7 +63,7 @@ type HoverInfo = {
   rect: DOMRect | null;
 };
 
-type OutputDetailLevel = "compact" | "standard" | "detailed";
+type OutputDetailLevel = "compact" | "standard" | "detailed" | "forensic";
 
 type ToolbarSettings = {
   outputDetail: OutputDetailLevel;
@@ -79,6 +83,7 @@ const OUTPUT_DETAIL_OPTIONS: { value: OutputDetailLevel; label: string }[] = [
   { value: "compact", label: "Compact" },
   { value: "standard", label: "Standard" },
   { value: "detailed", label: "Detailed" },
+  { value: "forensic", label: "Forensic" },
 ];
 
 const COLOR_OPTIONS = [
@@ -122,7 +127,18 @@ function generateOutput(
 
   let output = `## Page Feedback: ${pathname}\n`;
 
-  if (detailLevel !== "compact") {
+  if (detailLevel === "forensic") {
+    // Full environment info for forensic mode
+    output += `\n**Environment:**\n`;
+    output += `- Viewport: ${viewport}\n`;
+    if (typeof window !== "undefined") {
+      output += `- URL: ${window.location.href}\n`;
+      output += `- User Agent: ${navigator.userAgent}\n`;
+      output += `- Timestamp: ${new Date().toISOString()}\n`;
+      output += `- Device Pixel Ratio: ${window.devicePixelRatio}\n`;
+    }
+    output += `\n---\n`;
+  } else if (detailLevel !== "compact") {
     output += `**Viewport:** ${viewport}\n`;
   }
   output += "\n";
@@ -134,7 +150,40 @@ function generateOutput(
         output += ` (re: "${a.selectedText.slice(0, 30)}${a.selectedText.length > 30 ? "..." : ""}")`;
       }
       output += "\n";
+    } else if (detailLevel === "forensic") {
+      // Forensic mode - order matches output page example
+      output += `### ${i + 1}. ${a.element}\n`;
+      if (a.isMultiSelect && a.fullPath) {
+        output += `*Forensic data shown for first element of selection*\n`;
+      }
+      if (a.fullPath) {
+        output += `**Full DOM Path:** ${a.fullPath}\n`;
+      }
+      if (a.cssClasses) {
+        output += `**CSS Classes:** ${a.cssClasses}\n`;
+      }
+      if (a.boundingBox) {
+        output += `**Position:** x:${Math.round(a.boundingBox.x)}, y:${Math.round(a.boundingBox.y)} (${Math.round(a.boundingBox.width)}×${Math.round(a.boundingBox.height)}px)\n`;
+      }
+      output += `**Annotation at:** ${a.x.toFixed(1)}% from left, ${Math.round(a.y)}px from top\n`;
+      if (a.selectedText) {
+        output += `**Selected text:** "${a.selectedText}"\n`;
+      }
+      if (a.nearbyText && !a.selectedText) {
+        output += `**Context:** ${a.nearbyText.slice(0, 100)}\n`;
+      }
+      if (a.computedStyles) {
+        output += `**Computed Styles:** ${a.computedStyles}\n`;
+      }
+      if (a.accessibility) {
+        output += `**Accessibility:** ${a.accessibility}\n`;
+      }
+      if (a.nearbyElements) {
+        output += `**Nearby Elements:** ${a.nearbyElements}\n`;
+      }
+      output += `**Feedback:** ${a.comment}\n\n`;
     } else {
+      // Standard and detailed modes
       output += `### ${i + 1}. ${a.element}\n`;
       output += `**Location:** ${a.elementPath}\n`;
 
@@ -207,6 +256,10 @@ export function PageFeedbackToolbarCSS({
     cssClasses?: string;
     isMultiSelect?: boolean;
     isFixed?: boolean;
+    fullPath?: string;
+    accessibility?: string;
+    computedStyles?: string;
+    nearbyElements?: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
   const [cleared, setCleared] = useState(false);
@@ -620,6 +673,12 @@ export function PageFeedbackToolbarCSS({
         selectedText = selection.toString().trim().slice(0, 500);
       }
 
+      // Capture forensic data
+      const computedStylesObj = getDetailedComputedStyles(elementUnder);
+      const computedStylesStr = Object.entries(computedStylesObj)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join("; ");
+
       setPendingAnnotation({
         x,
         y,
@@ -636,6 +695,10 @@ export function PageFeedbackToolbarCSS({
         nearbyText: getNearbyText(elementUnder),
         cssClasses: getElementClasses(elementUnder),
         isFixed,
+        fullPath: getFullElementPath(elementUnder),
+        accessibility: getAccessibilityInfo(elementUnder),
+        computedStyles: computedStylesStr,
+        nearbyElements: getNearbyElements(elementUnder),
       });
       setHoverInfo(null);
     };
@@ -1008,6 +1071,13 @@ export function PageFeedbackToolbarCSS({
               ? ` +${finalElements.length - 5} more`
               : "";
 
+          // Capture forensic data from first element (Option A)
+          const firstElement = finalElements[0].element;
+          const firstElementComputedStyles = getDetailedComputedStyles(firstElement);
+          const firstElementComputedStylesStr = Object.entries(firstElementComputedStyles)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join("; ");
+
           setPendingAnnotation({
             x,
             y,
@@ -1021,6 +1091,13 @@ export function PageFeedbackToolbarCSS({
               height: bounds.bottom - bounds.top,
             },
             isMultiSelect: true,
+            // Forensic data from first element
+            fullPath: getFullElementPath(firstElement),
+            accessibility: getAccessibilityInfo(firstElement),
+            computedStyles: firstElementComputedStylesStr,
+            nearbyElements: getNearbyElements(firstElement),
+            cssClasses: getElementClasses(firstElement),
+            nearbyText: getNearbyText(firstElement),
           });
         } else {
           // No elements selected, but allow annotation on empty area
@@ -1082,6 +1159,10 @@ export function PageFeedbackToolbarCSS({
         cssClasses: pendingAnnotation.cssClasses,
         isMultiSelect: pendingAnnotation.isMultiSelect,
         isFixed: pendingAnnotation.isFixed,
+        fullPath: pendingAnnotation.fullPath,
+        accessibility: pendingAnnotation.accessibility,
+        computedStyles: pendingAnnotation.computedStyles,
+        nearbyElements: pendingAnnotation.nearbyElements,
       };
 
       setAnnotations((prev) => [...prev, newAnnotation]);
