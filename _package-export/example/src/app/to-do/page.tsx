@@ -111,7 +111,7 @@ export default function TodoPage() {
       <article className="article">
       <header>
         <h1>To-Do</h1>
-        <p className="tagline">9 tasks &middot; 4 areas to explore</p>
+        <p className="tagline">14 tasks &middot; 4 areas to explore</p>
       </header>
 
       <div className="todo-notice">
@@ -119,21 +119,23 @@ export default function TodoPage() {
       </div>
 
       <section>
-        <h2>Tasks</h2>
+        <h2>Tasks <span style={{ fontWeight: 400, fontSize: '0.75rem', color: 'rgba(0,0,0,0.4)' }}>(ordered by priority)</span></h2>
         <ul>
-          <li>Make sure popup annotations always show (e.g. if they are right at the edge of the screen)</li>
-          <li>Make the toolbar movable</li>
-          <li className="todo-deferred">Improve performance for drag annotations <span className="todo-badge later">Post-launch</span></li>
           <li>Missing forensic option in toolbar settings <span className="todo-badge progress">In progress</span></li>
           <li>Check whether output format setting is changing the output format for the toolbar</li>
           <li>Set toolbar to be closed by default in final package</li>
           <li>Create and run test package</li>
+          <li>Make sure the version number in settings always pulls (or builds with) the latest version</li>
           <li>Clean up git history for clean slate, then open source</li>
           <li>Finalise domain and OG image</li>
+          <li>Make sure popup annotations always show (e.g. if they are right at the edge of the screen)</li>
+          <li>Edge case: hover highlight shows above marker when editing an annotation</li>
           <li>Edge case: hover container shape flashes when right-clicking to edit an annotation</li>
-          <li>Add light mode</li>
+          <li>Truncate long feedback text in marker hover tooltips</li>
+          <li>Make the toolbar movable</li>
           <li>Consider removing the "right click to edit/click to remove" hint text</li>
-          <li>Make sure the version number in settings always pulls (or builds with) the latest version</li>
+          <li>Add light mode</li>
+          <li className="todo-deferred">Improve performance for drag annotations <span className="todo-badge later">Post-launch</span></li>
         </ul>
       </section>
 
