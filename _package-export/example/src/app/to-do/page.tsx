@@ -8,7 +8,7 @@ export default function TodoPage() {
       <article className="article">
       <header>
         <h1>To-Do</h1>
-        <p className="tagline">11 tasks &middot; 4 areas to explore</p>
+        <p className="tagline">12 tasks &middot; 4 areas to explore</p>
       </header>
 
       <div style={{
@@ -34,6 +34,7 @@ export default function TodoPage() {
           <li>Clicking save on right-click to edit isn&rsquo;t animating out the container</li>
           <li>Toolbar flashes in on page load &mdash; a simple scale animation might be nicer</li>
           <li>Missing forensic option in toolbar settings</li>
+          <li>Check whether output format setting is changing the output format for the toolbar</li>
           <li>Set toolbar to be closed by default in final package</li>
           <li style={{ color: 'rgba(0,0,0,0.4)' }}><s>Check mobile</s></li>
           <li style={{ color: 'rgba(0,0,0,0.4)' }}><s>Improve performance</s> (probably fine)</li>

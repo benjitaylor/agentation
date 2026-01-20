@@ -27,16 +27,7 @@ export function Footer() {
           Alex Vanderzon
         </a>
       </p>
-      <span>
-        Icons by{" "}
-        <a
-          href="https://dip.benji.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Dip
-        </a>
-      </span>
+      <a href="/colophon">Colophon</a>
     </footer>
   );
 }

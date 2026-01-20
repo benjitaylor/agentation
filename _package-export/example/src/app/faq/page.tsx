@@ -19,7 +19,7 @@ const faqCategories: FAQCategory[] = [
     items: [
       {
         question: "What is Agentation?",
-        answer: "Agentation is a floating toolbar that lets you annotate web pages and generate structured feedback for AI coding agents. Click elements, select text, and copy markdown that agents can parse to find and fix issues in your codebase."
+        answer: "Agentation is a floating toolbar that lets you annotate web pages and generate structured feedback for AI coding agents. Click elements, select text, and copy markdown that agents can parse to find and fix issues in your codebase.</p><p>It grew out of <a href=\"https://benji.org/annotating\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"faq-link\">a post by Benji Taylor</a> exploring how to give better feedback to AI agents, and has since been packaged for anyone to use."
       },
       {
         question: "Why not just screenshot and annotate?",
@@ -210,6 +210,10 @@ export default function FAQPage() {
           font-size: 0.8125rem;
           line-height: 1.6;
           color: rgba(0, 0, 0, 0.55);
+        }
+        .faq-answer-inner p + p {
+          padding-top: 0;
+          margin-top: -0.5rem;
         }
         .faq-answer-inner code {
           font-family: "SF Mono", "SFMono-Regular", ui-monospace, Consolas, monospace;
