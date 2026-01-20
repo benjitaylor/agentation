@@ -113,6 +113,21 @@ function isElementFixed(element: HTMLElement): boolean {
   return false;
 }
 
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function getActiveButtonStyle(isActive: boolean, color: string): React.CSSProperties | undefined {
+  if (!isActive) return undefined;
+  return {
+    color: color,
+    backgroundColor: hexToRgba(color, 0.25),
+  };
+}
+
 function generateOutput(
   annotations: Annotation[],
   pathname: string,
@@ -1364,6 +1379,7 @@ export function PageFeedbackToolbarCSS({
               }}
               title={isFrozen ? "Resume animations" : "Pause animations"}
               data-active={isFrozen}
+              style={getActiveButtonStyle(isFrozen, settings.annotationColor)}
             >
               <IconPausePlayAnimated size={24} isPaused={isFrozen} />
             </button>
@@ -1388,6 +1404,8 @@ export function PageFeedbackToolbarCSS({
               }}
               disabled={!hasAnnotations}
               title="Copy feedback"
+              data-active={copied}
+              style={getActiveButtonStyle(copied, settings.annotationColor)}
             >
               <IconCopyAnimated size={24} copied={copied} />
             </button>
@@ -1413,6 +1431,7 @@ export function PageFeedbackToolbarCSS({
               }}
               title="Settings"
               data-active={showSettings}
+              style={getActiveButtonStyle(showSettings, settings.annotationColor)}
             >
               <IconGear size={24} />
             </button>
