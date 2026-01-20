@@ -15,6 +15,7 @@ import {
   IconPlus,
   IconGear,
   IconCheck,
+  IconCheckSmall,
   AnimatedBunny,
   IconEye,
   IconEyeMinus,
@@ -23,6 +24,10 @@ import {
   IconXmark,
   IconCheckmark,
   IconCheckmarkLarge,
+  IconCheckmarkCircle,
+  IconPause,
+  IconEyeAlt,
+  IconEyeClosed,
 } from "../icons";
 import {
   identifyElement,
@@ -71,12 +76,13 @@ const OUTPUT_DETAIL_OPTIONS: { value: OutputDetailLevel; label: string }[] = [
 ];
 
 const COLOR_OPTIONS = [
-  { value: "#3c82f7", label: "Blue" },
-  { value: "#34C759", label: "Green" },
-  { value: "#FF9500", label: "Orange" },
   { value: "#AF52DE", label: "Purple" },
-  { value: "#FF2D55", label: "Pink" },
+  { value: "#3c82f7", label: "Blue" },
+  { value: "#5AC8FA", label: "Cyan" },
+  { value: "#34C759", label: "Green" },
   { value: "#FFD60A", label: "Yellow" },
+  { value: "#FF9500", label: "Orange" },
+  { value: "#FF3B30", label: "Red" },
 ];
 
 // =============================================================================
@@ -212,6 +218,7 @@ export function PageFeedbackToolbarCSS({
   const [showSettingsVisible, setShowSettingsVisible] = useState(false);
   const [settings, setSettings] = useState<ToolbarSettings>(DEFAULT_SETTINGS);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showOutputDropdown, setShowOutputDropdown] = useState(false);
 
   // For animations - track which markers have animated in and which are exiting
   const [animatedMarkers, setAnimatedMarkers] = useState<Set<string>>(
@@ -458,11 +465,27 @@ export function PageFeedbackToolbarCSS({
       setEditingAnnotation(null);
       setHoverInfo(null);
       setShowSettings(false); // Close settings when toolbar closes
+      setShowOutputDropdown(false); // Close dropdown when toolbar closes
       if (isFrozen) {
         unfreezeAnimations();
       }
     }
   }, [isActive, isFrozen, unfreezeAnimations]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!showOutputDropdown) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest("[data-dropdown]")) {
+        setShowOutputDropdown(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [showOutputDropdown]);
 
   // Custom cursor
   useEffect(() => {
@@ -1249,11 +1272,7 @@ export function PageFeedbackToolbarCSS({
               title={isFrozen ? "Resume animations" : "Pause animations"}
               data-active={isFrozen}
             >
-              {isFrozen ? (
-                <IconPlayAlt size={24} />
-              ) : (
-                <IconPauseAlt size={24} />
-              )}
+              {isFrozen ? <IconPlayAlt size={24} /> : <IconPause size={24} />}
             </button>
 
             <button
@@ -1264,7 +1283,11 @@ export function PageFeedbackToolbarCSS({
               }}
               title={showMarkers ? "Hide markers" : "Show markers"}
             >
-              {showMarkers ? <IconEye size={24} /> : <IconEyeMinus size={24} />}
+              {showMarkers ? (
+                <IconEyeAlt size={24} />
+              ) : (
+                <IconEyeClosed size={24} />
+              )}
             </button>
 
             <button
@@ -1279,7 +1302,7 @@ export function PageFeedbackToolbarCSS({
               {!copied ? (
                 <IconCopyAlt size={24} />
               ) : (
-                <IconCheckmarkLarge size={24} />
+                <IconCheckmarkCircle size={24} />
               )}
             </button>
 
@@ -1329,56 +1352,100 @@ export function PageFeedbackToolbarCSS({
           >
             <div className={styles.settingsHeader}>
               <span className={styles.settingsBrand}>
-                <span
-                  className={styles.settingsBrand}
-                  style={{
-                    color: "#fff",
-                  }}
-                >
-                  /
-                </span>
-                agentation
+                <span className={styles.settingsBrandSlash}>/</span>agentation
               </span>
-              <AnimatedBunny color="#fff" />
-              <span className={styles.settingsVersion}>v1.0.0</span>
+              <span className={styles.settingsVersion}>v1.0.1</span>
             </div>
 
             <div className={styles.settingsSection}>
-              <div className={styles.settingsLabel}>Output Detail</div>
-              <div className={styles.settingsOptions}>
-                {OUTPUT_DETAIL_OPTIONS.map((option) => (
+              <div className={styles.settingsRow}>
+                <div className={styles.settingsLabel}>Output Detail</div>
+                <div className={styles.dropdownContainer} data-dropdown>
                   <button
-                    key={option.value}
-                    className={`${styles.settingsOption} ${settings.outputDetail === option.value ? styles.selected : ""}`}
-                    onClick={() =>
-                      setSettings((s) => ({
-                        ...s,
-                        outputDetail: option.value,
-                      }))
-                    }
+                    className={styles.dropdownButton}
+                    onClick={() => setShowOutputDropdown(!showOutputDropdown)}
                   >
-                    {option.label}
+                    <span>
+                      {
+                        OUTPUT_DETAIL_OPTIONS.find(
+                          (opt) => opt.value === settings.outputDetail,
+                        )?.label
+                      }
+                    </span>
+                    <svg
+                      width="8"
+                      height="5"
+                      viewBox="0 0 8 5"
+                      fill="none"
+                      style={{
+                        transform: showOutputDropdown
+                          ? "rotate(180deg)"
+                          : "none",
+                        transition: "transform 0.15s ease",
+                      }}
+                    >
+                      <path
+                        d="M1 1L4 4L7 1"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   </button>
-                ))}
+                  {showOutputDropdown && (
+                    <div className={styles.dropdownMenu}>
+                      {OUTPUT_DETAIL_OPTIONS.map((option) => (
+                        <button
+                          key={option.value}
+                          className={`${styles.dropdownItem} ${settings.outputDetail === option.value ? styles.selected : ""}`}
+                          onClick={() => {
+                            setSettings((s) => ({
+                              ...s,
+                              outputDetail: option.value,
+                            }));
+                            setShowOutputDropdown(false);
+                          }}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             <div className={styles.settingsSection}>
-              <div className={styles.settingsLabel}>Marker Color</div>
+              <div
+                className={`${styles.settingsLabel} ${styles.settingsLabelMarker}`}
+              >
+                Marker Colour
+              </div>
               <div className={styles.colorOptions}>
                 {COLOR_OPTIONS.map((color) => (
-                  <button
-                    key={color.value}
-                    className={`${styles.colorOption} ${settings.annotationColor === color.value ? styles.selected : ""}`}
-                    style={{ backgroundColor: color.value }}
+                  <div
                     onClick={() =>
                       setSettings((s) => ({
                         ...s,
                         annotationColor: color.value,
                       }))
                     }
-                    title={color.label}
-                  />
+                    style={{
+                      borderColor:
+                        settings.annotationColor === color.value
+                          ? color.value
+                          : "transparent",
+                    }}
+                    className={`${styles.colorOptionRing} ${settings.annotationColor === color.value ? styles.selected : ""}`}
+                  >
+                    <div
+                      key={color.value}
+                      className={`${styles.colorOption} ${settings.annotationColor === color.value ? styles.selected : ""}`}
+                      style={{ backgroundColor: color.value }}
+                      title={color.label}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -1387,6 +1454,7 @@ export function PageFeedbackToolbarCSS({
               <label className={styles.settingsToggle}>
                 <input
                   type="checkbox"
+                  id="autoClearAfterCopy"
                   checked={settings.autoClearAfterCopy}
                   onChange={(e) =>
                     setSettings((s) => ({
@@ -1395,10 +1463,13 @@ export function PageFeedbackToolbarCSS({
                     }))
                   }
                 />
-                <span className={styles.customCheckbox}>
-                  {settings.autoClearAfterCopy && <IconCheck size={12} />}
-                </span>
-                <span className={styles.toggleLabel}>Clear after copy</span>
+                <label
+                  className={styles.customCheckbox}
+                  htmlFor="autoClearAfterCopy"
+                >
+                  {settings.autoClearAfterCopy && <IconCheckSmall size={14} />}
+                </label>
+                <span className={styles.toggleLabel}>Clear after output</span>
               </label>
             </div>
 
@@ -1406,6 +1477,7 @@ export function PageFeedbackToolbarCSS({
               <label className={styles.settingsToggle}>
                 <input
                   type="checkbox"
+                  id="blockInteractions"
                   checked={settings.blockInteractions}
                   onChange={(e) =>
                     setSettings((s) => ({
@@ -1414,9 +1486,12 @@ export function PageFeedbackToolbarCSS({
                     }))
                   }
                 />
-                <span className={styles.customCheckbox}>
-                  {settings.blockInteractions && <IconCheck size={12} />}
-                </span>
+                <label
+                  className={styles.customCheckbox}
+                  htmlFor="blockInteractions"
+                >
+                  {settings.blockInteractions && <IconCheckSmall size={14} />}
+                </label>
                 <span className={styles.toggleLabel}>
                   Block page interactions
                 </span>
