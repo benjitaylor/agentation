@@ -1482,7 +1482,7 @@ export function PageFeedbackToolbarCSS({
 
             <div className={styles.settingsSection}>
               <div className={styles.settingsRow}>
-                <div className={styles.settingsLabel}>
+                <div className={`${styles.settingsLabel} ${!isDarkMode ? styles.light : ""}`}>
                   Output Detail
                   <span
                     className={styles.helpIcon}
@@ -1492,7 +1492,7 @@ export function PageFeedbackToolbarCSS({
                   </span>
                 </div>
                 <button
-                  className={styles.cycleButton}
+                  className={`${styles.cycleButton} ${!isDarkMode ? styles.light : ""}`}
                   onClick={() => {
                     const currentIndex = OUTPUT_DETAIL_OPTIONS.findIndex(
                       (opt) => opt.value === settings.outputDetail,
@@ -1519,7 +1519,7 @@ export function PageFeedbackToolbarCSS({
                     {OUTPUT_DETAIL_OPTIONS.map((option, i) => (
                       <span
                         key={option.value}
-                        className={`${styles.cycleDot} ${settings.outputDetail === option.value ? styles.active : ""}`}
+                        className={`${styles.cycleDot} ${!isDarkMode ? styles.light : ""} ${settings.outputDetail === option.value ? styles.active : ""}`}
                       />
                     ))}
                   </span>
@@ -1529,7 +1529,7 @@ export function PageFeedbackToolbarCSS({
 
             <div className={styles.settingsSection}>
               <div
-                className={`${styles.settingsLabel} ${styles.settingsLabelMarker}`}
+                className={`${styles.settingsLabel} ${styles.settingsLabelMarker} ${!isDarkMode ? styles.light : ""}`}
               >
                 Marker Colour
               </div>
@@ -1575,14 +1575,14 @@ export function PageFeedbackToolbarCSS({
                   }
                 />
                 <label
-                  className={styles.customCheckbox}
+                  className={`${styles.customCheckbox} ${!isDarkMode ? styles.light : ""}`}
                   htmlFor="autoClearAfterCopy"
                 >
                   {settings.autoClearAfterCopy && (
                     <IconCheckSmallAnimated size={14} />
                   )}
                 </label>
-                <span className={styles.toggleLabel}>
+                <span className={`${styles.toggleLabel} ${!isDarkMode ? styles.light : ""}`}>
                   Clear after output
                   <span
                     className={styles.helpIcon}
@@ -1605,14 +1605,14 @@ export function PageFeedbackToolbarCSS({
                   }
                 />
                 <label
-                  className={styles.customCheckbox}
+                  className={`${styles.customCheckbox} ${!isDarkMode ? styles.light : ""}`}
                   htmlFor="blockInteractions"
                 >
                   {settings.blockInteractions && (
                     <IconCheckSmallAnimated size={14} />
                   )}
                 </label>
-                <span className={styles.toggleLabel}>
+                <span className={`${styles.toggleLabel} ${!isDarkMode ? styles.light : ""}`}>
                   Block page interactions
                 </span>
               </label>
