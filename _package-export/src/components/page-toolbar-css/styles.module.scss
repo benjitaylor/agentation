@@ -1096,22 +1096,22 @@ $green: #34c759;
     right: calc(100% + 8px);
     top: 50%;
     transform: translateY(-50%);
-    padding: 10px 17px;
+    padding: 8px 10px;
     background: #383838;
     color: rgba(255, 255, 255, 0.7);
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 400;
     line-height: 1.4;
     border-radius: 10px;
     white-space: normal;
-    width: 185px;
+    width: 152px;
     text-align: left;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.15s ease, visibility 0.15s ease;
     pointer-events: none;
     z-index: 100;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.28);
   }
 
   &:hover::after {

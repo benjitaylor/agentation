@@ -91,7 +91,7 @@ export default function NotFound() {
       gap: '1rem',
     }}>
       <AnimatedBunnyGrey />
-      <p style={{ color: 'rgba(0,0,0,0.4)', fontSize: '0.875rem', fontWeight: 500 }}>Page not found.</p>
+      <p style={{ color: 'rgba(0,0,0,0.3)', fontSize: '0.875rem', fontWeight: 400 }}>Page not found.</p>
     </div>
   );
 }

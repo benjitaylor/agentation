@@ -77,7 +77,7 @@ export default function TodoPage() {
           <li>Make sure popup annotations always show (e.g. if they are right at the edge of the screen)</li>
           <li>Make the toolbar movable</li>
           <li style={{ color: '#22c55e' }}>Improve performance for drag annotations <span style={{ opacity: 0.7 }}>(post-launch)</span></li>
-          <li>Missing forensic option in toolbar settings</li>
+          <li>Missing forensic option in toolbar settings <span style={{ display: 'inline-block', background: '#3b82f6', color: 'white', padding: '0.125rem 0.375rem', borderRadius: '0.25rem', fontSize: '0.625rem', fontWeight: 500, marginLeft: '0.25rem' }}>In Progress</span></li>
           <li>Check whether output format setting is changing the output format for the toolbar</li>
           <li>Set toolbar to be closed by default in final package</li>
           <li>Create and run test package</li>

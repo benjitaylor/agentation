@@ -1,5 +1,138 @@
 "use client";
 
+import { useEffect, useRef, useMemo, useCallback } from "react";
+
+const bunnyArt = `⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣤⣤⡄⢠⣤⣤⡄⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡟⢦⡀⠛⣿⠁⠀⢹⣇⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢻⡆⠓⡆⠛⣶⠀⠀⣿⠁⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢹⡆⠓⡄⢹⡆⠀⠉⣷⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣿⡇⢹⠈⢹⡇⠀⡿⣤⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⣀⡀⠈⣿⣀⣹⠀⠙⠛⠃⠘⠛⢣⣄⠀⠀
+⠀⠀⠀⠀⣰⠶⠞⠛⠛⠛⠛⠳⠶⣆⡿⠀⠀⠀⠀⢀⣀⣤⠀⠙⣷⠀
+⠀⠀⣤⠾⠉⠀⠀⠀⠀⠀⠀⠀⠀⠉⠀⠀⠀⠀⠀⠸⠿⠿⠀⠀⣉⣷
+⠀⢸⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⣿
+⢸⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣤⣤⡟⠛⠀
+⢸⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⠀⠀⠀⠀
+⠸⢧⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⠀⠀⠀⠀
+⠀⠺⣧⡀⢠⣀⠀⠀⣀⣟⠛⠛⣧⣄⡀⠀⠀⣸⡇⠀⣿⠉⠀⠀⠀⠀
+⠀⠀⠀⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠀⠀⠀⠀⠀⠀`;
+
+const COLORS = ['#4f46e5', '#7c3aed', '#e11d77', '#f97316', '#059669'];
+
+// Seeded random for consistent "imperfect" delays
+function seededRandom(seed: number) {
+  const x = Math.sin(seed * 9999) * 10000;
+  return x - Math.floor(x);
+}
+
+function AnimatedBunny() {
+  const containerRef = useRef<HTMLSpanElement>(null);
+  const frameRef = useRef<number>(0);
+  const startTimeRef = useRef<number>(0);
+
+  // Pre-calculate character data once, including random delay offset
+  const charData = useMemo(() => {
+    const chars = bunnyArt.split('');
+    let lineIndex = 0;
+    let colIndex = 0;
+
+    return chars.map((char, i) => {
+      if (char === '\n') {
+        lineIndex++;
+        colIndex = 0;
+        return { char, line: lineIndex - 1, col: colIndex, isNewline: true, randomOffset: 0 };
+      }
+      // Add randomness: some chars appear early, some late
+      const randomOffset = (seededRandom(i * 7 + 13) - 0.5) * 180; // ±90ms variance
+      const data = { char, line: lineIndex, col: colIndex, isNewline: false, randomOffset };
+      colIndex++;
+      return data;
+    });
+  }, []);
+
+  const updateStyles = useCallback((time: number) => {
+    if (!containerRef.current) return;
+
+    const elapsed = time - startTimeRef.current;
+    const tick = elapsed / 40; // Match original 40ms interval timing
+
+    // Intro phase: 0 to 1 over ~3 seconds
+    const introPhase = Math.min(elapsed / 3000, 1);
+    const colorThreshold = 0.6 - introPhase * 0.4;
+    const opacityBoost = (1 - introPhase) * 0.2;
+
+    const spans = containerRef.current.children;
+    let spanIndex = 0;
+
+    for (let i = 0; i < charData.length; i++) {
+      const { isNewline, line, col, randomOffset } = charData[i];
+      if (isNewline) continue;
+
+      const span = spans[spanIndex] as HTMLSpanElement;
+      if (!span) { spanIndex++; continue; }
+
+      // Intro reveal: staggered by line and column, with random variance for organic feel
+      const baseDelay = (line * 35) + (col * 10); // base timing
+      const revealDelay = Math.max(0, baseDelay + randomOffset); // add randomness
+      const charVisible = elapsed > revealDelay;
+      const revealProgress = charVisible ? Math.min((elapsed - revealDelay) / 450, 1) : 0;
+
+      // Wave calculations
+      const wave1 = (tick + i) % 150;
+      const wave2 = (tick * 0.7 + i + 75) % 150;
+      const intensity1 = wave1 < 30 ? Math.sin((wave1 / 30) * Math.PI) : 0;
+      const intensity2 = wave2 < 30 ? Math.sin((wave2 / 30) * Math.PI) : 0;
+      const intensity = Math.max(intensity1, intensity2);
+
+      // Base opacity for wave effect
+      const waveOpacity = 0.08 + intensity * (0.35 + opacityBoost);
+      // Apply reveal animation
+      const opacity = waveOpacity * revealProgress;
+
+      const useColor = intensity > colorThreshold;
+      const color = useColor ? COLORS[i % COLORS.length] : '';
+
+      span.style.opacity = String(opacity);
+      span.style.color = color;
+
+      spanIndex++;
+    }
+
+    frameRef.current = requestAnimationFrame(updateStyles);
+  }, [charData]);
+
+  useEffect(() => {
+    startTimeRef.current = performance.now();
+    frameRef.current = requestAnimationFrame(updateStyles);
+
+    return () => {
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current);
+      }
+    };
+  }, [updateStyles]);
+
+  // Only render visible characters (skip newlines, handle them with CSS)
+  const visibleChars = useMemo(() => {
+    return charData.filter(d => !d.isNewline);
+  }, [charData]);
+
+  return (
+    <span className="colophon-bunny" ref={containerRef}>
+      {visibleChars.map((data, i) => (
+        <span
+          key={i}
+          style={{ opacity: 0 }}
+        >
+          {data.char}
+          {/* Insert line break after each line's last char */}
+          {i < visibleChars.length - 1 && visibleChars[i + 1].line !== data.line && '\n'}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export default function ColophonPage() {
   return (
     <>
@@ -36,14 +169,15 @@ export default function ColophonPage() {
         .colophon-content a:hover {
           color: rgba(0, 0, 0, 0.65);
         }
-        .colophon-divider {
-          border: none;
-          border-top: 1px dotted rgba(0, 0, 0, 0.15);
-          margin: 1rem 0;
+        .colophon-table-wrapper {
+          position: relative;
+          margin-top: 1.5rem;
         }
         .colophon-table {
           display: flex;
           flex-direction: column;
+          position: relative;
+          z-index: 1;
         }
         .colophon-row {
           display: flex;
@@ -65,6 +199,17 @@ export default function ColophonPage() {
         .colophon-row-value a {
           color: rgba(0, 0, 0, 0.5);
         }
+        .colophon-bunny {
+          position: absolute;
+          top: -2rem;
+          right: 2rem;
+          white-space: pre;
+          line-height: 1;
+          font-size: 0.85rem;
+          color: rgba(0, 0, 0, 1);
+          pointer-events: none;
+          z-index: 0;
+        }
       `}</style>
       <div className="colophon-page">
         <h1>Colophon</h1>
@@ -82,9 +227,9 @@ export default function ColophonPage() {
             more on the motivation behind the project.
           </p>
 
-          <hr className="colophon-divider" />
-
-          <div className="colophon-table">
+          <div className="colophon-table-wrapper">
+            <AnimatedBunny />
+            <div className="colophon-table">
             <div className="colophon-row">
               <span className="colophon-row-label">Framework</span>
               <span className="colophon-row-value"><a href="https://nextjs.org" target="_blank" rel="noopener noreferrer">Next.js</a></span>
@@ -107,6 +252,7 @@ export default function ColophonPage() {
                 License
               </span>
               <span className="colophon-row-value"><a href="https://github.com/benjitaylor/agentation/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT</a></span>
+            </div>
             </div>
           </div>
         </div>
