@@ -292,6 +292,7 @@ function TypedLogo({ isForensic }: { isForensic: boolean }) {
           align-items: center;
           justify-content: center;
           padding: 4px;
+          padding-top: 8px;
         }
       `}</style>
       {showBunny && (
@@ -369,7 +370,7 @@ export function SideNav() {
 
   return (
     <nav className="side-nav">
-      <TypedLogo isForensic={isForensic} />
+      <TypedLogo isForensic={isForensic && pathname === '/output'} />
       <div className="nav-links">
         {links.map((link) => (
           <Link

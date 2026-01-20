@@ -88,7 +88,7 @@ export default function FeaturesPage() {
         <h2>Settings</h2>
         <p>Click the gear icon to access settings:</p>
         <ul>
-          <li><strong>Output Detail</strong> &mdash; Compact, Standard, or Detailed output</li>
+          <li><strong>Output Detail</strong> &mdash; Compact, Standard, Detailed, or Forensic output</li>
           <li><strong>Marker Color</strong> &mdash; Blue, Green, Orange, Purple, or Pink</li>
           <li><strong>Clear after copy</strong> &mdash; Auto-clear annotations after copying</li>
           <li><strong>Block interactions</strong> &mdash; Prevent clicking through to page elements</li>
@@ -99,7 +99,7 @@ export default function FeaturesPage() {
         <h2>Limitations</h2>
         <ul>
           <li><strong>Desktop only</strong> &mdash; The tool requires a desktop browser, but you can still request mobile changes in your feedback</li>
-          <li><strong>Session-only</strong> &mdash; Annotations clear on page refresh</li>
+          <li><strong>Per-page storage</strong> &mdash; Annotations persist in localStorage for 7 days</li>
           <li><strong>Single page</strong> &mdash; Annotations don&rsquo;t follow across navigation</li>
           <li><strong>Static positions</strong> &mdash; Markers don&rsquo;t update if layout changes</li>
           <li><strong>No screenshots</strong> &mdash; Output is text-only (paste alongside screenshots if needed)</li>

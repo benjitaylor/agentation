@@ -39,7 +39,7 @@ export default function AgentationDocs() {
         <section>
           <h2>Quick start</h2>
           <ol>
-            <li>Click the <strong>chat bubble</strong> in the bottom-right corner to activate</li>
+            <li>Click the <strong>toolbar icon</strong> in the bottom-right corner to activate</li>
             <li><strong>Hover</strong> over elements to see their names highlighted</li>
             <li><strong>Click</strong> any element to add an annotation</li>
             <li>Write your feedback and click <strong>Add</strong></li>
@@ -68,8 +68,8 @@ export default function AgentationDocs() {
           </p>
         </section>
 
-        {/* Interactive Demo Section */}
-        <section className="demo-section">
+        {/* Interactive Demo Section - hidden on mobile since tool is desktop-only */}
+        <section className="demo-section hide-on-mobile">
           <h2>Try it</h2>
           <p>
             The toolbar is active on this page. Try annotating these demo elements:
@@ -103,8 +103,8 @@ export default function AgentationDocs() {
           </div>
         </section>
 
-        {/* Animation Demo */}
-        <section className="demo-section">
+        {/* Animation Demo - hidden on mobile since tool is desktop-only */}
+        <section className="demo-section hide-on-mobile">
           <h2>Animation pause demo</h2>
           <p>
             Click the pause button in the toolbar to freeze this animation:

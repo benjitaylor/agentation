@@ -97,6 +97,7 @@ h3 {
 a {
   color: inherit;
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 img, svg {
@@ -109,6 +110,7 @@ button {
   cursor: pointer;
   background: none;
   font-family: var(--font-primary);
+  -webkit-tap-highlight-color: transparent;
 
   &:disabled {
     pointer-events: none;
@@ -580,6 +582,13 @@ button {
     &:hover {
       color: rgba(0, 0, 0, 0.7);
     }
+  }
+}
+
+// Hide on mobile utility
+.hide-on-mobile {
+  @media (max-width: 900px) {
+    display: none !important;
   }
 }
 

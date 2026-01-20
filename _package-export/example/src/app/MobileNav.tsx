@@ -316,7 +316,7 @@ export function MobileNav() {
   return (
     <nav className="mobile-nav">
       <div className="mobile-nav-header">
-        <MobileTypedLogo isForensic={isForensic} />
+        <MobileTypedLogo isForensic={isForensic && pathname === '/output'} />
         <button
           className={`mobile-nav-toggle ${isOpen ? "open" : ""}`}
           onClick={() => setIsOpen(!isOpen)}

@@ -44,7 +44,7 @@ const faqCategories: FAQCategory[] = [
       },
       {
         question: "How do I collapse the toolbar?",
-        answer: "Click the bunny icon or press <code>Escape</code> to collapse the toolbar. It stays minimal until you need it again."
+        answer: "Click the X button or press <code>Escape</code> to collapse the toolbar. It stays minimal until you need it again."
       },
       {
         question: "Can I pause animations?",
