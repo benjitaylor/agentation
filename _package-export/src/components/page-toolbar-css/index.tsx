@@ -1454,7 +1454,7 @@ export function PageFeedbackToolbarCSS({
 
           {/* Settings Panel */}
           <div
-            className={`${styles.settingsPanel} ${!isDarkMode ? styles.light : ""} ${showSettingsVisible ? styles.enter : styles.exit}`}
+            className={`${styles.settingsPanel} ${isDarkMode ? styles.dark : styles.light} ${showSettingsVisible ? styles.enter : styles.exit}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className={styles.settingsHeader}>
@@ -1575,7 +1575,7 @@ export function PageFeedbackToolbarCSS({
                   }
                 />
                 <label
-                  className={`${styles.customCheckbox} ${!isDarkMode ? styles.light : ""} ${settings.autoClearAfterCopy && !isDarkMode ? styles.checked : ""}`}
+                  className={`${styles.customCheckbox} ${settings.autoClearAfterCopy ? styles.checked : ""}`}
                   htmlFor="autoClearAfterCopy"
                 >
                   {settings.autoClearAfterCopy && (
@@ -1605,7 +1605,7 @@ export function PageFeedbackToolbarCSS({
                   }
                 />
                 <label
-                  className={`${styles.customCheckbox} ${!isDarkMode ? styles.light : ""} ${settings.blockInteractions && !isDarkMode ? styles.checked : ""}`}
+                  className={`${styles.customCheckbox} ${settings.blockInteractions ? styles.checked : ""}`}
                   htmlFor="blockInteractions"
                 >
                   {settings.blockInteractions && (

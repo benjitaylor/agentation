@@ -662,6 +662,26 @@ $green: #34c759;
   box-shadow:
     0 1px 8px rgba(0, 0, 0, 0.25),
     0 0 0 1px rgba(0, 0, 0, 0.04);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+
+  // Transition for all child elements
+  .settingsHeader,
+  .settingsBrand,
+  .settingsBrandSlash,
+  .settingsVersion,
+  .settingsSection,
+  .settingsLabel,
+  .cycleButton,
+  .cycleDot,
+  .dropdownButton,
+  .toggleLabel,
+  .customCheckbox,
+  .sliderLabel,
+  .slider,
+  .helpIcon,
+  .themeToggle {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
 
   &.enter {
     opacity: 1;
@@ -1080,10 +1100,10 @@ $green: #34c759;
 
 .customCheckbox {
   position: relative;
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
+  border-radius: 4px;
   background: rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
@@ -1106,16 +1126,12 @@ $green: #34c759;
 
   // Light mode variant (unchecked state)
   &.light {
-    border-color: rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(0, 0, 0, 0.15);
     background: #fff;
-
-    svg {
-      color: #1a1a1a;
-    }
 
     // Checked state in light mode
     &.checked {
-      border-color: rgba(0, 0, 0, 0.9);
+      border-color: #1a1a1a;
       background: #1a1a1a;
 
       svg {
@@ -1357,12 +1373,12 @@ $green: #34c759;
     }
 
     .customCheckbox {
-      border-color: rgba(0, 0, 0, 0.2);
-      background: rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      background: #fff;
 
-      input[type="checkbox"]:checked + & {
-        border-color: rgba(0, 0, 0, 0.7);
-        background: rgba(0, 0, 0, 0.85);
+      &.checked {
+        border-color: #1a1a1a;
+        background: #1a1a1a;
 
         svg {
           color: #fff;
