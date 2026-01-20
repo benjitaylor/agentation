@@ -46,6 +46,9 @@ import {
 import type { Annotation } from "../../types";
 import styles from "./styles.module.scss";
 
+// Module-level flag to prevent re-animating on SPA page navigation
+let hasPlayedEntranceAnimation = false;
+
 // =============================================================================
 // Types
 // =============================================================================
@@ -221,6 +224,7 @@ export function PageFeedbackToolbarCSS({
   const [showSettingsVisible, setShowSettingsVisible] = useState(false);
   const [settings, setSettings] = useState<ToolbarSettings>(DEFAULT_SETTINGS);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showEntranceAnimation, setShowEntranceAnimation] = useState(false);
 
   // For animations - track which markers have animated in and which are exiting
   const [animatedMarkers, setAnimatedMarkers] = useState<Set<string>>(
@@ -228,6 +232,7 @@ export function PageFeedbackToolbarCSS({
   );
   const [exitingMarkers, setExitingMarkers] = useState<Set<string>>(new Set());
   const [pendingExiting, setPendingExiting] = useState(false);
+  const [editExiting, setEditExiting] = useState(false);
 
   // Multi-select drag state - use refs for all drag visuals to avoid re-renders
   const [isDragging, setIsDragging] = useState(false);
@@ -294,6 +299,14 @@ export function PageFeedbackToolbarCSS({
     setScrollY(window.scrollY);
     const stored = loadAnnotations<Annotation>(pathname);
     setAnnotations(stored);
+
+    // Trigger entrance animation only on first load (not on SPA navigation)
+    if (!hasPlayedEntranceAnimation) {
+      setShowEntranceAnimation(true);
+      hasPlayedEntranceAnimation = true;
+      // Remove animation class after it completes (toolbar: 500ms, badge: 400ms delay + 300ms)
+      setTimeout(() => setShowEntranceAnimation(false), 750);
+    }
 
     try {
       const storedSettings = localStorage.getItem("feedback-toolbar-settings");
@@ -1136,14 +1149,24 @@ export function PageFeedbackToolbarCSS({
           a.id === editingAnnotation.id ? { ...a, comment: newComment } : a,
         ),
       );
-      setEditingAnnotation(null);
+
+      // Animate out the edit popup
+      setEditExiting(true);
+      setTimeout(() => {
+        setEditingAnnotation(null);
+        setEditExiting(false);
+      }, 150);
     },
     [editingAnnotation],
   );
 
-  // Cancel editing
+  // Cancel editing with exit animation
   const cancelEditAnnotation = useCallback(() => {
-    setEditingAnnotation(null);
+    setEditExiting(true);
+    setTimeout(() => {
+      setEditingAnnotation(null);
+      setEditExiting(false);
+    }, 150);
   }, []);
 
   // Clear all with staggered animation
@@ -1219,7 +1242,7 @@ export function PageFeedbackToolbarCSS({
       <div className={styles.toolbar} data-feedback-toolbar>
         {/* Morphing container */}
         <div
-          className={`${styles.toolbarContainer} ${isActive ? styles.expanded : styles.collapsed}`}
+          className={`${styles.toolbarContainer} ${isActive ? styles.expanded : styles.collapsed} ${showEntranceAnimation ? styles.entrance : ""}`}
           onClick={!isActive ? () => setIsActive(true) : undefined}
           role={!isActive ? "button" : undefined}
           tabIndex={!isActive ? 0 : -1}
@@ -1232,7 +1255,7 @@ export function PageFeedbackToolbarCSS({
             <IconListSparkle size={24} />
             {hasAnnotations && (
               <span
-                className={`${styles.badge} ${isActive ? styles.fadeOut : ""}`}
+                className={`${styles.badge} ${isActive ? styles.fadeOut : ""} ${showEntranceAnimation ? styles.entrance : ""}`}
                 style={{ backgroundColor: settings.annotationColor }}
               >
                 {annotations.length}
@@ -1262,6 +1285,7 @@ export function PageFeedbackToolbarCSS({
                 e.stopPropagation();
                 setShowMarkers(!showMarkers);
               }}
+              disabled={!hasAnnotations}
               title={showMarkers ? "Hide markers" : "Show markers"}
             >
               <IconEyeAnimated size={24} isOpen={showMarkers} />
@@ -1802,6 +1826,7 @@ export function PageFeedbackToolbarCSS({
                 }
                 onSubmit={addAnnotation}
                 onCancel={cancelAnnotation}
+                isExiting={pendingExiting}
                 accentColor={
                   pendingAnnotation.isMultiSelect
                     ? "#34C759"
@@ -1849,6 +1874,7 @@ export function PageFeedbackToolbarCSS({
                 submitLabel="Save"
                 onSubmit={updateAnnotation}
                 onCancel={cancelEditAnnotation}
+                isExiting={editExiting}
                 accentColor={
                   editingAnnotation.isMultiSelect
                     ? "#34C759"

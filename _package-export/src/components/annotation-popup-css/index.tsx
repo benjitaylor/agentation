@@ -28,6 +28,8 @@ export interface AnnotationPopupCSSProps {
   style?: React.CSSProperties;
   /** Custom color for submit button and textarea focus (hex) */
   accentColor?: string;
+  /** External exit state (parent controls exit animation) */
+  isExiting?: boolean;
 }
 
 export interface AnnotationPopupCSSHandle {
@@ -62,6 +64,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
       onCancel,
       style,
       accentColor = "#3c82f7",
+      isExiting = false,
     },
     ref
   ) {
@@ -71,6 +74,13 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
     const [isFocused, setIsFocused] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const popupRef = useRef<HTMLDivElement>(null);
+
+    // Sync with parent exit state
+    useEffect(() => {
+      if (isExiting && animState !== "exit") {
+        setAnimState("exit");
+      }
+    }, [isExiting, animState]);
 
     // Animate in on mount and focus textarea
     useEffect(() => {

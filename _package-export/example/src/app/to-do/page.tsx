@@ -57,7 +57,7 @@ export default function TodoPage() {
       <article className="article">
       <header>
         <h1>To-Do</h1>
-        <p className="tagline">12 tasks &middot; 4 areas to explore</p>
+        <p className="tagline">9 tasks &middot; 4 areas to explore</p>
       </header>
 
       <div style={{
@@ -74,12 +74,9 @@ export default function TodoPage() {
       <section>
         <h2>Tasks</h2>
         <ul>
-          <li>Make sure popup annotations show on top layer</li>
           <li>Make sure popup annotations always show (e.g. if they are right at the edge of the screen)</li>
           <li>Make the toolbar movable</li>
           <li style={{ color: '#22c55e' }}>Improve performance for drag annotations <span style={{ opacity: 0.7 }}>(post-launch)</span></li>
-          <li>Clicking save on right-click to edit isn&rsquo;t animating out the container</li>
-          <li>Toolbar flashes in on page load &mdash; a simple scale animation might be nicer</li>
           <li>Missing forensic option in toolbar settings</li>
           <li>Check whether output format setting is changing the output format for the toolbar</li>
           <li>Set toolbar to be closed by default in final package</li>
@@ -90,7 +87,7 @@ export default function TodoPage() {
       </section>
 
       <button className="section-toggle" style={{ marginTop: '0.5rem' }} onClick={() => setIsDoneOpen(!isDoneOpen)}>
-        <span>Done (6)</span>
+        <span>Done (9)</span>
         <span className={`section-toggle-icon ${isDoneOpen ? 'open' : ''}`}>
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path
@@ -107,6 +104,9 @@ export default function TodoPage() {
       <div className={`section-content ${isDoneOpen ? 'open' : ''}`}>
         <div className="section-content-inner">
           <ul style={{ color: 'rgba(0,0,0,0.4)', marginTop: '0.5rem' }}>
+            <li><s>Toolbar entrance animation on page load</s></li>
+            <li><s>Edit popup exit animation when clicking Save</s></li>
+            <li><s>Make sure popup annotations show on top layer</s></li>
             <li><s>Improve the toolbar settings (visual &mdash; Dennis)</s></li>
             <li><s>Improve toolbar icons/animations</s></li>
             <li><s>Check mobile</s></li>

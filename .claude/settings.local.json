@@ -24,7 +24,8 @@
       "Bash(open:*)",
       "Bash(curl:*)",
       "Bash(git checkout:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "WebFetch(domain:localhost)"
     ]
   }
 }
