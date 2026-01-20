@@ -134,22 +134,31 @@ export const IconHelp = ({ size = 20 }: { size?: number }) => (
 export const IconCheckSmallAnimated = ({ size = 14 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
     <style>{`
-      @keyframes checkDraw {
+      @keyframes checkPop {
         0% {
           stroke-dashoffset: 12;
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 1;
         }
         100% {
           stroke-dashoffset: 0;
+          transform: scale(1);
+          opacity: 1;
         }
       }
-      .check-path {
+      .check-path-animated {
         stroke-dasharray: 12;
         stroke-dashoffset: 0;
-        animation: checkDraw 0.2s ease-out;
+        transform-origin: center;
+        animation: checkPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
     `}</style>
     <path
-      className="check-path"
+      className="check-path-animated"
       d="M3.9375 7L6.125 9.1875L10.5 4.8125"
       stroke="currentColor"
       strokeWidth="1.5"
@@ -439,6 +448,7 @@ export const IconTrashAlt = ({ size = 16 }: { size?: number }) => (
     <path
       d="M10 11.5L10.125 15.5"
       stroke="currentColor"
+      strokeOpacity="1"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -446,6 +456,7 @@ export const IconTrashAlt = ({ size = 16 }: { size?: number }) => (
     <path
       d="M14 11.5L13.87 15.5"
       stroke="currentColor"
+      strokeOpacity="1"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -453,13 +464,22 @@ export const IconTrashAlt = ({ size = 16 }: { size?: number }) => (
     <path
       d="M9 7.5V6.25C9 5.42157 9.67157 4.75 10.5 4.75H13.5C14.3284 4.75 15 5.42157 15 6.25V7.5"
       stroke="currentColor"
+      strokeOpacity="1"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
-      d="M6.75 7.75C6.75 7.75 12.3684 7.75 17.25 7.75M6.75 7.75L7.11691 16.189C7.16369 17.2649 7.18708 17.8028 7.41136 18.2118C7.60875 18.5717 7.91211 18.8621 8.28026 19.0437C8.69854 19.25 9.23699 19.25 10.3139 19.25H13.6861C14.763 19.25 15.3015 19.25 15.7197 19.0437C16.0879 18.8621 16.3912 18.5717 16.5886 18.2118C16.8129 17.8028 16.8363 17.2649 16.8831 16.189L17.25 7.75M6.75 7.75H5.5C5.5 7.75 11.9779 7.75 17.25 7.75M17.25 7.75C17.6405 7.75 18.5 7.75 18.5 7.75"
+      d="M5.5 7.75H18.5"
       stroke="currentColor"
+      strokeOpacity="1"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+    <path
+      d="M6.75 7.75L7.11691 16.189C7.16369 17.2649 7.18708 17.8028 7.41136 18.2118C7.60875 18.5717 7.91211 18.8621 8.28026 19.0437C8.69854 19.25 9.23699 19.25 10.3139 19.25H13.6861C14.763 19.25 15.3015 19.25 15.7197 19.0437C16.0879 18.8621 16.3912 18.5717 16.5886 18.2118C16.8129 17.8028 16.8363 17.2649 16.8831 16.189L17.25 7.75"
+      stroke="currentColor"
+      strokeOpacity="1"
       strokeWidth="1.5"
       strokeLinecap="round"
     />

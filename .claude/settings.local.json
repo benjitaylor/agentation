@@ -17,7 +17,14 @@
       "Bash(pnpm build:*)",
       "Bash(pnpm dev:*)",
       "Bash(pnpm --filter agentation build:*)",
-      "Bash(tsup:*)"
+      "Bash(tsup:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(open http://localhost:3001/to-do)",
+      "Bash(open:*)",
+      "Bash(curl:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)"
     ]
   }
 }
