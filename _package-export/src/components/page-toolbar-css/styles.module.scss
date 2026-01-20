@@ -307,7 +307,8 @@ $green: #34c759;
   transition:
     background-color 0.15s ease,
     color 0.15s ease,
-    transform 0.1s ease;
+    transform 0.1s ease,
+    opacity 0.2s ease;
 
   &:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.12);
@@ -725,6 +726,59 @@ $green: #34c759;
   }
 }
 
+// Old dropdown styles kept for potential future use
+// @keyframes dropdownTextFade removed - using cycle button instead
+
+.cycleButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  letter-spacing: -0.0094em;
+}
+
+@keyframes cycleTextIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cycleButtonText {
+  display: inline-block;
+  animation: cycleTextIn 0.2s ease-out;
+}
+
+.cycleDots {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cycleDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0.7);
+  transition: background-color 0.25s ease-out, transform 0.25s ease-out;
+
+  &.active {
+    background: #fff;
+    transform: scale(1);
+  }
+}
+
 .dropdownMenu {
   position: absolute;
   right: 0;
@@ -934,6 +988,10 @@ $green: #34c759;
   gap: 0.5rem;
   cursor: pointer;
 
+  & + & {
+    margin-top: 1rem;
+  }
+
   input[type="checkbox"] {
     position: absolute;
     opacity: 0;
@@ -974,6 +1032,51 @@ $green: #34c759;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.5);
   letter-spacing: -0.0094em;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.helpIcon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: help;
+  color: #fff;
+  margin-left: 0;
+
+  svg {
+    display: block;
+    transform: translateY(1px);
+  }
+
+  &::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    padding: 0.4rem 0.6rem;
+    background: #333;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    line-height: 1.4;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+    pointer-events: none;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  &:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0.5s;
+  }
 }
 
 // =============================================================================

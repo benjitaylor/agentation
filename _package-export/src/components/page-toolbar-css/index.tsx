@@ -16,18 +16,21 @@ import {
   IconGear,
   IconCheck,
   IconCheckSmall,
+  IconCheckSmallAnimated,
+  IconHelp,
   AnimatedBunny,
   IconEye,
   IconEyeMinus,
   IconCopyAlt,
+  IconCopyAnimated,
   IconTrashAlt,
   IconXmark,
   IconCheckmark,
   IconCheckmarkLarge,
   IconCheckmarkCircle,
   IconPause,
-  IconEyeAlt,
-  IconEyeClosed,
+  IconEyeAnimated,
+  IconPausePlayAnimated,
 } from "../icons";
 import {
   identifyElement,
@@ -218,7 +221,6 @@ export function PageFeedbackToolbarCSS({
   const [showSettingsVisible, setShowSettingsVisible] = useState(false);
   const [settings, setSettings] = useState<ToolbarSettings>(DEFAULT_SETTINGS);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [showOutputDropdown, setShowOutputDropdown] = useState(false);
 
   // For animations - track which markers have animated in and which are exiting
   const [animatedMarkers, setAnimatedMarkers] = useState<Set<string>>(
@@ -465,27 +467,11 @@ export function PageFeedbackToolbarCSS({
       setEditingAnnotation(null);
       setHoverInfo(null);
       setShowSettings(false); // Close settings when toolbar closes
-      setShowOutputDropdown(false); // Close dropdown when toolbar closes
       if (isFrozen) {
         unfreezeAnimations();
       }
     }
   }, [isActive, isFrozen, unfreezeAnimations]);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    if (!showOutputDropdown) return;
-
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest("[data-dropdown]")) {
-        setShowOutputDropdown(false);
-      }
-    };
-
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, [showOutputDropdown]);
 
   // Custom cursor
   useEffect(() => {
@@ -1272,7 +1258,7 @@ export function PageFeedbackToolbarCSS({
               title={isFrozen ? "Resume animations" : "Pause animations"}
               data-active={isFrozen}
             >
-              {isFrozen ? <IconPlayAlt size={24} /> : <IconPause size={24} />}
+              <IconPausePlayAnimated size={24} isPaused={isFrozen} />
             </button>
 
             <button
@@ -1283,11 +1269,7 @@ export function PageFeedbackToolbarCSS({
               }}
               title={showMarkers ? "Hide markers" : "Show markers"}
             >
-              {showMarkers ? (
-                <IconEyeAlt size={24} />
-              ) : (
-                <IconEyeClosed size={24} />
-              )}
+              <IconEyeAnimated size={24} isOpen={showMarkers} />
             </button>
 
             <button
@@ -1299,11 +1281,7 @@ export function PageFeedbackToolbarCSS({
               disabled={!hasAnnotations}
               title="Copy feedback"
             >
-              {!copied ? (
-                <IconCopyAlt size={24} />
-              ) : (
-                <IconCheckmarkCircle size={24} />
-              )}
+              <IconCopyAnimated size={24} copied={copied} />
             </button>
 
             <button
@@ -1352,67 +1330,44 @@ export function PageFeedbackToolbarCSS({
           >
             <div className={styles.settingsHeader}>
               <span className={styles.settingsBrand}>
-                <span className={styles.settingsBrandSlash}>/</span>agentation
+                <span className={styles.settingsBrandSlash} style={{ color: settings.annotationColor, transition: 'color 0.2s ease' }}>/</span>agentation
               </span>
               <span className={styles.settingsVersion}>v1.0.1</span>
             </div>
 
             <div className={styles.settingsSection}>
               <div className={styles.settingsRow}>
-                <div className={styles.settingsLabel}>Output Detail</div>
-                <div className={styles.dropdownContainer} data-dropdown>
-                  <button
-                    className={styles.dropdownButton}
-                    onClick={() => setShowOutputDropdown(!showOutputDropdown)}
-                  >
-                    <span>
-                      {
-                        OUTPUT_DETAIL_OPTIONS.find(
-                          (opt) => opt.value === settings.outputDetail,
-                        )?.label
-                      }
-                    </span>
-                    <svg
-                      width="8"
-                      height="5"
-                      viewBox="0 0 8 5"
-                      fill="none"
-                      style={{
-                        transform: showOutputDropdown
-                          ? "rotate(180deg)"
-                          : "none",
-                        transition: "transform 0.15s ease",
-                      }}
-                    >
-                      <path
-                        d="M1 1L4 4L7 1"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                  {showOutputDropdown && (
-                    <div className={styles.dropdownMenu}>
-                      {OUTPUT_DETAIL_OPTIONS.map((option) => (
-                        <button
-                          key={option.value}
-                          className={`${styles.dropdownItem} ${settings.outputDetail === option.value ? styles.selected : ""}`}
-                          onClick={() => {
-                            setSettings((s) => ({
-                              ...s,
-                              outputDetail: option.value,
-                            }));
-                            setShowOutputDropdown(false);
-                          }}
-                        >
-                          {option.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                <div className={styles.settingsLabel}>
+                  Output Detail
+                  <span className={styles.helpIcon} data-tooltip="Controls how much detail is included in the copied output">
+                    <IconHelp size={20} />
+                  </span>
                 </div>
+                <button
+                  className={styles.cycleButton}
+                  onClick={() => {
+                    const currentIndex = OUTPUT_DETAIL_OPTIONS.findIndex(
+                      (opt) => opt.value === settings.outputDetail
+                    );
+                    const nextIndex = (currentIndex + 1) % OUTPUT_DETAIL_OPTIONS.length;
+                    setSettings((s) => ({
+                      ...s,
+                      outputDetail: OUTPUT_DETAIL_OPTIONS[nextIndex].value,
+                    }));
+                  }}
+                >
+                  <span key={settings.outputDetail} className={styles.cycleButtonText}>
+                    {OUTPUT_DETAIL_OPTIONS.find((opt) => opt.value === settings.outputDetail)?.label}
+                  </span>
+                  <span className={styles.cycleDots}>
+                    {OUTPUT_DETAIL_OPTIONS.map((option, i) => (
+                      <span
+                        key={option.value}
+                        className={`${styles.cycleDot} ${settings.outputDetail === option.value ? styles.active : ""}`}
+                      />
+                    ))}
+                  </span>
+                </button>
               </div>
             </div>
 
@@ -1467,13 +1422,15 @@ export function PageFeedbackToolbarCSS({
                   className={styles.customCheckbox}
                   htmlFor="autoClearAfterCopy"
                 >
-                  {settings.autoClearAfterCopy && <IconCheckSmall size={14} />}
+                  {settings.autoClearAfterCopy && <IconCheckSmallAnimated size={14} />}
                 </label>
-                <span className={styles.toggleLabel}>Clear after output</span>
+                <span className={styles.toggleLabel}>
+                  Clear after output
+                  <span className={styles.helpIcon} data-tooltip="Automatically clear annotations after copying">
+                    <IconHelp size={20} />
+                  </span>
+                </span>
               </label>
-            </div>
-
-            <div className={styles.settingsSection}>
               <label className={styles.settingsToggle}>
                 <input
                   type="checkbox"
@@ -1490,7 +1447,7 @@ export function PageFeedbackToolbarCSS({
                   className={styles.customCheckbox}
                   htmlFor="blockInteractions"
                 >
-                  {settings.blockInteractions && <IconCheckSmall size={14} />}
+                  {settings.blockInteractions && <IconCheckSmallAnimated size={14} />}
                 </label>
                 <span className={styles.toggleLabel}>
                   Block page interactions
