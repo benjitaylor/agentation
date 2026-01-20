@@ -990,7 +990,7 @@ $green: #34c759;
   cursor: pointer;
 
   & + & {
-    margin-top: 0.5rem;
+    margin-top: calc(0.5rem + 6px);
   }
 
   input[type="checkbox"] {
