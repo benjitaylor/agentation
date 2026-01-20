@@ -134,12 +134,11 @@ export default function TodoPage() {
           <li>Add light mode</li>
           <li>Consider removing the "right click to edit/click to remove" hint text</li>
           <li>Make sure the version number in settings always pulls (or builds with) the latest version</li>
-          <li><s>When deleting an annotation, animate the other annotation numbers vs static change</s></li>
         </ul>
       </section>
 
       <button className="section-toggle" onClick={() => setIsDoneOpen(!isDoneOpen)}>
-        <span>Done (9)</span>
+        <span>Done (10)</span>
         <span className={`section-toggle-icon ${isDoneOpen ? 'open' : ''}`}>
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path
@@ -165,6 +164,7 @@ export default function TodoPage() {
             <li><s>Improve performance</s> (probably fine)</li>
             <li><s>Add mobile nav for docs site</s></li>
             <li><s>Decide on domain and create OG image for site</s></li>
+            <li><s>Animate annotation numbers on delete (roll effect)</s></li>
           </ul>
         </div>
       </div>
