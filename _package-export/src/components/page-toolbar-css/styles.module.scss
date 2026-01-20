@@ -199,12 +199,13 @@ $green: #34c759;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #1a1a1a;
-  color: #fff;
+  background: #fff;
+  color: rgba(0, 0, 0, 0.85);
   border: none;
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.2),
-    0 4px 16px rgba(0, 0, 0, 0.1);
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
   pointer-events: auto;
 
   // Animated properties
@@ -228,7 +229,7 @@ $green: #34c759;
     }
 
     &:hover {
-      background: #2a2a2a;
+      background: #f5f5f5;
     }
 
     &:active {
@@ -335,7 +336,7 @@ $green: #34c759;
   border-radius: 50%;
   border: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(0, 0, 0, 0.5);
   transition:
     background-color 0.15s ease,
     color 0.15s ease,
@@ -343,8 +344,8 @@ $green: #34c759;
     opacity 0.2s ease;
 
   &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
+    background: rgba(0, 0, 0, 0.06);
+    color: rgba(0, 0, 0, 0.85);
   }
 
   &:active:not(:disabled) {
@@ -358,11 +359,11 @@ $green: #34c759;
 
   &[data-active="true"] {
     color: $blue;
-    background: rgba($blue, 0.25);
+    background: rgba($blue, 0.15);
   }
 
   &[data-danger]:hover:not(:disabled) {
-    background: rgba($red, 0.25);
+    background: rgba($red, 0.15);
     color: $red;
   }
 }
@@ -370,7 +371,7 @@ $green: #34c759;
 .divider {
   width: 1px;
   height: 12px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.1);
   margin: 0 0.125rem;
 }
 
@@ -598,12 +599,12 @@ $green: #34c759;
   left: 50%;
   transform: translateX(-50%);
   z-index: 100002;
-  background: #1a1a1a;
+  background: #fff;
   padding: 0.625rem 0.75rem;
   border-radius: 0.75rem;
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.08);
+    0 4px 20px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
   min-width: 120px;
   max-width: 200px;
   pointer-events: none;
@@ -618,7 +619,7 @@ $green: #34c759;
   display: block;
   font-size: 0.6875rem;
   font-style: italic;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.5);
   margin-bottom: 0.375rem;
   line-height: 1.4;
   white-space: nowrap;
@@ -631,7 +632,7 @@ $green: #34c759;
   font-size: 0.75rem;
   font-weight: 450;
   line-height: 1.4;
-  color: #fff;
+  color: rgba(0, 0, 0, 0.85);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -720,24 +721,24 @@ $green: #34c759;
   min-height: 24px;
   margin-bottom: 0.5rem;
   padding-bottom: calc(0.5rem + 4px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .settingsBrand {
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: -0.0094em;
-  color: #fff;
+  color: rgba(0, 0, 0, 0.85);
 }
 
 .settingsBrandSlash {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.4);
 }
 
 .settingsVersion {
   font-size: 0.6875rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(0, 0, 0, 0.4);
   margin-left: auto;
   letter-spacing: -0.0094em;
 }
@@ -746,7 +747,7 @@ $green: #34c759;
   & + & {
     margin-top: 0.5rem;
     padding-top: calc(0.5rem + 2px);
-    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
   }
 }
 
@@ -771,7 +772,7 @@ $green: #34c759;
   background: transparent;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #fff;
+  color: rgba(0, 0, 0, 0.85);
   cursor: pointer;
   transition:
     background-color 0.15s ease,
@@ -779,7 +780,7 @@ $green: #34c759;
   letter-spacing: -0.0094em;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.05);
   }
 
   svg {
@@ -799,7 +800,7 @@ $green: #34c759;
   background: transparent;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #fff;
+  color: rgba(0, 0, 0, 0.85);
   cursor: pointer;
   letter-spacing: -0.0094em;
 }
@@ -830,12 +831,12 @@ $green: #34c759;
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.2);
   transform: scale(0.667);
   transition: background-color 0.25s ease-out, transform 0.25s ease-out;
 
   &.active {
-    background: #fff;
+    background: rgba(0, 0, 0, 0.7);
     transform: scale(1);
   }
 }
@@ -888,7 +889,7 @@ $green: #34c759;
   font-size: 0.8125rem;
   font-weight: 400;
   letter-spacing: -0.0094em;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   gap: 0.125rem;
@@ -993,16 +994,16 @@ $green: #34c759;
 .sliderLabel {
   font-size: 0.625rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(0, 0, 0, 0.4);
   cursor: pointer;
   transition: color 0.15s ease;
 
   &:hover {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(0, 0, 0, 0.7);
   }
 
   &.active {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(0, 0, 0, 0.9);
   }
 }
 
@@ -1066,9 +1067,9 @@ $green: #34c759;
   position: relative;
   width: 14px;
   height: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.03);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1078,21 +1079,21 @@ $green: #34c759;
     border-color 0.15s ease;
 
   svg {
-    color: #1a1a1a;
+    color: #fff;
     opacity: 1;
     transition: opacity 0.15s ease;
   }
 
   input[type="checkbox"]:checked + & {
-    border-color: rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 1);
+    border-color: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.85);
   }
 }
 
 .toggleLabel {
   font-size: 0.8125rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.5);
   letter-spacing: -0.0094em;
   display: flex;
   align-items: center;
@@ -1105,7 +1106,7 @@ $green: #34c759;
   align-items: center;
   justify-content: center;
   cursor: help;
-  color: #fff;
+  color: rgba(0, 0, 0, 0.4);
   margin-left: 0;
 
   svg {
