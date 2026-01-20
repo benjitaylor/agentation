@@ -1575,7 +1575,7 @@ export function PageFeedbackToolbarCSS({
                   }
                 />
                 <label
-                  className={`${styles.customCheckbox} ${!isDarkMode ? styles.light : ""}`}
+                  className={`${styles.customCheckbox} ${!isDarkMode ? styles.light : ""} ${settings.autoClearAfterCopy && !isDarkMode ? styles.checked : ""}`}
                   htmlFor="autoClearAfterCopy"
                 >
                   {settings.autoClearAfterCopy && (
@@ -1605,7 +1605,7 @@ export function PageFeedbackToolbarCSS({
                   }
                 />
                 <label
-                  className={`${styles.customCheckbox} ${!isDarkMode ? styles.light : ""}`}
+                  className={`${styles.customCheckbox} ${!isDarkMode ? styles.light : ""} ${settings.blockInteractions && !isDarkMode ? styles.checked : ""}`}
                   htmlFor="blockInteractions"
                 >
                   {settings.blockInteractions && (

@@ -1104,18 +1104,23 @@ $green: #34c759;
     background: rgba(255, 255, 255, 1);
   }
 
-  // Light mode variant
+  // Light mode variant (unchecked state)
   &.light {
-    border-color: rgba(0, 0, 0, 0.15);
-    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.12);
+    background: #fff;
 
     svg {
-      color: #fff;
+      color: #1a1a1a;
     }
 
-    input[type="checkbox"]:checked + & {
-      border-color: rgba(0, 0, 0, 0.8);
-      background: rgba(0, 0, 0, 0.9);
+    // Checked state in light mode
+    &.checked {
+      border-color: rgba(0, 0, 0, 0.9);
+      background: #1a1a1a;
+
+      svg {
+        color: #fff;
+      }
     }
   }
 }
