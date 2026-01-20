@@ -111,7 +111,7 @@ export default function TodoPage() {
       <article className="article">
       <header>
         <h1>To-Do</h1>
-        <p className="tagline">15 tasks &middot; 4 areas to explore</p>
+        <p className="tagline">16 tasks &middot; 4 areas to explore</p>
       </header>
 
       <div className="todo-notice">
@@ -130,6 +130,7 @@ export default function TodoPage() {
           <li>Clean up git history for clean slate, then open source</li>
           <li>Finalise domain and OG image</li>
           <li>Make sure popup annotations always show (e.g. if they are right at the edge of the screen)</li>
+          <li>Hover labels should show above markers (z-index issue &mdash; tooltip is inside overlay parent with lower z-index than markersLayer, need to restructure DOM)</li>
           <li>Edge case: hover highlight shows above marker when editing an annotation</li>
           <li>Edge case: hover container shape flashes when right-clicking to edit an annotation</li>
           <li>Truncate long feedback text in marker hover tooltips</li>

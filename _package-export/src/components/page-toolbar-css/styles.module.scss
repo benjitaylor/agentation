@@ -604,8 +604,8 @@ $green: #34c759;
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.08);
-  min-width: 160px;
-  max-width: 280px;
+  min-width: 120px;
+  max-width: 200px;
   pointer-events: none;
   cursor: default;
 
@@ -621,6 +621,9 @@ $green: #34c759;
   color: rgba(255, 255, 255, 0.5);
   margin-bottom: 0.375rem;
   line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .markerNote {
@@ -629,7 +632,10 @@ $green: #34c759;
   font-weight: 450;
   line-height: 1.4;
   color: #fff;
-  white-space: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-bottom: 2px;
 }
 
 .markerHint {

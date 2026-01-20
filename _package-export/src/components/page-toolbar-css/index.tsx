@@ -1676,18 +1676,12 @@ export function PageFeedbackToolbarCSS({
                   )}
                   {isHovered && !editingAnnotation && (
                     <div className={`${styles.markerTooltip} ${styles.enter}`}>
-                      {annotation.selectedText && (
-                        <span className={styles.markerQuote}>
-                          &ldquo;{annotation.selectedText.slice(0, 50)}
-                          {annotation.selectedText.length > 50 ? "..." : ""}
-                          &rdquo;
-                        </span>
-                      )}
+                      <span className={styles.markerQuote}>
+                        {annotation.element}
+                        {annotation.selectedText && ` "${annotation.selectedText.slice(0, 30)}${annotation.selectedText.length > 30 ? "..." : ""}"`}
+                      </span>
                       <span className={styles.markerNote}>
                         {annotation.comment}
-                      </span>
-                      <span className={styles.markerHint}>
-                        Click to remove · Right-click to edit
                       </span>
                     </div>
                   )}
@@ -1785,18 +1779,12 @@ export function PageFeedbackToolbarCSS({
                   )}
                   {isHovered && !editingAnnotation && (
                     <div className={`${styles.markerTooltip} ${styles.enter}`}>
-                      {annotation.selectedText && (
-                        <span className={styles.markerQuote}>
-                          &ldquo;{annotation.selectedText.slice(0, 50)}
-                          {annotation.selectedText.length > 50 ? "..." : ""}
-                          &rdquo;
-                        </span>
-                      )}
+                      <span className={styles.markerQuote}>
+                        {annotation.element}
+                        {annotation.selectedText && ` "${annotation.selectedText.slice(0, 30)}${annotation.selectedText.length > 30 ? "..." : ""}"`}
+                      </span>
                       <span className={styles.markerNote}>
                         {annotation.comment}
-                      </span>
-                      <span className={styles.markerHint}>
-                        Click to remove · Right-click to edit
                       </span>
                     </div>
                   )}

@@ -92,7 +92,14 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
       const enterTimer = setTimeout(() => {
         setAnimState("entered");
       }, 200); // Match animation duration
-      const focusTimer = setTimeout(() => textareaRef.current?.focus(), 50);
+      const focusTimer = setTimeout(() => {
+        const textarea = textareaRef.current;
+        if (textarea) {
+          textarea.focus();
+          textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+          textarea.scrollTop = textarea.scrollHeight;
+        }
+      }, 50);
       return () => {
         clearTimeout(enterTimer);
         clearTimeout(focusTimer);

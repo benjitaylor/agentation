@@ -57,7 +57,14 @@ export const AnnotationPopup = forwardRef<AnnotationPopupHandle, AnnotationPopup
     // Animate in on mount and focus textarea
     useEffect(() => {
       controls.start({ opacity: 1, scale: 1, y: 0 });
-      const timer = setTimeout(() => textareaRef.current?.focus(), 10);
+      const timer = setTimeout(() => {
+        const textarea = textareaRef.current;
+        if (textarea) {
+          textarea.focus();
+          textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+          textarea.scrollTop = textarea.scrollHeight;
+        }
+      }, 10);
       return () => clearTimeout(timer);
     }, [controls]);
 
