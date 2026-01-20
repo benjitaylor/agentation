@@ -111,7 +111,7 @@ export default function TodoPage() {
       <article className="article">
       <header>
         <h1>To-Do</h1>
-        <p className="tagline">14 tasks &middot; 4 areas to explore</p>
+        <p className="tagline">15 tasks &middot; 4 areas to explore</p>
       </header>
 
       <div className="todo-notice">
@@ -125,6 +125,7 @@ export default function TodoPage() {
           <li>Check whether output format setting is changing the output format for the toolbar</li>
           <li>Set toolbar to be closed by default in final package</li>
           <li>Create and run test package (use <code>npm pack</code> &mdash; no publishing, totally private, tests real install flow)</li>
+          <li>Add README to npm package (shows on npm package page)</li>
           <li>Make sure the version number in settings always pulls (or builds with) the latest version</li>
           <li>Clean up git history for clean slate, then open source</li>
           <li>Finalise domain and OG image</li>
