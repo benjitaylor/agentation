@@ -1450,9 +1450,9 @@ export function PageFeedbackToolbarCSS({
             </button>
           </div>
 
-          {/* Settings Panel - always dark themed */}
+          {/* Settings Panel */}
           <div
-            className={`${styles.settingsPanel} ${styles.dark} ${showSettingsVisible ? styles.enter : styles.exit}`}
+            className={`${styles.settingsPanel} ${showSettingsVisible ? styles.enter : styles.exit}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className={styles.settingsHeader}>
