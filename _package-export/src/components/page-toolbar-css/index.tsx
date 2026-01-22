@@ -40,6 +40,7 @@ import {
   getNearbyText,
   getElementClasses,
   getDetailedComputedStyles,
+  getForensicComputedStyles,
   getFullElementPath,
   getAccessibilityInfo,
   getNearbyElements,
@@ -303,6 +304,7 @@ export function PageFeedbackToolbarCSS({
     fullPath?: string;
     accessibility?: string;
     computedStyles?: string;
+    computedStylesObj?: Record<string, string>;
     nearbyElements?: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
@@ -747,11 +749,9 @@ export function PageFeedbackToolbarCSS({
         selectedText = selection.toString().trim().slice(0, 500);
       }
 
-      // Capture forensic data
+      // Capture computed styles - filtered for popup, full for forensic output
       const computedStylesObj = getDetailedComputedStyles(elementUnder);
-      const computedStylesStr = Object.entries(computedStylesObj)
-        .map(([k, v]) => `${k}: ${v}`)
-        .join("; ");
+      const computedStylesStr = getForensicComputedStyles(elementUnder);
 
       setPendingAnnotation({
         x,
@@ -772,6 +772,7 @@ export function PageFeedbackToolbarCSS({
         fullPath: getFullElementPath(elementUnder),
         accessibility: getAccessibilityInfo(elementUnder),
         computedStyles: computedStylesStr,
+        computedStylesObj,
         nearbyElements: getNearbyElements(elementUnder),
       });
       setHoverInfo(null);
@@ -1145,15 +1146,11 @@ export function PageFeedbackToolbarCSS({
               ? ` +${finalElements.length - 5} more`
               : "";
 
-          // Capture forensic data from first element (Option A)
+          // Capture computed styles from first element - filtered for popup, full for forensic output
           const firstElement = finalElements[0].element;
           const firstElementComputedStyles =
             getDetailedComputedStyles(firstElement);
-          const firstElementComputedStylesStr = Object.entries(
-            firstElementComputedStyles,
-          )
-            .map(([k, v]) => `${k}: ${v}`)
-            .join("; ");
+          const firstElementComputedStylesStr = getForensicComputedStyles(firstElement);
 
           setPendingAnnotation({
             x,
@@ -1172,6 +1169,7 @@ export function PageFeedbackToolbarCSS({
             fullPath: getFullElementPath(firstElement),
             accessibility: getAccessibilityInfo(firstElement),
             computedStyles: firstElementComputedStylesStr,
+            computedStylesObj: firstElementComputedStyles,
             nearbyElements: getNearbyElements(firstElement),
             cssClasses: getElementClasses(firstElement),
             nearbyText: getNearbyText(firstElement),
@@ -2296,6 +2294,7 @@ export function PageFeedbackToolbarCSS({
                 ref={popupRef}
                 element={pendingAnnotation.element}
                 selectedText={pendingAnnotation.selectedText}
+                computedStyles={pendingAnnotation.computedStylesObj}
                 placeholder={
                   pendingAnnotation.element === "Area selection"
                     ? "What should change in this area?"
@@ -2322,13 +2321,10 @@ export function PageFeedbackToolbarCSS({
                       (pendingAnnotation.x / 100) * window.innerWidth,
                     ),
                   ),
-                  top: Math.max(
-                    20,
-                    Math.min(
-                      pendingAnnotation.clientY + 20,
-                      window.innerHeight - 180,
-                    ),
-                  ),
+                  // Position popup above or below marker to keep marker visible
+                  ...(pendingAnnotation.clientY > window.innerHeight - 290
+                    ? { bottom: window.innerHeight - pendingAnnotation.clientY + 20 }
+                    : { top: pendingAnnotation.clientY + 20 }),
                 }}
               />
             </>
@@ -2372,26 +2368,26 @@ export function PageFeedbackToolbarCSS({
                     ? "#34C759"
                     : settings.annotationColor
                 }
-                style={{
-                  // Popup is 280px wide, centered with translateX(-50%), so 140px each side
-                  // Clamp so popup stays 20px from viewport edges
-                  left: Math.max(
-                    160,
-                    Math.min(
-                      window.innerWidth - 160,
-                      (editingAnnotation.x / 100) * window.innerWidth,
+                style={(() => {
+                  const markerY = editingAnnotation.isFixed
+                    ? editingAnnotation.y
+                    : editingAnnotation.y - scrollY;
+                  return {
+                    // Popup is 280px wide, centered with translateX(-50%), so 140px each side
+                    // Clamp so popup stays 20px from viewport edges
+                    left: Math.max(
+                      160,
+                      Math.min(
+                        window.innerWidth - 160,
+                        (editingAnnotation.x / 100) * window.innerWidth,
+                      ),
                     ),
-                  ),
-                  top: Math.max(
-                    20,
-                    Math.min(
-                      (editingAnnotation.isFixed
-                        ? editingAnnotation.y
-                        : editingAnnotation.y - scrollY) + 20,
-                      window.innerHeight - 180,
-                    ),
-                  ),
-                }}
+                    // Position popup above or below marker to keep marker visible
+                    ...(markerY > window.innerHeight - 290
+                      ? { bottom: window.innerHeight - markerY + 20 }
+                      : { top: markerY + 20 }),
+                  };
+                })()}
               />
             </>
           )}
