@@ -4,6 +4,7 @@ import postcss from "postcss";
 import postcssModules from "postcss-modules";
 import * as path from "path";
 import * as fs from "fs";
+import { compile, preprocess } from "svelte/compiler";
 import type { Plugin } from "esbuild";
 
 // Read version from package.json at build time
@@ -82,19 +83,80 @@ export default {};
   };
 }
 
+// Svelte plugin for esbuild
+function sveltePlugin(): Plugin {
+  return {
+    name: "svelte",
+    setup(build) {
+      build.onLoad({ filter: /\.svelte$/ }, async (args) => {
+        const source = await fs.promises.readFile(args.path, "utf-8");
+
+        // Preprocess to handle TypeScript in script tags
+        const preprocessed = await preprocess(source, [
+          {
+            script: ({ content, attributes }) => {
+              if (attributes.lang === "ts") {
+                // We'll let esbuild handle the TypeScript
+                return { code: content };
+              }
+              return { code: content };
+            },
+          },
+        ], {
+          filename: args.path,
+        });
+
+        // Compile Svelte to JavaScript
+        const compiled = compile(preprocessed.code, {
+          filename: args.path,
+          generate: "client",
+          css: "injected",
+          dev: false,
+          runes: true,
+        });
+
+        // Return the compiled JavaScript
+        return {
+          contents: compiled.js.code,
+          loader: "ts",
+          warnings: compiled.warnings.map((w) => ({
+            text: w.message,
+            location: w.start
+              ? {
+                  file: args.path,
+                  line: w.start.line,
+                  column: w.start.column,
+                }
+              : undefined,
+          })),
+        };
+      });
+
+      // Handle .svelte.ts files (Svelte 5 module scripts)
+      build.onLoad({ filter: /\.svelte\.ts$/ }, async (args) => {
+        const source = await fs.promises.readFile(args.path, "utf-8");
+        return {
+          contents: source,
+          loader: "ts",
+        };
+      });
+    },
+  };
+}
+
 export default defineConfig((options) => ({
   entry: ["src/index.ts"],
   format: ["cjs", "esm"],
-  dts: true,
+  dts: false, // Svelte components don't work with automatic DTS generation
   splitting: false,
   sourcemap: true,
   clean: !options.watch, // Only clean on build, not during watch
-  external: ["react", "react-dom"],
-  esbuildPlugins: [scssModulesPlugin()],
+  external: ["svelte", "svelte/internal", "svelte/internal/client", "svelte/store"],
+  esbuildPlugins: [sveltePlugin(), scssModulesPlugin()],
   define: {
     __VERSION__: JSON.stringify(VERSION),
   },
-  banner: {
-    js: '"use client";',
+  esbuildOptions(options) {
+    options.conditions = ["svelte", "browser"];
   },
 }));

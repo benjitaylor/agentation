@@ -6,9 +6,11 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "svelte": "./dist/index.mjs",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "svelte": "./dist/index.mjs",
       "import": {
         "types": "./dist/index.d.mts",
         "default": "./dist/index.mjs"
@@ -28,18 +30,14 @@
     "dev": "pnpm build && pnpm watch"
   },
   "peerDependencies": {
-    "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "svelte": ">=5.0.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
     "esbuild-sass-plugin": "^3.6.0",
     "postcss": "^8.5.6",
     "postcss-modules": "^6.0.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "sass": "^1.97.2",
+    "svelte": "^5.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0"
   }

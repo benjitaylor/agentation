@@ -1,5 +1,5 @@
 // =============================================================================
-// Agentation
+// Agentation - Svelte Version
 // =============================================================================
 //
 // A floating toolbar for annotating web pages and collecting structured feedback
@@ -12,20 +12,45 @@
 // =============================================================================
 
 // Main components
-// CSS-only version (default - zero runtime deps)
-export { PageFeedbackToolbarCSS as Agentation } from "./components/page-toolbar-css";
-export { PageFeedbackToolbarCSS } from "./components/page-toolbar-css";
-export type { DemoAnnotation } from "./components/page-toolbar-css";
+export { default as Agentation } from "./components/page-toolbar-css/PageFeedbackToolbarCSS.svelte";
+export { default as PageFeedbackToolbarCSS } from "./components/page-toolbar-css/PageFeedbackToolbarCSS.svelte";
+export type { DemoAnnotation } from "./components/page-toolbar-css/PageFeedbackToolbarCSS.svelte";
 
 // Shared components (for building custom UIs)
-export { AnnotationPopupCSS } from "./components/annotation-popup-css";
-export type {
-  AnnotationPopupCSSProps,
-  AnnotationPopupCSSHandle,
-} from "./components/annotation-popup-css";
+export { default as AnnotationPopupCSS } from "./components/annotation-popup-css/AnnotationPopupCSS.svelte";
 
-// Icons (same for both versions - they're pure SVG)
-export * from "./components/icons";
+// Icons (Svelte components)
+export {
+  IconClose,
+  IconPlus,
+  IconCheck,
+  IconCheckSmall,
+  IconListSparkle,
+  IconHelp,
+  IconCheckSmallAnimated,
+  IconCopyAlt,
+  IconCopyAnimated,
+  IconEye,
+  IconEyeAlt,
+  IconEyeClosed,
+  IconEyeAnimated,
+  IconPausePlayAnimated,
+  IconEyeMinus,
+  IconGear,
+  IconPauseAlt,
+  IconPause,
+  IconPlayAlt,
+  IconTrashAlt,
+  IconChatEllipsis,
+  IconCheckmark,
+  IconCheckmarkLarge,
+  IconCheckmarkCircle,
+  IconXmark,
+  IconXmarkLarge,
+  IconSun,
+  IconMoon,
+  AnimatedBunny,
+} from "./components/icons.svelte";
 
 // Utilities (for building custom UIs)
 export {

@@ -4,7 +4,6 @@
     "lib": ["DOM", "DOM.Iterable", "ES2020"],
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "jsx": "react-jsx",
     "strict": true,
     "declaration": true,
     "declarationMap": true,
@@ -15,8 +14,9 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "types": ["svelte"]
   },
-  "include": ["src"],
+  "include": ["src/**/*.ts", "src/**/*.svelte.ts", "src/**/*.svelte"],
   "exclude": ["node_modules", "dist"]
 }
