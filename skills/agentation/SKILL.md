@@ -1,6 +1,6 @@
 ---
 name: agentation
-description: Add Agentation visual feedback toolbar to a React or Next.js project
+description: Add Agentation visual feedback toolbar to a React project (Next.js, Vite, CRA)
 ---
 
 # Agentation Setup
