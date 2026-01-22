@@ -823,3 +823,85 @@ export const AnimatedBunny = ({
     </text>
   </svg>
 );
+
+// Clawd icon - the Claude Code mascot for sync indicator
+export const IconClaudeSync = ({
+  size = 24,
+  status = "idle",
+}: {
+  size?: number;
+  status?: "idle" | "syncing" | "synced" | "error";
+}) => {
+  // Clawd colors
+  const bodyColor = "#C27C5C";
+  const feetColor = "#8B5A42";
+  const eyeColor = "#1a1a1a";
+
+  // Status indicator colors
+  const getStatusColor = () => {
+    switch (status) {
+      case "syncing":
+        return "#ffd60a";
+      case "synced":
+        return "#34c759";
+      case "error":
+        return "#ff3b30";
+      default:
+        return null;
+    }
+  };
+
+  const statusColor = getStatusColor();
+  const opacity = status === "idle" ? 0.5 : 1;
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <style>{`
+        @keyframes clawdBounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-1px); }
+        }
+        @keyframes clawdPulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; }
+        }
+        .clawd-body {
+          ${status === "syncing" ? "animation: clawdBounce 0.5s ease-in-out infinite;" : ""}
+        }
+        .status-dot {
+          ${status === "syncing" ? "animation: clawdPulse 1s ease-in-out infinite;" : ""}
+        }
+      `}</style>
+
+      <g className="clawd-body" opacity={opacity}>
+        {/* Body - main rectangle */}
+        <rect x="5" y="6" width="14" height="9" rx="1" fill={bodyColor} />
+
+        {/* Arms */}
+        <rect x="3" y="9" width="2" height="3" rx="0.5" fill={bodyColor} />
+        <rect x="19" y="9" width="2" height="3" rx="0.5" fill={bodyColor} />
+
+        {/* Eyes - tall vertical rectangles */}
+        <rect x="8" y="8" width="2" height="4" rx="0.5" fill={eyeColor} />
+        <rect x="14" y="8" width="2" height="4" rx="0.5" fill={eyeColor} />
+
+        {/* Legs - 2 pairs */}
+        <rect x="7" y="15" width="2" height="3" rx="0.5" fill={feetColor} />
+        <rect x="10" y="15" width="2" height="3" rx="0.5" fill={feetColor} />
+        <rect x="12" y="15" width="2" height="3" rx="0.5" fill={feetColor} />
+        <rect x="15" y="15" width="2" height="3" rx="0.5" fill={feetColor} />
+      </g>
+
+      {/* Status indicator dot */}
+      {statusColor && (
+        <circle
+          className="status-dot"
+          cx="19"
+          cy="5"
+          r="3"
+          fill={statusColor}
+        />
+      )}
+    </svg>
+  );
+};

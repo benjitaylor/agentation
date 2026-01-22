@@ -38,6 +38,8 @@ export function ToolbarProvider() {
       demoAnnotations={demoAnnotations}
       demoDelay={1500}
       enableDemoMode
+      // Enable Claude Code sync when running locally
+      serverUrl={process.env.NODE_ENV === "development" ? "http://localhost:4242" : undefined}
     />
   );
 }

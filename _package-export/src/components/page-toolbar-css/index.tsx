@@ -34,6 +34,7 @@ import {
   IconSun,
   IconMoon,
   IconXmarkLarge,
+  IconClaudeSync,
 } from "../icons";
 import {
   identifyElement,
@@ -243,10 +244,16 @@ export type DemoAnnotation = {
   selectedText?: string;
 };
 
+type SyncStatus = "idle" | "syncing" | "synced" | "error";
+
 type PageFeedbackToolbarCSSProps = {
   demoAnnotations?: DemoAnnotation[];
   demoDelay?: number;
   enableDemoMode?: boolean;
+  /** URL of the agentation-claude server for syncing annotations (e.g., "http://localhost:4242") */
+  serverUrl?: string;
+  /** Callback fired whenever annotations change */
+  onAnnotationChange?: (annotations: Annotation[]) => void;
 };
 
 // =============================================================================
@@ -257,9 +264,12 @@ export function PageFeedbackToolbarCSS({
   demoAnnotations,
   demoDelay = 1000,
   enableDemoMode = false,
+  serverUrl,
+  onAnnotationChange,
 }: PageFeedbackToolbarCSSProps = {}) {
   const [isActive, setIsActive] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle");
   const [showMarkers, setShowMarkers] = useState(true);
 
   // Unified marker visibility state - controls both toolbar and eye toggle
@@ -519,14 +529,63 @@ export function PageFeedbackToolbarCSS({
     };
   }, []);
 
-  // Save annotations
+  // Save annotations to localStorage and sync to server
   useEffect(() => {
-    if (mounted && annotations.length > 0) {
+    if (!mounted) return;
+
+    // Save to localStorage
+    if (annotations.length > 0) {
       saveAnnotations(pathname, annotations);
-    } else if (mounted && annotations.length === 0) {
+    } else {
       localStorage.removeItem(getStorageKey(pathname));
     }
-  }, [annotations, pathname, mounted]);
+
+    // Call change callback if provided
+    onAnnotationChange?.(annotations);
+
+    // Sync to server if serverUrl is configured
+    if (serverUrl) {
+      const syncToServer = async () => {
+        setSyncStatus("syncing");
+        try {
+          const payload = {
+            url: typeof window !== "undefined" ? window.location.href : "",
+            pathname,
+            viewport:
+              typeof window !== "undefined"
+                ? { width: window.innerWidth, height: window.innerHeight }
+                : undefined,
+            userAgent:
+              typeof navigator !== "undefined" ? navigator.userAgent : undefined,
+            annotations,
+          };
+
+          const response = await fetch(`${serverUrl}/sync`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          if (response.ok) {
+            setSyncStatus("synced");
+            // Reset to idle after a brief moment
+            setTimeout(() => setSyncStatus("idle"), 2000);
+          } else {
+            setSyncStatus("error");
+          }
+        } catch {
+          // Server not available - fail silently, this is optional functionality
+          setSyncStatus("error");
+          // Reset to idle after showing error briefly
+          setTimeout(() => setSyncStatus("idle"), 3000);
+        }
+      };
+
+      // Debounce sync to avoid hammering server during rapid changes
+      const timeoutId = setTimeout(syncToServer, 300);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [annotations, pathname, mounted, serverUrl, onAnnotationChange]);
 
   // Freeze animations
   const freezeAnimations = useCallback(() => {
@@ -1335,6 +1394,42 @@ export function PageFeedbackToolbarCSS({
     setTimeout(() => setCleared(false), 1500);
   }, [pathname, annotations.length]);
 
+  // Listen for server-sent events (clear commands from MCP)
+  useEffect(() => {
+    if (!serverUrl || !mounted) return;
+
+    let eventSource: EventSource | null = null;
+
+    const connect = () => {
+      eventSource = new EventSource(`${serverUrl}/events`);
+
+      eventSource.addEventListener("clear", (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          // Clear if it's for all pages or matches our pathname
+          if (data.all || data.pathname === pathname) {
+            clearAll();
+          }
+        } catch {
+          // Ignore parse errors
+        }
+      });
+
+      eventSource.onerror = () => {
+        // Silently handle errors - server may not be running
+        eventSource?.close();
+        // Attempt to reconnect after a delay
+        setTimeout(connect, 5000);
+      };
+    };
+
+    connect();
+
+    return () => {
+      eventSource?.close();
+    };
+  }, [serverUrl, mounted, pathname, clearAll]);
+
   // Copy output
   const copyOutput = useCallback(async () => {
     const output = generateOutput(annotations, pathname, settings.outputDetail);
@@ -1684,6 +1779,24 @@ export function PageFeedbackToolbarCSS({
             >
               <IconCopyAnimated size={24} copied={copied} />
             </button>
+
+            {/* Sync status indicator - only shown when serverUrl is configured */}
+            {serverUrl && (
+              <div
+                className={`${styles.controlButton} ${styles.syncButton} ${!isDarkMode ? styles.light : ""}`}
+                title={
+                  syncStatus === "syncing"
+                    ? "Syncing to Claude..."
+                    : syncStatus === "synced"
+                      ? "Synced to Claude"
+                      : syncStatus === "error"
+                        ? "Sync failed - server not running?"
+                        : "Claude sync enabled"
+                }
+              >
+                <IconClaudeSync size={24} status={syncStatus} />
+              </div>
+            )}
 
             <button
               className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}

@@ -182,7 +182,7 @@ $green: #34c759;
   position: fixed;
   bottom: 1.25rem;
   right: 1.25rem;
-  width: 257px;
+  width: 290px;
   z-index: 100000;
   font-family:
     system-ui,
@@ -256,7 +256,7 @@ $green: #34c759;
     border-radius: 1.5rem;
     padding: 0.375rem;
     @supports not (width: calc-size(auto, size)) {
-      width: 257px;
+      width: 290px;
     }
   }
 }
@@ -386,6 +386,19 @@ $green: #34c759;
   height: 12px;
   background: rgba(255, 255, 255, 0.15);
   margin: 0 0.125rem;
+}
+
+// =============================================================================
+// Sync Indicator (Claude integration)
+// =============================================================================
+
+.syncButton {
+  cursor: default !important;
+  pointer-events: none;
+
+  &:hover {
+    background: transparent !important;
+  }
 }
 
 // =============================================================================

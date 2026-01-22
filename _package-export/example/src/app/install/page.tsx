@@ -223,6 +223,28 @@ function App() {
       </section>
 
       <section>
+        <h2>Claude Code Integration (Optional)</h2>
+        <p>
+          Sync annotations directly to Claude Code instead of copy/paste.
+          Annotations flow automatically to Claude via MCP.
+        </p>
+        <h3>1. Add the MCP server</h3>
+        <CodeBlock code="claude mcp add agentation -- npx @agentation/claude" language="bash" copyable />
+
+        <h3>2. Enable sync in your app</h3>
+        <CodeBlock
+          code={`<Agentation serverUrl="http://localhost:4242" />`}
+          language="tsx"
+        />
+
+        <h3>3. Use naturally</h3>
+        <p>
+          When you annotate elements, they sync to Claude automatically.
+          Just tell Claude &ldquo;check my page feedback&rdquo; or &ldquo;fix the issues on /dashboard&rdquo;.
+        </p>
+      </section>
+
+      <section>
         <h2>Requirements</h2>
         <ul>
           <li><strong>React 18+</strong> &mdash; Uses modern React features</li>

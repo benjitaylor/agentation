@@ -1,3 +1,4 @@
 packages:
   - '_package-export'
   - '_package-export/example'
+  - '_claude-integration'
