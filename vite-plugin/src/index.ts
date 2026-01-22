@@ -1,4 +1,4 @@
-import type { Plugin, HtmlTagDescriptor, ViteDevServer } from 'vite'
+import type { Plugin, HtmlTagDescriptor } from 'vite'
 
 export interface AgentationPluginOptions {
   /**
@@ -16,14 +16,23 @@ import { Agentation } from 'agentation';
 import { createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 
+let root = null;
+
 function init() {
-  if (document.getElementById('agentation-root')) return;
+  const existing = document.getElementById('agentation-root');
+  if (existing) {
+    // Clean up previous root if it exists (HMR case)
+    if (root) {
+      root.unmount();
+    }
+    existing.remove();
+  }
 
   const container = document.createElement('div');
   container.id = 'agentation-root';
   document.body.appendChild(container);
 
-  const root = createRoot(container);
+  root = createRoot(container);
   root.render(createElement(Agentation));
 }
 
@@ -32,11 +41,23 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    if (root) {
+      root.unmount();
+      root = null;
+    }
+    const container = document.getElementById('agentation-root');
+    if (container) {
+      container.remove();
+    }
+  });
+}
 `
 
 export default function agentationPlugin(options: AgentationPluginOptions = {}): Plugin {
   const { enabled = true } = options
-  let server: ViteDevServer
 
   return {
     name: 'vite-plugin-agentation',
@@ -48,10 +69,6 @@ export default function agentationPlugin(options: AgentationPluginOptions = {}):
           include: ['agentation', 'react', 'react-dom/client']
         }
       }
-    },
-
-    configureServer(_server) {
-      server = _server
     },
 
     resolveId(id) {
