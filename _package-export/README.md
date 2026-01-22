@@ -25,6 +25,27 @@ function App() {
 
 The toolbar appears in the bottom-right corner. Click to activate, then click any element to annotate it.
 
+### Vite plugin
+
+For Vite projects, you can use the plugin to inject Agentation automatically without modifying your app code:
+
+```bash
+npm install vite-plugin-agentation -D
+```
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import agentation from 'vite-plugin-agentation'
+
+export default defineConfig({
+  plugins: [react(), agentation()]
+})
+```
+
+The plugin only runs in dev mode and excludes itself from production builds.
+
 ## Features
 
 - **Click to annotate** – Click any element with automatic selector identification

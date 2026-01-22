@@ -283,6 +283,31 @@ function App() {
         </section>
 
         <section>
+          <h2>Vite plugin (alternative)</h2>
+          <p>
+            For Vite projects, you can use the Vite plugin which automatically
+            injects Agentation during development without modifying your app code.
+          </p>
+          <CodeBlock code="npm install vite-plugin-agentation" language="bash" copyable />
+          <p style={{ marginTop: "1rem" }}>
+            Add the plugin to your <code>vite.config.ts</code>:
+          </p>
+          <CodeBlock
+            code={`import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import agentation from "vite-plugin-agentation";
+
+export default defineConfig({
+  plugins: [react(), agentation()],
+});`}
+            language="typescript"
+          />
+          <p style={{ marginTop: "1rem", fontSize: "0.875rem", color: "rgba(0,0,0,0.6)" }}>
+            The plugin only runs in dev mode and automatically excludes itself from production builds.
+          </p>
+        </section>
+
+        <section>
           <h2>Requirements</h2>
           <ul>
             <li>
