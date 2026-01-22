@@ -44,6 +44,7 @@ import {
   getAccessibilityInfo,
   getNearbyElements,
 } from "../../utils/element-identification";
+import { getReactComponentName } from "../../utils/react-detection";
 import {
   loadAnnotations,
   saveAnnotations,
@@ -52,6 +53,41 @@ import {
 
 import type { Annotation } from "../../types";
 import styles from "./styles.module.scss";
+
+/**
+ * Composes element identification with React component detection.
+ * This is the boundary where we combine framework-agnostic element ID
+ * with React-specific component name detection.
+ */
+function identifyElementWithReact(
+  element: HTMLElement,
+  reactMode: ReactComponentMode = "dom-correlated",
+): {
+  /** Combined name for display (React path + element) */
+  name: string;
+  /** Raw element name without React path */
+  elementName: string;
+  /** DOM path */
+  path: string;
+  /** React component path (e.g., '<SideNav> <LinkComponent>') */
+  reactComponents: string | null;
+} {
+  const { name: elementName, path } = identifyElement(element);
+
+  // If React detection is off, just return element info
+  if (reactMode === "off") {
+    return { name: elementName, elementName, path, reactComponents: null };
+  }
+
+  const reactInfo = getReactComponentName(element, { mode: reactMode });
+
+  return {
+    name: reactInfo.path ? `${reactInfo.path} ${elementName}` : elementName,
+    elementName,
+    path,
+    reactComponents: reactInfo.path,
+  };
+}
 
 // Module-level flag to prevent re-animating on SPA page navigation
 let hasPlayedEntranceAnimation = false;
@@ -67,12 +103,14 @@ type HoverInfo = {
 };
 
 type OutputDetailLevel = "compact" | "standard" | "detailed" | "forensic";
+type ReactComponentMode = "dom-correlated" | "filtered" | "off";
 
 type ToolbarSettings = {
   outputDetail: OutputDetailLevel;
   autoClearAfterCopy: boolean;
   annotationColor: string;
   blockInteractions: boolean;
+  reactComponentMode: ReactComponentMode;
 };
 
 const DEFAULT_SETTINGS: ToolbarSettings = {
@@ -80,7 +118,14 @@ const DEFAULT_SETTINGS: ToolbarSettings = {
   autoClearAfterCopy: false,
   annotationColor: "#3c82f7",
   blockInteractions: false,
+  reactComponentMode: "filtered",
 };
+
+const REACT_MODE_OPTIONS: { value: ReactComponentMode; label: string }[] = [
+  { value: "filtered", label: "On" },
+  { value: "dom-correlated", label: "Smart" },
+  { value: "off", label: "Off" },
+];
 
 const OUTPUT_DETAIL_OPTIONS: { value: OutputDetailLevel; label: string }[] = [
   { value: "compact", label: "Compact" },
@@ -165,17 +210,35 @@ function generateOutput(
   output += "\n";
 
   annotations.forEach((a, i) => {
+    // Build element display name based on detail level
+    const elementWithReact =
+      a.reactComponents &&
+      detailLevel !== "compact" &&
+      detailLevel !== "forensic"
+        ? `${a.reactComponents} ${a.element}`
+        : a.element;
+
     if (detailLevel === "compact") {
+      // Compact: No React components, minimal info
       output += `${i + 1}. **${a.element}**: ${a.comment}`;
       if (a.selectedText) {
         output += ` (re: "${a.selectedText.slice(0, 30)}${a.selectedText.length > 30 ? "..." : ""}")`;
       }
       output += "\n";
     } else if (detailLevel === "forensic") {
-      // Forensic mode - order matches output page example
+      // Forensic: React components as separate field
       output += `### ${i + 1}. ${a.element}\n`;
       if (a.isMultiSelect && a.fullPath) {
         output += `*Forensic data shown for first element of selection*\n`;
+      }
+      if (a.reactComponents) {
+        // Format: <SideNav> <LinkComponent> -> SideNav > LinkComponent (matches DOM path style)
+        const componentChain = a.reactComponents
+          .replace(/<([^>]+)>/g, "$1")
+          .split(" ")
+          .filter(Boolean)
+          .join(" > ");
+        output += `**React Components:** ${componentChain}\n`;
       }
       if (a.fullPath) {
         output += `**Full DOM Path:** ${a.fullPath}\n`;
@@ -204,8 +267,8 @@ function generateOutput(
       }
       output += `**Feedback:** ${a.comment}\n\n`;
     } else {
-      // Standard and detailed modes
-      output += `### ${i + 1}. ${a.element}\n`;
+      // Standard and detailed modes: React components inline
+      output += `### ${i + 1}. ${elementWithReact}\n`;
       output += `**Location:** ${a.elementPath}\n`;
 
       if (detailLevel === "detailed") {
@@ -283,6 +346,7 @@ export function PageFeedbackToolbarCSS({
     accessibility?: string;
     computedStyles?: string;
     nearbyElements?: string;
+    reactComponents?: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
   const [cleared, setCleared] = useState(false);
@@ -464,14 +528,15 @@ export function PageFeedbackToolbarCSS({
           if (!element) return;
 
           const rect = element.getBoundingClientRect();
-          const { name, path } = identifyElement(element);
+          const { elementName, path, reactComponents } =
+            identifyElementWithReact(element, settings.reactComponentMode);
 
           const newAnnotation: Annotation = {
             id: `demo-${Date.now()}-${index}`,
             x: ((rect.left + rect.width / 2) / window.innerWidth) * 100,
             y: rect.top + rect.height / 2 + window.scrollY,
             comment: demo.comment,
-            element: name,
+            element: elementName,
             elementPath: path,
             timestamp: Date.now(),
             selectedText: demo.selectedText,
@@ -483,6 +548,7 @@ export function PageFeedbackToolbarCSS({
             },
             nearbyText: getNearbyText(element),
             cssClasses: getElementClasses(element),
+            reactComponents: reactComponents ?? undefined,
           };
 
           setAnnotations((prev) => [...prev, newAnnotation]);
@@ -493,7 +559,13 @@ export function PageFeedbackToolbarCSS({
     return () => {
       timeoutIds.forEach(clearTimeout);
     };
-  }, [enableDemoMode, mounted, demoAnnotations, demoDelay]);
+  }, [
+    enableDemoMode,
+    mounted,
+    demoAnnotations,
+    demoDelay,
+    settings.reactComponentMode,
+  ]);
 
   // Track scroll
   useEffect(() => {
@@ -649,7 +721,10 @@ export function PageFeedbackToolbarCSS({
         return;
       }
 
-      const { name, path } = identifyElement(elementUnder);
+      const { name, path } = identifyElementWithReact(
+        elementUnder,
+        settings.reactComponentMode,
+      );
       const rect = elementUnder.getBoundingClientRect();
 
       setHoverInfo({ element: name, elementPath: path, rect });
@@ -658,7 +733,7 @@ export function PageFeedbackToolbarCSS({
 
     document.addEventListener("mousemove", handleMouseMove);
     return () => document.removeEventListener("mousemove", handleMouseMove);
-  }, [isActive, pendingAnnotation]);
+  }, [isActive, pendingAnnotation, settings.reactComponentMode]);
 
   // Handle click
   useEffect(() => {
@@ -713,7 +788,10 @@ export function PageFeedbackToolbarCSS({
       ) as HTMLElement;
       if (!elementUnder) return;
 
-      const { name, path } = identifyElement(elementUnder);
+      const { elementName, path, reactComponents } = identifyElementWithReact(
+        elementUnder,
+        settings.reactComponentMode,
+      );
       const rect = elementUnder.getBoundingClientRect();
       const x = (e.clientX / window.innerWidth) * 100;
 
@@ -736,7 +814,7 @@ export function PageFeedbackToolbarCSS({
         x,
         y,
         clientY: e.clientY,
-        element: name,
+        element: elementName,
         elementPath: path,
         selectedText,
         boundingBox: {
@@ -752,6 +830,7 @@ export function PageFeedbackToolbarCSS({
         accessibility: getAccessibilityInfo(elementUnder),
         computedStyles: computedStylesStr,
         nearbyElements: getNearbyElements(elementUnder),
+        reactComponents: reactComponents ?? undefined,
       });
       setHoverInfo(null);
     };
@@ -764,6 +843,7 @@ export function PageFeedbackToolbarCSS({
     pendingAnnotation,
     editingAnnotation,
     settings.blockInteractions,
+    settings.reactComponentMode,
   ]);
 
   // Multi-select drag - mousedown
@@ -1115,17 +1195,21 @@ export function PageFeedbackToolbarCSS({
             },
           );
 
-          const elementNames = finalElements
+          // Get element info for all selected elements
+          const elementInfos = finalElements
             .slice(0, 5)
-            .map(({ element }) => identifyElement(element).name)
-            .join(", ");
+            .map(({ element }) =>
+              identifyElementWithReact(element, settings.reactComponentMode),
+            );
+          const elementNames = elementInfos.map((info) => info.name).join(", ");
           const suffix =
             finalElements.length > 5
               ? ` +${finalElements.length - 5} more`
               : "";
 
-          // Capture forensic data from first element (Option A)
+          // Capture forensic data from first element
           const firstElement = finalElements[0].element;
+          const firstElementInfo = elementInfos[0];
           const firstElementComputedStyles =
             getDetailedComputedStyles(firstElement);
           const firstElementComputedStylesStr = Object.entries(
@@ -1154,6 +1238,7 @@ export function PageFeedbackToolbarCSS({
             nearbyElements: getNearbyElements(firstElement),
             cssClasses: getElementClasses(firstElement),
             nearbyText: getNearbyText(firstElement),
+            reactComponents: firstElementInfo?.reactComponents ?? undefined,
           });
         } else {
           // No elements selected, but allow annotation on empty area
@@ -1194,7 +1279,7 @@ export function PageFeedbackToolbarCSS({
 
     document.addEventListener("mouseup", handleMouseUp);
     return () => document.removeEventListener("mouseup", handleMouseUp);
-  }, [isActive, isDragging]);
+  }, [isActive, isDragging, settings.reactComponentMode]);
 
   // Add annotation
   const addAnnotation = useCallback(
@@ -1219,6 +1304,7 @@ export function PageFeedbackToolbarCSS({
         accessibility: pendingAnnotation.accessibility,
         computedStyles: pendingAnnotation.computedStyles,
         nearbyElements: pendingAnnotation.nearbyElements,
+        reactComponents: pendingAnnotation.reactComponents,
       };
 
       setAnnotations((prev) => [...prev, newAnnotation]);
@@ -1805,6 +1891,53 @@ export function PageFeedbackToolbarCSS({
                       <span
                         key={option.value}
                         className={`${styles.cycleDot} ${!isDarkMode ? styles.light : ""} ${settings.outputDetail === option.value ? styles.active : ""}`}
+                      />
+                    ))}
+                  </span>
+                </button>
+              </div>
+
+              <div className={styles.settingsRow}>
+                <div
+                  className={`${styles.settingsLabel} ${!isDarkMode ? styles.light : ""}`}
+                >
+                  React Components
+                  <span
+                    className={styles.helpIcon}
+                    data-tooltip="How to detect React component names: Smart (DOM-correlated), All (filtered), Strict (user patterns only), Off"
+                  >
+                    <IconHelp size={20} />
+                  </span>
+                </div>
+                <button
+                  className={`${styles.cycleButton} ${!isDarkMode ? styles.light : ""}`}
+                  onClick={() => {
+                    const currentIndex = REACT_MODE_OPTIONS.findIndex(
+                      (opt) => opt.value === settings.reactComponentMode,
+                    );
+                    const nextIndex =
+                      (currentIndex + 1) % REACT_MODE_OPTIONS.length;
+                    setSettings((s) => ({
+                      ...s,
+                      reactComponentMode: REACT_MODE_OPTIONS[nextIndex].value,
+                    }));
+                  }}
+                >
+                  <span
+                    key={settings.reactComponentMode}
+                    className={styles.cycleButtonText}
+                  >
+                    {
+                      REACT_MODE_OPTIONS.find(
+                        (opt) => opt.value === settings.reactComponentMode,
+                      )?.label
+                    }
+                  </span>
+                  <span className={styles.cycleDots}>
+                    {REACT_MODE_OPTIONS.map((option) => (
+                      <span
+                        key={option.value}
+                        className={`${styles.cycleDot} ${!isDarkMode ? styles.light : ""} ${settings.reactComponentMode === option.value ? styles.active : ""}`}
                       />
                     ))}
                   </span>

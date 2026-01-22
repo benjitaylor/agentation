@@ -7,7 +7,7 @@ export type Annotation = {
   x: number; // % of viewport width
   y: number; // px from top of document (absolute) OR viewport (if isFixed)
   comment: string;
-  element: string;
+  element: string; // DOM element description (e.g., 'button "Submit"')
   elementPath: string;
   timestamp: number;
   selectedText?: string;
@@ -20,6 +20,7 @@ export type Annotation = {
   accessibility?: string;
   isMultiSelect?: boolean; // true if created via drag selection
   isFixed?: boolean; // true if element has fixed/sticky positioning (marker stays fixed)
+  reactComponents?: string; // React component path (e.g., '<SideNav> <LinkComponent>')
 };
 
 // TODO: Add configuration types when abstracting config

@@ -38,6 +38,17 @@ export {
 } from "./utils/element-identification";
 
 export {
+  getReactComponentName,
+  isReactPage,
+  clearReactDetectionCache,
+} from "./utils/react-detection";
+export type {
+  ReactComponentInfo,
+  ReactDetectionConfig,
+  ReactDetectionMode,
+} from "./utils/react-detection";
+
+export {
   loadAnnotations,
   saveAnnotations,
   getStorageKey,
