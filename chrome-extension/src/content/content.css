@@ -1,0 +1,5 @@
+/* Content script styles - injects into pages */
+#agentation-extension-root {
+  all: initial;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}

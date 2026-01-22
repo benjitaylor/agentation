@@ -1,0 +1,231 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #0f0f0f;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.options {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.options-container {
+  width: 100%;
+  max-width: 600px;
+}
+
+.options-header {
+  margin-bottom: 40px;
+}
+
+.options-title {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.options-title-slash {
+  color: #3c82f7;
+}
+
+.options-subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.options-section {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.options-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.options-field {
+  margin-bottom: 20px;
+}
+
+.options-field:last-child {
+  margin-bottom: 0;
+}
+
+.options-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+}
+
+.options-select {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.options-select:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.options-select:focus {
+  outline: none;
+  border-color: #3c82f7;
+}
+
+.options-colors {
+  display: flex;
+  gap: 8px;
+}
+
+.options-color {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.options-color:hover {
+  transform: scale(1.1);
+}
+
+.options-color.selected {
+  border-color: #fff;
+  transform: scale(0.9);
+}
+
+.options-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+}
+
+.options-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: #3c82f7;
+}
+
+.options-saved {
+  margin-top: 16px;
+  padding: 10px;
+  background: rgba(52, 199, 89, 0.2);
+  border-radius: 6px;
+  font-size: 13px;
+  color: #34c759;
+  text-align: center;
+}
+
+.options-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.options-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.options-stat-value {
+  font-size: 32px;
+  font-weight: 600;
+  color: #3c82f7;
+}
+
+.options-stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 4px;
+}
+
+.options-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.options-button {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.options-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.options-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.options-button-danger {
+  border-color: rgba(255, 59, 48, 0.3);
+}
+
+.options-button-danger:hover:not(:disabled) {
+  background: rgba(255, 59, 48, 0.2);
+  border-color: rgba(255, 59, 48, 0.5);
+}
+
+.options-button-danger.confirm {
+  background: rgba(255, 59, 48, 0.3);
+  border-color: #ff3b30;
+  color: #ff3b30;
+}
+
+.options-footer {
+  text-align: center;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+}
+
+.options-footer a {
+  color: #3c82f7;
+  text-decoration: none;
+}
+
+.options-footer a:hover {
+  text-decoration: underline;
+}
