@@ -176,7 +176,14 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
           {computedStyles && Object.keys(computedStyles).length > 0 ? (
             <button
               className={styles.headerToggle}
-              onClick={() => setIsStylesExpanded(!isStylesExpanded)}
+              onClick={() => {
+                const wasExpanded = isStylesExpanded;
+                setIsStylesExpanded(!isStylesExpanded);
+                if (wasExpanded) {
+                  // Refocus textarea when closing
+                  setTimeout(() => textareaRef.current?.focus(), 0);
+                }
+              }}
               type="button"
             >
               <svg

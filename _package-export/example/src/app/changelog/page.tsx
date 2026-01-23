@@ -26,6 +26,14 @@ const badgeLabels: Record<ChangeType, string> = {
 
 const releases: Release[] = [
   {
+    version: "1.3.0",
+    date: "January 23, 2026",
+    changes: [
+      { type: "added", text: "Collapsible computed styles section in annotation popup — click the chevron to view CSS properties for the selected element" },
+      { type: "improved", text: "Toolbar polish and visual refinements" },
+    ],
+  },
+  {
     version: "1.2.0",
     date: "January 22, 2026",
     changes: [

@@ -41,6 +41,7 @@ import {
   getElementClasses,
   getDetailedComputedStyles,
   getForensicComputedStyles,
+  parseComputedStylesString,
   getFullElementPath,
   getAccessibilityInfo,
   getNearbyElements,
@@ -2356,6 +2357,7 @@ export function PageFeedbackToolbarCSS({
                 ref={editPopupRef}
                 element={editingAnnotation.element}
                 selectedText={editingAnnotation.selectedText}
+                computedStyles={parseComputedStylesString(editingAnnotation.computedStyles)}
                 placeholder="Edit your feedback..."
                 initialValue={editingAnnotation.comment}
                 submitLabel="Save"

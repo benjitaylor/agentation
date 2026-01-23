@@ -462,6 +462,32 @@ export function getForensicComputedStyles(target: HTMLElement): string {
 }
 
 /**
+ * Parses a forensic computed styles string back into a Record.
+ * Inverse of getForensicComputedStyles - used when editing annotations.
+ */
+export function parseComputedStylesString(
+  stylesStr: string | undefined,
+): Record<string, string> | undefined {
+  if (!stylesStr) return undefined;
+
+  const result: Record<string, string> = {};
+  const parts = stylesStr.split(";").map((p) => p.trim()).filter(Boolean);
+
+  for (const part of parts) {
+    const colonIndex = part.indexOf(":");
+    if (colonIndex > 0) {
+      const key = part.slice(0, colonIndex).trim();
+      const value = part.slice(colonIndex + 1).trim();
+      if (key && value) {
+        result[key] = value;
+      }
+    }
+  }
+
+  return Object.keys(result).length > 0 ? result : undefined;
+}
+
+/**
  * Gets accessibility information for an element
  */
 export function getAccessibilityInfo(target: HTMLElement): string {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Footer } from "../Footer";
-import { FeaturesDemo, SettingsDemo, SmartIdentificationDemo, MarkerKeyDemo } from "../components/FeaturesDemo";
+import { FeaturesDemo, SettingsDemo, SmartIdentificationDemo, MarkerKeyDemo, ComputedStylesDemo } from "../components/FeaturesDemo";
 
 export default function FeaturesPage() {
   return (
@@ -49,6 +49,15 @@ export default function FeaturesPage() {
           This makes it easy for agents to <code>grep</code> for the exact element in your codebase.
         </p>
         <SmartIdentificationDemo />
+      </section>
+
+      <section>
+        <h2>Computed styles</h2>
+        <p>
+          View the computed CSS styles for any element directly in the annotation popup.
+          Expand the collapsible section to see relevant properties like colors, fonts, and spacing.
+        </p>
+        <ComputedStylesDemo />
       </section>
 
       <section>

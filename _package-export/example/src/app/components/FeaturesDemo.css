@@ -1326,6 +1326,179 @@
 }
 
 /* ============================================================
+   COMPUTED STYLES DEMO
+   ============================================================ */
+.csd-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.csd-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+  flex-shrink: 0;
+}
+
+.csd-profile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.csd-name {
+  width: 80px;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 5px;
+}
+
+.csd-email {
+  width: 110px;
+  height: 7px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 3.5px;
+}
+
+.csd-edit-btn {
+  width: 36px;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.csd-stats-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.csd-stat {
+  flex: 1;
+  background: white;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.csd-stat-value {
+  width: 36px;
+  height: 14px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.csd-stat-value.short {
+  width: 28px;
+}
+
+.csd-stat-label {
+  width: 45px;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.csd-highlight {
+  position: absolute;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.csd-highlight.visible {
+  opacity: 1;
+}
+
+.csd-popup {
+  width: 220px;
+}
+
+.csd-popup-header {
+  margin-bottom: 6px;
+}
+
+.csd-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.csd-chevron {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.csd-chevron.expanded {
+  transform: rotate(90deg);
+}
+
+.csd-element {
+  font-size: 10px;
+  font-weight: 500;
+  font-family: system-ui, sans-serif;
+}
+
+.csd-styles-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-bottom: 6px;
+}
+
+.csd-styles-wrapper.expanded {
+  grid-template-rows: 1fr;
+}
+
+.csd-styles-inner {
+  overflow: hidden;
+}
+
+.csd-styles-block {
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  margin-top: 6px;
+  font-family: "SF Mono", "SFMono-Regular", ui-monospace, monospace;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.csd-style-line {
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.csd-style-prop {
+  color: #c084fc;
+}
+
+.csd-style-value {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ============================================================
    MOBILE RESPONSIVE STYLES
    ============================================================ */
 
