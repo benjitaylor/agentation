@@ -1880,8 +1880,8 @@ export function ComputedStylesDemo() {
       await delay(400);
       if (cancelled) return;
 
-      // Move to input area and type - keep pointer while over popup
-      setCursorPos({ x: 180, y: 168 });
+      // Move cursor to input area (inside popup, keep pointer)
+      setCursorPos({ x: 280, y: 125 });
       await delay(300);
       if (cancelled) return;
 
@@ -1894,6 +1894,7 @@ export function ComputedStylesDemo() {
       await delay(400);
       if (cancelled) return;
 
+      // Close popup and show marker
       setShowPopup(false);
       setIsCrosshair(true);
       await delay(200);
