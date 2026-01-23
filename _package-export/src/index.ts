@@ -1,12 +1,12 @@
 // =============================================================================
-// Agentation - Svelte Version
+// agentation-svelte
 // =============================================================================
 //
 // A floating toolbar for annotating web pages and collecting structured feedback
-// for AI coding agents.
+// for AI coding agents. Svelte 5 version.
 //
 // Usage:
-//   import { Agentation } from 'agentation';
+//   import { Agentation } from 'agentation-svelte';
 //   <Agentation />
 //
 // =============================================================================

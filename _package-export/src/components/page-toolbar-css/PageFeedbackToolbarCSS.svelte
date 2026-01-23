@@ -1224,7 +1224,7 @@
 
     // Create portal container
     portalContainer = document.createElement('div');
-    portalContainer.id = 'agentation-portal';
+    portalContainer.id = 'agentation-svelte-portal';
     document.body.appendChild(portalContainer);
 
     // Setup event listeners
@@ -1448,13 +1448,7 @@
     >
       <div class={styles.settingsHeader}>
         <span class={styles.settingsBrand}>
-          <span
-            class={styles.settingsBrandSlash}
-            style="color: {settings.annotationColor}; transition: color 0.2s ease;"
-          >
-            /
-          </span>
-          agentation
+          agentation-svelte
         </span>
         <span class={styles.settingsVersion}>v{__VERSION__}</span>
         <button

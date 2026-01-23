@@ -1,5 +1,5 @@
 {
-  "name": "agentation",
+  "name": "agentation-svelte",
   "version": "1.1.0",
   "type": "module",
   "description": "Visual feedback for AI coding agents",
