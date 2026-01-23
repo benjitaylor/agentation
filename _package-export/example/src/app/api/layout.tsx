@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     description: "Programmatic access for developers",
     images: [
       {
-        url: "/api-og-2.png",
+        url: "/api-og.jpg",
         width: 1200,
         height: 630,
         alt: "Agentation API",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "API | Agentation",
     description: "Programmatic access for developers",
-    images: ["/api-og-2.png"],
+    images: ["/api-og.jpg"],
   },
 };
 
