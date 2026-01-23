@@ -760,6 +760,15 @@ button {
       color: rgba(0, 0, 0, 0.8);
       font-variation-settings: 'wght' 550;
     }
+
+    .nav-badge {
+      font-size: 0.5rem;
+      color: #3b82f6;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      margin-left: 0.25rem;
+    }
   }
 }
 
