@@ -323,6 +323,16 @@ export function PageFeedbackToolbarCSS({
   const [isFrozen, setIsFrozen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showSettingsVisible, setShowSettingsVisible] = useState(false);
+  const [tooltipsHidden, setTooltipsHidden] = useState(false);
+
+  // Hide tooltips after button click until mouse leaves
+  const hideTooltipsUntilMouseLeave = () => {
+    setTooltipsHidden(true);
+  };
+
+  const showTooltipsAgain = () => {
+    setTooltipsHidden(false);
+  };
   const [settings, setSettings] = useState<ToolbarSettings>(DEFAULT_SETTINGS);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [showEntranceAnimation, setShowEntranceAnimation] = useState(false);
@@ -1695,83 +1705,125 @@ export function PageFeedbackToolbarCSS({
 
           {/* Controls content - visible when expanded */}
           <div
-            className={`${styles.controlsContent} ${isActive ? styles.visible : styles.hidden}`}
+            className={`${styles.controlsContent} ${isActive ? styles.visible : styles.hidden} ${
+              toolbarPosition && toolbarPosition.y < 100 ? styles.tooltipBelow : ""
+            } ${tooltipsHidden || showSettings ? styles.tooltipsHidden : ""}`}
+            onMouseLeave={showTooltipsAgain}
           >
-            <button
-              className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleFreeze();
-              }}
-              title={isFrozen ? "Resume animations" : "Pause animations"}
-              data-active={isFrozen}
-            >
-              <IconPausePlayAnimated size={24} isPaused={isFrozen} />
-            </button>
+            <div className={`${styles.buttonWrapper} ${
+              toolbarPosition && toolbarPosition.x < 120 ? styles.buttonWrapperAlignLeft : ""
+            }`}>
+              <button
+                className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  hideTooltipsUntilMouseLeave();
+                  toggleFreeze();
+                }}
+                data-active={isFrozen}
+              >
+                <IconPausePlayAnimated size={24} isPaused={isFrozen} />
+              </button>
+              <span className={styles.buttonTooltip}>
+                {isFrozen ? "Resume animations" : "Pause animations"}
+                <span className={styles.shortcut}>P</span>
+              </span>
+            </div>
 
-            <button
-              className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowMarkers(!showMarkers);
-              }}
-              disabled={!hasAnnotations}
-              title={showMarkers ? "Hide markers" : "Show markers"}
-            >
-              <IconEyeAnimated size={24} isOpen={showMarkers} />
-            </button>
+            <div className={styles.buttonWrapper}>
+              <button
+                className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  hideTooltipsUntilMouseLeave();
+                  setShowMarkers(!showMarkers);
+                }}
+                disabled={!hasAnnotations}
+              >
+                <IconEyeAnimated size={24} isOpen={showMarkers} />
+              </button>
+              <span className={styles.buttonTooltip}>
+                {showMarkers ? "Hide markers" : "Show markers"}
+                <span className={styles.shortcut}>H</span>
+              </span>
+            </div>
 
-            <button
-              className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                copyOutput();
-              }}
-              disabled={!hasAnnotations}
-              title="Copy feedback"
-              data-active={copied}
-            >
-              <IconCopyAnimated size={24} copied={copied} />
-            </button>
+            <div className={styles.buttonWrapper}>
+              <button
+                className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  hideTooltipsUntilMouseLeave();
+                  copyOutput();
+                }}
+                disabled={!hasAnnotations}
+                data-active={copied}
+              >
+                <IconCopyAnimated size={24} copied={copied} />
+              </button>
+              <span className={styles.buttonTooltip}>
+                Copy feedback
+                <span className={styles.shortcut}>C</span>
+              </span>
+            </div>
 
-            <button
-              className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                clearAll();
-              }}
-              disabled={!hasAnnotations}
-              title="Clear all"
-              data-danger
-            >
-              <IconTrashAlt size={24} />
-            </button>
+            <div className={styles.buttonWrapper}>
+              <button
+                className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  hideTooltipsUntilMouseLeave();
+                  clearAll();
+                }}
+                disabled={!hasAnnotations}
+                data-danger
+              >
+                <IconTrashAlt size={24} />
+              </button>
+              <span className={styles.buttonTooltip}>
+                Clear all
+                <span className={styles.shortcut}>X</span>
+              </span>
+            </div>
 
-            <button
-              className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowSettings(!showSettings);
-              }}
-              title="Settings"
-            >
-              <IconGear size={24} />
-            </button>
+            <div className={styles.buttonWrapper}>
+              <button
+                className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  hideTooltipsUntilMouseLeave();
+                  setShowSettings(!showSettings);
+                }}
+              >
+                <IconGear size={24} />
+              </button>
+              <span className={styles.buttonTooltip}>
+                Settings
+              </span>
+            </div>
 
             <div
               className={`${styles.divider} ${!isDarkMode ? styles.light : ""}`}
             />
 
-            <button
-              className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsActive(false);
-              }}
-              title="Exit feedback mode"
-            >
-              <IconXmarkLarge size={24} />
-            </button>
+            <div className={`${styles.buttonWrapper} ${
+              toolbarPosition && typeof window !== "undefined" && toolbarPosition.x > window.innerWidth - 120 ? styles.buttonWrapperAlignRight : ""
+            }`}>
+              <button
+                className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  hideTooltipsUntilMouseLeave();
+                  setIsActive(false);
+                }}
+              >
+                <IconXmarkLarge size={24} />
+              </button>
+              <span className={styles.buttonTooltip}>
+                Exit
+                <span className={styles.shortcut}>Esc</span>
+              </span>
+            </div>
           </div>
 
           {/* Settings Panel */}

@@ -96,7 +96,10 @@
       "Bash(gh pr comment:*)",
       "WebFetch(domain:www.vibe-annotations.com)",
       "Bash(git show:*)",
-      "Bash(npm version:*)"
+      "Bash(npm version:*)",
+      "Bash(sips:*)",
+      "mcp__claude_ai_Vercel__web_fetch_vercel_url",
+      "mcp__claude_ai_Vercel__get_access_to_vercel_url"
     ]
   }
 }

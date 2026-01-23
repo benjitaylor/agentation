@@ -26,6 +26,15 @@ const badgeLabels: Record<ChangeType, string> = {
 
 const releases: Release[] = [
   {
+    version: "1.3.1",
+    date: "January 23, 2026",
+    changes: [
+      { type: "added", text: "Custom tooltips with arrows on toolbar buttons" },
+      { type: "added", text: "Subtle stroke around marker dots for better visibility" },
+      { type: "improved", text: "Help icon design and tooltip styling" },
+    ],
+  },
+  {
     version: "1.3.0",
     date: "January 23, 2026",
     changes: [

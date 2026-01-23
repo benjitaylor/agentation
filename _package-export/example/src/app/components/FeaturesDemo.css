@@ -1549,11 +1549,11 @@
 }
 
 .mkd-marker.green {
-  width: 26px;
-  height: 26px;
-  font-size: 0.75rem;
+  width: 22px;
+  height: 22px;
+  font-size: 0.6875rem;
   background: #34c759;
-  border-radius: 6px;
+  border-radius: 5px;
 }
 
 @media (max-width: 640px) {
