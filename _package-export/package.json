@@ -17,6 +17,17 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
+    },
+    "./solid": {
+      "types": "./dist/solid.d.ts",
+      "import": {
+        "types": "./dist/solid.d.mts",
+        "default": "./dist/solid.mjs"
+      },
+      "require": {
+        "types": "./dist/solid.d.ts",
+        "default": "./dist/solid.js"
+      }
     }
   },
   "files": [
@@ -29,17 +40,34 @@
   },
   "peerDependencies": {
     "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "react-dom": ">=18.0.0",
+    "solid-js": ">=1.7.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    }
+  },
+  "overrides": {
+    "babel-preset-solid": "1.9.9"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "esbuild-plugin-solid": "^0.6.0",
     "esbuild-sass-plugin": "^3.6.0",
     "postcss": "^8.5.6",
     "postcss-modules": "^6.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sass": "^1.97.2",
+    "solid-js": "^1.9.10",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0"
   }

@@ -1,0 +1,22 @@
+{
+  "name": "agentation-solid-example",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vinxi dev",
+    "build": "vinxi build",
+    "start": "vinxi start"
+  },
+  "dependencies": {
+    "@solidjs/meta": "^0.29.4",
+    "@solidjs/router": "^0.15.4",
+    "@solidjs/start": "^1.2.0",
+    "agentation": "file:..",
+    "solid-js": "^1.9.10",
+    "vinxi": "^0.5.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
