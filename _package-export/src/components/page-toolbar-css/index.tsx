@@ -243,11 +243,18 @@ export type DemoAnnotation = {
   selectedText?: string;
 };
 
-type PageFeedbackToolbarCSSProps = {
+export type PageFeedbackToolbarCSSProps = {
   demoAnnotations?: DemoAnnotation[];
   demoDelay?: number;
   enableDemoMode?: boolean;
+  /** Callback fired when an annotation is added. Receives the full annotation object. */
+  onAnnotation?: (annotation: Annotation) => void;
+  /** Whether to copy to clipboard when the copy button is clicked. Defaults to true. */
+  copyToClipboard?: boolean;
 };
+
+/** Alias for PageFeedbackToolbarCSSProps */
+export type AgentationProps = PageFeedbackToolbarCSSProps;
 
 // =============================================================================
 // Component
@@ -257,6 +264,8 @@ export function PageFeedbackToolbarCSS({
   demoAnnotations,
   demoDelay = 1000,
   enableDemoMode = false,
+  onAnnotation,
+  copyToClipboard = true,
 }: PageFeedbackToolbarCSSProps = {}) {
   const [isActive, setIsActive] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
@@ -1232,6 +1241,9 @@ export function PageFeedbackToolbarCSS({
         setAnimatedMarkers((prev) => new Set(prev).add(newAnnotation.id));
       }, 250);
 
+      // Fire callback with the full annotation object
+      onAnnotation?.(newAnnotation);
+
       // Animate out the pending annotation UI
       setPendingExiting(true);
       setTimeout(() => {
@@ -1241,7 +1253,7 @@ export function PageFeedbackToolbarCSS({
 
       window.getSelection()?.removeAllRanges();
     },
-    [pendingAnnotation],
+    [pendingAnnotation, onAnnotation],
   );
 
   // Cancel annotation with exit animation
@@ -1340,7 +1352,9 @@ export function PageFeedbackToolbarCSS({
     const output = generateOutput(annotations, pathname, settings.outputDetail);
     if (!output) return;
 
-    await navigator.clipboard.writeText(output);
+    if (copyToClipboard) {
+      await navigator.clipboard.writeText(output);
+    }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
 
@@ -1353,6 +1367,7 @@ export function PageFeedbackToolbarCSS({
     settings.outputDetail,
     settings.autoClearAfterCopy,
     clearAll,
+    copyToClipboard,
   ]);
 
   // Toolbar dragging - mousemove and mouseup

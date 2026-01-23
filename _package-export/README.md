@@ -33,8 +33,73 @@ The toolbar appears in the bottom-right corner. Click to activate, then click an
 - **Area selection** – Drag to annotate any region, even empty space
 - **Animation pause** – Freeze CSS animations to capture specific states
 - **Structured output** – Copy markdown with selectors, positions, and context
+- **Programmatic access** – Callback prop for direct integration with tools
 - **Dark/light mode** – Matches your preference or set manually
 - **Zero dependencies** – Pure CSS animations, no runtime libraries
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `onAnnotation` | `(annotation: Annotation) => void` | - | Callback fired when an annotation is added |
+| `copyToClipboard` | `boolean` | `true` | Whether to copy to clipboard when copy button is clicked |
+
+### Programmatic Integration
+
+Use the `onAnnotation` callback to receive structured annotation data directly, without clipboard intermediation:
+
+```tsx
+import { Agentation, type Annotation } from 'agentation';
+
+function App() {
+  const handleAnnotation = (annotation: Annotation) => {
+    // Structured data - no parsing needed
+    console.log(annotation.element);      // "Button"
+    console.log(annotation.elementPath);  // "body > div > button"
+    console.log(annotation.boundingBox);  // { x, y, width, height }
+    console.log(annotation.cssClasses);   // "btn btn-primary"
+
+    // Send to your agent, API, etc.
+    sendToAgent(annotation);
+  };
+
+  return (
+    <>
+      <YourApp />
+      <Agentation
+        onAnnotation={handleAnnotation}
+        copyToClipboard={false}  // Skip clipboard if not needed
+      />
+    </>
+  );
+}
+```
+
+### Annotation Type
+
+```typescript
+type Annotation = {
+  id: string;
+  x: number;                    // % of viewport width
+  y: number;                    // px from top
+  comment: string;              // User's note
+  element: string;              // e.g., "Button"
+  elementPath: string;          // e.g., "body > div > button"
+  timestamp: number;
+
+  // Optional metadata (when available)
+  selectedText?: string;
+  boundingBox?: { x: number; y: number; width: number; height: number };
+  nearbyText?: string;
+  cssClasses?: string;
+  nearbyElements?: string;
+  computedStyles?: string;
+  fullPath?: string;
+  accessibility?: string;
+  isMultiSelect?: boolean;
+  isFixed?: boolean;
+};
+```
 
 ## How it works
 
