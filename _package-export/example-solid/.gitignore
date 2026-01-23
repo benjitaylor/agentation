@@ -1,0 +1,9 @@
+# Build output
+.output/
+.vinxi/
+
+# Dependencies
+node_modules/
+
+# Temp files
+*.timestamp_*.js
