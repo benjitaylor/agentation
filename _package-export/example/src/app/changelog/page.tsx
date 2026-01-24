@@ -26,6 +26,15 @@ const badgeLabels: Record<ChangeType, string> = {
 
 const releases: Release[] = [
   {
+    version: "1.3.2",
+    date: "January 24, 2026",
+    changes: [
+      { type: "fixed", text: "Blurry tooltip text on marker hover (counter-scaled to offset parent transform)" },
+      { type: "improved", text: "Unified quote text styling between marker tooltip and annotation popup" },
+      { type: "improved", text: "Tooltip font and padding consistency" },
+    ],
+  },
+  {
     version: "1.3.1",
     date: "January 23, 2026",
     changes: [

@@ -1291,6 +1291,12 @@ export function PageFeedbackToolbarCSS({
     (id: string) => {
       const deletedIndex = annotations.findIndex((a) => a.id === id);
       const deletedAnnotation = annotations[deletedIndex];
+
+      // Close edit panel if deleting the annotation being edited
+      if (editingAnnotation?.id === id) {
+        setEditingAnnotation(null);
+      }
+
       setDeletingMarkerId(id);
       setExitingMarkers((prev) => new Set(prev).add(id));
 
@@ -1316,7 +1322,7 @@ export function PageFeedbackToolbarCSS({
         }
       }, 150);
     },
-    [annotations, onAnnotationDelete],
+    [annotations, editingAnnotation, onAnnotationDelete],
   );
 
   // Start editing an annotation (right-click)
@@ -1598,6 +1604,7 @@ export function PageFeedbackToolbarCSS({
     exitingMarkers.has(a.id),
   );
 
+  // Helper function to calculate viewport-aware tooltip positioning
   // Helper function to calculate viewport-aware tooltip positioning
   const getTooltipPosition = (annotation: Annotation): React.CSSProperties => {
     // Tooltip dimensions (from CSS)

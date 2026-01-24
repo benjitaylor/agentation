@@ -10,168 +10,170 @@ $green: #34c759;
 // =============================================================================
 
 @keyframes toolbarEnter {
-  from {
-    opacity: 0;
-    transform: scale(0.5) rotate(90deg);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
+    from {
+        opacity: 0;
+        transform: scale(0.5) rotate(90deg);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
 }
 
 @keyframes badgeEnter {
-  from {
-    opacity: 0;
-    transform: scale(0);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+    from {
+        opacity: 0;
+        transform: scale(0);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 @keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.85);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 @keyframes scaleOut {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.85);
-  }
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.85);
+    }
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: scale(0.85) translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: scale(0.85) translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 @keyframes slideDown {
-  from {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.85) translateY(8px);
-  }
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.85) translateY(8px);
+    }
 }
 
 @keyframes markerIn {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.3);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.3);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
 }
 
 @keyframes markerOut {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.3);
-  }
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.3);
+    }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 
 @keyframes tooltipIn {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(2px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
-  }
+    from {
+        opacity: 0;
+        // 0.891 = 0.98 * 0.909 (animation start × counter-scale)
+        transform: translateX(-50%) translateY(2px) scale(0.891);
+    }
+    to {
+        opacity: 1;
+        // 0.909 = 1/1.1 counter-scale to offset parent marker's hover scale
+        transform: translateX(-50%) translateY(0) scale(0.909);
+    }
 }
 
 @keyframes hoverHighlightIn {
-  from {
-    opacity: 0;
-    transform: scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 @keyframes hoverTooltipIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 @keyframes settingsPanelIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.95);
-    filter: blur(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0px);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+        filter: blur(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0px);
+    }
 }
 
 @keyframes settingsPanelOut {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0px);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-    filter: blur(5px);
-  }
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0px);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+        filter: blur(5px);
+    }
 }
 
 // =============================================================================
@@ -179,359 +181,358 @@ $green: #34c759;
 // =============================================================================
 
 .toolbar {
-  position: fixed;
-  bottom: 1.25rem;
-  right: 1.25rem;
-  width: 257px;
-  z-index: 100000;
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
-  pointer-events: none;
-  transition:
-    left 0s,
-    top 0s,
-    right 0s,
-    bottom 0s; // Instant positioning changes
+    position: fixed;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    width: 257px;
+    z-index: 100000;
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+    pointer-events: none;
+    transition:
+        left 0s,
+        top 0s,
+        right 0s,
+        bottom 0s; // Instant positioning changes
 }
 
 .toolbarContainer {
-  user-select: none;
-  margin-left: auto;
-  align-self: flex-end;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #1a1a1a;
-  color: #fff;
-  border: none;
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.2),
-    0 4px 16px rgba(0, 0, 0, 0.1);
-  pointer-events: auto;
-  cursor: grab;
+    user-select: none;
+    margin-left: auto;
+    align-self: flex-end;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.2),
+        0 4px 16px rgba(0, 0, 0, 0.1);
+    pointer-events: auto;
+    cursor: grab;
 
-  // Animated properties
-  transition:
-    width 0.4s cubic-bezier(0.19, 1, 0.22, 1),
-    transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    // Animated properties
+    transition:
+        width 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+        transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
 
-  &.dragging {
-    // Remove transition while dragging for immediate feedback
-    transition: width 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-    cursor: grabbing;
-  }
-
-  &.entrance {
-    animation: toolbarEnter 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
-  }
-
-  &.collapsed {
-    width: 44px;
-    height: 44px;
-    border-radius: 22px;
-    padding: 0;
-    cursor: pointer;
-
-    svg {
-      margin-top: -1px;
+    &.dragging {
+        // Remove transition while dragging for immediate feedback
+        transition: width 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        cursor: grabbing;
     }
 
-    &:hover {
-      background: #2a2a2a;
+    &.entrance {
+        animation: toolbarEnter 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
     }
 
-    &:active {
-      transform: scale(0.95);
-    }
-  }
+    &.collapsed {
+        width: 44px;
+        height: 44px;
+        border-radius: 22px;
+        padding: 0;
+        cursor: pointer;
 
-  &.expanded {
-    width: calc-size(auto, size);
-    height: 44px;
-    border-radius: 1.5rem;
-    padding: 0.375rem;
-    @supports not (width: calc-size(auto, size)) {
-      width: 257px;
+        svg {
+            margin-top: -1px;
+        }
+
+        &:hover {
+            background: #2a2a2a;
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
     }
-  }
+
+    &.expanded {
+        width: calc-size(auto, size);
+        height: 44px;
+        border-radius: 1.5rem;
+        padding: 0.375rem;
+        @supports not (width: calc-size(auto, size)) {
+            width: 257px;
+        }
+    }
 }
 
 .toggleContent {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.1s cubic-bezier(0.19, 1, 0.22, 1);
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.1s cubic-bezier(0.19, 1, 0.22, 1);
 
-  &.visible {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-  }
+    &.visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
 
-  &.hidden {
-    opacity: 0;
-    pointer-events: none;
-  }
+    &.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
 }
 
 .controlsContent {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  transition:
-    filter 0.8s cubic-bezier(0.19, 1, 0.22, 1),
-    opacity 0.8s cubic-bezier(0.19, 1, 0.22, 1),
-    transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    transition:
+        filter 0.8s cubic-bezier(0.19, 1, 0.22, 1),
+        opacity 0.8s cubic-bezier(0.19, 1, 0.22, 1),
+        transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
 
-  &.visible {
-    opacity: 1;
-    filter: blur(0px);
-    transform: scale(1);
-    visibility: visible;
-    pointer-events: auto;
-  }
+    &.visible {
+        opacity: 1;
+        filter: blur(0px);
+        transform: scale(1);
+        visibility: visible;
+        pointer-events: auto;
+    }
 
-  &.hidden {
-    opacity: 0;
-    filter: blur(10px);
-    transform: scale(0.4);
-    pointer-events: none;
-  }
+    &.hidden {
+        opacity: 0;
+        filter: blur(10px);
+        transform: scale(0.4);
+        pointer-events: none;
+    }
 }
 
 .badge {
-  position: absolute;
-  top: -16px;
-  right: -16px;
-  user-select: none;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 9px;
-  background: $blue;
-  color: white;
-  font-size: 0.625rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  opacity: 1;
-  transition:
-    transform 0.3s ease,
-    opacity 0.2s ease;
-  transform: scale(1);
+    position: absolute;
+    top: -16px;
+    right: -16px;
+    user-select: none;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: $blue;
+    color: white;
+    font-size: 0.625rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    opacity: 1;
+    transition:
+        transform 0.3s ease,
+        opacity 0.2s ease;
+    transform: scale(1);
 
-  &.fadeOut {
-    opacity: 0;
-    transform: scale(0);
-    pointer-events: none;
-  }
+    &.fadeOut {
+        opacity: 0;
+        transform: scale(0);
+        pointer-events: none;
+    }
 
-  &.entrance {
-    animation: badgeEnter 0.3s cubic-bezier(0.34, 1.2, 0.64, 1) 0.4s both;
-  }
+    &.entrance {
+        animation: badgeEnter 0.3s cubic-bezier(0.34, 1.2, 0.64, 1) 0.4s both;
+    }
 }
 
 .controlButton {
-  position: relative;
-  cursor: pointer !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.85);
-  transition:
-    background-color 0.15s ease,
-    color 0.15s ease,
-    transform 0.1s ease,
-    opacity 0.2s ease;
+    position: relative;
+    cursor: pointer !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.85);
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.1s ease,
+        opacity 0.2s ease;
 
-  &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
-  }
+    &:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+    }
 
-  &:active:not(:disabled) {
-    transform: scale(0.92);
-  }
+    &:active:not(:disabled) {
+        transform: scale(0.92);
+    }
 
-  &:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-  }
+    &:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
 
-  &[data-active="true"] {
-    color: $blue;
-    background: rgba($blue, 0.25);
-  }
+    &[data-active="true"] {
+        color: $blue;
+        background: rgba($blue, 0.25);
+    }
 
-  &[data-danger]:hover:not(:disabled) {
-    background: rgba($red, 0.25);
-    color: $red;
-  }
-
+    &[data-danger]:hover:not(:disabled) {
+        background: rgba($red, 0.25);
+        color: $red;
+    }
 }
 
 // Button wrapper for tooltip positioning (tooltip is sibling, not child of button)
 .buttonWrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  // Show tooltip on wrapper hover (with delay)
-  &:hover .buttonTooltip {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) scale(1);
-    transition-delay: 0.85s;
-  }
+    // Show tooltip on wrapper hover (with delay)
+    &:hover .buttonTooltip {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) scale(1);
+        transition-delay: 0.85s;
+    }
 
-  // Don't show tooltip if button inside is disabled
-  &:has(.controlButton:disabled):hover .buttonTooltip {
-    opacity: 0;
-    visibility: hidden;
-  }
+    // Don't show tooltip if button inside is disabled
+    &:has(.controlButton:disabled):hover .buttonTooltip {
+        opacity: 0;
+        visibility: hidden;
+    }
 }
 
 // Toolbar Button Tooltips
 .buttonTooltip {
-  position: absolute;
-  bottom: calc(100% + 14px);
-  left: 50%;
-  transform: translateX(-50%) scale(0.95);
-  padding: 6px 10px;
-  background: #1a1a1a;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 12px;
-  font-weight: 500;
-  border-radius: 8px;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  z-index: 100001;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  transition:
-    opacity 0.135s ease,
-    transform 0.135s ease,
-    visibility 0.135s ease;
-
-  // Arrow pointing down (rotated square with rounded tip)
-  &::after {
-    content: "";
     position: absolute;
-    top: calc(100% - 4px);
+    bottom: calc(100% + 14px);
     left: 50%;
-    transform: translateX(-50%) rotate(45deg);
-    width: 8px;
-    height: 8px;
+    transform: translateX(-50%) scale(0.95);
+    padding: 6px 10px;
     background: #1a1a1a;
-    border-radius: 0 0 2px 0;
-  }
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 8px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 100001;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition:
+        opacity 0.135s ease,
+        transform 0.135s ease,
+        visibility 0.135s ease;
+
+    // Arrow pointing down (rotated square with rounded tip)
+    &::after {
+        content: "";
+        position: absolute;
+        top: calc(100% - 4px);
+        left: 50%;
+        transform: translateX(-50%) rotate(45deg);
+        width: 8px;
+        height: 8px;
+        background: #1a1a1a;
+        border-radius: 0 0 2px 0;
+    }
 }
 
 // Keyboard shortcut in tooltip
 .shortcut {
-  margin-left: 4px;
-  opacity: 0.5;
+    margin-left: 4px;
+    opacity: 0.5;
 }
 
 // Flipped position (tooltip below) - when toolbar near top
 .tooltipBelow .buttonTooltip {
-  bottom: auto;
-  top: calc(100% + 14px);
-  transform: translateX(-50%) scale(0.95);
-
-  &::after {
-    top: calc(-4px);
     bottom: auto;
-    border-radius: 2px 0 0 0;
-  }
+    top: calc(100% + 14px);
+    transform: translateX(-50%) scale(0.95);
+
+    &::after {
+        top: calc(-4px);
+        bottom: auto;
+        border-radius: 2px 0 0 0;
+    }
 }
 
 .tooltipBelow .buttonWrapper:hover .buttonTooltip {
-  transform: translateX(-50%) scale(1);
+    transform: translateX(-50%) scale(1);
 }
 
 // Hide tooltips immediately after button click
 .tooltipsHidden .buttonTooltip {
-  opacity: 0 !important;
-  visibility: hidden !important;
-  transition: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: none !important;
 }
 
 // Left-aligned tooltip (for buttons near left edge)
 // Applied directly to buttonWrapper
 .buttonWrapperAlignLeft {
-  .buttonTooltip {
-    left: 50%;
-    transform: translateX(-12px) scale(0.95);
+    .buttonTooltip {
+        left: 50%;
+        transform: translateX(-12px) scale(0.95);
 
-    &::after {
-      left: 16px;
+        &::after {
+            left: 16px;
+        }
     }
-  }
 
-  &:hover .buttonTooltip {
-    transform: translateX(-12px) scale(1);
-  }
+    &:hover .buttonTooltip {
+        transform: translateX(-12px) scale(1);
+    }
 }
 
 .tooltipBelow .buttonWrapperAlignLeft {
-  .buttonTooltip {
-    transform: translateX(-12px) scale(0.95);
-  }
+    .buttonTooltip {
+        transform: translateX(-12px) scale(0.95);
+    }
 
-  &:hover .buttonTooltip {
-    transform: translateX(-12px) scale(1);
-  }
+    &:hover .buttonTooltip {
+        transform: translateX(-12px) scale(1);
+    }
 }
 
 // Right-aligned tooltip (for buttons near right edge)
 // Applied directly to buttonWrapper
 .buttonWrapperAlignRight {
-  .buttonTooltip {
-    left: 50%;
-    transform: translateX(calc(-100% + 12px)) scale(0.95);
+    .buttonTooltip {
+        left: 50%;
+        transform: translateX(calc(-100% + 12px)) scale(0.95);
 
-    &::after {
-      left: auto;
-      right: 8px;
+        &::after {
+            left: auto;
+            right: 8px;
+        }
     }
-  }
 
-  &:hover .buttonTooltip {
-    transform: translateX(calc(-100% + 12px)) scale(1);
-  }
+    &:hover .buttonTooltip {
+        transform: translateX(calc(-100% + 12px)) scale(1);
+    }
 }
 
 .tooltipBelow .buttonWrapperAlignRight {
-  .buttonTooltip {
-    transform: translateX(calc(-100% + 12px)) scale(0.95);
-  }
+    .buttonTooltip {
+        transform: translateX(calc(-100% + 12px)) scale(0.95);
+    }
 
-  &:hover .buttonTooltip {
-    transform: translateX(calc(-100% + 12px)) scale(1);
-  }
+    &:hover .buttonTooltip {
+        transform: translateX(calc(-100% + 12px)) scale(1);
+    }
 }
 
 .divider {
-  width: 1px;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.15);
-  margin: 0 0.125rem;
+    width: 1px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 0 0.125rem;
 }
 
 // =============================================================================
@@ -539,14 +540,14 @@ $green: #34c759;
 // =============================================================================
 
 .overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 99997;
-  pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99997;
+    pointer-events: none;
 
-  > * {
-    pointer-events: auto;
-  }
+    > * {
+        pointer-events: auto;
+    }
 }
 
 // =============================================================================
@@ -554,73 +555,73 @@ $green: #34c759;
 // =============================================================================
 
 .hoverHighlight {
-  position: fixed;
-  border: 2px solid rgba($blue, 0.5);
-  border-radius: 4px;
-  pointer-events: none !important;
-  background: rgba($blue, 0.04);
-  box-sizing: border-box;
-  will-change: opacity;
-  contain: layout style;
+    position: fixed;
+    border: 2px solid rgba($blue, 0.5);
+    border-radius: 4px;
+    pointer-events: none !important;
+    background: rgba($blue, 0.04);
+    box-sizing: border-box;
+    will-change: opacity;
+    contain: layout style;
 
-  &.enter {
-    animation: hoverHighlightIn 0.12s ease-out forwards;
-  }
+    &.enter {
+        animation: hoverHighlightIn 0.12s ease-out forwards;
+    }
 }
 
 .multiSelectOutline {
-  position: fixed;
-  border: 2px dashed rgba($green, 0.6);
-  border-radius: 4px;
-  pointer-events: none !important;
-  background: rgba($green, 0.05);
-  box-sizing: border-box;
-  will-change: opacity;
+    position: fixed;
+    border: 2px dashed rgba($green, 0.6);
+    border-radius: 4px;
+    pointer-events: none !important;
+    background: rgba($green, 0.05);
+    box-sizing: border-box;
+    will-change: opacity;
 
-  &.enter {
-    animation: fadeIn 0.15s ease-out forwards;
-  }
+    &.enter {
+        animation: fadeIn 0.15s ease-out forwards;
+    }
 
-  &.exit {
-    animation: fadeOut 0.15s ease-out forwards;
-  }
+    &.exit {
+        animation: fadeOut 0.15s ease-out forwards;
+    }
 }
 
 .singleSelectOutline {
-  position: fixed;
-  border: 2px solid rgba($blue, 0.6);
-  border-radius: 4px;
-  pointer-events: none !important;
-  background: rgba($blue, 0.05);
-  box-sizing: border-box;
-  will-change: opacity;
+    position: fixed;
+    border: 2px solid rgba($blue, 0.6);
+    border-radius: 4px;
+    pointer-events: none !important;
+    background: rgba($blue, 0.05);
+    box-sizing: border-box;
+    will-change: opacity;
 
-  &.enter {
-    animation: fadeIn 0.15s ease-out forwards;
-  }
+    &.enter {
+        animation: fadeIn 0.15s ease-out forwards;
+    }
 
-  &.exit {
-    animation: fadeOut 0.15s ease-out forwards;
-  }
+    &.exit {
+        animation: fadeOut 0.15s ease-out forwards;
+    }
 }
 
 .hoverTooltip {
-  position: fixed;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.85);
-  padding: 0.35rem 0.6rem;
-  border-radius: 0.375rem;
-  pointer-events: none !important;
-  white-space: nowrap;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    position: fixed;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.375rem;
+    pointer-events: none !important;
+    white-space: nowrap;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
-  &.enter {
-    animation: hoverTooltipIn 0.1s ease-out forwards;
-  }
+    &.enter {
+        animation: hoverTooltipIn 0.1s ease-out forwards;
+    }
 }
 
 // =============================================================================
@@ -628,31 +629,31 @@ $green: #34c759;
 // =============================================================================
 
 .markersLayer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 0;
-  z-index: 99998;
-  pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    z-index: 99998;
+    pointer-events: none;
 
-  > * {
-    pointer-events: auto;
-  }
+    > * {
+        pointer-events: auto;
+    }
 }
 
 .fixedMarkersLayer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 99998;
-  pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 99998;
+    pointer-events: none;
 
-  > * {
-    pointer-events: auto;
-  }
+    > * {
+        pointer-events: auto;
+    }
 }
 
 // =============================================================================
@@ -660,153 +661,163 @@ $green: #34c759;
 // =============================================================================
 
 .marker {
-  position: absolute;
-  width: 22px;
-  height: 22px;
-  background: $blue;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
-  cursor: pointer;
-  box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.2),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.04);
-  user-select: none;
-  will-change: transform, opacity;
-  contain: layout style;
-  z-index: 1;
-
-  &:hover {
-    z-index: 2;
-  }
-
-  // Only apply transitions when NOT animating
-  &:not(.enter):not(.exit):not(.clearing) {
-    transition:
-      background-color 0.15s ease,
-      transform 0.1s ease;
-  }
-
-  &.enter {
-    animation: markerIn 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  &.exit {
-    animation: markerOut 0.2s ease-out both;
-    pointer-events: none;
-  }
-
-  &.clearing {
-    animation: markerOut 0.15s ease-out both;
-    pointer-events: none;
-  }
-
-  // Only apply hover scale when not animating
-  &:not(.enter):not(.exit):not(.clearing):hover {
-    transform: translate(-50%, -50%) scale(1.1);
-  }
-
-  &.pending {
-    position: fixed;
+    position: absolute;
+    width: 22px;
+    height: 22px;
     background: $blue;
-  }
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    cursor: pointer;
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.2),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+    user-select: none;
+    will-change: transform, opacity;
+    contain: layout style;
+    z-index: 1;
 
-  &.fixed {
-    position: fixed;
-  }
+    &:hover {
+        z-index: 2;
+    }
 
-  &.multiSelect {
-    background: $green;
-    width: 26px;
-    height: 26px;
-    border-radius: 6px;
-    font-size: 0.75rem;
+    // Only apply transitions when NOT animating
+    &:not(.enter):not(.exit):not(.clearing) {
+        transition:
+            background-color 0.15s ease,
+            transform 0.1s ease;
+    }
+
+    &.enter {
+        animation: markerIn 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    &.exit {
+        animation: markerOut 0.2s ease-out both;
+        pointer-events: none;
+    }
+
+    &.clearing {
+        animation: markerOut 0.15s ease-out both;
+        pointer-events: none;
+    }
+
+    // Only apply hover scale when not animating
+    &:not(.enter):not(.exit):not(.clearing):hover {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
 
     &.pending {
-      background: $green;
+        position: fixed;
+        background: $blue;
     }
-  }
 
-  &.hovered {
-    background: $red;
-  }
+    &.fixed {
+        position: fixed;
+    }
+
+    &.multiSelect {
+        background: $green;
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+
+        &.pending {
+            background: $green;
+        }
+    }
+
+    &.hovered {
+        background: $red;
+    }
 }
 
 .renumber {
-  display: block;
-  animation: renumberRoll 0.2s ease-out;
+    display: block;
+    animation: renumberRoll 0.2s ease-out;
 }
 
 @keyframes renumberRoll {
-  0% {
-    transform: translateX(-40%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
+    0% {
+        transform: translateX(-40%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 .markerTooltip {
-  position: absolute;
-  top: calc(100% + 10px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100002;
-  background: #1a1a1a;
-  padding: 0.625rem 0.75rem;
-  border-radius: 0.75rem;
-  box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.08);
-  min-width: 120px;
-  max-width: 200px;
-  pointer-events: none;
-  cursor: default;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    // Counter-scale to offset the parent marker's 1.1x hover scale
+    transform: translateX(-50%) scale(0.909);
+    z-index: 100002;
+    background: #1a1a1a;
+    padding: 8px 0.75rem;
+    border-radius: 0.75rem;
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+    font-weight: 400;
+    color: #fff;
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.08);
+    min-width: 120px;
+    max-width: 200px;
+    pointer-events: none;
+    cursor: default;
 
-  &.enter {
-    animation: tooltipIn 0.1s ease-out forwards;
-  }
+    &.enter {
+        animation: tooltipIn 0.1s ease-out forwards;
+    }
 }
 
 .markerQuote {
-  display: block;
-  font-size: 0.6875rem;
-  font-style: italic;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 0.375rem;
-  line-height: 1.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    display: block;
+    font-size: 12px;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 0.3125rem;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .markerNote {
-  display: block;
-  font-size: 0.75rem;
-  font-weight: 450;
-  line-height: 1.4;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-bottom: 2px;
+    display: block;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-bottom: 2px;
 }
 
 .markerHint {
-  display: block;
-  font-size: 0.625rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.3);
-  margin-top: 0.375rem;
-  white-space: nowrap;
+    display: block;
+    font-size: 0.625rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 0.375rem;
+    white-space: nowrap;
 }
 
 // =============================================================================
@@ -814,570 +825,570 @@ $green: #34c759;
 // =============================================================================
 
 .settingsPanel {
-  position: absolute;
-  right: 5px;
-  bottom: calc(100% + 0.5rem);
-  z-index: 1;
-  background: white;
-  border-radius: 1rem;
-  padding: 13px 1rem 16px;
-  min-width: 205px;
-  box-shadow:
-    0 1px 8px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(0, 0, 0, 0.04);
-  transition:
-    background 0.25s ease,
-    box-shadow 0.25s ease;
-
-  // Transition for all child elements
-  .settingsHeader,
-  .settingsBrand,
-  .settingsBrandSlash,
-  .settingsVersion,
-  .settingsSection,
-  .settingsLabel,
-  .cycleButton,
-  .cycleDot,
-  .dropdownButton,
-  .toggleLabel,
-  .customCheckbox,
-  .sliderLabel,
-  .slider,
-  .helpIcon,
-  .themeToggle {
-    transition:
-      background 0.25s ease,
-      color 0.25s ease,
-      border-color 0.25s ease;
-  }
-
-  &.enter {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0px);
-    transition:
-      opacity 0.2s ease,
-      transform 0.2s ease,
-      filter 0.2s ease;
-  }
-
-  &.exit {
-    opacity: 0;
-    transform: translateY(8px) scale(0.95);
-    filter: blur(5px);
-    pointer-events: none;
-    transition:
-      opacity 0.1s ease,
-      transform 0.1s ease,
-      filter 0.1s ease;
-  }
-
-  &.dark {
-    background: #1a1a1a;
+    position: absolute;
+    right: 5px;
+    bottom: calc(100% + 0.5rem);
+    z-index: 1;
+    background: white;
+    border-radius: 1rem;
+    padding: 13px 1rem 16px;
+    min-width: 205px;
     box-shadow:
-      0 4px 20px rgba(0, 0, 0, 0.3),
-      0 0 0 1px rgba(255, 255, 255, 0.08);
+        0 1px 8px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(0, 0, 0, 0.04);
+    transition:
+        background 0.25s ease,
+        box-shadow 0.25s ease;
 
-    .settingsLabel {
-      color: rgba(255, 255, 255, 0.6);
+    // Transition for all child elements
+    .settingsHeader,
+    .settingsBrand,
+    .settingsBrandSlash,
+    .settingsVersion,
+    .settingsSection,
+    .settingsLabel,
+    .cycleButton,
+    .cycleDot,
+    .dropdownButton,
+    .toggleLabel,
+    .customCheckbox,
+    .sliderLabel,
+    .slider,
+    .helpIcon,
+    .themeToggle {
+        transition:
+            background 0.25s ease,
+            color 0.25s ease,
+            border-color 0.25s ease;
     }
 
-    .settingsOption {
-      color: rgba(255, 255, 255, 0.85);
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.1);
-      }
-
-      &.selected {
-        background: rgba(255, 255, 255, 0.15);
-        color: #fff;
-      }
+    &.enter {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0px);
+        transition:
+            opacity 0.2s ease,
+            transform 0.2s ease,
+            filter 0.2s ease;
     }
 
-    .toggleLabel {
-      color: rgba(255, 255, 255, 0.85);
+    &.exit {
+        opacity: 0;
+        transform: translateY(8px) scale(0.95);
+        filter: blur(5px);
+        pointer-events: none;
+        transition:
+            opacity 0.1s ease,
+            transform 0.1s ease,
+            filter 0.1s ease;
     }
-  }
+
+    &.dark {
+        background: #1a1a1a;
+        box-shadow:
+            0 4px 20px rgba(0, 0, 0, 0.3),
+            0 0 0 1px rgba(255, 255, 255, 0.08);
+
+        .settingsLabel {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .settingsOption {
+            color: rgba(255, 255, 255, 0.85);
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+            &.selected {
+                background: rgba(255, 255, 255, 0.15);
+                color: #fff;
+            }
+        }
+
+        .toggleLabel {
+            color: rgba(255, 255, 255, 0.85);
+        }
+    }
 }
 
 .settingsHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 24px;
-  margin-bottom: 0.5rem;
-  padding-bottom: 9px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 24px;
+    margin-bottom: 0.5rem;
+    padding-bottom: 9px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .settingsBrand {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: -0.0094em;
-  color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: -0.0094em;
+    color: #fff;
 }
 
 .settingsBrandSlash {
-  color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .settingsVersion {
-  font-size: 0.6875rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.4);
-  margin-left: auto;
-  letter-spacing: -0.0094em;
+    font-size: 0.6875rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.4);
+    margin-left: auto;
+    letter-spacing: -0.0094em;
 }
 
 .settingsSection {
-  & + & {
-    margin-top: 0.5rem;
-    padding-top: calc(0.5rem + 2px);
-    border-top: 1px solid rgba(255, 255, 255, 0.07);
-  }
+    & + & {
+        margin-top: 0.5rem;
+        padding-top: calc(0.5rem + 2px);
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
 }
 
 .settingsRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 24px;
 }
 
 .dropdownContainer {
-  position: relative;
+    position: relative;
 }
 
 .dropdownButton {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0.5rem;
-  border: none;
-  border-radius: 0.375rem;
-  background: transparent;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #fff;
-  cursor: pointer;
-  transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
-  letter-spacing: -0.0094em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    background: transparent;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+    letter-spacing: -0.0094em;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.08);
-  }
+    &:hover {
+        background: rgba(255, 255, 255, 0.08);
+    }
 
-  svg {
-    opacity: 0.6;
-  }
+    svg {
+        opacity: 0.6;
+    }
 }
 
 // Old dropdown styles kept for potential future use
 // @keyframes dropdownTextFade removed - using cycle button instead
 
 .cycleButton {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0;
-  border: none;
-  background: transparent;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: #fff;
-  cursor: pointer;
-  letter-spacing: -0.0094em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    letter-spacing: -0.0094em;
 
-  &.light {
-    color: rgba(0, 0, 0, 0.85);
-  }
+    &.light {
+        color: rgba(0, 0, 0, 0.85);
+    }
 }
 
 @keyframes cycleTextIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    0% {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .cycleButtonText {
-  display: inline-block;
-  animation: cycleTextIn 0.2s ease-out;
+    display: inline-block;
+    animation: cycleTextIn 0.2s ease-out;
 }
 
 .cycleDots {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .cycleDot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(0.667);
-  transition:
-    background-color 0.25s ease-out,
-    transform 0.25s ease-out;
-
-  &.active {
-    background: #fff;
-    transform: scale(1);
-  }
-
-  &.light {
-    background: rgba(0, 0, 0, 0.2);
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0.667);
+    transition:
+        background-color 0.25s ease-out,
+        transform 0.25s ease-out;
 
     &.active {
-      background: rgba(0, 0, 0, 0.7);
+        background: #fff;
+        transform: scale(1);
     }
-  }
+
+    &.light {
+        background: rgba(0, 0, 0, 0.2);
+
+        &.active {
+            background: rgba(0, 0, 0, 0.7);
+        }
+    }
 }
 
 .dropdownMenu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 0.25rem);
-  background: #1a1a1a;
-  border-radius: 0.5rem;
-  padding: 0.25rem;
-  min-width: 120px;
-  box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
-  z-index: 10;
-  animation: scaleIn 0.15s ease-out;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.25rem);
+    background: #1a1a1a;
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+    min-width: 120px;
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    z-index: 10;
+    animation: scaleIn 0.15s ease-out;
 }
 
 .dropdownItem {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 0.625rem;
-  border: none;
-  border-radius: 0.375rem;
-  background: transparent;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
-  cursor: pointer;
-  text-align: left;
-  transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
-  letter-spacing: -0.0094em;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.625rem;
+    border: none;
+    border-radius: 0.375rem;
+    background: transparent;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    text-align: left;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+    letter-spacing: -0.0094em;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.08);
-  }
+    &:hover {
+        background: rgba(255, 255, 255, 0.08);
+    }
 
-  &.selected {
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
-    font-weight: 600;
-  }
+    &.selected {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        font-weight: 600;
+    }
 }
 
 .settingsLabel {
-  font-size: 0.8125rem;
-  font-weight: 400;
-  letter-spacing: -0.0094em;
-  color: rgba(255, 255, 255, 0.5);
-  display: flex;
-  align-items: center;
-  gap: 0.125rem;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    letter-spacing: -0.0094em;
+    color: rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
 
-  &.light {
-    color: rgba(0, 0, 0, 0.5);
-  }
+    &.light {
+        color: rgba(0, 0, 0, 0.5);
+    }
 }
 
 .settingsLabelMarker {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .settingsOptions {
-  display: flex;
-  gap: 0.25rem;
+    display: flex;
+    gap: 0.25rem;
 }
 
 .settingsOption {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  padding: 0.375rem 0.5rem;
-  border: none;
-  border-radius: 0.375rem;
-  background: transparent;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.7);
-  cursor: pointer;
-  transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    background: transparent;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.7);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
 
-  &:hover {
-    background: rgba(0, 0, 0, 0.05);
-  }
+    &:hover {
+        background: rgba(0, 0, 0, 0.05);
+    }
 
-  &.selected {
-    background: rgba($blue, 0.15);
-    color: $blue;
-  }
+    &.selected {
+        background: rgba($blue, 0.15);
+        color: $blue;
+    }
 }
 
 .sliderContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .slider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 2px;
-  outline: none;
-  cursor: pointer;
-
-  &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 14px;
-    height: 14px;
-    background: white;
-    border-radius: 50%;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    outline: none;
     cursor: pointer;
-    transition:
-      transform 0.15s ease,
-      box-shadow 0.15s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  }
 
-  &::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    background: white;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    transition:
-      transform 0.15s ease,
-      box-shadow 0.15s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  }
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        background: white;
+        border-radius: 50%;
+        cursor: pointer;
+        transition:
+            transform 0.15s ease,
+            box-shadow 0.15s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
 
-  &:hover::-webkit-slider-thumb {
-    transform: scale(1.15);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-  }
+    &::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        background: white;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        transition:
+            transform 0.15s ease,
+            box-shadow 0.15s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
 
-  &:hover::-moz-range-thumb {
-    transform: scale(1.15);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-  }
+    &:hover::-webkit-slider-thumb {
+        transform: scale(1.15);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    &:hover::-moz-range-thumb {
+        transform: scale(1.15);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
 }
 
 .sliderLabels {
-  display: flex;
-  justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
 }
 
 .sliderLabel {
-  font-size: 0.625rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.4);
-  cursor: pointer;
-  transition: color 0.15s ease;
+    font-size: 0.625rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: color 0.15s ease;
 
-  &:hover {
-    color: rgba(255, 255, 255, 0.7);
-  }
+    &:hover {
+        color: rgba(255, 255, 255, 0.7);
+    }
 
-  &.active {
-    color: rgba(255, 255, 255, 0.9);
-  }
+    &.active {
+        color: rgba(255, 255, 255, 0.9);
+    }
 }
 
 .colorOptions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.375rem;
-  margin-bottom: 1px;
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.375rem;
+    margin-bottom: 1px;
 }
 
 .colorOption {
-  display: block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
 
-  &:hover {
-    transform: scale(1.15);
-  }
+    &:hover {
+        transform: scale(1.15);
+    }
 
-  &.selected {
-    transform: scale(0.83);
-    // border-color: rgba(255, 255, 255, 0.4);
-  }
+    &.selected {
+        transform: scale(0.83);
+        // border-color: rgba(255, 255, 255, 0.4);
+    }
 }
 
 .colorOptionRing {
-  display: flex;
-  width: 24px;
-  height: 24px;
-  border: 2px solid transparent;
-  border-radius: 50%;
-  transition: border-color 0.3s ease;
+    display: flex;
+    width: 24px;
+    height: 24px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    transition: border-color 0.3s ease;
 
-  &.selected {
-  }
+    &.selected {
+    }
 }
 
 .settingsToggle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
 
-  & + & {
-    margin-top: calc(0.5rem + 6px);
-  }
+    & + & {
+        margin-top: calc(0.5rem + 6px);
+    }
 
-  input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
+    input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
 }
 
 .customCheckbox {
-  position: relative;
-  width: 14px;
-  height: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition:
-    background 0.25s ease,
-    border-color 0.25s ease;
+    position: relative;
+    width: 14px;
+    height: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition:
+        background 0.25s ease,
+        border-color 0.25s ease;
 
-  svg {
-    color: #1a1a1a;
-    opacity: 1;
-    transition: opacity 0.15s ease;
-  }
-
-  input[type="checkbox"]:checked + & {
-    border-color: rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 1);
-  }
-
-  // Light mode variant (unchecked state)
-  &.light {
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    background: #fff;
-
-    // Checked state in light mode
-    &.checked {
-      border-color: #1a1a1a;
-      background: #1a1a1a;
-
-      svg {
-        color: #fff;
-      }
+    svg {
+        color: #1a1a1a;
+        opacity: 1;
+        transition: opacity 0.15s ease;
     }
-  }
+
+    input[type="checkbox"]:checked + & {
+        border-color: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 1);
+    }
+
+    // Light mode variant (unchecked state)
+    &.light {
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        background: #fff;
+
+        // Checked state in light mode
+        &.checked {
+            border-color: #1a1a1a;
+            background: #1a1a1a;
+
+            svg {
+                color: #fff;
+            }
+        }
+    }
 }
 
 .toggleLabel {
-  font-size: 0.8125rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.5);
-  letter-spacing: -0.0094em;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: -0.0094em;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
 
-  &.light {
-    color: rgba(0, 0, 0, 0.5);
-  }
+    &.light {
+        color: rgba(0, 0, 0, 0.5);
+    }
 }
 
 .helpIcon {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: help;
-  margin-left: 0;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: help;
+    margin-left: 0;
 
-  svg {
-    display: block;
-    transform: translateY(1px);
-    color: rgba(255, 255, 255, 0.2);
-    transition: color 0.15s ease;
-  }
+    svg {
+        display: block;
+        transform: translateY(1px);
+        color: rgba(255, 255, 255, 0.2);
+        transition: color 0.15s ease;
+    }
 
-  &:hover svg {
-    color: rgba(255, 255, 255, 0.4);
-  }
+    &:hover svg {
+        color: rgba(255, 255, 255, 0.4);
+    }
 
-  &::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    right: calc(100% + 8px);
-    top: 50%;
-    transform: translateY(-50%);
-    padding: 6px 10px;
-    background: #383838;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 11px;
-    font-weight: 400;
-    line-height: 14px;
-    border-radius: 10px;
-    width: 152px;
-    text-align: left;
-    opacity: 0;
-    visibility: hidden;
-    transition:
-      opacity 0.15s ease,
-      visibility 0.15s ease;
-    pointer-events: none;
-    z-index: 100;
-    box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.28);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
+    &::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        right: calc(100% + 8px);
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 6px 10px;
+        background: #383838;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 14px;
+        border-radius: 10px;
+        width: 152px;
+        text-align: left;
+        opacity: 0;
+        visibility: hidden;
+        transition:
+            opacity 0.15s ease,
+            visibility 0.15s ease;
+        pointer-events: none;
+        z-index: 100;
+        box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.28);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
 
-  &:hover::after {
-    opacity: 1;
-    visibility: visible;
-    transition-delay: 0.5s;
-  }
+    &:hover::after {
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0.5s;
+    }
 }
 
 // =============================================================================
@@ -1385,51 +1396,51 @@ $green: #34c759;
 // =============================================================================
 
 .dragSelection {
-  position: fixed;
-  top: 0;
-  left: 0;
-  border: 2px solid rgba($green, 0.6);
-  border-radius: 4px;
-  background: rgba($green, 0.08);
-  pointer-events: none;
-  z-index: 99997;
-  will-change: transform, width, height;
-  contain: layout style;
+    position: fixed;
+    top: 0;
+    left: 0;
+    border: 2px solid rgba($green, 0.6);
+    border-radius: 4px;
+    background: rgba($green, 0.08);
+    pointer-events: none;
+    z-index: 99997;
+    will-change: transform, width, height;
+    contain: layout style;
 }
 
 .dragCount {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: $green;
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  border-radius: 1rem;
-  min-width: 1.5rem;
-  text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: $green;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+    min-width: 1.5rem;
+    text-align: center;
 }
 
 .highlightsContainer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 99996;
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 99996;
 }
 
 .selectedElementHighlight {
-  position: fixed;
-  top: 0;
-  left: 0;
-  border: 2px solid rgba($green, 0.5);
-  border-radius: 4px;
-  background: rgba($green, 0.06);
-  pointer-events: none;
-  will-change: transform, width, height;
-  contain: layout style;
+    position: fixed;
+    top: 0;
+    left: 0;
+    border: 2px solid rgba($green, 0.5);
+    border-radius: 4px;
+    background: rgba($green, 0.06);
+    pointer-events: none;
+    will-change: transform, width, height;
+    contain: layout style;
 }
 
 // =============================================================================
@@ -1437,211 +1448,211 @@ $green: #34c759;
 // =============================================================================
 
 .light {
-  // Toolbar container
-  &.toolbarContainer {
-    background: #fff;
-    color: rgba(0, 0, 0, 0.85);
-    box-shadow:
-      0 2px 8px rgba(0, 0, 0, 0.08),
-      0 4px 16px rgba(0, 0, 0, 0.06),
-      0 0 0 1px rgba(0, 0, 0, 0.04);
+    // Toolbar container
+    &.toolbarContainer {
+        background: #fff;
+        color: rgba(0, 0, 0, 0.85);
+        box-shadow:
+            0 2px 8px rgba(0, 0, 0, 0.08),
+            0 4px 16px rgba(0, 0, 0, 0.06),
+            0 0 0 1px rgba(0, 0, 0, 0.04);
 
-    &.collapsed:hover {
-      background: #f5f5f5;
-    }
-  }
-
-  // Control buttons in toolbar
-  &.controlButton {
-    color: rgba(0, 0, 0, 0.5);
-
-    &:hover:not(:disabled) {
-      background: rgba(0, 0, 0, 0.06);
-      color: rgba(0, 0, 0, 0.85);
-    }
-
-    &[data-active="true"] {
-      color: $blue;
-      background: rgba($blue, 0.15);
-    }
-
-    &[data-danger]:hover:not(:disabled) {
-      background: rgba($red, 0.15);
-      color: $red;
-    }
-  }
-
-  // Button tooltips
-  &.buttonTooltip {
-    background: #fff;
-    color: rgba(0, 0, 0, 0.85);
-    box-shadow:
-      0 2px 8px rgba(0, 0, 0, 0.08),
-      0 4px 16px rgba(0, 0, 0, 0.06),
-      0 0 0 1px rgba(0, 0, 0, 0.04);
-
-    &::after {
-      background: #fff;
-    }
-  }
-
-  // Divider
-  &.divider {
-    background: rgba(0, 0, 0, 0.1);
-  }
-
-  // Marker tooltip
-  &.markerTooltip {
-    background: #fff;
-    box-shadow:
-      0 4px 20px rgba(0, 0, 0, 0.12),
-      0 0 0 1px rgba(0, 0, 0, 0.06);
-
-    .markerQuote {
-      color: rgba(0, 0, 0, 0.5);
-    }
-
-    .markerNote {
-      color: rgba(0, 0, 0, 0.85);
-    }
-
-    .markerHint {
-      color: rgba(0, 0, 0, 0.35);
-    }
-  }
-
-  // Settings panel
-  &.settingsPanel {
-    background: #fff;
-    box-shadow:
-      0 2px 8px rgba(0, 0, 0, 0.08),
-      0 4px 16px rgba(0, 0, 0, 0.06),
-      0 0 0 1px rgba(0, 0, 0, 0.04);
-
-    .settingsHeader {
-      border-bottom-color: rgba(0, 0, 0, 0.08);
-    }
-
-    .settingsBrand {
-      color: rgba(0, 0, 0, 0.85);
-    }
-
-    .settingsBrandSlash {
-      color: rgba(0, 0, 0, 0.4);
-    }
-
-    .settingsVersion {
-      color: rgba(0, 0, 0, 0.4);
-    }
-
-    .settingsSection {
-      border-top-color: rgba(0, 0, 0, 0.08);
-    }
-
-    .settingsLabel {
-      color: rgba(0, 0, 0, 0.5);
-    }
-
-    .cycleButton {
-      color: rgba(0, 0, 0, 0.85);
-    }
-
-    .cycleDot {
-      background: rgba(0, 0, 0, 0.2);
-
-      &.active {
-        background: rgba(0, 0, 0, 0.7);
-      }
-    }
-
-    .dropdownButton {
-      color: rgba(0, 0, 0, 0.85);
-
-      &:hover {
-        background: rgba(0, 0, 0, 0.05);
-      }
-    }
-
-    .toggleLabel {
-      color: rgba(0, 0, 0, 0.5);
-    }
-
-    .customCheckbox {
-      border: 1px solid rgba(0, 0, 0, 0.15);
-      background: #fff;
-
-      &.checked {
-        border-color: #1a1a1a;
-        background: #1a1a1a;
-
-        svg {
-          color: #fff;
+        &.collapsed:hover {
+            background: #f5f5f5;
         }
-      }
     }
 
-    .sliderLabel {
-      color: rgba(0, 0, 0, 0.4);
+    // Control buttons in toolbar
+    &.controlButton {
+        color: rgba(0, 0, 0, 0.5);
 
-      &:hover {
-        color: rgba(0, 0, 0, 0.7);
-      }
+        &:hover:not(:disabled) {
+            background: rgba(0, 0, 0, 0.06);
+            color: rgba(0, 0, 0, 0.85);
+        }
 
-      &.active {
-        color: rgba(0, 0, 0, 0.9);
-      }
+        &[data-active="true"] {
+            color: $blue;
+            background: rgba($blue, 0.15);
+        }
+
+        &[data-danger]:hover:not(:disabled) {
+            background: rgba($red, 0.15);
+            color: $red;
+        }
     }
 
-    .slider {
-      background: rgba(0, 0, 0, 0.1);
+    // Button tooltips
+    &.buttonTooltip {
+        background: #fff;
+        color: rgba(0, 0, 0, 0.85);
+        box-shadow:
+            0 2px 8px rgba(0, 0, 0, 0.08),
+            0 4px 16px rgba(0, 0, 0, 0.06),
+            0 0 0 1px rgba(0, 0, 0, 0.04);
 
-      &::-webkit-slider-thumb {
-        background: #1a1a1a;
-      }
-
-      &::-moz-range-thumb {
-        background: #1a1a1a;
-      }
+        &::after {
+            background: #fff;
+        }
     }
 
-    .helpIcon svg {
-      color: rgba(0, 0, 0, 0.2);
+    // Divider
+    &.divider {
+        background: rgba(0, 0, 0, 0.1);
     }
 
-    .helpIcon:hover svg {
-      color: rgba(0, 0, 0, 0.4);
+    // Marker tooltip
+    &.markerTooltip {
+        background: #fff;
+        box-shadow:
+            0 4px 20px rgba(0, 0, 0, 0.12),
+            0 0 0 1px rgba(0, 0, 0, 0.06);
+
+        .markerQuote {
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .markerNote {
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .markerHint {
+            color: rgba(0, 0, 0, 0.35);
+        }
     }
-  }
+
+    // Settings panel
+    &.settingsPanel {
+        background: #fff;
+        box-shadow:
+            0 2px 8px rgba(0, 0, 0, 0.08),
+            0 4px 16px rgba(0, 0, 0, 0.06),
+            0 0 0 1px rgba(0, 0, 0, 0.04);
+
+        .settingsHeader {
+            border-bottom-color: rgba(0, 0, 0, 0.08);
+        }
+
+        .settingsBrand {
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .settingsBrandSlash {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        .settingsVersion {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        .settingsSection {
+            border-top-color: rgba(0, 0, 0, 0.08);
+        }
+
+        .settingsLabel {
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .cycleButton {
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .cycleDot {
+            background: rgba(0, 0, 0, 0.2);
+
+            &.active {
+                background: rgba(0, 0, 0, 0.7);
+            }
+        }
+
+        .dropdownButton {
+            color: rgba(0, 0, 0, 0.85);
+
+            &:hover {
+                background: rgba(0, 0, 0, 0.05);
+            }
+        }
+
+        .toggleLabel {
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .customCheckbox {
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            background: #fff;
+
+            &.checked {
+                border-color: #1a1a1a;
+                background: #1a1a1a;
+
+                svg {
+                    color: #fff;
+                }
+            }
+        }
+
+        .sliderLabel {
+            color: rgba(0, 0, 0, 0.4);
+
+            &:hover {
+                color: rgba(0, 0, 0, 0.7);
+            }
+
+            &.active {
+                color: rgba(0, 0, 0, 0.9);
+            }
+        }
+
+        .slider {
+            background: rgba(0, 0, 0, 0.1);
+
+            &::-webkit-slider-thumb {
+                background: #1a1a1a;
+            }
+
+            &::-moz-range-thumb {
+                background: #1a1a1a;
+            }
+        }
+
+        .helpIcon svg {
+            color: rgba(0, 0, 0, 0.2);
+        }
+
+        .helpIcon:hover svg {
+            color: rgba(0, 0, 0, 0.4);
+        }
+    }
 }
 
 // Theme toggle button (works in both modes)
 .themeToggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  margin-left: 0.5rem;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.4);
-  cursor: pointer;
-  transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.8);
-  }
-
-  .light & {
-    color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-left: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.06);
-      color: rgba(0, 0, 0, 0.7);
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.8);
     }
-  }
+
+    .light & {
+        color: rgba(0, 0, 0, 0.4);
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.06);
+            color: rgba(0, 0, 0, 0.7);
+        }
+    }
 }
