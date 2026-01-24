@@ -360,6 +360,10 @@ export function PageFeedbackToolbarCSS({
   const [pendingExiting, setPendingExiting] = useState(false);
   const [editExiting, setEditExiting] = useState(false);
 
+  // CTRL+click multi-select state
+  const [isCtrlPressed, setIsCtrlPressed] = useState(false);
+  const [multiSelectedElements, setMultiSelectedElements] = useState<HTMLElement[]>([]);
+
   // Multi-select drag state - use refs for all drag visuals to avoid re-renders
   const [isDragging, setIsDragging] = useState(false);
   const mouseDownPosRef = useRef<{ x: number; y: number } | null>(null);
@@ -620,6 +624,7 @@ export function PageFeedbackToolbarCSS({
       setEditingAnnotation(null);
       setHoverInfo(null);
       setShowSettings(false); // Close settings when toolbar closes
+      setMultiSelectedElements([]); // Clear multi-select when toolbar closes
       if (isFrozen) {
         unfreezeAnimations();
       }
@@ -663,6 +668,194 @@ export function PageFeedbackToolbarCSS({
       if (existingStyle) existingStyle.remove();
     };
   }, [isActive]);
+
+  // Handle keyboard events for CTRL+click multi-select
+  useEffect(() => {
+    if (!isActive) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Control' || e.key === 'Meta') {
+        setIsCtrlPressed(true);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Control' || e.key === 'Meta') {
+        setIsCtrlPressed(false);
+        // When CTRL is released, if we have multi-selected elements, show the feedback popup
+        if (multiSelectedElements.length > 0) {
+          const bounds = multiSelectedElements.reduce(
+            (acc, el) => {
+              const rect = el.getBoundingClientRect();
+              return {
+                left: Math.min(acc.left, rect.left),
+                top: Math.min(acc.top, rect.top),
+                right: Math.max(acc.right, rect.right),
+                bottom: Math.max(acc.bottom, rect.bottom),
+              };
+            },
+            {
+              left: Infinity,
+              top: Infinity,
+              right: -Infinity,
+              bottom: -Infinity,
+            }
+          );
+
+          const elementNames = multiSelectedElements
+            .slice(0, 5)
+            .map((el) => identifyElement(el).name)
+            .join(", ");
+          const suffix =
+            multiSelectedElements.length > 5
+              ? ` +${multiSelectedElements.length - 5} more`
+              : "";
+
+          // Capture computed styles from first element
+          const firstElement = multiSelectedElements[0];
+          const firstElementComputedStyles =
+            getDetailedComputedStyles(firstElement);
+          const firstElementComputedStylesStr =
+            getForensicComputedStyles(firstElement);
+
+          setPendingAnnotation({
+            x: ((bounds.left + bounds.right) / 2 / window.innerWidth) * 100,
+            y: (bounds.top + bounds.bottom) / 2 + window.scrollY,
+            clientY: (bounds.top + bounds.bottom) / 2,
+            element: `${multiSelectedElements.length} elements: ${elementNames}${suffix}`,
+            elementPath: "multi-select",
+            boundingBox: {
+              x: bounds.left,
+              y: bounds.top + window.scrollY,
+              width: bounds.right - bounds.left,
+              height: bounds.bottom - bounds.top,
+            },
+            isMultiSelect: true,
+            // Forensic data from first element
+            fullPath: getFullElementPath(firstElement),
+            accessibility: getAccessibilityInfo(firstElement),
+            computedStyles: firstElementComputedStylesStr,
+            computedStylesObj: firstElementComputedStyles,
+            nearbyElements: getNearbyElements(firstElement),
+            cssClasses: getElementClasses(firstElement),
+            nearbyText: getNearbyText(firstElement),
+          });
+          setMultiSelectedElements([]); // Clear the selection
+        }
+      }
+    };
+
+    // Prevent browser zoom when CTRL is pressed and we have elements selected
+    const handleWheel = (e: WheelEvent) => {
+      if ((e.ctrlKey || e.metaKey) && multiSelectedElements.length > 0) {
+        // Prevent the zoom behavior but allow the scroll to continue
+        e.preventDefault();
+        
+        // Manually scroll the page to maintain scroll functionality
+        const scrollAmount = e.deltaY;
+        window.scrollBy({
+          top: scrollAmount,
+          left: e.deltaX,
+          behavior: 'auto'
+        });
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+    document.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+      document.removeEventListener('wheel', handleWheel);
+    };
+  }, [isActive, multiSelectedElements]);
+
+  // Visual feedback for multi-selected elements
+  useEffect(() => {
+    // Clear any existing multi-select highlights
+    const existingHighlights = document.querySelectorAll('[data-multi-select-highlight]');
+    existingHighlights.forEach(el => el.remove());
+
+    if (multiSelectedElements.length === 0) return;
+
+    // Create highlights for each selected element
+    const highlights: HTMLElement[] = [];
+    multiSelectedElements.forEach(element => {
+      const rect = element.getBoundingClientRect();
+      const highlight = document.createElement('div');
+      highlight.setAttribute('data-multi-select-highlight', 'true');
+      highlight.style.cssText = `
+        position: fixed;
+        left: ${rect.left}px;
+        top: ${rect.top}px;
+        width: ${rect.width}px;
+        height: ${rect.height}px;
+        background-color: rgba(59, 130, 246, 0.3);
+        border: 2px solid #3b82f6;
+        border-radius: 4px;
+        pointer-events: none;
+        z-index: 999999;
+        box-sizing: border-box;
+      `;
+      document.body.appendChild(highlight);
+      highlights.push(highlight);
+    });
+
+    // Update highlight positions on scroll
+    const handleScroll = () => {
+      highlights.forEach((highlight, index) => {
+        const element = multiSelectedElements[index];
+        if (element && element.isConnected) {
+          const rect = element.getBoundingClientRect();
+          highlight.style.left = `${rect.left}px`;
+          highlight.style.top = `${rect.top}px`;
+          highlight.style.width = `${rect.width}px`;
+          highlight.style.height = `${rect.height}px`;
+        } else {
+          // Element was removed from DOM, remove highlight
+          highlight.remove();
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+
+    // Add selection counter if we have multiple elements selected
+    let selectionCounter: HTMLElement | null = null;
+    if (multiSelectedElements.length > 1) {
+      selectionCounter = document.createElement('div');
+      selectionCounter.setAttribute('data-multi-select-counter', 'true');
+      selectionCounter.textContent = `${multiSelectedElements.length} selected`;
+      selectionCounter.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #3b82f6;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        z-index: 1000000;
+        pointer-events: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      `;
+      document.body.appendChild(selectionCounter);
+    }
+
+    return () => {
+      // Cleanup highlights and event listeners
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+      const highlightsToRemove = document.querySelectorAll('[data-multi-select-highlight]');
+      highlightsToRemove.forEach(el => el.remove());
+      const counterToRemove = document.querySelectorAll('[data-multi-select-counter]');
+      counterToRemove.forEach(el => el.remove());
+    };
+  }, [multiSelectedElements]);
 
   // Handle mouse move
   useEffect(() => {
@@ -739,13 +932,32 @@ export function PageFeedbackToolbarCSS({
         return;
       }
 
-      e.preventDefault();
-
       const elementUnder = document.elementFromPoint(
         e.clientX,
         e.clientY,
       ) as HTMLElement;
       if (!elementUnder) return;
+
+      // Handle CTRL+click multi-select
+      if (isCtrlPressed && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        
+        // Check if element is already selected
+        const isAlreadySelected = multiSelectedElements.some(el => el === elementUnder);
+        
+        if (isAlreadySelected) {
+          // Remove from selection
+          setMultiSelectedElements(prev => prev.filter(el => el !== elementUnder));
+        } else {
+          // Add to selection
+          setMultiSelectedElements(prev => [...prev, elementUnder]);
+        }
+        
+        return;
+      }
+
+      // Normal click behavior (when not CTRL+click)
+      e.preventDefault();
 
       const { name, path } = identifyElement(elementUnder);
       const rect = elementUnder.getBoundingClientRect();
@@ -797,6 +1009,8 @@ export function PageFeedbackToolbarCSS({
     pendingAnnotation,
     editingAnnotation,
     settings.blockInteractions,
+    isCtrlPressed,
+    multiSelectedElements,
   ]);
 
   // Multi-select drag - mousedown
