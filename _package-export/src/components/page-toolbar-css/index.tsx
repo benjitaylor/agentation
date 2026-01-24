@@ -1579,6 +1579,27 @@ export function PageFeedbackToolbarCSS({
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Check if user is typing in an input field
+      const isTyping =
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA" ||
+        (document.activeElement as HTMLElement)?.isContentEditable;
+
+      // Alt + A to toggle the tool (works even when inactive, unless typing)
+      if (e.altKey && e.key.toLowerCase() === "a" && !isTyping) {
+        e.preventDefault();
+        setIsActive((prev) => !prev);
+        return;
+      }
+
+      // Alt + F to toggle freeze (works globally when component is mounted, unless typing)
+      if (e.altKey && e.key.toLowerCase() === "f" && !isTyping) {
+        e.preventDefault();
+        toggleFreeze();
+        return;
+      }
+
+      // Escape to deactivate
       if (e.key === "Escape") {
         if (pendingAnnotation) {
           // Let popup handle
@@ -1590,7 +1611,7 @@ export function PageFeedbackToolbarCSS({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isActive, pendingAnnotation]);
+  }, [isActive, pendingAnnotation, toggleFreeze]);
 
   if (!mounted) return null;
 
@@ -1685,7 +1706,7 @@ export function PageFeedbackToolbarCSS({
           onMouseDown={handleToolbarMouseDown}
           role={!isActive ? "button" : undefined}
           tabIndex={!isActive ? 0 : -1}
-          title={!isActive ? "Start feedback mode" : undefined}
+          title={!isActive ? "Start feedback mode (Alt+A)" : undefined}
           style={
             isDraggingToolbar
               ? {
@@ -1733,7 +1754,7 @@ export function PageFeedbackToolbarCSS({
               </button>
               <span className={styles.buttonTooltip}>
                 {isFrozen ? "Resume animations" : "Pause animations"}
-                <span className={styles.shortcut}>P</span>
+                <span className={styles.shortcut}>Alt+F</span>
               </span>
             </div>
 
@@ -1828,7 +1849,7 @@ export function PageFeedbackToolbarCSS({
               </button>
               <span className={styles.buttonTooltip}>
                 Exit
-                <span className={styles.shortcut}>Esc</span>
+                <span className={styles.shortcut}>Esc / Alt+A</span>
               </span>
             </div>
           </div>
