@@ -1,11 +1,11 @@
 // =============================================================================
 // Element Identification Utilities
 // =============================================================================
-
-/**
- * Gets a readable path for an element (e.g., "article > section > p")
- */
-export function getElementPath(target: HTMLElement, maxDepth = 4): string {
+export function getElementPath(
+  target: HTMLElement,
+  priorityAttribute: string = "data-testid",
+  maxDepth = 4,
+): string {
   const parts: string[] = [];
   let current: HTMLElement | null = target;
   let depth = 0;
@@ -18,12 +18,23 @@ export function getElementPath(target: HTMLElement, maxDepth = 4): string {
 
     // Get identifier
     let identifier = tag;
-    if (current.id) {
+    const priorityValue = priorityAttribute
+      ? current.getAttribute(priorityAttribute)
+      : null;
+
+    if (priorityValue) {
+      identifier = `[${priorityAttribute}="${priorityValue}"]`;
+    } else if (current.id) {
       identifier = `#${current.id}`;
     } else if (current.className && typeof current.className === "string") {
       const meaningfulClass = current.className
         .split(/\s+/)
-        .find(c => c.length > 2 && !c.match(/^[a-z]{1,2}$/) && !c.match(/[A-Z0-9]{5,}/));
+        .find(
+          (c) =>
+            c.length > 2 &&
+            !c.match(/^[a-z]{1,2}$/) &&
+            !c.match(/[A-Z0-9]{5,}/),
+        );
       if (meaningfulClass) {
         identifier = `.${meaningfulClass.split("_")[0]}`;
       }
@@ -40,8 +51,14 @@ export function getElementPath(target: HTMLElement, maxDepth = 4): string {
 /**
  * Identifies an element and returns a human-readable name + path
  */
-export function identifyElement(target: HTMLElement): { name: string; path: string } {
-  const path = getElementPath(target);
+export function identifyElement(
+  target: HTMLElement,
+  priorityAttribute: string = "data-testid",
+): {
+  name: string;
+  path: string;
+} {
+  const path = getElementPath(target, priorityAttribute);
 
   if (target.dataset.element) {
     return { name: target.dataset.element, path };
@@ -56,7 +73,7 @@ export function identifyElement(target: HTMLElement): { name: string; path: stri
     if (svg) {
       const parent = svg.parentElement;
       if (parent) {
-        const parentName = identifyElement(parent).name;
+        const parentName = identifyElement(parent, priorityAttribute).name;
         return { name: `graphic in ${parentName}`, path };
       }
     }
@@ -66,7 +83,10 @@ export function identifyElement(target: HTMLElement): { name: string; path: stri
     const parent = target.parentElement;
     if (parent?.tagName.toLowerCase() === "button") {
       const btnText = parent.textContent?.trim();
-      return { name: btnText ? `icon in "${btnText}" button` : "button icon", path };
+      return {
+        name: btnText ? `icon in "${btnText}" button` : "button icon",
+        path,
+      };
     }
     return { name: "icon", path };
   }
@@ -103,7 +123,11 @@ export function identifyElement(target: HTMLElement): { name: string; path: stri
   // Text elements
   if (tag === "p") {
     const text = target.textContent?.trim();
-    if (text) return { name: `paragraph: "${text.slice(0, 40)}${text.length > 40 ? '...' : ''}"`, path };
+    if (text)
+      return {
+        name: `paragraph: "${text.slice(0, 40)}${text.length > 40 ? "..." : ""}"`,
+        path,
+      };
     return { name: "paragraph", path };
   }
   if (tag === "span" || tag === "label") {
@@ -113,7 +137,8 @@ export function identifyElement(target: HTMLElement): { name: string; path: stri
   }
   if (tag === "li") {
     const text = target.textContent?.trim();
-    if (text && text.length < 40) return { name: `list item: "${text.slice(0, 35)}"`, path };
+    if (text && text.length < 40)
+      return { name: `list item: "${text.slice(0, 35)}"`, path };
     return { name: "list item", path };
   }
   if (tag === "blockquote") return { name: "blockquote", path };
@@ -132,7 +157,18 @@ export function identifyElement(target: HTMLElement): { name: string; path: stri
   if (tag === "video") return { name: "video", path };
 
   // Containers - try to infer meaningful name
-  if (["div", "section", "article", "nav", "header", "footer", "aside", "main"].includes(tag)) {
+  if (
+    [
+      "div",
+      "section",
+      "article",
+      "nav",
+      "header",
+      "footer",
+      "aside",
+      "main",
+    ].includes(tag)
+  ) {
     const className = target.className;
     const role = target.getAttribute("role");
     const ariaLabel = target.getAttribute("aria-label");
@@ -230,8 +266,8 @@ export function identifyAnimationElement(target: HTMLElement): string {
     if (typeof className === "string" && className) {
       const words = className
         .split(/[\s_-]+/)
-        .map(c => c.replace(/[A-Z0-9]{5,}.*$/, ""))
-        .filter(c => c.length > 2 && !/^[a-z]{1,2}$/.test(c))
+        .map((c) => c.replace(/[A-Z0-9]{5,}.*$/, ""))
+        .filter((c) => c.length > 2 && !/^[a-z]{1,2}$/.test(c))
         .slice(0, 2);
       if (words.length > 0) {
         return words.join(" ");
@@ -251,7 +287,7 @@ export function getNearbyElements(element: HTMLElement): string {
   if (!parent) return "";
 
   const siblings = Array.from(parent.children).filter(
-    (child) => child !== element && child instanceof HTMLElement
+    (child) => child !== element && child instanceof HTMLElement,
   ) as HTMLElement[];
 
   if (siblings.length === 0) return "";
@@ -292,7 +328,8 @@ export function getNearbyElements(element: HTMLElement): string {
   }
 
   const total = parent.children.length;
-  const suffix = total > siblingIds.length + 1 ? ` (${total} total in ${parentId})` : "";
+  const suffix =
+    total > siblingIds.length + 1 ? ` (${total} total in ${parentId})` : "";
 
   return siblingIds.join(", ") + suffix;
 }
@@ -307,8 +344,8 @@ export function getElementClasses(target: HTMLElement): string {
   // Split and clean class names (remove module hashes like _abc123)
   const classes = className
     .split(/\s+/)
-    .filter(c => c.length > 0)
-    .map(c => {
+    .filter((c) => c.length > 0)
+    .map((c) => {
       // Keep the meaningful part before the hash
       const match = c.match(/^([a-zA-Z][a-zA-Z0-9_-]*?)(?:_[a-zA-Z0-9]{5,})?$/);
       return match ? match[1] : c;
@@ -331,13 +368,15 @@ export function getComputedStylesSnapshot(target: HTMLElement): string {
   const color = styles.color;
   const bg = styles.backgroundColor;
   if (color && color !== "rgb(0, 0, 0)") parts.push(`color: ${color}`);
-  if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") parts.push(`bg: ${bg}`);
+  if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent")
+    parts.push(`bg: ${bg}`);
 
   // Typography
   const fontSize = styles.fontSize;
   const fontWeight = styles.fontWeight;
   if (fontSize) parts.push(`font: ${fontSize}`);
-  if (fontWeight && fontWeight !== "400" && fontWeight !== "normal") parts.push(`weight: ${fontWeight}`);
+  if (fontWeight && fontWeight !== "400" && fontWeight !== "normal")
+    parts.push(`weight: ${fontWeight}`);
 
   // Spacing
   const padding = styles.padding;
@@ -348,32 +387,76 @@ export function getComputedStylesSnapshot(target: HTMLElement): string {
   // Layout
   const display = styles.display;
   const position = styles.position;
-  if (display && display !== "block" && display !== "inline") parts.push(`display: ${display}`);
+  if (display && display !== "block" && display !== "inline")
+    parts.push(`display: ${display}`);
   if (position && position !== "static") parts.push(`position: ${position}`);
 
   // Border
   const borderRadius = styles.borderRadius;
-  if (borderRadius && borderRadius !== "0px") parts.push(`radius: ${borderRadius}`);
+  if (borderRadius && borderRadius !== "0px")
+    parts.push(`radius: ${borderRadius}`);
 
   return parts.join(", ");
 }
 
 // Values to filter out when collecting computed styles (browser defaults / uninteresting)
 const DEFAULT_STYLE_VALUES = new Set([
-  "none", "normal", "auto", "0px", "rgba(0, 0, 0, 0)", "transparent", "static", "visible"
+  "none",
+  "normal",
+  "auto",
+  "0px",
+  "rgba(0, 0, 0, 0)",
+  "transparent",
+  "static",
+  "visible",
 ]);
 
 // Element type categories for style property selection
 const TEXT_ELEMENTS = new Set([
-  "p", "span", "h1", "h2", "h3", "h4", "h5", "h6", "label", "li", "td", "th",
-  "blockquote", "figcaption", "caption", "legend", "dt", "dd", "pre", "code",
-  "em", "strong", "b", "i", "a", "time", "cite", "q"
+  "p",
+  "span",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "label",
+  "li",
+  "td",
+  "th",
+  "blockquote",
+  "figcaption",
+  "caption",
+  "legend",
+  "dt",
+  "dd",
+  "pre",
+  "code",
+  "em",
+  "strong",
+  "b",
+  "i",
+  "a",
+  "time",
+  "cite",
+  "q",
 ]);
 const FORM_INPUT_ELEMENTS = new Set(["input", "textarea", "select"]);
 const MEDIA_ELEMENTS = new Set(["img", "video", "canvas", "svg"]);
 const CONTAINER_ELEMENTS = new Set([
-  "div", "section", "article", "nav", "header", "footer", "aside", "main",
-  "ul", "ol", "form", "fieldset"
+  "div",
+  "section",
+  "article",
+  "nav",
+  "header",
+  "footer",
+  "aside",
+  "main",
+  "ul",
+  "ol",
+  "form",
+  "fieldset",
 ]);
 
 /**
@@ -381,7 +464,9 @@ const CONTAINER_ELEMENTS = new Set([
  * Returns different properties based on element type to show the most relevant
  * CSS properties for debugging (e.g., typography for text, layout for containers).
  */
-export function getDetailedComputedStyles(target: HTMLElement): Record<string, string> {
+export function getDetailedComputedStyles(
+  target: HTMLElement,
+): Record<string, string> {
   if (typeof window === "undefined") return {};
 
   const styles = window.getComputedStyle(target);
@@ -393,13 +478,34 @@ export function getDetailedComputedStyles(target: HTMLElement): Record<string, s
 
   if (TEXT_ELEMENTS.has(tag)) {
     // Typography-focused for text elements
-    properties = ["color", "fontSize", "fontWeight", "fontFamily", "lineHeight"];
-  } else if (tag === "button" || (tag === "a" && target.getAttribute("role") === "button")) {
+    properties = [
+      "color",
+      "fontSize",
+      "fontWeight",
+      "fontFamily",
+      "lineHeight",
+    ];
+  } else if (
+    tag === "button" ||
+    (tag === "a" && target.getAttribute("role") === "button")
+  ) {
     // Appearance and spacing for interactive elements
-    properties = ["backgroundColor", "color", "padding", "borderRadius", "fontSize"];
+    properties = [
+      "backgroundColor",
+      "color",
+      "padding",
+      "borderRadius",
+      "fontSize",
+    ];
   } else if (FORM_INPUT_ELEMENTS.has(tag)) {
     // Form styling
-    properties = ["backgroundColor", "color", "padding", "borderRadius", "fontSize"];
+    properties = [
+      "backgroundColor",
+      "color",
+      "padding",
+      "borderRadius",
+      "fontSize",
+    ];
   } else if (MEDIA_ELEMENTS.has(tag)) {
     // Dimensions for media
     properties = ["width", "height", "objectFit", "borderRadius"];
@@ -425,16 +531,40 @@ export function getDetailedComputedStyles(target: HTMLElement): Record<string, s
 // Comprehensive list of CSS properties for forensic output
 const FORENSIC_PROPERTIES = [
   // Colors
-  "color", "backgroundColor", "borderColor",
+  "color",
+  "backgroundColor",
+  "borderColor",
   // Typography
-  "fontSize", "fontWeight", "fontFamily", "lineHeight", "letterSpacing", "textAlign",
+  "fontSize",
+  "fontWeight",
+  "fontFamily",
+  "lineHeight",
+  "letterSpacing",
+  "textAlign",
   // Box model
-  "width", "height", "padding", "margin", "border", "borderRadius",
+  "width",
+  "height",
+  "padding",
+  "margin",
+  "border",
+  "borderRadius",
   // Layout & positioning
-  "display", "position", "top", "right", "bottom", "left", "zIndex",
-  "flexDirection", "justifyContent", "alignItems", "gap",
+  "display",
+  "position",
+  "top",
+  "right",
+  "bottom",
+  "left",
+  "zIndex",
+  "flexDirection",
+  "justifyContent",
+  "alignItems",
+  "gap",
   // Visual effects
-  "opacity", "visibility", "overflow", "boxShadow",
+  "opacity",
+  "visibility",
+  "overflow",
+  "boxShadow",
   // Transform
   "transform",
 ];
@@ -471,7 +601,10 @@ export function parseComputedStylesString(
   if (!stylesStr) return undefined;
 
   const result: Record<string, string> = {};
-  const parts = stylesStr.split(";").map((p) => p.trim()).filter(Boolean);
+  const parts = stylesStr
+    .split(";")
+    .map((p) => p.trim())
+    .filter(Boolean);
 
   for (const part of parts) {
     const colonIndex = part.indexOf(":");
@@ -506,7 +639,9 @@ export function getAccessibilityInfo(target: HTMLElement): string {
   if (ariaHidden === "true") parts.push("aria-hidden");
 
   // Check focusability
-  const focusable = target.matches("a, button, input, select, textarea, [tabindex]");
+  const focusable = target.matches(
+    "a, button, input, select, textarea, [tabindex]",
+  );
   if (focusable) parts.push("focusable");
 
   return parts.join(", ");
@@ -515,21 +650,29 @@ export function getAccessibilityInfo(target: HTMLElement): string {
 /**
  * Gets full DOM ancestry path (for forensic mode)
  */
-export function getFullElementPath(target: HTMLElement): string {
+export function getFullElementPath(
+  target: HTMLElement,
+  priorityAttribute: string = "data-testid",
+): string {
   const parts: string[] = [];
   let current: HTMLElement | null = target;
 
   while (current && current.tagName.toLowerCase() !== "html") {
     const tag = current.tagName.toLowerCase();
     let identifier = tag;
+    const priorityValue = priorityAttribute
+      ? current.getAttribute(priorityAttribute)
+      : null;
 
-    if (current.id) {
+    if (priorityValue) {
+      identifier = `${tag}[${priorityAttribute}="${priorityValue}"]`;
+    } else if (current.id) {
       identifier = `${tag}#${current.id}`;
     } else if (current.className && typeof current.className === "string") {
       const cls = current.className
         .split(/\s+/)
-        .map(c => c.replace(/[_][a-zA-Z0-9]{5,}.*$/, ""))
-        .find(c => c.length > 2);
+        .map((c) => c.replace(/[_][a-zA-Z0-9]{5,}.*$/, ""))
+        .find((c) => c.length > 2);
       if (cls) identifier = `${tag}.${cls}`;
     }
 
