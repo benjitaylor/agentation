@@ -245,6 +245,9 @@ export type DemoAnnotation = {
   selectedText?: string;
 };
 
+/** Position of the toolbar on the screen. */
+export type ToolbarPosition = 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
+
 export type PageFeedbackToolbarCSSProps = {
   demoAnnotations?: DemoAnnotation[];
   demoDelay?: number;
@@ -261,6 +264,8 @@ export type PageFeedbackToolbarCSSProps = {
   onCopy?: (markdown: string) => void;
   /** Whether to copy to clipboard when the copy button is clicked. Defaults to true. */
   copyToClipboard?: boolean;
+  /** Position of the toolbar on the screen. Defaults to 'bottom-right'. */
+  position?: ToolbarPosition;
 };
 
 /** Alias for PageFeedbackToolbarCSSProps */
@@ -280,6 +285,7 @@ export function PageFeedbackToolbarCSS({
   onAnnotationsClear,
   onCopy,
   copyToClipboard = true,
+  position = 'bottom-right',
 }: PageFeedbackToolbarCSSProps = {}) {
   const [isActive, setIsActive] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
@@ -1654,7 +1660,7 @@ export function PageFeedbackToolbarCSS({
     <>
       {/* Toolbar */}
       <div
-        className={styles.toolbar}
+        className={`${styles.toolbar} ${position === 'bottom-left' ? styles.bottomLeft : ''} ${position === 'top-right' ? styles.topRight : ''} ${position === 'top-left' ? styles.topLeft : ''}`}
         data-feedback-toolbar
         style={
           toolbarPosition
@@ -1669,7 +1675,7 @@ export function PageFeedbackToolbarCSS({
       >
         {/* Morphing container */}
         <div
-          className={`${styles.toolbarContainer} ${!isDarkMode ? styles.light : ""} ${isActive ? styles.expanded : styles.collapsed} ${showEntranceAnimation ? styles.entrance : ""} ${isDraggingToolbar ? styles.dragging : ""}`}
+          className={`${styles.toolbarContainer} ${!isDarkMode ? styles.light : ""} ${isActive ? styles.expanded : styles.collapsed} ${showEntranceAnimation ? styles.entrance : ""} ${isDraggingToolbar ? styles.dragging : ""} ${(position === 'bottom-left' || position === 'top-left') ? styles.alignLeft : ''}`}
           onClick={
             !isActive
               ? (e) => {
@@ -1835,7 +1841,7 @@ export function PageFeedbackToolbarCSS({
 
           {/* Settings Panel */}
           <div
-            className={`${styles.settingsPanel} ${isDarkMode ? styles.dark : styles.light} ${showSettingsVisible ? styles.enter : styles.exit}`}
+            className={`${styles.settingsPanel} ${isDarkMode ? styles.dark : styles.light} ${showSettingsVisible ? styles.enter : styles.exit} ${(position === 'bottom-left' || position === 'top-left') ? styles.alignLeft : ''} ${(position === 'top-right' || position === 'top-left') ? styles.alignTop : ''}`}
             onClick={(e) => e.stopPropagation()}
             style={
               toolbarPosition && toolbarPosition.y < 230

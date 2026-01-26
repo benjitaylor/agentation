@@ -199,6 +199,24 @@ $green: #34c759;
         top 0s,
         right 0s,
         bottom 0s; // Instant positioning changes
+
+    // Position variants
+    &.bottomLeft {
+        right: unset;
+        left: 1.25rem;
+    }
+
+    &.topRight {
+        bottom: unset;
+        top: 1.25rem;
+    }
+
+    &.topLeft {
+        right: unset;
+        left: 1.25rem;
+        bottom: unset;
+        top: 1.25rem;
+    }
 }
 
 .toolbarContainer {
@@ -216,6 +234,13 @@ $green: #34c759;
         0 4px 16px rgba(0, 0, 0, 0.1);
     pointer-events: auto;
     cursor: grab;
+
+    // Left-aligned position variant
+    &.alignLeft {
+        margin-left: 0;
+        margin-right: auto;
+        align-self: flex-start;
+    }
 
     // Animated properties
     transition:
@@ -839,6 +864,18 @@ $green: #34c759;
     transition:
         background 0.25s ease,
         box-shadow 0.25s ease;
+
+    // Left-aligned position variant
+    &.alignLeft {
+        right: unset;
+        left: 5px;
+    }
+
+    // Top position variant (panel opens below toolbar)
+    &.alignTop {
+        bottom: unset;
+        top: calc(100% + 0.5rem);
+    }
 
     // Transition for all child elements
     .settingsHeader,
