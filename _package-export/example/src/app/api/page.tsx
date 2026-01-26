@@ -60,37 +60,51 @@ export default function APIPage() {
             <div className="prop-item">
               <div className="prop-header">
                 <code className="prop-name">onAnnotationAdd</code>
-                <span className="prop-type">(annotation: Annotation) =&gt; void</span>
+                <span className="prop-type">
+                  (annotation: Annotation) =&gt; void
+                </span>
               </div>
               <p className="prop-desc">Called when an annotation is created</p>
             </div>
             <div className="prop-item">
               <div className="prop-header">
                 <code className="prop-name">onAnnotationDelete</code>
-                <span className="prop-type">(annotation: Annotation) =&gt; void</span>
+                <span className="prop-type">
+                  (annotation: Annotation) =&gt; void
+                </span>
               </div>
               <p className="prop-desc">Called when an annotation is deleted</p>
             </div>
             <div className="prop-item">
               <div className="prop-header">
                 <code className="prop-name">onAnnotationUpdate</code>
-                <span className="prop-type">(annotation: Annotation) =&gt; void</span>
+                <span className="prop-type">
+                  (annotation: Annotation) =&gt; void
+                </span>
               </div>
-              <p className="prop-desc">Called when an annotation comment is edited</p>
+              <p className="prop-desc">
+                Called when an annotation comment is edited
+              </p>
             </div>
             <div className="prop-item">
               <div className="prop-header">
                 <code className="prop-name">onAnnotationsClear</code>
-                <span className="prop-type">(annotations: Annotation[]) =&gt; void</span>
+                <span className="prop-type">
+                  (annotations: Annotation[]) =&gt; void
+                </span>
               </div>
-              <p className="prop-desc">Called when all annotations are cleared</p>
+              <p className="prop-desc">
+                Called when all annotations are cleared
+              </p>
             </div>
             <div className="prop-item">
               <div className="prop-header">
                 <code className="prop-name">onCopy</code>
                 <span className="prop-type">(markdown: string) =&gt; void</span>
               </div>
-              <p className="prop-desc">Callback with the markdown output when copy is clicked</p>
+              <p className="prop-desc">
+                Callback with the markdown output when copy is clicked
+              </p>
             </div>
             <div className="prop-item">
               <div className="prop-header">
@@ -98,16 +112,28 @@ export default function APIPage() {
                 <span className="prop-type">boolean</span>
                 <span className="prop-default">default: true</span>
               </div>
-              <p className="prop-desc">Set to false to prevent writing to clipboard (if handling via onCopy)</p>
+              <p className="prop-desc">
+                Set to false to prevent writing to clipboard (if handling via
+                onCopy)
+              </p>
+            </div>
+            <div className="prop-item">
+              <div className="prop-header">
+                <code className="prop-name">priorityAttribute</code>
+                <span className="prop-type">string</span>
+                <span className="prop-default">default: "data-testid"</span>
+              </div>
+              <p className="prop-desc">
+                Attribute used for highest priority element identification (e.g.
+                "data-cy", "data-test-id")
+              </p>
             </div>
           </div>
         </section>
 
         <section>
           <h2>Basic usage</h2>
-          <p>
-            Receive annotation data directly in your code:
-          </p>
+          <p>Receive annotation data directly in your code:</p>
           <CodeBlock
             code={`import { Agentation, Annotation } from "agentation";
 
@@ -162,9 +188,7 @@ function App() {
 
         <section>
           <h2>TypeScript</h2>
-          <p>
-            Types are exported for full TypeScript support:
-          </p>
+          <p>Types are exported for full TypeScript support:</p>
           <CodeBlock
             code={`import type { Annotation, AgentationProps } from "agentation";`}
           />
