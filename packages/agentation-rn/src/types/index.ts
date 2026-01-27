@@ -1,6 +1,5 @@
 export type {
   OutputDetailLevel,
-  AnnotationColor,
   DemoAnnotation,
   Annotation,
   StorageKey,
@@ -18,11 +17,8 @@ export type {
 
 export type {
   CodeInfo,
-  InspectInfo,
   ComponentDetection,
 } from './detection';
 
 export type { AgenationSettings } from './settings';
 export { DEFAULT_SETTINGS } from './settings';
-
-export { isAnnotation, isValidCodeInfo } from './guards';

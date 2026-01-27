@@ -2,7 +2,7 @@ import * as Clipboard from 'expo-clipboard';
 import { debugError } from './debug';
 
 export function generateId(): string {
-  return `ann_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  return `ann_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 }
 
 export function getTimestamp(): number {
@@ -18,24 +18,13 @@ export async function copyToClipboard(text: string): Promise<void> {
   }
 }
 
-export async function getFromClipboard(): Promise<string> {
-  try {
-    return await Clipboard.getStringAsync();
-  } catch (error) {
-    debugError('Failed to get from clipboard:', error);
-    return '';
+export function formatDetectedElement(
+  codeInfo: { relativePath?: string; lineNumber?: number; componentName?: string } | null
+): string | undefined {
+  if (!codeInfo) return undefined;
+  const filename = codeInfo.relativePath?.split('/').pop();
+  if (filename) {
+    return codeInfo.lineNumber ? `${filename}:${codeInfo.lineNumber}` : filename;
   }
-}
-
-export function formatDate(timestamp: number): string {
-  return new Date(timestamp).toLocaleDateString();
-}
-
-export function formatTime(timestamp: number): string {
-  return new Date(timestamp).toLocaleTimeString();
-}
-
-export function truncate(text: string, maxLength: number): string {
-  if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength - 3) + '...';
+  return codeInfo.componentName;
 }

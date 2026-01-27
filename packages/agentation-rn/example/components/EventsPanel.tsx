@@ -11,7 +11,7 @@ import {
 
 export interface ApiEvent {
   id: string;
-  type: 'onAnnotationAdd' | 'onAnnotationUpdate' | 'onAnnotationDelete' | 'onCopy' | 'onAnnotationsClear' | 'onModeEnabled' | 'onModeDisabled';
+  type: 'onAnnotationAdd' | 'onAnnotationUpdate' | 'onAnnotationDelete' | 'onCopy' | 'onAnnotationsClear';
   data: Record<string, unknown>;
   timestamp: number;
 }
@@ -28,8 +28,6 @@ const EVENT_COLORS: Record<ApiEvent['type'], string> = {
   onAnnotationDelete: '#ff3b30',
   onCopy: '#007aff',
   onAnnotationsClear: '#ff3b30',
-  onModeEnabled: '#5856d6',
-  onModeDisabled: '#8e8e93',
 };
 
 export function EventsPanel({ events, onClear, enabled = true }: EventsPanelProps) {

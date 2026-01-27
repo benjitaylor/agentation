@@ -5,12 +5,12 @@ import {
   GestureResponderEvent,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { debugLog } from '../utils/debug';
+import { debugLog, debugError } from '../utils/debug';
 import type { AgenationProps, Annotation, ComponentDetection, DemoAnnotation, AgenationSettings, OutputDetailLevel } from '../types';
 import { DEFAULT_SETTINGS } from '../types';
 import { loadSettings, saveSettings } from '../utils/storage';
 import { useAnnotations } from '../hooks/useAnnotations';
-import { generateId, getTimestamp } from '../utils/helpers';
+import { generateId, getTimestamp, formatDetectedElement } from '../utils/helpers';
 import { detectComponentAtPoint } from '../utils/componentDetection';
 import { Toolbar } from './Toolbar';
 import { AnnotationMarker } from './AnnotationMarker';
@@ -19,15 +19,6 @@ import { AgenationContext, AgenationContextValue } from '../context/AgenationCon
 
 
 export type { AgenationProps };
-
-function formatDetectedElement(codeInfo: { relativePath?: string; lineNumber?: number; componentName?: string } | null): string | undefined {
-  if (!codeInfo) return undefined;
-  const filename = codeInfo.relativePath?.split('/').pop();
-  if (filename) {
-    return codeInfo.lineNumber ? `${filename}:${codeInfo.lineNumber}` : filename;
-  }
-  return codeInfo.componentName;
-}
 
 function convertDemoAnnotations(demoAnnotations: DemoAnnotation[]): Annotation[] {
   return demoAnnotations.map((demo) => {
@@ -73,22 +64,12 @@ export function Agentation({
   children,
   disabled = false,
   demoAnnotations,
-  demoDelay: _demoDelay = 1000,
-  enableDemoMode: _enableDemoMode = false,
-  storageKey = 'default',
-  onAnnotationModeEnabled,
-  onAnnotationModeDisabled,
   onAnnotationAdd,
   onAnnotationDelete,
   onAnnotationUpdate,
   onAnnotationsClear,
   onCopy,
   copyToClipboard = true,
-  onAnnotationCreated,
-  onAnnotationUpdated,
-  onAnnotationDeleted,
-  onMarkdownCopied,
-  zIndexBase = 9999,
   toolbarOffset,
 }: AgenationProps) {
   const insets = useSafeAreaInsets();
@@ -99,7 +80,7 @@ export function Agentation({
 
   const toolbarHeight = Math.max(insets.bottom, 16) + 16 + 56 + (toolbarOffset?.y ?? 0);
 
-  const [isAnnotationMode, setIsAnnotationMode] = useState(false);
+  const [isActive, setIsActive] = useState(false);
   const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation | null>(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const [pendingTap, setPendingTap] = useState<{ x: number; y: number } | null>(null);
@@ -150,10 +131,9 @@ export function Agentation({
   const contextValue = useMemo<AgenationContextValue>(() => ({
     reportScrollOffset,
     scrollOffset,
-    isAnnotationMode,
     isDarkMode,
     setIsDarkMode,
-  }), [reportScrollOffset, scrollOffset, isAnnotationMode, isDarkMode]);
+  }), [reportScrollOffset, scrollOffset, isDarkMode]);
 
   const updateCurrentRoute = useCallback(() => {
     const route = getCurrentRouteName();
@@ -162,13 +142,8 @@ export function Agentation({
     }
   }, [currentRoute]);
 
-  const mergedOnAdd = onAnnotationAdd || onAnnotationCreated;
-  const mergedOnUpdate = onAnnotationUpdate || onAnnotationUpdated;
-  const mergedOnDelete = onAnnotationDelete || onAnnotationDeleted;
-  const mergedOnCopy = onCopy || onMarkdownCopied;
-
   const initialAnnotations = useMemo(() => {
-    if (!demoAnnotations || demoAnnotations.length === 0) {
+    if (!demoAnnotations || !demoAnnotations.length) {
       return undefined;
     }
     return convertDemoAnnotations(demoAnnotations);
@@ -182,22 +157,18 @@ export function Agentation({
     clearAll,
     copyMarkdown,
   } = useAnnotations({
-    screenName: storageKey,
     initialAnnotations,
-    onAnnotationCreated: mergedOnAdd,
-    onAnnotationUpdated: mergedOnUpdate,
-    onAnnotationDeleted: mergedOnDelete,
-    onMarkdownCopied: mergedOnCopy,
+    onAnnotationAdd,
+    onAnnotationUpdate,
+    onAnnotationDelete,
+    onCopy,
     copyToClipboard,
   });
 
   const handleToggleMode = useCallback(() => {
-    setIsAnnotationMode(prev => {
+    setIsActive(prev => {
       const newMode = !prev;
-      if (newMode) {
-        onAnnotationModeEnabled?.();
-      } else {
-        onAnnotationModeDisabled?.();
+      if (!newMode) {
         setSelectedAnnotation(null);
         setPopupVisible(false);
         setPendingTap(null);
@@ -205,7 +176,7 @@ export function Agentation({
       }
       return newMode;
     });
-  }, [onAnnotationModeEnabled, onAnnotationModeDisabled]);
+  }, []);
 
   const handleOverlayStartShouldSetResponder = useCallback(
     (e: GestureResponderEvent): boolean => {
@@ -224,7 +195,7 @@ export function Agentation({
         .then(detection => {
           setPendingDetection(detection);
         })
-        .catch(() => {});
+        .catch((e) => debugError('Detection failed:', e));
 
       return true;
     },
@@ -351,7 +322,7 @@ export function Agentation({
         </View>
 
         <>
-          {isAnnotationMode && !popupVisible && (
+          {isActive && !popupVisible && (
             <View
               style={styles.overlayTouch}
               onStartShouldSetResponder={handleOverlayStartShouldSetResponder}
@@ -407,12 +378,11 @@ export function Agentation({
           )}
 
           <Toolbar
-            isAnnotationMode={isAnnotationMode}
+            isActive={isActive}
             annotationCount={annotations.length}
             onToggleMode={handleToggleMode}
             onCopyMarkdown={handleCopyMarkdown}
             onClearAll={handleClearAll}
-            zIndex={zIndexBase}
             offset={toolbarOffset}
             annotationColor={settings.annotationColor}
             onAnnotationColorChange={handleAnnotationColorChange}

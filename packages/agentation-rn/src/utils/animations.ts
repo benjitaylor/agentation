@@ -13,10 +13,8 @@ export const SPRING_SMOOTH = {
 export const TIMING = {
   fast: 150,
   normal: 200,
-  slow: 300,
-  entrance: 250, // marker entrance (web: 0.25s)
-  exit: 150, // marker exit/clearing (web: 0.15s)
-  shake: 50,
+  entrance: 250,
+  exit: 150,
 };
 
 export const DELAYS = {

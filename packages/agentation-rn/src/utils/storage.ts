@@ -42,36 +42,6 @@ export async function loadAnnotations(
   }
 }
 
-export async function clearAnnotations(screenName: string): Promise<void> {
-  try {
-    const key = getStorageKey(screenName);
-    await AsyncStorage.removeItem(key);
-  } catch (error) {
-    debugError('Failed to clear annotations:', error);
-    throw error;
-  }
-}
-
-export async function getAllAnnotationKeys(): Promise<string[]> {
-  try {
-    const allKeys = await AsyncStorage.getAllKeys();
-    return allKeys.filter(key => key.startsWith('@agentation:'));
-  } catch (error) {
-    debugError('Failed to get annotation keys:', error);
-    return [];
-  }
-}
-
-export async function clearAllAnnotations(): Promise<void> {
-  try {
-    const keys = await getAllAnnotationKeys();
-    await AsyncStorage.multiRemove(keys);
-  } catch (error) {
-    debugError('Failed to clear all annotations:', error);
-    throw error;
-  }
-}
-
 export async function saveSettings(
   settings: Partial<AgenationSettings>
 ): Promise<void> {
@@ -99,14 +69,5 @@ export async function loadSettings(): Promise<AgenationSettings> {
   } catch (error) {
     debugError('Failed to load settings:', error);
     return DEFAULT_SETTINGS;
-  }
-}
-
-export async function resetSettings(): Promise<void> {
-  try {
-    await AsyncStorage.removeItem(SETTINGS_KEY);
-  } catch (error) {
-    debugError('Failed to reset settings:', error);
-    throw error;
   }
 }

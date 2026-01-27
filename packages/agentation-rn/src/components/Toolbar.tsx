@@ -5,14 +5,13 @@ import {
   Pressable,
   StyleSheet,
   Platform,
-  Alert,
   Animated,
   Text,
   StyleProp,
   ViewStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { IconListSparkle, IconClose, IconCopy, IconTrash, IconGear, IconSun, IconMoon, IconEye, IconEyeSlash } from './Icons';
+import { IconListSparkle, IconClose, IconCopy, IconTrash, IconGear, IconSun, IconMoon, IconEye, IconEyeSlash, IconCheckSmall } from './Icons';
 import type { OutputDetailLevel } from '../types';
 import { useToolbarAnimations } from '../hooks/useToolbarAnimations';
 import { useToolbarSettings } from '../hooks/useToolbarSettings';
@@ -125,7 +124,7 @@ function AnimatedButton({ onPress, disabled, style, children }: AnimatedButtonPr
 }
 
 export interface ToolbarProps {
-  isAnnotationMode: boolean;
+  isActive: boolean;
   annotationCount: number;
   onToggleMode: () => void;
   onCopyMarkdown: () => void;
@@ -145,7 +144,7 @@ export interface ToolbarProps {
 
 export function Toolbar(props: ToolbarProps) {
   const {
-    isAnnotationMode,
+    isActive,
     annotationCount,
     onToggleMode,
     onCopyMarkdown,
@@ -189,7 +188,7 @@ export function Toolbar(props: ToolbarProps) {
   const handleFabPress = useCallback(() => {
     if (!isExpanded) {
       setIsExpanded(true);
-      if (!isAnnotationMode) {
+      if (!isActive) {
         onToggleMode();
       }
     } else {
@@ -198,25 +197,18 @@ export function Toolbar(props: ToolbarProps) {
         setShowSettingsMenu(false);
         onSettingsMenuChange?.(false);
       }
-      if (isAnnotationMode) {
+      if (isActive) {
         onToggleMode();
       }
     }
-  }, [isExpanded, isAnnotationMode, onToggleMode, showSettingsMenu, onSettingsMenuChange]);
+  }, [isExpanded, isActive, onToggleMode, showSettingsMenu, onSettingsMenuChange]);
 
   const handleCopyPress = useCallback(() => {
     onCopyMarkdown();
   }, [onCopyMarkdown]);
 
   const handleTrashPress = useCallback(() => {
-    Alert.alert(
-      'Clear All Annotations',
-      'Are you sure you want to delete all annotations?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Clear All', style: 'destructive', onPress: onClearAll },
-      ]
-    );
+    onClearAll();
   }, [onClearAll]);
 
   const handleSettingsPress = useCallback(() => {
@@ -339,7 +331,7 @@ export function Toolbar(props: ToolbarProps) {
                 },
               ]}>
                 {settings.currentClearAfterCopy && (
-                  <Text style={[styles.checkmark, { color: theme.checkmarkColor }]}>✓</Text>
+                  <IconCheckSmall size={12} color={theme.checkmarkColor} />
                 )}
               </View>
               <Text style={[styles.toggleLabel, { color: theme.toggleText }]}>Clear after output</Text>
@@ -655,10 +647,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 2,
-  },
-  checkmark: {
-    fontSize: 11,
-    fontWeight: '600',
-    marginTop: -1,
   },
 });

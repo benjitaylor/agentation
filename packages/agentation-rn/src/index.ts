@@ -11,7 +11,6 @@ export type {
   AnnotationMarkerProps,
   AnnotationPopupProps,
   CodeInfo,
-  InspectInfo,
   ComponentDetection,
   MarkdownOutput,
   StorageKey,
@@ -43,24 +42,14 @@ export {
   formatElementPath as getElementPath,
 } from './utils/componentDetection';
 
-export {
-  generateMarkdown,
-  generateSimpleMarkdown,
-  generateSingleAnnotationMarkdown,
-  canGenerateMarkdown,
-  getMarkdownStats,
-} from './utils/markdownGeneration';
+export { generateMarkdown } from './utils/markdownGeneration';
 
 export {
   saveAnnotations,
   loadAnnotations,
-  clearAnnotations,
-  getAllAnnotationKeys,
-  clearAllAnnotations,
   getStorageKey,
   saveSettings,
   loadSettings,
-  resetSettings,
 } from './utils/storage';
 
 export {
@@ -74,10 +63,5 @@ export {
   generateId,
   getTimestamp,
   copyToClipboard,
-  getFromClipboard,
-  formatDate,
-  formatTime,
-  truncate,
 } from './utils/helpers';
 
-export { isAnnotation, isValidCodeInfo } from './types';

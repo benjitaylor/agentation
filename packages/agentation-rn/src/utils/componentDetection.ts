@@ -8,7 +8,17 @@ import {
   isComponentDetectionAvailable as checkAvailability,
   getInspectorDataForViewAtPoint,
   type FiberCodeInfo,
+  type InspectorData,
 } from './fiberTraversal';
+
+const DETECTION_TIMEOUT = 3000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+  return Promise.race([
+    promise,
+    new Promise<null>(resolve => setTimeout(() => resolve(null), ms)),
+  ]);
+}
 
 interface MeasurableView {
   measure: (callback: (x: number, y: number, width: number, height: number, pageX: number, pageY: number) => void) => void;
@@ -140,9 +150,12 @@ export async function detectComponentAtPoint(
   }
 
   try {
-    const inspectorData = await getInspectorDataForViewAtPoint(viewRef, x, y);
+    const inspectorData = await withTimeout(
+      getInspectorDataForViewAtPoint(viewRef, x, y),
+      DETECTION_TIMEOUT
+    ) as InspectorData | null;
 
-    if (inspectorData && inspectorData.hierarchy && inspectorData.hierarchy.length > 0) {
+    if (inspectorData && inspectorData.hierarchy && inspectorData.hierarchy.length) {
       const bounds = inspectorData.frame ? {
         x: inspectorData.frame.left,
         y: inspectorData.frame.top,

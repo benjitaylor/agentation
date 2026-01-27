@@ -67,8 +67,6 @@ Main wrapper component. Provides annotation functionality to your entire app.
   onAnnotationDelete={(annotation) => {}}  // Called when annotation deleted
   onAnnotationsClear={(annotations) => {}} // Called when all cleared
   onCopy={(markdown) => {}}                // Called when markdown copied
-  onAnnotationModeEnabled={() => {}}       // Called when annotation mode enabled
-  onAnnotationModeDisabled={() => {}}      // Called when annotation mode disabled
 >
   <YourApp />
 </Agentation>

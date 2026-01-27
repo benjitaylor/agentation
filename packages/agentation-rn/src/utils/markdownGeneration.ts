@@ -2,7 +2,6 @@ import type { Annotation, MarkdownOutput, OutputDetailLevel } from '../types';
 
 export function generateMarkdown(
   annotations: Annotation[],
-  screenName: string,
   detailLevel: OutputDetailLevel = 'standard'
 ): MarkdownOutput {
   const timestamp = Date.now();
@@ -15,7 +14,7 @@ export function generateMarkdown(
   const screenDims = firstAnnotation?.screenDimensions;
   const pixelRatio = firstAnnotation?.pixelRatio;
 
-  const pageTitle = routeName || screenName;
+  const pageTitle = routeName || 'App';
 
   if (annotations.length === 0) {
     return {
@@ -261,46 +260,4 @@ function generateForensicOutput(
   });
 
   return content;
-}
-
-export function generateSimpleMarkdown(
-  annotations: Annotation[],
-  screenName: string
-): string {
-  return generateMarkdown(annotations, screenName, 'compact').content;
-}
-
-export function generateSingleAnnotationMarkdown(
-  annotation: Annotation,
-  screenName: string
-): string {
-  let markdown = `## ${screenName} - ${annotation.element}\n\n`;
-  markdown += `**Location:** ${annotation.elementPath}\n`;
-  markdown += `**Feedback:** ${annotation.comment}\n`;
-
-  return markdown;
-}
-
-export function canGenerateMarkdown(annotation: Annotation): boolean {
-  return Boolean(
-    annotation.elementPath &&
-    annotation.comment &&
-    annotation.element
-  );
-}
-
-export function getMarkdownStats(annotations: Annotation[]): {
-  total: number;
-  withSourcePaths: number;
-  withTestIDs: number;
-  withAccessibility: number;
-  withSelectedText: number;
-} {
-  return {
-    total: annotations.length,
-    withSourcePaths: annotations.filter(a => a.sourcePath).length,
-    withTestIDs: annotations.filter(a => a.testID).length,
-    withAccessibility: annotations.filter(a => a.accessibility).length,
-    withSelectedText: annotations.filter(a => a.selectedText).length,
-  };
 }

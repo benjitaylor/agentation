@@ -62,36 +62,17 @@ export function IconListSparkle({ size = 24, color = 'currentColor' }: IconProps
   );
 }
 
-export function IconPlay({ size = 24, color = 'currentColor' }: IconProps) {
-  if (!Svg) return <EmojiIcon emoji="▶️" size={size} />;
+export function IconCheckSmall({ size = 14, color = 'currentColor' }: IconProps) {
+  if (!Svg) return <EmojiIcon emoji="✓" size={size} />;
 
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg width={size} height={size} viewBox="0 0 14 14" fill="none">
       <Path
-        d="M17.75 10.701C18.75 11.2783 18.75 12.7217 17.75 13.299L8.75 18.4952C7.75 19.0725 6.5 18.3509 6.5 17.1962L6.5 6.80384C6.5 5.64914 7.75 4.92746 8.75 5.50481L17.75 10.701Z"
-        stroke={color}
-        strokeWidth={1.5}
-      />
-    </Svg>
-  );
-}
-
-export function IconPause({ size = 24, color = 'currentColor' }: IconProps) {
-  if (!Svg) return <EmojiIcon emoji="⏸️" size={size} />;
-
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M8 6L8 18"
+        d="M3.9375 7L6.125 9.1875L10.5 4.8125"
         stroke={color}
         strokeWidth={1.5}
         strokeLinecap="round"
-      />
-      <Path
-        d="M16 18L16 6"
-        stroke={color}
-        strokeWidth={1.5}
-        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </Svg>
   );
@@ -172,22 +153,6 @@ export function IconGear({ size = 24, color = 'currentColor' }: IconProps) {
         strokeLinejoin="round"
       />
       <Circle cx={12} cy={12} r={2.5} stroke={color} strokeWidth={1.5} />
-    </Svg>
-  );
-}
-
-export function IconCheck({ size = 24, color = 'currentColor' }: IconProps) {
-  if (!Svg) return <EmojiIcon emoji="✓" size={size} />;
-
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M16.25 8.75L10 15.25L7.25 12.25"
-        stroke={color}
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
     </Svg>
   );
 }

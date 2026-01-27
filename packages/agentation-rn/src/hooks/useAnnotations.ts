@@ -1,27 +1,24 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Platform, Dimensions, PixelRatio } from 'react-native';
 import { debugError } from '../utils/debug';
 import type { Annotation, OutputDetailLevel } from '../types';
-import { saveAnnotations, loadAnnotations } from '../utils/storage';
 import { generateId, getTimestamp, copyToClipboard } from '../utils/helpers';
 import { detectComponentAtPoint, formatElementPath, getComponentType } from '../utils/componentDetection';
 import { generateMarkdown } from '../utils/markdownGeneration';
 import { getNavigationInfo, NavigationResolver } from '../utils/navigationDetection';
 
 export interface UseAnnotationsOptions {
-  screenName: string;
   initialAnnotations?: Annotation[];
-  onAnnotationCreated?: (annotation: Annotation) => void;
-  onAnnotationUpdated?: (annotation: Annotation) => void;
-  onAnnotationDeleted?: ((annotation: Annotation) => void) | ((annotationId: string) => void);
-  onMarkdownCopied?: (markdown: string) => void;
+  onAnnotationAdd?: (annotation: Annotation) => void;
+  onAnnotationUpdate?: (annotation: Annotation) => void;
+  onAnnotationDelete?: (annotation: Annotation) => void;
+  onCopy?: (markdown: string) => void;
   copyToClipboard?: boolean;
   navigationResolver?: NavigationResolver;
 }
 
 export interface UseAnnotationsReturn {
   annotations: Annotation[];
-  loading: boolean;
   createAnnotation: (
     x: number,
     y: number,
@@ -39,51 +36,16 @@ export function useAnnotations(
   options: UseAnnotationsOptions
 ): UseAnnotationsReturn {
   const {
-    screenName,
     initialAnnotations = [],
-    onAnnotationCreated,
-    onAnnotationUpdated,
-    onAnnotationDeleted,
-    onMarkdownCopied,
+    onAnnotationAdd,
+    onAnnotationUpdate,
+    onAnnotationDelete,
+    onCopy,
     copyToClipboard: shouldCopyToClipboard = true,
     navigationResolver,
   } = options;
 
   const [annotations, setAnnotations] = useState<Annotation[]>(initialAnnotations);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadAnnotationsFromStorage();
-  }, [screenName]);
-
-  useEffect(() => {
-    if (!loading) {
-      saveAnnotationsToStorage();
-    }
-  }, [annotations, loading]);
-
-  const loadAnnotationsFromStorage = async () => {
-    try {
-      setLoading(true);
-      const loaded = await loadAnnotations(screenName);
-
-      if (loaded.length > 0) {
-        setAnnotations(loaded);
-      }
-    } catch (error) {
-      debugError('Failed to load annotations:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const saveAnnotationsToStorage = async () => {
-    try {
-      await saveAnnotations(screenName, annotations);
-    } catch (error) {
-      debugError('Failed to save annotations:', error);
-    }
-  };
 
   const createAnnotation = useCallback(
     async (
@@ -147,7 +109,7 @@ export function useAnnotations(
         };
 
         setAnnotations(prev => [...prev, annotation]);
-        onAnnotationCreated?.(annotation);
+        onAnnotationAdd?.(annotation);
 
         return annotation;
       } catch (error) {
@@ -155,38 +117,30 @@ export function useAnnotations(
         return null;
       }
     },
-    [onAnnotationCreated]
+    [navigationResolver, onAnnotationAdd]
   );
 
   const updateAnnotation = useCallback(
     (id: string, comment: string) => {
-      setAnnotations(prev =>
-        prev.map(ann =>
-          ann.id === id
-            ? { ...ann, comment, timestamp: getTimestamp() }
-            : ann
-        )
-      );
+      const existing = annotations.find(a => a.id === id);
+      if (!existing) return;
 
-      const updated = annotations.find(a => a.id === id);
-      if (updated) {
-        onAnnotationUpdated?.({ ...updated, comment });
-      }
+      const updated = { ...existing, comment, timestamp: getTimestamp() };
+      setAnnotations(prev => prev.map(ann => ann.id === id ? updated : ann));
+      onAnnotationUpdate?.(updated);
     },
-    [annotations, onAnnotationUpdated]
+    [annotations, onAnnotationUpdate]
   );
 
   const deleteAnnotation = useCallback(
     (id: string) => {
       const annotation = annotations.find(a => a.id === id);
+      if (!annotation) return;
 
       setAnnotations(prev => prev.filter(ann => ann.id !== id));
-
-      if (onAnnotationDeleted && annotation) {
-        (onAnnotationDeleted as (annotation: Annotation) => void)(annotation);
-      }
+      onAnnotationDelete?.(annotation);
     },
-    [onAnnotationDeleted, annotations]
+    [annotations, onAnnotationDelete]
   );
 
   const clearAll = useCallback(() => {
@@ -195,18 +149,18 @@ export function useAnnotations(
 
   const copyMarkdownFn = useCallback(async (outputDetail?: OutputDetailLevel) => {
     try {
-      const output = generateMarkdown(annotations, screenName, outputDetail);
+      const output = generateMarkdown(annotations, outputDetail);
 
       if (shouldCopyToClipboard) {
         await copyToClipboard(output.content);
       }
 
-      onMarkdownCopied?.(output.content);
+      onCopy?.(output.content);
     } catch (error) {
       debugError('Failed to copy markdown:', error);
       throw error;
     }
-  }, [annotations, screenName, onMarkdownCopied, shouldCopyToClipboard]);
+  }, [annotations, onCopy, shouldCopyToClipboard]);
 
   const getAnnotation = useCallback(
     (id: string) => {
@@ -217,7 +171,6 @@ export function useAnnotations(
 
   return {
     annotations,
-    loading,
     createAnnotation,
     updateAnnotation,
     deleteAnnotation,

@@ -44,10 +44,6 @@ The component exposes these callback props (matching web 1.2.0+):
 - `onCopy(markdown)` - when copy button clicked
 - `copyToClipboard` (boolean, default: true)
 
-**RN-specific callbacks:**
-- `onAnnotationModeEnabled()` - when annotation mode activated
-- `onAnnotationModeDisabled()` - when annotation mode deactivated
-
 **API stability**: These are public contracts. Changing signatures or removing callbacks is a breaking change requiring a major version bump.
 
 ## Testing Changes

@@ -12,7 +12,7 @@ import {
 import type { AnnotationMarkerProps, Annotation } from '../types';
 import { TIMING } from '../utils/animations';
 
-interface MarkerProps extends Omit<AnnotationMarkerProps, 'annotation' | 'index' | 'onPress' | 'onLongPress'> {
+interface MarkerProps extends Omit<AnnotationMarkerProps, 'annotation' | 'index' | 'onPress'> {
   annotation?: Annotation;
   index?: number;
   isPending?: boolean;
@@ -40,7 +40,8 @@ export const AnnotationMarker = memo(function AnnotationMarker(props: (Annotatio
   isRemoving?: boolean;
   onRemoveComplete?: () => void;
 }) | MarkerProps) {
-  const { isSelected, onPress, onLongPress } = props;
+  const { isSelected, onPress } = props;
+  const onLongPress = 'onLongPress' in props ? props.onLongPress : undefined;
 
   const isPending = 'isPending' in props ? props.isPending : false;
   const x = 'x' in props ? props.x : props.annotation.x;

@@ -1,6 +1,5 @@
 export interface CodeInfo {
   relativePath: string;
-  absolutePath?: string;
   lineNumber: number;
   columnNumber?: number;
   componentName?: string;
@@ -9,7 +8,6 @@ export interface CodeInfo {
 export interface InspectInfo {
   name: string;
   codeInfo: CodeInfo | null;
-  fiber: unknown;
 }
 
 export interface ComponentDetection {

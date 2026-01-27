@@ -8,8 +8,6 @@ export interface AgenationCallbacks {
   onAnnotationDelete: (annotation: Annotation) => void;
   onCopy: (markdown: string) => void;
   onAnnotationsClear: (cleared: Annotation[]) => void;
-  onAnnotationModeEnabled: () => void;
-  onAnnotationModeDisabled: () => void;
 }
 
 export interface UseApiEventsReturn {
@@ -67,14 +65,6 @@ export function useApiEvents(maxEvents = 20): UseApiEventsReturn {
       addEvent('onAnnotationsClear', {
         count: cleared.length,
       });
-    }, [addEvent]),
-
-    onAnnotationModeEnabled: useCallback(() => {
-      addEvent('onModeEnabled', {});
-    }, [addEvent]),
-
-    onAnnotationModeDisabled: useCallback(() => {
-      addEvent('onModeDisabled', {});
     }, [addEvent]),
   };
 

@@ -10,8 +10,6 @@ export const COLOR_OPTIONS = [
   { value: '#FF3B30', label: 'Red' },
 ] as const;
 
-export type AnnotationColor = typeof COLOR_OPTIONS[number]['value'];
-
 export type DemoAnnotation = {
   selector: string;
   comment: string;

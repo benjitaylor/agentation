@@ -8,24 +8,14 @@ export {
   detectComponentAtPoint,
 } from './componentDetection';
 
-export {
-  generateMarkdown,
-  generateSimpleMarkdown,
-  generateSingleAnnotationMarkdown,
-  canGenerateMarkdown,
-  getMarkdownStats,
-} from './markdownGeneration';
+export { generateMarkdown } from './markdownGeneration';
 
 export {
   saveAnnotations,
   loadAnnotations,
-  clearAnnotations,
-  getAllAnnotationKeys,
-  clearAllAnnotations,
   getStorageKey,
   saveSettings,
   loadSettings,
-  resetSettings,
 } from './storage';
 
 export {
@@ -39,10 +29,7 @@ export {
   generateId,
   getTimestamp,
   copyToClipboard,
-  getFromClipboard,
-  formatDate,
-  formatTime,
-  truncate,
+  formatDetectedElement,
 } from './helpers';
 
 export {
