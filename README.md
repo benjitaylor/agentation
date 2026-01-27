@@ -40,10 +40,23 @@ The toolbar appears in the bottom-right corner. Click to activate, then click an
 
 Agentation captures class names, selectors, and element positions so AI agents can `grep` for the exact code you're referring to. Instead of describing "the blue button in the sidebar," you give the agent `.sidebar > button.primary` and your feedback.
 
+## Packages
+
+| Package | Platform | Install |
+|---------|----------|---------|
+| `agentation` | Web (React) | `npm install agentation` |
+| `agentation-rn` | React Native | `npm install agentation-rn` |
+
 ## Requirements
 
+### Web
 - React 18+
-- Desktop browser (mobile not supported)
+- Desktop browser
+
+### React Native
+- React Native >= 0.72.0
+- React >= 18.0.0
+- iOS & Android supported
 
 ## Docs
 

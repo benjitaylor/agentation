@@ -1,0 +1,35 @@
+{
+  "name": "@agentation-rn/example",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@callstack/liquid-glass": "^0.7.0",
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-navigation/native": "^7.1.28",
+    "@react-navigation/native-stack": "^7.10.1",
+    "agentation-rn": "workspace:*",
+    "expo": "~54.0.32",
+    "expo-clipboard": "^8.0.8",
+    "expo-status-bar": "~3.0.9",
+    "react": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-dev-inspector": "^1.1.0",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0",
+    "react-native-svg": "15.12.1"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-react-jsx-source": "^7.27.1",
+    "@types/react": "~19.1.0",
+    "babel-preset-expo": "^54.0.10",
+    "typescript": "~5.9.2"
+  }
+}

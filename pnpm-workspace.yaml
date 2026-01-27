@@ -1,3 +1,5 @@
 packages:
   - '_package-export'
   - '_package-export/example'
+  - 'packages/agentation-rn'
+  - 'packages/agentation-rn/example'
