@@ -47,6 +47,10 @@ import {
   getNearbyElements,
 } from "../../utils/element-identification";
 import {
+  getSourceLocation,
+  getComponentHierarchy,
+} from "../../utils/source-location";
+import {
   loadAnnotations,
   saveAnnotations,
   getStorageKey,
@@ -66,6 +70,7 @@ type HoverInfo = {
   element: string;
   elementPath: string;
   rect: DOMRect | null;
+  reactComponent?: string;
 };
 
 type OutputDetailLevel = "compact" | "standard" | "detailed" | "forensic";
@@ -204,10 +209,23 @@ function generateOutput(
       if (a.nearbyElements) {
         output += `**Nearby Elements:** ${a.nearbyElements}\n`;
       }
+      // React Forensic Data
+      if (a.reactComponent) {
+        output += `**React Component:** ${a.reactComponent}\n`;
+      }
+      if (a.reactHierarchy) {
+        output += `**React Hierarchy:** ${a.reactHierarchy.join(" > ")}\n`;
+      }
+      if (a.reactSource) {
+        output += `**React Source:** ${a.reactSource}\n`;
+      }
       output += `**Feedback:** ${a.comment}\n\n`;
     } else {
       // Standard and detailed modes
       output += `### ${i + 1}. ${a.element}\n`;
+      if (a.reactComponent) {
+        output += `**Component:** ${a.reactComponent}\n`;
+      }
       output += `**Location:** ${a.elementPath}\n`;
 
       if (detailLevel === "detailed") {
@@ -307,6 +325,9 @@ export function PageFeedbackToolbarCSS({
     computedStyles?: string;
     computedStylesObj?: Record<string, string>;
     nearbyElements?: string;
+    reactComponent?: string;
+    reactHierarchy?: string[];
+    reactSource?: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
   const [cleared, setCleared] = useState(false);
@@ -686,7 +707,15 @@ export function PageFeedbackToolbarCSS({
       const { name, path } = identifyElement(elementUnder);
       const rect = elementUnder.getBoundingClientRect();
 
-      setHoverInfo({ element: name, elementPath: path, rect });
+      // Capture React Metadata for hover tooltip
+      const reactInfo = getSourceLocation(elementUnder);
+
+      setHoverInfo({ 
+        element: name, 
+        elementPath: path, 
+        rect,
+        reactComponent: reactInfo.found ? reactInfo.source?.componentName : undefined
+      });
       setHoverPosition({ x: e.clientX, y: e.clientY });
     };
 
@@ -764,6 +793,14 @@ export function PageFeedbackToolbarCSS({
       const computedStylesObj = getDetailedComputedStyles(elementUnder);
       const computedStylesStr = getForensicComputedStyles(elementUnder);
 
+      // Capture React Metadata
+      const reactInfo = getSourceLocation(elementUnder);
+      const reactHierarchy = getComponentHierarchy(elementUnder);
+
+      const hierarchyNames = reactHierarchy
+        .map((h) => h.componentName)
+        .filter(Boolean) as string[];
+
       setPendingAnnotation({
         x,
         y,
@@ -785,6 +822,9 @@ export function PageFeedbackToolbarCSS({
         computedStyles: computedStylesStr,
         computedStylesObj,
         nearbyElements: getNearbyElements(elementUnder),
+        reactComponent: reactInfo.found ? reactInfo.source?.componentName : undefined,
+        reactHierarchy: hierarchyNames.length > 0 ? hierarchyNames : undefined,
+        reactSource: reactInfo.found ? reactInfo.source?.fileName : undefined,
       });
       setHoverInfo(null);
     };
@@ -1249,6 +1289,9 @@ export function PageFeedbackToolbarCSS({
         accessibility: pendingAnnotation.accessibility,
         computedStyles: pendingAnnotation.computedStyles,
         nearbyElements: pendingAnnotation.nearbyElements,
+        reactComponent: pendingAnnotation.reactComponent,
+        reactHierarchy: pendingAnnotation.reactHierarchy,
+        reactSource: pendingAnnotation.reactSource,
       };
 
       setAnnotations((prev) => [...prev, newAnnotation]);
@@ -2311,6 +2354,13 @@ export function PageFeedbackToolbarCSS({
                 top: Math.max(hoverPosition.y - 32, 8),
               }}
             >
+              {hoverInfo.reactComponent && (
+                <span className={styles.hoverReact}>
+                  <span className={styles.hoverReactSlash}>/</span>
+                  {hoverInfo.reactComponent}
+                  <span className={styles.hoverDivider}>•</span>
+                </span>
+              )}
               {hoverInfo.element}
             </div>
           )}
@@ -2355,6 +2405,9 @@ export function PageFeedbackToolbarCSS({
                 element={pendingAnnotation.element}
                 selectedText={pendingAnnotation.selectedText}
                 computedStyles={pendingAnnotation.computedStylesObj}
+                reactComponent={pendingAnnotation.reactComponent}
+                reactHierarchy={pendingAnnotation.reactHierarchy}
+                reactSource={pendingAnnotation.reactSource}
                 placeholder={
                   pendingAnnotation.element === "Area selection"
                     ? "What should change in this area?"
@@ -2417,6 +2470,9 @@ export function PageFeedbackToolbarCSS({
                 element={editingAnnotation.element}
                 selectedText={editingAnnotation.selectedText}
                 computedStyles={parseComputedStylesString(editingAnnotation.computedStyles)}
+                reactComponent={editingAnnotation.reactComponent}
+                reactHierarchy={editingAnnotation.reactHierarchy}
+                reactSource={editingAnnotation.reactSource}
                 placeholder="Edit your feedback..."
                 initialValue={editingAnnotation.comment}
                 submitLabel="Save"

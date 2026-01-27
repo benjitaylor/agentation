@@ -624,6 +624,22 @@ $green: #34c759;
     }
 }
 
+.hoverReact {
+    opacity: 0.9;
+    margin-right: 4px;
+}
+
+.hoverReactSlash {
+    color: #AF52DE; // Purple accent for React info
+    font-weight: bold;
+    margin-right: 2px;
+}
+
+.hoverDivider {
+    margin: 0 4px;
+    opacity: 0.4;
+}
+
 // =============================================================================
 // Markers Layer
 // =============================================================================
