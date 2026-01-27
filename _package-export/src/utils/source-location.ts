@@ -375,25 +375,52 @@ function findDebugSourceReact19(
 }
 
 /**
- * Gets the source file location for a DOM element in a React application
+ * Default data attribute for source location detection.
+ * TanStack Devtools uses "data-tsd-source" by default.
+ */
+export const DEFAULT_SOURCE_ATTRIBUTE = "data-tsd-source";
+
+/**
+ * Gets the source file location for a DOM element in a React application.
  *
  * This function attempts to extract the source file path and line number
  * where a React component is defined. This only works in development mode
  * as production builds strip debug information.
  *
  * @param element - DOM element to get source location for
+ * @param sourceAttribute - Data attribute to check for source info (default: "data-tsd-source")
  * @returns SourceLocationResult with location info or reason for failure
- *
- * @example
- * ```ts
- * const result = getSourceLocation(element);
- * if (result.found && result.source) {
- *   console.log(`${result.source.fileName}:${result.source.lineNumber}`);
- *   // Output: "/src/components/Button.tsx:42"
- * }
- * ```
  */
-export function getSourceLocation(element: HTMLElement): SourceLocationResult {
+export function getSourceLocation(
+  element: HTMLElement,
+  sourceAttribute: string = DEFAULT_SOURCE_ATTRIBUTE
+): SourceLocationResult {
+  // First, check for source attribute on DOM elements (e.g., data-tsd-source from TanStack Devtools)
+  // This can be customized via the sourceAttribute parameter
+  let current: HTMLElement | null = element;
+  while (current) {
+    const sourceValue = current.getAttribute(sourceAttribute);
+    if (sourceValue) {
+      // Format: "/src/components/Button.tsx:42:5" or "src/components/Button.tsx:42"
+      const match = sourceValue.match(/^(.+):(\d+)(?::(\d+))?$/);
+      if (match) {
+        const [, fileName, lineStr, colStr] = match;
+        return {
+          found: true,
+          source: {
+            fileName: fileName,
+            lineNumber: parseInt(lineStr, 10),
+            columnNumber: colStr ? parseInt(colStr, 10) : undefined,
+            componentName: undefined,
+          },
+          isReactApp: true,
+          isProduction: false,
+        };
+      }
+    }
+    current = current.parentElement;
+  }
+
   // Detect React environment
   const reactInfo = detectReactApp();
 

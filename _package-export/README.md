@@ -33,6 +33,7 @@ The toolbar appears in the bottom-right corner. Click to activate, then click an
 - **Area selection** – Drag to annotate any region, even empty space
 - **Animation pause** – Freeze CSS animations to capture specific states
 - **Structured output** – Copy markdown with selectors, positions, and context
+- **Source detection** – Shows file:line for React components (dev mode with TanStack Devtools)
 - **Programmatic access** – Callback prop for direct integration with tools
 - **Dark/light mode** – Matches your preference or set manually
 - **Zero dependencies** – Pure CSS animations, no runtime libraries
@@ -47,6 +48,7 @@ The toolbar appears in the bottom-right corner. Click to activate, then click an
 | `onAnnotationsClear` | `(annotations: Annotation[]) => void` | - | Called when all annotations are cleared |
 | `onCopy` | `(markdown: string) => void` | - | Callback with markdown output when copy is clicked |
 | `copyToClipboard` | `boolean` | `true` | Set to false to prevent writing to clipboard |
+| `sourceAttribute` | `string` | `"data-tsd-source"` | Data attribute to read source file path from |
 
 ### Programmatic Integration
 
@@ -102,6 +104,10 @@ type Annotation = {
   accessibility?: string;
   isMultiSelect?: boolean;
   isFixed?: boolean;
+
+  // Source location (dev mode only)
+  sourceFile?: string;           // e.g., "src/components/Button.tsx:42"
+  sourceComponent?: string;      // Component name if available
 };
 ```
 

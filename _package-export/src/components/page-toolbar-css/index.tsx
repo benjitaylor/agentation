@@ -51,6 +51,11 @@ import {
   saveAnnotations,
   getStorageKey,
 } from "../../utils/storage";
+import {
+  getSourceLocation,
+  formatSourceLocation,
+  DEFAULT_SOURCE_ATTRIBUTE,
+} from "../../utils/source-location";
 
 import type { Annotation } from "../../types";
 import styles from "./styles.module.scss";
@@ -179,6 +184,13 @@ function generateOutput(
       if (a.isMultiSelect && a.fullPath) {
         output += `*Forensic data shown for first element of selection*\n`;
       }
+      if (a.sourceFile) {
+        output += `**Source:** ${a.sourceFile}`;
+        if (a.sourceComponent) {
+          output += ` (component: ${a.sourceComponent})`;
+        }
+        output += `\n`;
+      }
       if (a.fullPath) {
         output += `**Full DOM Path:** ${a.fullPath}\n`;
       }
@@ -208,6 +220,13 @@ function generateOutput(
     } else {
       // Standard and detailed modes
       output += `### ${i + 1}. ${a.element}\n`;
+      if (a.sourceFile) {
+        output += `**Source:** ${a.sourceFile}`;
+        if (a.sourceComponent) {
+          output += ` (${a.sourceComponent})`;
+        }
+        output += `\n`;
+      }
       output += `**Location:** ${a.elementPath}\n`;
 
       if (detailLevel === "detailed") {
@@ -261,6 +280,8 @@ export type PageFeedbackToolbarCSSProps = {
   onCopy?: (markdown: string) => void;
   /** Whether to copy to clipboard when the copy button is clicked. Defaults to true. */
   copyToClipboard?: boolean;
+  /** Data attribute name to read source location from. Defaults to "data-tsd-source" (TanStack Devtools). */
+  sourceAttribute?: string;
 };
 
 /** Alias for PageFeedbackToolbarCSSProps */
@@ -280,6 +301,7 @@ export function PageFeedbackToolbarCSS({
   onAnnotationsClear,
   onCopy,
   copyToClipboard = true,
+  sourceAttribute = DEFAULT_SOURCE_ATTRIBUTE,
 }: PageFeedbackToolbarCSSProps = {}) {
   const [isActive, setIsActive] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
@@ -307,6 +329,8 @@ export function PageFeedbackToolbarCSS({
     computedStyles?: string;
     computedStylesObj?: Record<string, string>;
     nearbyElements?: string;
+    sourceFile?: string;
+    sourceComponent?: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
   const [cleared, setCleared] = useState(false);
@@ -499,6 +523,7 @@ export function PageFeedbackToolbarCSS({
 
           const rect = element.getBoundingClientRect();
           const { name, path } = identifyElement(element);
+          const sourceResult = getSourceLocation(element, sourceAttribute);
 
           const newAnnotation: Annotation = {
             id: `demo-${Date.now()}-${index}`,
@@ -517,6 +542,11 @@ export function PageFeedbackToolbarCSS({
             },
             nearbyText: getNearbyText(element),
             cssClasses: getElementClasses(element),
+            sourceFile:
+              sourceResult.found && sourceResult.source
+                ? formatSourceLocation(sourceResult.source, "path")
+                : undefined,
+            sourceComponent: sourceResult.source?.componentName,
           };
 
           setAnnotations((prev) => [...prev, newAnnotation]);
@@ -764,6 +794,14 @@ export function PageFeedbackToolbarCSS({
       const computedStylesObj = getDetailedComputedStyles(elementUnder);
       const computedStylesStr = getForensicComputedStyles(elementUnder);
 
+      // Capture source location for React components
+      const sourceResult = getSourceLocation(elementUnder, sourceAttribute);
+      const sourceFile =
+        sourceResult.found && sourceResult.source
+          ? formatSourceLocation(sourceResult.source, "path")
+          : undefined;
+      const sourceComponent = sourceResult.source?.componentName;
+
       setPendingAnnotation({
         x,
         y,
@@ -785,6 +823,8 @@ export function PageFeedbackToolbarCSS({
         computedStyles: computedStylesStr,
         computedStylesObj,
         nearbyElements: getNearbyElements(elementUnder),
+        sourceFile,
+        sourceComponent,
       });
       setHoverInfo(null);
     };
@@ -1163,6 +1203,14 @@ export function PageFeedbackToolbarCSS({
             getDetailedComputedStyles(firstElement);
           const firstElementComputedStylesStr = getForensicComputedStyles(firstElement);
 
+          // Capture source location from first element
+          const sourceResult = getSourceLocation(firstElement, sourceAttribute);
+          const sourceFile =
+            sourceResult.found && sourceResult.source
+              ? formatSourceLocation(sourceResult.source, "path")
+              : undefined;
+          const sourceComponent = sourceResult.source?.componentName;
+
           setPendingAnnotation({
             x,
             y,
@@ -1184,6 +1232,8 @@ export function PageFeedbackToolbarCSS({
             nearbyElements: getNearbyElements(firstElement),
             cssClasses: getElementClasses(firstElement),
             nearbyText: getNearbyText(firstElement),
+            sourceFile,
+            sourceComponent,
           });
         } else {
           // No elements selected, but allow annotation on empty area
@@ -1249,6 +1299,8 @@ export function PageFeedbackToolbarCSS({
         accessibility: pendingAnnotation.accessibility,
         computedStyles: pendingAnnotation.computedStyles,
         nearbyElements: pendingAnnotation.nearbyElements,
+        sourceFile: pendingAnnotation.sourceFile,
+        sourceComponent: pendingAnnotation.sourceComponent,
       };
 
       setAnnotations((prev) => [...prev, newAnnotation]);

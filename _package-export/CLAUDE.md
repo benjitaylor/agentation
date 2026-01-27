@@ -40,6 +40,10 @@ The component exposes these callback props (added in 1.2.0):
 
 **API stability**: These are public contracts. Changing signatures or removing callbacks is a breaking change requiring a major version bump.
 
+**1.4.0 additions:**
+- `sourceAttribute` prop - configurable source detection attribute
+- `sourceFile`, `sourceComponent` on Annotation type
+
 **Expansion ideas** (for future consideration):
 - `onActivate` / `onDeactivate` - toolbar state changes
 - `getAnnotations()` ref method - programmatic access

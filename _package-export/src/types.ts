@@ -20,6 +20,10 @@ export type Annotation = {
   accessibility?: string;
   isMultiSelect?: boolean; // true if created via drag selection
   isFixed?: boolean; // true if element has fixed/sticky positioning (marker stays fixed)
+  /** Source file path with line number (dev mode only). e.g., "src/components/Button.tsx:42" */
+  sourceFile?: string;
+  /** React component name. e.g., "Button" */
+  sourceComponent?: string;
 };
 
 // TODO: Add configuration types when abstracting config
