@@ -20,6 +20,10 @@ export type Annotation = {
   accessibility?: string;
   isMultiSelect?: boolean; // true if created via drag selection
   isFixed?: boolean; // true if element has fixed/sticky positioning (marker stays fixed)
+  // Framework Metadata
+  reactComponent?: string;
+  reactHierarchy?: string[];
+  reactSource?: string;
 };
 
 // TODO: Add configuration types when abstracting config

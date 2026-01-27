@@ -34,6 +34,12 @@ export interface AnnotationPopupCSSProps {
   lightMode?: boolean;
   /** Computed styles for the selected element */
   computedStyles?: Record<string, string>;
+  /** React component name */
+  reactComponent?: string;
+  /** React component hierarchy */
+  reactHierarchy?: string[];
+  /** React source file location */
+  reactSource?: string;
 }
 
 export interface AnnotationPopupCSSHandle {
@@ -71,6 +77,8 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
       isExiting = false,
       lightMode = false,
       computedStyles,
+      reactComponent,
+      reactHierarchy,
     },
     ref
   ) {
@@ -210,6 +218,34 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
           )}
           {timestamp && <span className={styles.timestamp}>{timestamp}</span>}
         </div>
+
+        {/* React Component Metadata */}
+        {reactComponent && (
+          <div className={styles.reactInfo}>
+            <div className={styles.reactComponent}>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ color: "#61dafb", marginRight: "4px" }}
+              >
+                <circle cx="12" cy="12" r="2" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+              </svg>
+              <span>{reactComponent}</span>
+            </div>
+            {reactHierarchy && reactHierarchy.length > 1 && (
+              <div className={styles.reactHierarchy}>
+                {reactHierarchy.slice(1, 4).join(" < ")}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Collapsible computed styles section - uses grid-template-rows for smooth animation */}
         {computedStyles && Object.keys(computedStyles).length > 0 && (
