@@ -34,6 +34,10 @@ export {
   getElementPath,
   getNearbyText,
   getElementClasses,
+  // Shadow DOM support
+  isInShadowDOM,
+  getShadowHost,
+  getShadowAwareSelectors,
 } from "./utils/element-identification";
 
 export {
