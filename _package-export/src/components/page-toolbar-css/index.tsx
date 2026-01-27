@@ -75,6 +75,7 @@ type ToolbarSettings = {
   autoClearAfterCopy: boolean;
   annotationColor: string;
   blockInteractions: boolean;
+  activationShortcut: string;
 };
 
 const DEFAULT_SETTINGS: ToolbarSettings = {
@@ -82,6 +83,7 @@ const DEFAULT_SETTINGS: ToolbarSettings = {
   autoClearAfterCopy: false,
   annotationColor: "#3c82f7",
   blockInteractions: false,
+  activationShortcut: "mod+Shift+A",
 };
 
 const OUTPUT_DETAIL_OPTIONS: { value: OutputDetailLevel; label: string }[] = [
@@ -125,6 +127,46 @@ function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+/**
+ * Formats a keyboard event into a shortcut string (e.g., "Meta+Shift+A")
+ */
+function formatShortcut(e: KeyboardEvent): string {
+  const isMac = typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+  const parts: string[] = [];
+  
+  if (isMac) {
+    if (e.metaKey) parts.push("Cmd");
+    if (e.ctrlKey) parts.push("Ctrl");
+  } else {
+    if (e.ctrlKey) parts.push("Ctrl");
+    if (e.metaKey) parts.push("Win");
+  }
+  
+  if (e.altKey) parts.push("Alt");
+  if (e.shiftKey) parts.push("Shift");
+
+  // Only add the key if it's not a modifier key itself
+  const key = e.key;
+  if (
+    key !== "Meta" &&
+    key !== "Control" &&
+    key !== "Alt" &&
+    key !== "Shift" &&
+    key !== "CapsLock"
+  ) {
+    // Standardize key names
+    if (key === " ") {
+      parts.push("Space");
+    } else if (key.length === 1) {
+      parts.push(key.toUpperCase());
+    } else {
+      parts.push(key);
+    }
+  }
+
+  return parts.join("+");
+}
+
 function getActiveButtonStyle(
   isActive: boolean,
   color: string,
@@ -134,6 +176,42 @@ function getActiveButtonStyle(
     color: color,
     backgroundColor: hexToRgba(color, 0.25),
   };
+}
+
+/**
+ * Checks if a keyboard event matches a shortcut string (e.g., "Meta+Shift+A")
+ */
+function matchesShortcut(e: KeyboardEvent, shortcut: string): boolean {
+  const parts = shortcut.split("+").map((p) => p.trim().toLowerCase());
+  const key = parts[parts.length - 1];
+  const modifiers = parts.slice(0, -1);
+
+  const isMac = typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+  
+  // Normalize modifiers
+  const hasMod = modifiers.includes("mod");
+  const hasMeta = modifiers.includes("meta") || modifiers.includes("cmd") || modifiers.includes("win");
+  const hasCtrl = modifiers.includes("ctrl");
+  const hasAlt = modifiers.includes("alt");
+  const hasShift = modifiers.includes("shift");
+
+  // Expected states
+  const targetMeta = hasMeta || (hasMod && isMac);
+  const targetCtrl = hasCtrl || (hasMod && !isMac);
+  const targetAlt = hasAlt;
+  const targetShift = hasShift;
+
+  const eventKey = e.key.toLowerCase();
+  // Handle "space" string
+  const targetKey = key === "space" ? " " : key;
+
+  return (
+    eventKey === targetKey &&
+    e.metaKey === targetMeta &&
+    e.ctrlKey === targetCtrl &&
+    e.altKey === targetAlt &&
+    e.shiftKey === targetShift
+  );
 }
 
 function generateOutput(
@@ -261,6 +339,8 @@ export type PageFeedbackToolbarCSSProps = {
   onCopy?: (markdown: string) => void;
   /** Whether to copy to clipboard when the copy button is clicked. Defaults to true. */
   copyToClipboard?: boolean;
+  /** Custom keyboard shortcut to activate the toolbar. Defaults to 'Meta+Shift+A'. */
+  activationShortcut?: string;
 };
 
 /** Alias for PageFeedbackToolbarCSSProps */
@@ -280,6 +360,7 @@ export function PageFeedbackToolbarCSS({
   onAnnotationsClear,
   onCopy,
   copyToClipboard = true,
+  activationShortcut: initialActivationShortcut,
 }: PageFeedbackToolbarCSSProps = {}) {
   const [isActive, setIsActive] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
@@ -324,6 +405,49 @@ export function PageFeedbackToolbarCSS({
   const [showSettings, setShowSettings] = useState(false);
   const [showSettingsVisible, setShowSettingsVisible] = useState(false);
   const [tooltipsHidden, setTooltipsHidden] = useState(false);
+  const [isRecordingShortcut, setIsRecordingShortcut] = useState(false);
+
+  // Recording shortcut effect
+  useEffect(() => {
+    if (!isRecordingShortcut) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const key = e.key;
+      // Don't finish if it's only a modifier key
+      if (
+        key === "Meta" ||
+        key === "Control" ||
+        key === "Alt" ||
+        key === "Shift" ||
+        key === "CapsLock"
+      ) {
+        return;
+      }
+
+      const newShortcut = formatShortcut(e);
+      if (newShortcut) {
+        setSettings((s) => ({ ...s, activationShortcut: newShortcut }));
+        setIsRecordingShortcut(false);
+      }
+    };
+
+    // Capture Escape to cancel
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsRecordingShortcut(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown, true);
+    window.addEventListener("keyup", handleKeyUp, true);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown, true);
+      window.removeEventListener("keyup", handleKeyUp, true);
+    };
+  }, [isRecordingShortcut]);
 
   // Hide tooltips after button click until mouse leaves
   const hideTooltipsUntilMouseLeave = () => {
@@ -437,7 +561,21 @@ export function PageFeedbackToolbarCSS({
     try {
       const storedSettings = localStorage.getItem("feedback-toolbar-settings");
       if (storedSettings) {
-        setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(storedSettings) });
+        const parsed = JSON.parse(storedSettings);
+        setSettings({
+          ...DEFAULT_SETTINGS,
+          ...parsed,
+          // Prop takes precedence over stored settings if provided
+          activationShortcut:
+            initialActivationShortcut ||
+            parsed.activationShortcut ||
+            DEFAULT_SETTINGS.activationShortcut,
+        });
+      } else if (initialActivationShortcut) {
+        setSettings((s) => ({
+          ...s,
+          activationShortcut: initialActivationShortcut,
+        }));
       }
     } catch (e) {
       // Ignore parsing errors
@@ -1579,18 +1717,59 @@ export function PageFeedbackToolbarCSS({
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts if user is typing in a popup or recording a shortcut
+      if (
+        (e.target as HTMLElement).closest("[data-annotation-popup]") ||
+        isRecordingShortcut
+      ) {
+        return;
+      }
+
       if (e.key === "Escape") {
         if (pendingAnnotation) {
           // Let popup handle
         } else if (isActive) {
           setIsActive(false);
         }
+        return;
+      }
+
+      // Activation shortcut
+      if (matchesShortcut(e, settings.activationShortcut)) {
+        e.preventDefault();
+        setIsActive((prev) => !prev);
+        return;
+      }
+
+      // Other shortcuts only when active
+      if (isActive) {
+        if (e.key.toLowerCase() === "p") {
+          e.preventDefault();
+          toggleFreeze();
+        } else if (e.key.toLowerCase() === "h") {
+          e.preventDefault();
+          setShowMarkers((prev) => !prev);
+        } else if (e.key.toLowerCase() === "c") {
+          e.preventDefault();
+          copyOutput();
+        } else if (e.key.toLowerCase() === "x") {
+          e.preventDefault();
+          clearAll();
+        }
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isActive, pendingAnnotation]);
+  }, [
+    isActive,
+    pendingAnnotation,
+    settings.activationShortcut,
+    isRecordingShortcut,
+    toggleFreeze,
+    copyOutput,
+    clearAll,
+  ]);
 
   if (!mounted) return null;
 
@@ -1685,7 +1864,7 @@ export function PageFeedbackToolbarCSS({
           onMouseDown={handleToolbarMouseDown}
           role={!isActive ? "button" : undefined}
           tabIndex={!isActive ? 0 : -1}
-          title={!isActive ? "Start feedback mode" : undefined}
+          title={!isActive ? `Start feedback mode (${settings.activationShortcut})` : undefined}
           style={
             isDraggingToolbar
               ? {
@@ -2013,6 +2192,28 @@ export function PageFeedbackToolbarCSS({
                   Block page interactions
                 </span>
               </label>
+            </div>
+
+            <div className={styles.settingsSection}>
+              <div className={styles.settingsRow}>
+                <div
+                  className={`${styles.settingsLabel} ${!isDarkMode ? styles.light : ""}`}
+                >
+                  Shortcut
+                  <span
+                    className={styles.helpIcon}
+                    data-tooltip="Keyboard shortcut to toggle feedback mode"
+                  >
+                    <IconHelp size={20} />
+                  </span>
+                </div>
+                <button
+                  className={`${styles.shortcutButton} ${!isDarkMode ? styles.light : ""} ${isRecordingShortcut ? styles.recording : ""}`}
+                  onClick={() => setIsRecordingShortcut(!isRecordingShortcut)}
+                >
+                  {isRecordingShortcut ? "Press keys..." : settings.activationShortcut}
+                </button>
+              </div>
             </div>
           </div>
         </div>
