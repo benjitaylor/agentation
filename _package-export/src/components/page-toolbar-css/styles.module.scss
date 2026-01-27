@@ -176,6 +176,12 @@ $green: #34c759;
     }
 }
 
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
 // =============================================================================
 // Toolbar
 // =============================================================================
@@ -1021,6 +1027,52 @@ $green: #34c759;
 .cycleButtonText {
     display: inline-block;
     animation: cycleTextIn 0.2s ease-out;
+}
+
+.shortcutButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.375rem;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    letter-spacing: -0.0094em;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    &.recording {
+        background: rgba($blue, 0.15);
+        border-color: $blue;
+        color: $blue;
+        animation: pulse 1.5s infinite;
+    }
+
+    &.light {
+        color: rgba(0, 0, 0, 0.85);
+        border-color: rgba(0, 0, 0, 0.1);
+        background: rgba(0, 0, 0, 0.03);
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.06);
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+
+        &.recording {
+            background: rgba($blue, 0.1);
+            border-color: $blue;
+            color: $blue;
+        }
+    }
 }
 
 .cycleDots {

@@ -62,6 +62,9 @@ export default function FeaturesPage() {
 
       <section>
         <h2>Keyboard shortcuts</h2>
+        <p style={{ fontSize: '0.875rem', color: 'rgba(0,0,0,0.5)', marginBottom: '1rem' }}>
+          Shortcut keys can be customized in the <strong>Settings</strong> panel.
+        </p>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
           <tbody>
             <tr>

@@ -7,5 +7,9 @@
     "build": "pnpm --filter agentation build",
     "example": "pnpm --filter feedback-tool-example dev",
     "pack": "cd _package-export && pnpm pack"
-  }
+  },
+  "workspaces": [
+    "_package-export",
+    "_package-export/example"
+  ]
 }
