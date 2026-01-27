@@ -210,29 +210,37 @@ export function getFiberFromElement(element: HTMLElement): ReactFiber | null {
     return null;
   }
 
+  // Find any property that starts with the React fiber/instance prefix
   const keys = Object.keys(element);
+  
+  // React 17+ pattern: __reactFiber$randomid
+  // React 16 pattern: __reactInternalInstance$randomid
+  const reactKey = keys.find(key => 
+    key.startsWith("__reactFiber$") || 
+    key.startsWith("__reactInternalInstance$") ||
+    key.startsWith("__reactProps$") // Sometimes props are sibling to fiber
+  );
 
-  // React 18+ uses __reactFiber$ prefix
-  const fiberKey = keys.find((key) => key.startsWith("__reactFiber$"));
-  if (fiberKey) {
-    return (element as unknown as Record<string, ReactFiber>)[fiberKey] || null;
+  if (reactKey) {
+    // If it's the props key, we might need to look for the fiber key specifically
+    if (reactKey.startsWith("__reactProps$")) {
+      const fiberKey = keys.find(k => k.startsWith("__reactFiber$"));
+      if (fiberKey) {
+        return (element as any)[fiberKey];
+      }
+    }
+    return (element as any)[reactKey];
   }
 
-  // React 16-17 uses __reactInternalInstance$ prefix
-  const instanceKey = keys.find((key) => key.startsWith("__reactInternalInstance$"));
-  if (instanceKey) {
-    return (element as unknown as Record<string, ReactFiber>)[instanceKey] || null;
-  }
-
-  // React 19 may use different patterns - check for any fiber-like object
+  // Fallback for React 19 / Future versions
   const possibleFiberKey = keys.find((key) => {
     if (!key.startsWith("__react")) return false;
-    const value = (element as unknown as Record<string, unknown>)[key];
-    return value && typeof value === "object" && "_debugSource" in (value as object);
+    const value = (element as any)[key];
+    return value && typeof value === "object" && ("_debugSource" in value || "return" in value);
   });
 
   if (possibleFiberKey) {
-    return (element as unknown as Record<string, ReactFiber>)[possibleFiberKey] || null;
+    return (element as any)[possibleFiberKey];
   }
 
   return null;
@@ -406,25 +414,45 @@ export function getSourceLocation(element: HTMLElement): SourceLocationResult {
     };
   }
 
-  if (reactInfo.isProduction) {
-    return {
-      found: false,
-      reason: "production-build",
-      isReactApp: true,
-      isProduction: true,
-    };
-  }
-
   // Get fiber from element
   const fiber = getFiberFromElement(element);
 
   if (!fiber) {
-    // Element might not be part of React tree (e.g., injected by extension)
     return {
       found: false,
       reason: "no-fiber",
       isReactApp: true,
-      isProduction: false,
+      isProduction: reactInfo.isProduction,
+    };
+  }
+
+  // Attempt to find the component name even if we don't have debug source
+  // We'll walk up a bit to find the first non-host component (the React component)
+  let currentFiber: ReactFiber | null | undefined = fiber;
+  let detectedComponentName: string | null = null;
+  let depth = 0;
+  
+  while (currentFiber && depth < 20) {
+    const name = getComponentName(currentFiber);
+    if (name) {
+      detectedComponentName = name;
+      break;
+    }
+    currentFiber = currentFiber.return;
+    depth++;
+  }
+
+  if (reactInfo.isProduction) {
+    return {
+      found: !!detectedComponentName,
+      source: detectedComponentName ? {
+        fileName: "unknown (production)",
+        lineNumber: 0,
+        componentName: detectedComponentName,
+      } : undefined,
+      reason: "production-build",
+      isReactApp: true,
+      isProduction: true,
     };
   }
 
@@ -437,7 +465,21 @@ export function getSourceLocation(element: HTMLElement): SourceLocationResult {
   }
 
   if (!debugInfo || !debugInfo.source) {
-    // Check if this might be React 19 with changed internals
+    // FALLBACK: If we have a component name but no source location, it's still better than nothing
+    if (detectedComponentName) {
+      return {
+        found: true,
+        source: {
+          fileName: "Source location hidden (check bundler settings)",
+          lineNumber: 0,
+          componentName: detectedComponentName,
+          reactVersion: reactInfo.version,
+        },
+        isReactApp: true,
+        isProduction: false,
+      };
+    }
+
     const majorVersion = reactInfo.version?.split(".")[0];
     if (majorVersion === "19") {
       return {
@@ -462,7 +504,7 @@ export function getSourceLocation(element: HTMLElement): SourceLocationResult {
       fileName: debugInfo.source.fileName,
       lineNumber: debugInfo.source.lineNumber,
       columnNumber: debugInfo.source.columnNumber,
-      componentName: debugInfo.componentName || undefined,
+      componentName: debugInfo.componentName || detectedComponentName || undefined,
       reactVersion: reactInfo.version,
     },
     isReactApp: true,

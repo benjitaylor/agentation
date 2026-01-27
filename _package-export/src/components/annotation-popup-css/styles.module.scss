@@ -204,6 +204,42 @@ $green: #34c759;
 }
 
 // =============================================================================
+// React Metadata
+// =============================================================================
+
+.reactInfo {
+    margin-bottom: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.reactComponent {
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1;
+
+    span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+.reactHierarchy {
+    font-size: 0.625rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-left: 16px; // Align with component name icon
+}
+
+// =============================================================================
 // Quote
 // =============================================================================
 
