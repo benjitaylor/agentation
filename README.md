@@ -53,3 +53,11 @@ Full documentation at [agentation.dev](https://agentation.dev)
 
 © 2026 Benji Taylor
 Licensed under PolyForm Shield 1.0.0
+
+## Compatible Agents
+
+Agentation works with AI coding agents including:
+
+- [Claude Code](https://claude.ai/code) - Anthropic's official CLI
+- [AdaL](https://sylph.ai/adal) - Self-evolving AI coding agent with MCP support
+
