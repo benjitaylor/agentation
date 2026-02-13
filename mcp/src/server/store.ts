@@ -43,7 +43,7 @@ export function getStore(): AFSStore {
 function initializeStore(): AFSStore {
   // Check if we should use in-memory only
   if (process.env.AGENTATION_STORE === "memory") {
-    console.log("[Store] Using in-memory store (AGENTATION_STORE=memory)");
+    process.stderr.write("[Store] Using in-memory store (AGENTATION_STORE=memory)\n");
     return createMemoryStore();
   }
 
@@ -52,7 +52,7 @@ function initializeStore(): AFSStore {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { createSQLiteStore } = require("./sqlite.js");
     const store = createSQLiteStore();
-    console.log("[Store] Using SQLite store (~/.agentation/store.db)");
+    process.stderr.write("[Store] Using SQLite store (~/.agentation/store.db)\n");
     return store;
   } catch (err) {
     console.warn("[Store] SQLite unavailable, falling back to in-memory:", (err as Error).message);
