@@ -41,6 +41,99 @@ function log(message: string): void {
 let cloudApiKey: string | undefined;
 const CLOUD_API_URL = "https://agentation-mcp-cloud.vercel.app/api";
 
+// -----------------------------------------------------------------------------
+// CORS Configuration
+// -----------------------------------------------------------------------------
+
+/**
+ * Parse CORS allowed origins from environment variable.
+ * Supports:
+ * - "*" (allow all - default, but warns in production)
+ * - Single origin: "https://example.com"
+ * - Multiple origins: "https://example.com,https://app.example.com"
+ * - Regex patterns: "regex:https://.*\\.example\\.com"
+ */
+function getCorsAllowedOrigins(): string[] {
+  const envValue = process.env.AGENTATION_CORS_ORIGINS;
+  if (!envValue) {
+    return ["*"];
+  }
+  return envValue.split(",").map((s) => s.trim()).filter((s) => s.length > 0);
+}
+
+/** Cache the parsed CORS origins */
+let _corsOrigins: string[] | null = null;
+function getAllowedOrigins(): string[] {
+  if (_corsOrigins === null) {
+    _corsOrigins = getCorsAllowedOrigins();
+    // Warn if using "*" in production
+    if (_corsOrigins.includes("*") && process.env.NODE_ENV === "production") {
+      process.stderr.write(
+        "[CORS] WARNING: Using wildcard (*) CORS in production. " +
+        "Set AGENTATION_CORS_ORIGINS to restrict allowed origins.\n"
+      );
+    }
+  }
+  return _corsOrigins;
+}
+
+/**
+ * Check if an origin is allowed based on configured CORS origins.
+ * Supports exact matches and regex patterns (prefixed with "regex:").
+ */
+function isOriginAllowed(origin: string | undefined): boolean {
+  if (!origin) return false;
+
+  const allowedOrigins = getAllowedOrigins();
+
+  // Wildcard allows everything
+  if (allowedOrigins.includes("*")) {
+    return true;
+  }
+
+  for (const allowed of allowedOrigins) {
+    // Check regex patterns
+    if (allowed.startsWith("regex:")) {
+      try {
+        const pattern = new RegExp(allowed.slice(6));
+        if (pattern.test(origin)) {
+          return true;
+        }
+      } catch {
+        // Invalid regex, skip
+      }
+      continue;
+    }
+
+    // Exact match
+    if (allowed === origin) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Get the appropriate Access-Control-Allow-Origin header value.
+ * Returns the origin if allowed, null if not allowed.
+ */
+function getCorsOriginHeader(requestOrigin: string | undefined): string | null {
+  const allowedOrigins = getAllowedOrigins();
+
+  // Wildcard mode
+  if (allowedOrigins.includes("*")) {
+    return "*";
+  }
+
+  // Check if specific origin is allowed
+  if (requestOrigin && isOriginAllowed(requestOrigin)) {
+    return requestOrigin;
+  }
+
+  return null;
+}
+
 /**
  * Set the API key for cloud storage mode.
  * When set, the HTTP server proxies requests to the cloud API.
@@ -190,36 +283,65 @@ async function parseBody<T>(req: IncomingMessage): Promise<T> {
 }
 
 /**
- * Send JSON response.
+ * Send JSON response with CORS headers.
  */
-function sendJson(res: ServerResponse, status: number, data: unknown): void {
-  res.writeHead(status, {
+function sendJson(
+  res: ServerResponse,
+  status: number,
+  data: unknown,
+  requestOrigin?: string
+): void {
+  const corsOrigin = getCorsOriginHeader(requestOrigin);
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
-  });
+  };
+
+  if (corsOrigin) {
+    headers["Access-Control-Allow-Origin"] = corsOrigin;
+    // When not using wildcard, we need Vary header for caching
+    if (corsOrigin !== "*") {
+      headers["Vary"] = "Origin";
+    }
+  }
+
+  res.writeHead(status, headers);
   res.end(JSON.stringify(data));
 }
 
 /**
  * Send error response.
  */
-function sendError(res: ServerResponse, status: number, message: string): void {
-  sendJson(res, status, { error: message });
+function sendError(
+  res: ServerResponse,
+  status: number,
+  message: string,
+  requestOrigin?: string
+): void {
+  sendJson(res, status, { error: message }, requestOrigin);
 }
 
 /**
  * Handle CORS preflight.
  */
-function handleCors(res: ServerResponse): void {
-  res.writeHead(204, {
-    "Access-Control-Allow-Origin": "*",
+function handleCors(res: ServerResponse, requestOrigin?: string): void {
+  const corsOrigin = getCorsOriginHeader(requestOrigin);
+  const headers: Record<string, string> = {
     "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Accept, Mcp-Session-Id",
     "Access-Control-Expose-Headers": "Mcp-Session-Id",
     "Access-Control-Max-Age": "86400",
-  });
+  };
+
+  if (corsOrigin) {
+    headers["Access-Control-Allow-Origin"] = corsOrigin;
+    if (corsOrigin !== "*") {
+      headers["Vary"] = "Origin";
+    }
+  }
+
+  res.writeHead(204, headers);
   res.end();
 }
 
@@ -936,6 +1058,7 @@ export function startHttpServer(port: number, apiKey?: string): void {
     const url = new URL(req.url || "/", `http://localhost:${port}`);
     const pathname = url.pathname;
     const method = req.method || "GET";
+    const origin = req.headers.origin as string | undefined;
 
     // Log all requests for debugging
     if (method !== "OPTIONS" && pathname !== "/health") {
@@ -944,12 +1067,12 @@ export function startHttpServer(port: number, apiKey?: string): void {
 
     // Handle CORS preflight
     if (method === "OPTIONS") {
-      return handleCors(res);
+      return handleCors(res, origin);
     }
 
     // Health check (always local)
     if (pathname === "/health" && method === "GET") {
-      return sendJson(res, 200, { status: "ok", mode: isCloudMode() ? "cloud" : "local" });
+      return sendJson(res, 200, { status: "ok", mode: isCloudMode() ? "cloud" : "local" }, origin);
     }
 
     // Status endpoint (always local)
@@ -961,7 +1084,7 @@ export function startHttpServer(port: number, apiKey?: string): void {
         webhookCount: webhookUrls.length,
         activeListeners: sseConnections.size,
         agentListeners: agentConnections.size,
-      });
+      }, origin);
     }
 
     // MCP protocol endpoint (always local - allows Claude Code to connect)
@@ -977,14 +1100,14 @@ export function startHttpServer(port: number, apiKey?: string): void {
     // Local mode: use local store
     const match = matchRoute(method, pathname);
     if (!match) {
-      return sendError(res, 404, "Not found");
+      return sendError(res, 404, "Not found", origin);
     }
 
     try {
       await match.handler(req, res, match.params);
     } catch (err) {
       console.error("Request error:", err);
-      sendError(res, 500, "Internal server error");
+      sendError(res, 500, "Internal server error", origin);
     }
   });
 
