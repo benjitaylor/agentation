@@ -575,6 +575,10 @@ $green: #34c759;
   }
 }
 
+.tooltipsInSession .buttonWrapper:hover .buttonTooltip {
+  transition-delay: 0s;
+}
+
 // Send button wrapper - animates width when MCP connects/disconnects
 .sendButtonWrapper {
   width: 0;
