@@ -2985,6 +2985,19 @@ export function PageFeedbackToolbarCSS({
               : undefined
           }
           onMouseDown={handleToolbarMouseDown}
+          onKeyDown={
+            !isActive
+              ? (e) => {
+                  // Ignore key repeats
+                  if (e.repeat) return;
+                  // Activate on Enter or Space (standard button activation keys)
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setIsActive(true);
+                  }
+                }
+              : undefined
+          }
           role={!isActive ? "button" : undefined}
           tabIndex={!isActive ? 0 : -1}
           title={!isActive ? "Start feedback mode" : undefined}
@@ -3018,6 +3031,7 @@ export function PageFeedbackToolbarCSS({
                 : ""
             } ${tooltipsHidden || showSettings ? styles.tooltipsHidden : ""}`}
             onMouseLeave={showTooltipsAgain}
+            {...({ inert: !isActive ? '' : null } as React.HTMLAttributes<HTMLDivElement>)}
           >
             <div
               className={`${styles.buttonWrapper} ${
@@ -3206,6 +3220,7 @@ export function PageFeedbackToolbarCSS({
                   }
                 : undefined
             }
+            {...({ inert: !isActive ? '' : null } as React.HTMLAttributes<HTMLDivElement>)}
           >
             <div
               className={`${styles.settingsPanelContainer} ${isTransitioning ? styles.transitioning : ""}`}

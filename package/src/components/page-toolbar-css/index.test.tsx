@@ -78,6 +78,84 @@ describe("PageFeedbackToolbarCSS", () => {
       ).not.toThrow();
     });
   });
+
+  describe("inert when collapsed", () => {
+    it("should set inert on controls and settings when toolbar is collapsed", () => {
+      render(<PageFeedbackToolbarCSS />);
+      const toolbar = document.querySelector("[data-feedback-toolbar]");
+      expect(toolbar).toBeTruthy();
+      const inertElements = toolbar?.querySelectorAll("[inert]") ?? [];
+      expect(inertElements.length).toBeGreaterThanOrEqual(2); // controls content + settings panel
+    });
+
+    it("should remove inert from controls and settings when toolbar is expanded", async () => {
+      render(<PageFeedbackToolbarCSS />);
+      const toolbar = document.querySelector("[data-feedback-toolbar]");
+      const trigger = toolbar?.querySelector('[role="button"]');
+      expect(trigger).toBeTruthy();
+      fireEvent.click(trigger!);
+      await waitFor(() => {
+        const inertElements = toolbar?.querySelectorAll("[inert]") ?? [];
+        expect(inertElements.length).toBe(0);
+      });
+    });
+  });
+
+  describe("keyboard trigger", () => {
+    it("should expose trigger as button (role, tabIndex, title) when collapsed", () => {
+      render(<PageFeedbackToolbarCSS />);
+      const toolbar = document.querySelector("[data-feedback-toolbar]");
+      const trigger = toolbar?.firstElementChild as HTMLElement | null; // toolbar container is the trigger
+      expect(trigger).toBeTruthy();
+      expect(trigger?.getAttribute("role")).toBe("button");
+      expect(trigger?.getAttribute("tabindex")).toBe("0");
+      expect(trigger?.getAttribute("title")).toBe("Start feedback mode");
+    });
+
+    it("should activate toolbar on Enter when trigger is focused", async () => {
+      render(<PageFeedbackToolbarCSS />);
+      const toolbar = document.querySelector("[data-feedback-toolbar]");
+      const trigger = toolbar?.firstElementChild as HTMLElement | null; // toolbar container is the trigger
+      expect(trigger?.getAttribute("role")).toBe("button");
+      trigger?.focus();
+      fireEvent.keyDown(trigger!, { key: "Enter" });
+      await waitFor(() => {
+        expect(trigger?.getAttribute("role")).toBeNull();
+        expect(trigger?.getAttribute("tabindex")).toBe("-1");
+      });
+    });
+
+    it("should activate toolbar on Space when trigger is focused", async () => {
+      render(<PageFeedbackToolbarCSS />);
+      const toolbar = document.querySelector("[data-feedback-toolbar]");
+      const trigger = toolbar?.firstElementChild as HTMLElement | null; // toolbar container is the trigger
+      expect(trigger?.getAttribute("role")).toBe("button");
+      trigger?.focus();
+      fireEvent.keyDown(trigger!, { key: " " });
+      await waitFor(() => {
+        expect(trigger?.getAttribute("role")).toBeNull();
+        expect(trigger?.getAttribute("tabindex")).toBe("-1");
+      });
+    });
+
+    it("should not activate on key repeat (Enter)", () => {
+      render(<PageFeedbackToolbarCSS />);
+      const toolbar = document.querySelector("[data-feedback-toolbar]");
+      const trigger = toolbar?.firstElementChild as HTMLElement | null;
+      trigger?.focus();
+      fireEvent.keyDown(trigger!, { key: "Enter", repeat: true });
+      expect(trigger?.getAttribute("role")).toBe("button");
+    });
+
+    it("should not activate on key repeat (Space)", () => {
+      render(<PageFeedbackToolbarCSS />);
+      const toolbar = document.querySelector("[data-feedback-toolbar]");
+      const trigger = toolbar?.firstElementChild as HTMLElement | null;
+      trigger?.focus();
+      fireEvent.keyDown(trigger!, { key: " ", repeat: true });
+      expect(trigger?.getAttribute("role")).toBe("button");
+    });
+  });
 });
 
 describe("Annotation type", () => {
