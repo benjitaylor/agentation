@@ -312,7 +312,7 @@ Continue watching until I say stop or timeout is reached.`}
           <CodeBlock
             language="bash"
             copyable
-            code={`npx skills add agent-browser`}
+            code={`npx skills add vercel-labs/agent-browser`}
           />
         </section>
 
