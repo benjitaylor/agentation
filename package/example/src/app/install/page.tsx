@@ -272,7 +272,7 @@ function App() {
               marginTop: "0.375rem",
             }}
           >
-            Detects your framework, installs the package, wires it into your layout, and configures the MCP server for auto-start.
+            Detects your framework, installs the package, wires it into your layout, and recommends MCP server setup.
           </p>
         </section>
 
@@ -308,9 +308,7 @@ function App() {
 
           <h3>2. Verify setup</h3>
           <p>
-            The Agentation server runs two services: an HTTP server (port 4747) that receives
-            annotations from the React component, and an MCP server that exposes
-            tools for AI agents to read and act on feedback.
+            Check that everything is configured correctly:
           </p>
           <CodeBlock code="npx agentation-mcp doctor" language="bash" copyable />
           <p
@@ -320,7 +318,7 @@ function App() {
               marginTop: "0.5rem",
             }}
           >
-            Runs on port 4747 by default. Use <code>--port 8080</code> to change it.
+            The server runs on port 4747 by default. Use <code>--port 8080</code> to change it.
           </p>
 
           <h3>3. Connect the component</h3>
