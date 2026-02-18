@@ -284,13 +284,35 @@ function App() {
             This enables real-time annotation syncing and bidirectional communication.
           </p>
 
-          <h3>1. Start the server</h3>
+          <h3>1. Add the MCP server to your agent</h3>
           <p>
-            The Agentation server runs two services: an HTTP server that receives
+            The easiest way to configure Agentation across any supported agent (Claude Code, Cursor, Codex, Windsurf, and more):
+          </p>
+          <CodeBlock code={`npx add-mcp "npx -y agentation-mcp server"`} language="bash" copyable />
+          <p
+            style={{
+              fontSize: "0.8125rem",
+              color: "rgba(0,0,0,0.45)",
+              marginTop: "0.375rem",
+            }}
+          >
+            Uses{" "}
+            <a href="https://github.com/neondatabase/add-mcp" target="_blank" rel="noopener noreferrer">add-mcp</a>{" "}
+            to auto-detect your installed agents and write the correct config. Supports 9+ agents.
+          </p>
+
+          <p style={{ marginTop: "1rem" }}>
+            Or use the interactive wizard for Claude Code specifically:
+          </p>
+          <CodeBlock code="npx agentation-mcp init" language="bash" copyable />
+
+          <h3>2. Verify setup</h3>
+          <p>
+            The Agentation server runs two services: an HTTP server (port 4747) that receives
             annotations from the React component, and an MCP server that exposes
             tools for AI agents to read and act on feedback.
           </p>
-          <CodeBlock code="npx agentation-mcp server" language="bash" copyable />
+          <CodeBlock code="npx agentation-mcp doctor" language="bash" copyable />
           <p
             style={{
               fontSize: "0.875rem",
@@ -300,23 +322,6 @@ function App() {
           >
             Runs on port 4747 by default. Use <code>--port 8080</code> to change it.
           </p>
-
-          <h3>2. Configure your agent</h3>
-          <p>
-            Add Agentation as an MCP server in your agent&apos;s config. Example for Claude Code:
-          </p>
-          <CodeBlock
-            code={`// Edit ~/.claude/claude_code_config.json
-{
-  "mcpServers": {
-    "agentation": {
-      "command": "npx",
-      "args": ["agentation-mcp", "server"]
-    }
-  }
-}`}
-            language="json"
-          />
 
           <h3>3. Connect the component</h3>
           <p>
@@ -361,8 +366,9 @@ function App() {
 
           <p style={{ marginTop: "1.5rem" }}>
             <strong>Other agents:</strong> Any tool that supports MCP can connect.
-            Point your agent&apos;s MCP config to <code>npx agentation-mcp server</code> and
-            it will have access to annotation tools like <code>agentation_get_all_pending</code>,{" "}
+            Use <code>npx add-mcp &quot;npx -y agentation-mcp server&quot;</code> to auto-configure,
+            or manually point your agent&apos;s MCP config to the Agentation server.
+            Once connected, the agent will have access to tools like <code>agentation_get_all_pending</code>,{" "}
             <code>agentation_list_sessions</code>, and <code>agentation_resolve</code>.
           </p>
         </section>

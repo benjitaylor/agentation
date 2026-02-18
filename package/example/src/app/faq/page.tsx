@@ -68,7 +68,7 @@ const faqCategories: FAQCategory[] = [
       },
       {
         question: "What is Agent Sync?",
-        answer: "Agent Sync connects the browser toolbar to an MCP server, enabling real-time sync between reviewers and AI agents. Annotations persist across pages and can be accessed via MCP tools. Run <code>npx agentation-mcp server</code> to start the server, then enable Agent Sync in settings."
+        answer: "Agent Sync connects the browser toolbar to an MCP server, enabling real-time sync between reviewers and AI agents. Annotations persist across pages and can be accessed via MCP tools. Run <code>npx add-mcp \"npx -y agentation-mcp server\"</code> to configure your agent, or <code>npx agentation-mcp init</code> for Claude Code specifically, then enable Agent Sync in settings."
       },
     ]
   },

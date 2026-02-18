@@ -14,15 +14,21 @@ pnpm add agentation-mcp
 
 ## Quick Start
 
-### 1. Set up the MCP server
+### 1. Add to your agent
 
-Run the interactive setup wizard:
+The fastest way to configure Agentation across any supported agent:
+
+```bash
+npx add-mcp "npx -y agentation-mcp server"
+```
+
+Uses [add-mcp](https://github.com/neondatabase/add-mcp) to auto-detect installed agents (Claude Code, Cursor, Codex, Windsurf, and more).
+
+Or use the interactive wizard for Claude Code specifically:
 
 ```bash
 agentation-mcp init
 ```
-
-This will configure Claude Code to use the Agentation MCP server.
 
 ### 2. Start the server
 

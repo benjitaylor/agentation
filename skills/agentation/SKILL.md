@@ -42,38 +42,20 @@ Set up the Agentation annotation toolbar in this project.
 5. **Confirm component setup**
    - Tell the user the Agentation toolbar component is configured
 
-6. **Check if MCP server already configured**
-   - Read `~/.claude/claude_code_config.json` if it exists
-   - Check if `mcpServers.agentation` entry exists
-   - If yes, skip to final confirmation step
-
-7. **Configure Claude Code MCP server**
-   - Create `~/.claude/` directory if it doesn't exist
-   - Read existing `claude_code_config.json` if present (preserve other MCP servers)
-   - Add or merge the `mcpServers.agentation` entry:
-     ```json
-     {
-       "mcpServers": {
-         "agentation": {
-           "command": "npx",
-           "args": ["agentation-mcp", "server"]
-         }
-       }
-     }
-     ```
-   - Write updated config back to file
-
-8. **Confirm full setup**
-   - Tell the user both components are set up:
-     - React component for the toolbar (`<Agentation />`)
-     - MCP server configured to auto-start with Claude Code
-   - Tell user to restart Claude Code to load the MCP server
-   - Explain that annotations will now sync to Claude automatically
+6. **Recommend MCP server setup**
+   - Explain that for real-time annotation syncing with AI agents, they should also set up the MCP server
+   - Recommend one of the following approaches:
+     - **Universal (supports 9+ agents including Claude Code, Cursor, Codex, Windsurf, etc.):**
+       See [add-mcp](https://github.com/neondatabase/add-mcp) — run `npx add-mcp` and follow the prompts to add `agentation-mcp` as an MCP server
+     - **Claude Code only (interactive wizard):**
+       Run `agentation-mcp init` after installing the package
+   - Tell user to restart their coding agent after MCP setup to load the server
+   - Explain that once configured, annotations will sync to the agent automatically
 
 ## Notes
 
 - The `NODE_ENV` check ensures Agentation only loads in development
 - Agentation requires React 18
-- The MCP server auto-starts when Claude Code launches (uses npx, no global install needed)
-- Port 4747 is used by default for the HTTP server
-- Run `npx agentation-mcp doctor` to verify setup
+- The MCP server runs on port 4747 by default for the HTTP server
+- MCP server exposes tools like `agentation_get_all_pending`, `agentation_resolve`, and `agentation_watch_annotations`
+- Run `agentation-mcp doctor` to verify setup after installing
