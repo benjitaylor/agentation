@@ -1,6 +1,6 @@
 {
   "name": "agentation-mcp",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "MCP server for Agentation - visual feedback for AI coding agents",
   "license": "PolyForm-Shield-1.0.0",
   "main": "./dist/index.js",

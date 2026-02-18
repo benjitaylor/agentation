@@ -24,11 +24,12 @@ npx add-mcp "npx -y agentation-mcp server"
 
 Uses [add-mcp](https://github.com/neondatabase/add-mcp) to auto-detect installed agents (Claude Code, Cursor, Codex, Windsurf, and more).
 
-Or use the interactive wizard for Claude Code specifically:
+Or for Claude Code specifically:
 
 ```bash
-agentation-mcp init
+claude mcp add agentation -- npx agentation-mcp server
 ```
+
 
 ### 2. Start the server
 
@@ -49,7 +50,7 @@ agentation-mcp doctor
 ## CLI Commands
 
 ```bash
-agentation-mcp init                    # Interactive setup wizard
+agentation-mcp init                    # Setup wizard (registers via claude mcp add)
 agentation-mcp server [options]        # Start the annotation server
 agentation-mcp doctor                  # Check your setup
 agentation-mcp help                    # Show help

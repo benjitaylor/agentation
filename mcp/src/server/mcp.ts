@@ -630,6 +630,36 @@ export async function handleTool(name: string, args: unknown): Promise<ToolResul
       const batchWindowSeconds = Math.min(60, Math.max(1, parsed.batchWindowSeconds ?? 10));
       const timeoutSeconds = Math.min(300, Math.max(1, parsed.timeoutSeconds ?? 120));
 
+      // Drain: return any pending annotations immediately before blocking on SSE.
+      // This catches annotations that arrived while the caller was busy processing
+      // the previous batch (when watch_annotations wasn't running).
+      try {
+        const pendingPath = sessionId ? `/sessions/${sessionId}/pending` : "/pending";
+        const pending = await httpGet<PendingResponse>(pendingPath);
+        if (pending.count > 0) {
+          const sessions = [...new Set(pending.annotations.map((a) => a.sessionId))];
+          return success({
+            timeout: false,
+            count: pending.count,
+            sessions,
+            annotations: pending.annotations.map((a) => ({
+              id: a.id,
+              comment: a.comment,
+              element: a.element,
+              elementPath: a.elementPath,
+              url: a.url,
+              intent: a.intent,
+              severity: a.severity,
+              timestamp: a.timestamp,
+              nearbyText: a.nearbyText,
+              reactComponents: a.reactComponents,
+            })),
+          });
+        }
+      } catch (err) {
+        console.error("[MCP] Pending drain failed, falling through to SSE watch:", err);
+      }
+
       const result = await watchForAnnotations(
         sessionId,
         batchWindowSeconds * 1000,

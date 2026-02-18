@@ -1,6 +1,6 @@
 {
   "name": "agentation",
-  "version": "2.1.1",
+  "version": "2.2.1",
   "description": "Visual feedback for AI coding agents",
   "license": "PolyForm-Shield-1.0.0",
   "main": "./dist/index.js",

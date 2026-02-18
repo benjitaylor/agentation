@@ -25,7 +25,7 @@ This is the publishable npm package. Changes here affect everyone who installs `
 import { Agentation } from 'agentation';
 ```
 
-CSS-only animations, no external runtime dependencies beyond React.
+No external runtime dependencies beyond React.
 
 ## Programmatic API
 

@@ -50,7 +50,7 @@ function initializeTenantStore(): import("./sqlite.js").TenantStore {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { createTenantStore } = require("./sqlite.js");
     const store = createTenantStore();
-    console.log("[TenantStore] Initialized tenant store");
+    process.stderr.write("[TenantStore] Initialized tenant store\n");
     return store;
   } catch (err) {
     console.error("[TenantStore] Failed to initialize:", (err as Error).message);

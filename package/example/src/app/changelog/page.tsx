@@ -30,6 +30,20 @@ function isMajorVersion(version: string): boolean {
 
 const releases: Release[] = [
   {
+    version: "2.2.1",
+    date: "February 11, 2026",
+    changes: [
+      { type: "fixed", text: "An issue where the toolbar button would occasionally become unresponsive to clicks and drags" },
+    ],
+  },
+  {
+    version: "2.2.0",
+    date: "February 6, 2026",
+    changes: [
+      { type: "improved", text: "Animation pause now freezes all page animations — CSS, JavaScript timers, requestAnimationFrame, Web Animations API, and videos — and resumes exactly where they left off" },
+    ],
+  },
+  {
     version: "2.1.1",
     date: "February 5, 2026",
     changes: [

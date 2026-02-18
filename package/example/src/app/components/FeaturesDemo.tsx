@@ -35,7 +35,7 @@ const features: Feature[] = [
   {
     key: "animation-pause",
     label: "Animation",
-    caption: "Freeze CSS animations to annotate specific states.\nClick pause in the toolbar to stop all animations.",
+    caption: "Freeze animations to annotate specific states.\nClick pause in the toolbar to stop all animations.",
   },
 ];
 

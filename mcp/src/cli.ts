@@ -35,7 +35,7 @@ async function runInit() {
 
   // Step 1: Check Claude Code config
   const homeDir = process.env.HOME || process.env.USERPROFILE || "";
-  const claudeConfigPath = path.join(homeDir, ".claude", "claude_code_config.json");
+  const claudeConfigPath = path.join(homeDir, ".claude.json");
   const hasClaudeConfig = fs.existsSync(claudeConfigPath);
 
   if (hasClaudeConfig) {
@@ -60,36 +60,29 @@ async function runInit() {
       port = parseInt(portAnswer, 10);
     }
 
-    // Create or update Claude config
-    let config: Record<string, unknown> = {};
-    if (hasClaudeConfig) {
-      try {
-        config = JSON.parse(fs.readFileSync(claudeConfigPath, "utf-8"));
-      } catch {
-        console.log(`   Warning: Could not parse existing config, creating new one`);
-      }
-    }
+    // Register MCP server using claude mcp add
+    const mcpArgs = port === 4747
+      ? ["mcp", "add", "agentation", "--", "npx", "agentation-mcp", "server"]
+      : ["mcp", "add", "agentation", "--", "npx", "agentation-mcp", "server", "--port", String(port)];
 
-    // Ensure mcpServers exists
-    if (!config.mcpServers || typeof config.mcpServers !== "object") {
-      config.mcpServers = {};
-    }
-
-    // Add agentation server
-    (config.mcpServers as Record<string, unknown>).agentation = {
-      command: "agentation-mcp",
-      args: port === 4747 ? ["server"] : ["server", "--port", String(port)],
-    };
-
-    // Ensure directory exists
-    const claudeDir = path.dirname(claudeConfigPath);
-    if (!fs.existsSync(claudeDir)) {
-      fs.mkdirSync(claudeDir, { recursive: true });
-    }
-
-    fs.writeFileSync(claudeConfigPath, JSON.stringify(config, null, 2));
     console.log();
-    console.log(`✓ Updated ${claudeConfigPath}`);
+    console.log(`Running: claude ${mcpArgs.join(" ")}`);
+
+    try {
+      const result = spawn("claude", mcpArgs, { stdio: "inherit" });
+      await new Promise<void>((resolve, reject) => {
+        result.on("close", (code) => {
+          if (code === 0) resolve();
+          else reject(new Error(`claude mcp add exited with code ${code}`));
+        });
+        result.on("error", reject);
+      });
+      console.log(`✓ Registered agentation MCP server with Claude Code`);
+    } catch (err) {
+      console.log(`✗ Could not register MCP server automatically: ${err}`);
+      console.log(`  You can register manually by running:`);
+      console.log(`  claude mcp add agentation -- npx agentation-mcp server`);
+    }
     console.log();
 
     // Test connection
@@ -161,24 +154,44 @@ async function runDoctor() {
 
   // Check 2: Claude Code config
   const homeDir = process.env.HOME || process.env.USERPROFILE || "";
-  const claudeConfigPath = path.join(homeDir, ".claude", "claude_code_config.json");
+  const claudeConfigPath = path.join(homeDir, ".claude.json");
   if (fs.existsSync(claudeConfigPath)) {
     try {
       const config = JSON.parse(fs.readFileSync(claudeConfigPath, "utf-8"));
+      // Check top-level and per-project mcpServers for agentation
+      let found = false;
       if (config.mcpServers?.agentation) {
+        found = true;
+      }
+      // Also check per-project entries
+      if (!found && config.projects) {
+        for (const proj of Object.values(config.projects) as Record<string, unknown>[]) {
+          if ((proj as { mcpServers?: { agentation?: unknown } }).mcpServers?.agentation) {
+            found = true;
+            break;
+          }
+        }
+      }
+      if (found) {
         results.push({ name: "Claude Code config", status: "pass", message: "MCP server configured" });
       } else {
-        results.push({ name: "Claude Code config", status: "warn", message: "Config exists but no agentation MCP entry" });
+        results.push({ name: "Claude Code config", status: "warn", message: "Config exists but no agentation MCP entry. Run: claude mcp add agentation -- npx agentation-mcp server" });
       }
     } catch {
       results.push({ name: "Claude Code config", status: "fail", message: "Could not parse config file" });
       allPassed = false;
     }
   } else {
-    results.push({ name: "Claude Code config", status: "warn", message: "No config found at ~/.claude/claude_code_config.json" });
+    results.push({ name: "Claude Code config", status: "warn", message: "No config found at ~/.claude.json. Run: claude mcp add agentation -- npx agentation-mcp server" });
   }
 
-  // Check 3: Server connectivity (try default port)
+  // Check 3: Stale config at old (wrong) path
+  const oldConfigPath = path.join(homeDir, ".claude", "claude_code_config.json");
+  if (fs.existsSync(oldConfigPath)) {
+    results.push({ name: "Stale config", status: "warn", message: `${oldConfigPath} exists but Claude Code doesn't read this file. Safe to delete.` });
+  }
+
+  // Check 4: Server connectivity (try default port)
   try {
     const response = await fetch("http://localhost:4747/health", { signal: AbortSignal.timeout(2000) });
     if (response.ok) {
@@ -285,7 +298,7 @@ Server Options:
 
 Commands:
   init      Guided setup that configures Claude Code to use the MCP server.
-            Creates or updates ~/.claude/claude_code_config.json.
+            Registers the server via 'claude mcp add'.
 
   server    Starts both an HTTP server and MCP server for collecting annotations.
             The HTTP server receives annotations from the React component.

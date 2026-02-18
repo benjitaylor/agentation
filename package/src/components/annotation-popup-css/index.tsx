@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import styles from "./styles.module.scss";
 import { IconTrash } from "../icons";
+import { originalSetTimeout } from "../../utils/freeze-animations";
 
 // =============================================================================
 // Types
@@ -48,16 +49,6 @@ export interface AnnotationPopupCSSHandle {
 // Component
 // =============================================================================
 
-// Darken a hex color by a percentage
-function darkenColor(hex: string, percent: number): string {
-  const num = parseInt(hex.replace("#", ""), 16);
-  const amt = Math.round(2.55 * percent);
-  const R = Math.max((num >> 16) - amt, 0);
-  const G = Math.max((num >> 8 & 0x00FF) - amt, 0);
-  const B = Math.max((num & 0x0000FF) - amt, 0);
-  return `#${(0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1)}`;
-}
-
 export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, AnnotationPopupCSSProps>(
   function AnnotationPopupCSS(
     {
@@ -85,6 +76,8 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
     const [isStylesExpanded, setIsStylesExpanded] = useState(false); // Computed styles accordion state
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const popupRef = useRef<HTMLDivElement>(null);
+    const cancelTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const shakeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Sync with parent exit state
     useEffect(() => {
@@ -95,15 +88,15 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
 
     // Animate in on mount and focus textarea
     useEffect(() => {
-      // Start enter animation
-      requestAnimationFrame(() => {
+      // Start enter animation (use originalSetTimeout to bypass freeze patch)
+      originalSetTimeout(() => {
         setAnimState("enter");
-      });
+      }, 0);
       // Transition to entered state after animation completes
-      const enterTimer = setTimeout(() => {
+      const enterTimer = originalSetTimeout(() => {
         setAnimState("entered");
       }, 200); // Match animation duration
-      const focusTimer = setTimeout(() => {
+      const focusTimer = originalSetTimeout(() => {
         const textarea = textareaRef.current;
         if (textarea) {
           textarea.focus();
@@ -114,13 +107,16 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
       return () => {
         clearTimeout(enterTimer);
         clearTimeout(focusTimer);
+        if (cancelTimerRef.current) clearTimeout(cancelTimerRef.current);
+        if (shakeTimerRef.current) clearTimeout(shakeTimerRef.current);
       };
     }, []);
 
     // Shake animation
     const shake = useCallback(() => {
+      if (shakeTimerRef.current) clearTimeout(shakeTimerRef.current);
       setIsShaking(true);
-      setTimeout(() => {
+      shakeTimerRef.current = originalSetTimeout(() => {
         setIsShaking(false);
         textareaRef.current?.focus();
       }, 250);
@@ -134,7 +130,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
     // Handle cancel with exit animation
     const handleCancel = useCallback(() => {
       setAnimState("exit");
-      setTimeout(() => {
+      cancelTimerRef.current = originalSetTimeout(() => {
         onCancel();
       }, 150); // Match exit animation duration
     }, [onCancel]);
@@ -186,7 +182,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
                 setIsStylesExpanded(!isStylesExpanded);
                 if (wasExpanded) {
                   // Refocus textarea when closing
-                  setTimeout(() => textareaRef.current?.focus(), 0);
+                  originalSetTimeout(() => textareaRef.current?.focus(), 0);
                 }
               }}
               type="button"

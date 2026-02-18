@@ -108,7 +108,7 @@ npx agentation-mcp help      # Show help`}
           <h3>1. Add the MCP server</h3>
           <CodeBlock language="bash" copyable code={`npx add-mcp "npx -y agentation-mcp server"`} />
           <p style={{ fontSize: "0.8125rem", color: "rgba(0,0,0,0.55)", marginTop: "0.5rem" }}>
-            Or use <code>npx agentation-mcp init</code> for the Claude Code-specific interactive wizard.
+            Or use <code>claude mcp add agentation -- npx agentation-mcp server</code> or the interactive wizard: <code>npx agentation-mcp init</code>
           </p>
 
           <h3>2. Restart Claude Code</h3>
@@ -285,9 +285,75 @@ Continue watching until I say stop or timeout is reached.`}
         </section>
 
         <section>
+          <h2 id="critique-mode">Critique Mode</h2>
+          <p>
+            Hands-free mode waits for <em>you</em> to annotate. Critique mode flips that &mdash; the
+            agent opens a headed browser, scrolls through your page top-to-bottom, and adds
+            design annotations through the toolbar on your behalf. You watch the cursor move
+            across the page in real time.
+          </p>
+          <CodeBlock
+            language="markdown"
+            copyable
+            code={`Critique the UI at http://localhost:3000`}
+          />
+          <ol style={{ fontSize: "0.8125rem", color: "rgba(0,0,0,0.65)", marginTop: "0.5rem" }}>
+            <li>Agent opens a headed browser to your page</li>
+            <li>Scrolls top-to-bottom, picking elements to critique</li>
+            <li>Moves cursor to each element, clicks to open the annotation dialog</li>
+            <li>Types specific, actionable feedback and submits</li>
+            <li>Repeats for 5&ndash;8 annotations across hierarchy, spacing, typography, navigation, and CTAs</li>
+          </ol>
+          <p style={{ fontSize: "0.8125rem", color: "rgba(0,0,0,0.55)", marginTop: "0.5rem" }}>
+            You review them in the toolbar and decide what to fix.
+          </p>
+
+          <h3>Requires</h3>
+          <CodeBlock
+            language="bash"
+            copyable
+            code={`npx skills add agent-browser`}
+          />
+        </section>
+
+        <section>
+          <h2 id="self-driving-mode">Self-Driving Mode</h2>
+          <p>
+            Critique mode leaves annotations for you to review. Self-driving mode goes
+            further &mdash; the same agent also fixes each issue after annotating it.
+          </p>
+          <CodeBlock
+            language="markdown"
+            copyable
+            code={`Self-driving mode on http://localhost:3000`}
+          />
+          <ol style={{ fontSize: "0.8125rem", color: "rgba(0,0,0,0.65)", marginTop: "0.5rem" }}>
+            <li>Agent opens a headed browser to your page</li>
+            <li>Scrolls to an element, adds a critique annotation (visible in the toolbar)</li>
+            <li>Reads the relevant source code and edits it to fix the issue</li>
+            <li>Calls <code>agentation_resolve</code> &mdash; annotation disappears from the browser</li>
+            <li>Verifies the fix in the browser (if a dev server is running)</li>
+            <li>Moves to the next element, repeats</li>
+          </ol>
+          <p style={{ fontSize: "0.8125rem", color: "rgba(0,0,0,0.55)", marginTop: "0.5rem" }}>
+            One Claude Code session handles everything &mdash; browser, code, and annotations.
+          </p>
+
+          <h3>Requires</h3>
+          <p style={{ fontSize: "0.8125rem", color: "rgba(0,0,0,0.55)" }}>
+            Everything from critique mode, plus the self-driving skill:
+          </p>
+          <CodeBlock
+            language="bash"
+            copyable
+            code={`ln -s "$(pwd)/skills/agentation-self-driving" ~/.claude/skills/agentation-self-driving`}
+          />
+        </section>
+
+        <section>
           <h2 id="types">TypeScript Types</h2>
           <p>
-            The package exports all types for use in your own integrations:
+            Key types for building your own integrations:
           </p>
           <CodeBlock
             language="typescript"

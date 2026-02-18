@@ -27,6 +27,16 @@ import {
 import { eventBus } from "./events.js";
 import type { Annotation, AFSEvent, ActionRequest } from "../types.js";
 
+/**
+ * Log to stderr so diagnostic output never corrupts the MCP stdio channel.
+ * When `server` runs without --mcp-only, both the HTTP server and MCP stdio
+ * server share the same process. stdout is reserved for JSON-RPC messages,
+ * so all logging must go to stderr.
+ */
+function log(message: string): void {
+  process.stderr.write(message + "\n");
+}
+
 // Cloud API configuration
 let cloudApiKey: string | undefined;
 const CLOUD_API_URL = "https://agentation-mcp-cloud.vercel.app/api";
@@ -143,7 +153,7 @@ function sendWebhooks(actionRequest: ActionRequest): void {
       body: payload,
     })
       .then((res) => {
-        console.log(
+        log(
           `[Webhook] POST ${url} -> ${res.status} ${res.statusText}`
         );
       })
@@ -152,7 +162,7 @@ function sendWebhooks(actionRequest: ActionRequest): void {
       });
   }
 
-  console.log(
+  log(
     `[Webhook] Fired ${webhookUrls.length} webhook(s) for session ${actionRequest.sessionId}`
   );
 }
@@ -738,7 +748,7 @@ async function handleMcp(req: IncomingMessage, res: ServerResponse): Promise<voi
       const newSessionId = transport.sessionId;
       if (newSessionId && !mcpTransports.has(newSessionId)) {
         mcpTransports.set(newSessionId, transport);
-        console.log(`[MCP HTTP] New session created: ${newSessionId}`);
+        log(`[MCP HTTP] New session created: ${newSessionId}`);
       }
     } catch (err) {
       console.error("[MCP HTTP] Error handling request:", err);
@@ -929,7 +939,7 @@ export function startHttpServer(port: number, apiKey?: string): void {
 
     // Log all requests for debugging
     if (method !== "OPTIONS" && pathname !== "/health") {
-      console.log(`[HTTP] ${method} ${pathname}`);
+      log(`[HTTP] ${method} ${pathname}`);
     }
 
     // Handle CORS preflight
@@ -978,11 +988,19 @@ export function startHttpServer(port: number, apiKey?: string): void {
     }
   });
 
+  server.on("error", (err: NodeJS.ErrnoException) => {
+    if (err.code === "EADDRINUSE") {
+      log(`[HTTP] Port ${port} already in use — skipping HTTP server (MCP stdio still active)`);
+    } else {
+      log(`[HTTP] Server error: ${err.message}`);
+    }
+  });
+
   server.listen(port, () => {
     if (isCloudMode()) {
-      console.log(`[HTTP] Agentation server listening on http://localhost:${port} (cloud mode)`);
+      log(`[HTTP] Agentation server listening on http://localhost:${port} (cloud mode)`);
     } else {
-      console.log(`[HTTP] Agentation server listening on http://localhost:${port}`);
+      log(`[HTTP] Agentation server listening on http://localhost:${port}`);
     }
   });
 }

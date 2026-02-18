@@ -34,7 +34,7 @@ The toolbar appears in the bottom-right corner. Click to activate, then click an
 - **Text selection** – Select text to annotate specific content
 - **Multi-select** – Drag to select multiple elements at once
 - **Area selection** – Drag to annotate any region, even empty space
-- **Animation pause** – Freeze CSS animations to capture specific states
+- **Animation pause** – Freeze all animations (CSS, JS, videos) to capture specific states
 - **Structured output** – Copy markdown with selectors, positions, and context
 - **Programmatic access** – Callback prop for direct integration with tools
 - **Dark/light mode** – Toggle in settings, persists to localStorage

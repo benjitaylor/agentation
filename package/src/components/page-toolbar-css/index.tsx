@@ -70,6 +70,12 @@ import {
   requestAction,
 } from "../../utils/sync";
 import { getReactComponentName } from "../../utils/react-detection";
+import {
+  freeze as freezeAll,
+  unfreeze as unfreezeAll,
+  originalSetTimeout,
+  originalSetInterval,
+} from "../../utils/freeze-animations";
 
 import type { Annotation } from "../../types";
 import styles from "./styles.module.scss";
@@ -579,7 +585,7 @@ export function PageFeedbackToolbarCSS({
         exitTimeoutRef.current = null;
       }
       updatePosition();
-      timeoutRef.current = setTimeout(() => {
+      timeoutRef.current = originalSetTimeout(() => {
         setVisible(true);
       }, 500); // 0.5s delay before showing
     };
@@ -592,7 +598,7 @@ export function PageFeedbackToolbarCSS({
       }
       setVisible(false);
       // Keep rendered during exit animation
-      exitTimeoutRef.current = setTimeout(() => {
+      exitTimeoutRef.current = originalSetTimeout(() => {
         setShouldRender(false);
       }, 150);
     };
@@ -616,6 +622,7 @@ export function PageFeedbackToolbarCSS({
         {shouldRender &&
           createPortal(
             <div
+              data-feedback-toolbar
               style={{
                 position: "fixed",
                 top: position.top,
@@ -724,14 +731,14 @@ export function PageFeedbackToolbarCSS({
       setTooltipsHidden(false);
       // Reset to main page when settings close
       setSettingsPage("main");
-      const timer = setTimeout(() => setShowSettingsVisible(false), 0);
+      const timer = originalSetTimeout(() => setShowSettingsVisible(false), 0);
       return () => clearTimeout(timer);
     }
   }, [showSettings]);
 
   useEffect(() => {
     setIsTransitioning(true);
-    const timer = setTimeout(() => setIsTransitioning(false), 350);
+    const timer = originalSetTimeout(() => setIsTransitioning(false), 350);
     return () => clearTimeout(timer);
   }, [settingsPage]);
 
@@ -745,7 +752,7 @@ export function PageFeedbackToolbarCSS({
       setMarkersVisible(true);
       setAnimatedMarkers(new Set());
       // After enter animations complete, mark all as animated
-      const timer = setTimeout(() => {
+      const timer = originalSetTimeout(() => {
         setAnimatedMarkers((prev) => {
           const newSet = new Set(prev);
           annotations.forEach((a) => newSet.add(a.id));
@@ -756,7 +763,7 @@ export function PageFeedbackToolbarCSS({
     } else if (markersVisible) {
       // Hide markers - start exit animation, then unmount
       setMarkersExiting(true);
-      const timer = setTimeout(() => {
+      const timer = originalSetTimeout(() => {
         setMarkersVisible(false);
         setMarkersExiting(false);
       }, 250);
@@ -777,7 +784,7 @@ export function PageFeedbackToolbarCSS({
       setShowEntranceAnimation(true);
       hasPlayedEntranceAnimation = true;
       // Remove animation class after it completes (toolbar: 500ms, badge: 400ms delay + 300ms)
-      setTimeout(() => setShowEntranceAnimation(false), 750);
+      originalSetTimeout(() => setShowEntranceAnimation(false), 750);
     }
 
     try {
@@ -1063,7 +1070,7 @@ export function PageFeedbackToolbarCSS({
 
     // Check immediately, then every 10 seconds
     checkHealth();
-    const interval = setInterval(checkHealth, 10000);
+    const interval = originalSetInterval(checkHealth, 10000);
     return () => clearInterval(interval);
   }, [endpoint, mounted]);
 
@@ -1084,7 +1091,7 @@ export function PageFeedbackToolbarCSS({
           const id = event.payload.id as string;
           // Trigger exit animation then remove
           setExitingMarkers((prev) => new Set(prev).add(id));
-          setTimeout(() => {
+          originalSetTimeout(() => {
             setAnnotations((prev) => prev.filter((a) => a.id !== id));
             setExitingMarkers((prev) => {
               const next = new Set(prev);
@@ -1194,7 +1201,7 @@ export function PageFeedbackToolbarCSS({
     const timeoutIds: ReturnType<typeof setTimeout>[] = [];
 
     timeoutIds.push(
-      setTimeout(() => {
+      originalSetTimeout(() => {
         setIsActive(true);
       }, demoDelay - 200),
     );
@@ -1203,7 +1210,7 @@ export function PageFeedbackToolbarCSS({
       const annotationDelay = demoDelay + index * 300;
 
       timeoutIds.push(
-        setTimeout(() => {
+        originalSetTimeout(() => {
           const element = document.querySelector(demo.selector) as HTMLElement;
           if (!element) return;
 
@@ -1249,7 +1256,7 @@ export function PageFeedbackToolbarCSS({
         clearTimeout(scrollTimeoutRef.current);
       }
 
-      scrollTimeoutRef.current = setTimeout(() => {
+      scrollTimeoutRef.current = originalSetTimeout(() => {
         setIsScrolling(false);
       }, 150);
     };
@@ -1278,46 +1285,16 @@ export function PageFeedbackToolbarCSS({
     }
   }, [annotations, pathname, mounted, currentSessionId]);
 
-  // Freeze animations
+  // Freeze animations (delegates to freeze-animations utility)
   const freezeAnimations = useCallback(() => {
     if (isFrozen) return;
-
-    const style = document.createElement("style");
-    style.id = "feedback-freeze-styles";
-    style.textContent = `
-      *:not([data-feedback-toolbar]):not([data-feedback-toolbar] *):not([data-annotation-popup]):not([data-annotation-popup] *):not([data-annotation-marker]):not([data-annotation-marker] *),
-      *:not([data-feedback-toolbar]):not([data-feedback-toolbar] *):not([data-annotation-popup]):not([data-annotation-popup] *):not([data-annotation-marker]):not([data-annotation-marker] *)::before,
-      *:not([data-feedback-toolbar]):not([data-feedback-toolbar] *):not([data-annotation-popup]):not([data-annotation-popup] *):not([data-annotation-marker]):not([data-annotation-marker] *)::after {
-        animation-play-state: paused !important;
-        transition: none !important;
-      }
-    `;
-    document.head.appendChild(style);
-
-    document.querySelectorAll("video").forEach((video) => {
-      if (!video.paused) {
-        video.dataset.wasPaused = "false";
-        video.pause();
-      }
-    });
-
+    freezeAll();
     setIsFrozen(true);
   }, [isFrozen]);
 
-  // Unfreeze animations
   const unfreezeAnimations = useCallback(() => {
     if (!isFrozen) return;
-
-    const style = document.getElementById("feedback-freeze-styles");
-    if (style) style.remove();
-
-    document.querySelectorAll("video").forEach((video) => {
-      if (video.dataset.wasPaused === "false") {
-        video.play();
-        delete video.dataset.wasPaused;
-      }
-    });
-
+    unfreezeAll();
     setIsFrozen(false);
   }, [isFrozen]);
 
@@ -1449,6 +1426,13 @@ export function PageFeedbackToolbarCSS({
       }
     }
   }, [isActive, isFrozen, unfreezeAnimations]);
+
+  // Unmount safety — if component is removed while frozen, unfreeze the page
+  useEffect(() => {
+    return () => {
+      unfreezeAll();
+    };
+  }, []);
 
   // Custom cursor
   useEffect(() => {
@@ -2241,11 +2225,11 @@ export function PageFeedbackToolbarCSS({
       setAnnotations((prev) => [...prev, newAnnotation]);
       // Prevent immediate hover on newly added marker
       recentlyAddedIdRef.current = newAnnotation.id;
-      setTimeout(() => {
+      originalSetTimeout(() => {
         recentlyAddedIdRef.current = null;
       }, 300);
       // Mark as needing animation (will be set to animated after animation completes)
-      setTimeout(() => {
+      originalSetTimeout(() => {
         setAnimatedMarkers((prev) => new Set(prev).add(newAnnotation.id));
       }, 250);
 
@@ -2255,7 +2239,7 @@ export function PageFeedbackToolbarCSS({
 
       // Animate out the pending annotation UI
       setPendingExiting(true);
-      setTimeout(() => {
+      originalSetTimeout(() => {
         setPendingAnnotation(null);
         setPendingExiting(false);
       }, 150);
@@ -2301,7 +2285,7 @@ export function PageFeedbackToolbarCSS({
   // Cancel annotation with exit animation
   const cancelAnnotation = useCallback(() => {
     setPendingExiting(true);
-    setTimeout(() => {
+    originalSetTimeout(() => {
       setPendingAnnotation(null);
       setPendingExiting(false);
     }, 150); // Match exit animation duration
@@ -2316,7 +2300,7 @@ export function PageFeedbackToolbarCSS({
       // Close edit panel with exit animation if deleting the annotation being edited
       if (editingAnnotation?.id === id) {
         setEditExiting(true);
-        setTimeout(() => {
+        originalSetTimeout(() => {
           setEditingAnnotation(null);
           setEditingTargetElement(null);
           setEditingTargetElements([]);
@@ -2344,7 +2328,7 @@ export function PageFeedbackToolbarCSS({
       }
 
       // Wait for exit animation then remove
-      setTimeout(() => {
+      originalSetTimeout(() => {
         setAnnotations((prev) => prev.filter((a) => a.id !== id));
         setExitingMarkers((prev) => {
           const next = new Set(prev);
@@ -2356,7 +2340,7 @@ export function PageFeedbackToolbarCSS({
         // Trigger renumber animation for markers after deleted one
         if (deletedIndex < annotations.length - 1) {
           setRenumberFrom(deletedIndex);
-          setTimeout(() => setRenumberFrom(null), 200);
+          originalSetTimeout(() => setRenumberFrom(null), 200);
         }
       }, 150);
     },
@@ -2504,7 +2488,7 @@ export function PageFeedbackToolbarCSS({
 
       // Animate out the edit popup
       setEditExiting(true);
-      setTimeout(() => {
+      originalSetTimeout(() => {
         setEditingAnnotation(null);
         setEditingTargetElement(null);
         setEditingTargetElements([]);
@@ -2517,7 +2501,7 @@ export function PageFeedbackToolbarCSS({
   // Cancel editing with exit animation
   const cancelEditAnnotation = useCallback(() => {
     setEditExiting(true);
-    setTimeout(() => {
+    originalSetTimeout(() => {
       setEditingAnnotation(null);
       setEditingTargetElement(null);
       setEditingTargetElements([]);
@@ -2552,14 +2536,14 @@ export function PageFeedbackToolbarCSS({
     setCleared(true);
 
     const totalAnimationTime = count * 30 + 200;
-    setTimeout(() => {
+    originalSetTimeout(() => {
       setAnnotations([]);
       setAnimatedMarkers(new Set()); // Reset animated markers
       localStorage.removeItem(getStorageKey(pathname));
       setIsClearing(false);
     }, totalAnimationTime);
 
-    setTimeout(() => setCleared(false), 1500);
+    originalSetTimeout(() => setCleared(false), 1500);
   }, [pathname, annotations, onAnnotationsClear, fireWebhook, endpoint]);
 
   // Copy output
@@ -2590,10 +2574,10 @@ export function PageFeedbackToolbarCSS({
     onCopy?.(output);
 
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    originalSetTimeout(() => setCopied(false), 2000);
 
     if (settings.autoClearAfterCopy) {
-      setTimeout(() => clearAll(), 500);
+      originalSetTimeout(() => clearAll(), 500);
     }
   }, [
     annotations,
@@ -2631,18 +2615,18 @@ export function PageFeedbackToolbarCSS({
     setSendState("sending");
 
     // Brief delay for the fade effect
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await new Promise((resolve) => originalSetTimeout(resolve, 150));
 
     // Fire webhook and check result (force=true to bypass webhooksEnabled check for manual sends)
     const success = await fireWebhook("submit", { output, annotations }, true);
 
     // Show result
     setSendState(success ? "sent" : "failed");
-    setTimeout(() => setSendState("idle"), 2500);
+    originalSetTimeout(() => setSendState("idle"), 2500);
 
     // Clear annotations if send succeeded and autoClearAfterCopy is enabled
     if (success && settings.autoClearAfterCopy) {
-      setTimeout(() => clearAll(), 500);
+      originalSetTimeout(() => clearAll(), 500);
     }
   }, [
     onSubmit,

@@ -56,7 +56,7 @@ const faqCategories: FAQCategory[] = [
       },
       {
         question: "Can I pause animations?",
-        answer: "Yes. Click <svg style=\"display:inline-block;vertical-align:-0.45em;width:1.5em;height:1.5em;margin:0 -0.1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"><path d=\"M8 6L8 18\" /><path d=\"M16 18L16 6\" /></svg> to freeze CSS animations and transitions. Note that JavaScript-driven animations (like Framer Motion, React Spring, or GSAP) won't be affected."
+        answer: "Yes. Click <svg style=\"display:inline-block;vertical-align:-0.45em;width:1.5em;height:1.5em;margin:0 -0.1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"><path d=\"M8 6L8 18\" /><path d=\"M16 18L16 6\" /></svg> to freeze all animations on the page — CSS animations, JavaScript-driven motion, and videos all pause instantly. Unfreeze to resume exactly where things left off."
       },
       {
         question: "Can I customize marker colors?",

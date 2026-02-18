@@ -429,6 +429,8 @@ export function SideNav() {
         { id: 'claude-code', text: 'Claude Code' },
         { id: 'mcp-tools', text: 'MCP Tools' },
         { id: 'hands-free-mode', text: 'Hands-Free Mode' },
+        { id: 'critique-mode', text: 'Critique Mode' },
+        { id: 'self-driving-mode', text: 'Self-Driving Mode' },
         { id: 'types', text: 'TypeScript Types' },
       ],
     },
