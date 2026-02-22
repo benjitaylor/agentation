@@ -1,5 +1,37 @@
 "use client";
 
+import { useState, useEffect, type ReactNode } from 'react';
+import s from './icon-transitions.module.scss';
+
+// =============================================================================
+// Crossfade helper — renders both states during transition, then removes old one.
+// Only the exiting state uses opacity (via CSS animation), and it's removed from
+// the DOM after the animation completes, making it immune to host CSS overrides.
+// =============================================================================
+
+function useCrossfade<T>(value: T, durationMs = 150) {
+  const [displayValue, setDisplayValue] = useState(value);
+  const [prevValue, setPrevValue] = useState<T | null>(null);
+
+  if (value !== displayValue && prevValue === null) {
+    setPrevValue(displayValue);
+    setDisplayValue(value);
+  }
+
+  useEffect(() => {
+    if (prevValue !== null) {
+      const timer = setTimeout(() => setPrevValue(null), durationMs);
+      return () => clearTimeout(timer);
+    }
+  }, [prevValue, durationMs]);
+
+  return { current: displayValue, exiting: prevValue };
+}
+
+const CrossfadeGroup = ({ children, exiting }: { children: ReactNode; exiting?: boolean }) => (
+  <g className={exiting ? s.exiting : ''}>{children}</g>
+);
+
 // =============================================================================
 // Icons
 // =============================================================================
@@ -189,46 +221,26 @@ export const IconCopyAlt = ({ size = 16 }: { size?: number }) => (
 );
 
 // Animated copy/checkmark icon
-export const IconCopyAnimated = ({ size = 24, copied = false }: { size?: number; copied?: boolean }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <style>{`
-      .copy-icon, .check-icon {
-        transition: opacity 0.2s ease, transform 0.2s ease;
-      }
-    `}</style>
-    {/* Copy icon */}
-    <g className="copy-icon" style={{ opacity: copied ? 0 : 1, transform: copied ? 'scale(0.8)' : 'scale(1)', transformOrigin: 'center' }}>
-      <path
-        d="M4.75 11.25C4.75 10.4216 5.42157 9.75 6.25 9.75H12.75C13.5784 9.75 14.25 10.4216 14.25 11.25V17.75C14.25 18.5784 13.5784 19.25 12.75 19.25H6.25C5.42157 19.25 4.75 18.5784 4.75 17.75V11.25Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M17.25 14.25H17.75C18.5784 14.25 19.25 13.5784 19.25 12.75V6.25C19.25 5.42157 18.5784 4.75 17.75 4.75H11.25C10.4216 4.75 9.75 5.42157 9.75 6.25V6.75"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
+export const IconCopyAnimated = ({ size = 24, copied = false }: { size?: number; copied?: boolean }) => {
+  const { current, exiting } = useCrossfade(copied);
+  const renderState = (val: boolean) => val ? (
+    <g>
+      <path d="M12 20C7.58172 20 4 16.4182 4 12C4 7.58172 7.58172 4 12 4C16.4182 4 20 7.58172 20 12C20 16.4182 16.4182 20 12 20Z" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M15 10L11 14.25L9.25 12.25" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </g>
-    {/* Checkmark circle */}
-    <g className="check-icon" style={{ opacity: copied ? 1 : 0, transform: copied ? 'scale(1)' : 'scale(0.8)', transformOrigin: 'center' }}>
-      <path
-        d="M12 20C7.58172 20 4 16.4182 4 12C4 7.58172 7.58172 4 12 4C16.4182 4 20 7.58172 20 12C20 16.4182 16.4182 20 12 20Z"
-        stroke="#22c55e"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M15 10L11 14.25L9.25 12.25"
-        stroke="#22c55e"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+  ) : (
+    <g>
+      <path d="M4.75 11.25C4.75 10.4216 5.42157 9.75 6.25 9.75H12.75C13.5784 9.75 14.25 10.4216 14.25 11.25V17.75C14.25 18.5784 13.5784 19.25 12.75 19.25H6.25C5.42157 19.25 4.75 18.5784 4.75 17.75V11.25Z" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M17.25 14.25H17.75C18.5784 14.25 19.25 13.5784 19.25 12.75V6.25C19.25 5.42157 18.5784 4.75 17.75 4.75H11.25C10.4216 4.75 9.75 5.42157 9.75 6.25V6.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </g>
-  </svg>
-);
+  );
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      {exiting !== null && <CrossfadeGroup exiting>{renderState(exiting)}</CrossfadeGroup>}
+      {renderState(current)}
+    </svg>
+  );
+};
 
 // Animated send arrow icon (paper plane style with checkmark/error transition)
 export const IconSendArrow = ({
@@ -238,133 +250,58 @@ export const IconSendArrow = ({
   size?: number;
   state?: "idle" | "sending" | "sent" | "failed";
 }) => {
-  const showArrow = state === "idle";
-  const showCheck = state === "sent";
-  const showError = state === "failed";
-  const isSending = state === "sending";
-
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <style>{`
-        .send-arrow-icon, .send-check-icon, .send-error-icon {
-          transition: opacity 0.15s ease, transform 0.15s ease;
-        }
-      `}</style>
-      {/* Send arrow */}
-      <g className="send-arrow-icon" style={{
-        opacity: showArrow ? 1 : isSending ? 0.5 : 0,
-        transform: showArrow ? 'scale(1)' : 'scale(0.8)',
-        transformOrigin: 'center'
-      }}>
-        <path
-          d="M9.875 14.125L12.3506 19.6951C12.7184 20.5227 13.9091 20.4741 14.2083 19.6193L18.8139 6.46032C19.0907 5.6695 18.3305 4.90933 17.5397 5.18611L4.38072 9.79174C3.52589 10.0909 3.47731 11.2816 4.30494 11.6494L9.875 14.125ZM9.875 14.125L13.375 10.625"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+  const { current, exiting } = useCrossfade(state);
+  const renderState = (val: typeof state) => {
+    if (val === "sent") return (
+      <g>
+        <path d="M12 20C7.58172 20 4 16.4182 4 12C4 7.58172 7.58172 4 12 4C16.4182 4 20 7.58172 20 12C20 16.4182 16.4182 20 12 20Z" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M15 10L11 14.25L9.25 12.25" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </g>
-      {/* Green checkmark circle */}
-      <g className="send-check-icon" style={{
-        opacity: showCheck ? 1 : 0,
-        transform: showCheck ? 'scale(1)' : 'scale(0.8)',
-        transformOrigin: 'center'
-      }}>
-        <path
-          d="M12 20C7.58172 20 4 16.4182 4 12C4 7.58172 7.58172 4 12 4C16.4182 4 20 7.58172 20 12C20 16.4182 16.4182 20 12 20Z"
-          stroke="#22c55e"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M15 10L11 14.25L9.25 12.25"
-          stroke="#22c55e"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </g>
-      {/* Red error circle with exclamation */}
-      <g className="send-error-icon" style={{
-        opacity: showError ? 1 : 0,
-        transform: showError ? 'scale(1)' : 'scale(0.8)',
-        transformOrigin: 'center'
-      }}>
-        <path
-          d="M12 20C7.58172 20 4 16.4182 4 12C4 7.58172 7.58172 4 12 4C16.4182 4 20 7.58172 20 12C20 16.4182 16.4182 20 12 20Z"
-          stroke="#ef4444"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M12 8V12"
-          stroke="#ef4444"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
+    );
+    if (val === "failed") return (
+      <g>
+        <path d="M12 20C7.58172 20 4 16.4182 4 12C4 7.58172 7.58172 4 12 4C16.4182 4 20 7.58172 20 12C20 16.4182 16.4182 20 12 20Z" stroke="#ef4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M12 8V12" stroke="#ef4444" strokeWidth="1.5" strokeLinecap="round" />
         <circle cx="12" cy="15" r="0.5" fill="#ef4444" stroke="#ef4444" strokeWidth="1" />
       </g>
+    );
+    return (
+      <g className={val === "sending" ? s.sending : undefined}>
+        <path d="M9.875 14.125L12.3506 19.6951C12.7184 20.5227 13.9091 20.4741 14.2083 19.6193L18.8139 6.46032C19.0907 5.6695 18.3305 4.90933 17.5397 5.18611L4.38072 9.79174C3.52589 10.0909 3.47731 11.2816 4.30494 11.6494L9.875 14.125ZM9.875 14.125L13.375 10.625" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </g>
+    );
+  };
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      {exiting !== null && <CrossfadeGroup exiting>{renderState(exiting)}</CrossfadeGroup>}
+      {renderState(current)}
     </svg>
   );
 };
 
 // Animated send/checkmark icon (for "Send to Agent" button)
-export const IconSendAnimated = ({ size = 24, sent = false }: { size?: number; sent?: boolean }) => (
-  <svg width={size} height={size} viewBox="0 0 22 21" fill="none">
-    <style>{`
-      .send-icon, .sent-icon {
-        transition: opacity 0.2s ease, transform 0.2s ease;
-      }
-    `}</style>
-    {/* Send icon (document with arrow) */}
-    <g className="send-icon" style={{ opacity: sent ? 0 : 1, transform: sent ? 'scale(0.8)' : 'scale(1)', transformOrigin: 'center' }}>
-      <path
-        d="M9.5 5H6.5C4.84315 5 3.5 6.34315 3.5 8V15C3.5 16.6569 4.84315 18 6.5 18H13.5C15.1569 18 16.5 16.6569 16.5 15V12"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M13.5 8.5L18.5 3.5M18.5 3.5L14.4524 3.5M18.5 3.5L18.5 7.54762"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M7.5 13.75H12.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M7.5 10.75H10.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
+export const IconSendAnimated = ({ size = 24, sent = false }: { size?: number; sent?: boolean }) => {
+  const { current, exiting } = useCrossfade(sent);
+  const renderState = (val: boolean) => val ? (
+    <g>
+      <path d="M11 19C6.58172 19 3 15.4182 3 11C3 6.58172 6.58172 3 11 3C15.4182 3 19 6.58172 19 11C19 15.4182 15.4182 19 11 19Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14 9L10 13.25L8.25 11.25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </g>
-    {/* Checkmark circle (success state) */}
-    <g className="sent-icon" style={{ opacity: sent ? 1 : 0, transform: sent ? 'scale(1)' : 'scale(0.8)', transformOrigin: 'center' }}>
-      <path
-        d="M11 19C6.58172 19 3 15.4182 3 11C3 6.58172 6.58172 3 11 3C15.4182 3 19 6.58172 19 11C19 15.4182 15.4182 19 11 19Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M14 9L10 13.25L8.25 11.25"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+  ) : (
+    <g>
+      <path d="M9.5 5H6.5C4.84315 5 3.5 6.34315 3.5 8V15C3.5 16.6569 4.84315 18 6.5 18H13.5C15.1569 18 16.5 16.6569 16.5 15V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M13.5 8.5L18.5 3.5M18.5 3.5L14.4524 3.5M18.5 3.5L18.5 7.54762" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M7.5 13.75H12.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M7.5 10.75H10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </g>
-  </svg>
-);
+  );
+  return (
+    <svg width={size} height={size} viewBox="0 0 22 21" fill="none">
+      {exiting !== null && <CrossfadeGroup exiting>{renderState(exiting)}</CrossfadeGroup>}
+      {renderState(current)}
+    </svg>
+  );
+};
 
 // Eye icon (original)
 export const IconEye = ({ size = 16 }: { size?: number }) => (
@@ -423,81 +360,53 @@ export const IconEyeClosed = ({ size = 24 }: { size?: number }) => (
 );
 
 // Animated eye icon that transitions between open/closed states
-export const IconEyeAnimated = ({ size = 24, isOpen = true }: { size?: number; isOpen?: boolean }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <style>{`
-      .eye-open, .eye-closed {
-        transition: opacity 0.2s ease;
-      }
-    `}</style>
-    {/* Open state - full outline + pupil */}
-    <g className="eye-open" style={{ opacity: isOpen ? 1 : 0 }}>
-      <path
-        d="M3.91752 12.7539C3.65127 12.2996 3.65037 11.7515 3.9149 11.2962C4.9042 9.59346 7.72688 5.49994 12 5.49994C16.2731 5.49994 19.0958 9.59346 20.0851 11.2962C20.3496 11.7515 20.3487 12.2996 20.0825 12.7539C19.0908 14.4459 16.2694 18.4999 12 18.4999C7.73064 18.4999 4.90918 14.4459 3.91752 12.7539Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M12 14.8261C13.5608 14.8261 14.8261 13.5608 14.8261 12C14.8261 10.4392 13.5608 9.17392 12 9.17392C10.4392 9.17392 9.17391 10.4392 9.17391 12C9.17391 13.5608 10.4392 14.8261 12 14.8261Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+export const IconEyeAnimated = ({ size = 24, isOpen = true }: { size?: number; isOpen?: boolean }) => {
+  const { current, exiting } = useCrossfade(isOpen);
+  const renderState = (val: boolean) => val ? (
+    <g>
+      <path d="M3.91752 12.7539C3.65127 12.2996 3.65037 11.7515 3.9149 11.2962C4.9042 9.59346 7.72688 5.49994 12 5.49994C16.2731 5.49994 19.0958 9.59346 20.0851 11.2962C20.3496 11.7515 20.3487 12.2996 20.0825 12.7539C19.0908 14.4459 16.2694 18.4999 12 18.4999C7.73064 18.4999 4.90918 14.4459 3.91752 12.7539Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M12 14.8261C13.5608 14.8261 14.8261 13.5608 14.8261 12C14.8261 10.4392 13.5608 9.17392 12 9.17392C10.4392 9.17392 9.17391 10.4392 9.17391 12C9.17391 13.5608 10.4392 14.8261 12 14.8261Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </g>
-    {/* Closed state - split outline + slash */}
-    <g className="eye-closed" style={{ opacity: isOpen ? 0 : 1 }}>
-      <path
-        d="M18.6025 9.28503C18.9174 8.9701 19.4364 8.99481 19.7015 9.35271C20.1484 9.95606 20.4943 10.507 20.7342 10.9199C21.134 11.6086 21.1329 12.4454 20.7303 13.1328C20.2144 14.013 19.2151 15.5225 17.7723 16.8193C16.3293 18.1162 14.3852 19.2497 12.0008 19.25C11.4192 19.25 10.8638 19.1823 10.3355 19.0613C9.77966 18.934 9.63498 18.2525 10.0382 17.8493C10.2412 17.6463 10.5374 17.573 10.8188 17.6302C11.1993 17.7076 11.5935 17.75 12.0008 17.75C13.8848 17.7497 15.4867 16.8568 16.7693 15.7041C18.0522 14.5511 18.9606 13.1867 19.4363 12.375C19.5656 12.1543 19.5659 11.8943 19.4373 11.6729C19.2235 11.3049 18.921 10.8242 18.5364 10.3003C18.3085 9.98991 18.3302 9.5573 18.6025 9.28503ZM12.0008 4.75C12.5814 4.75006 13.1358 4.81803 13.6632 4.93953C14.2182 5.06741 14.362 5.74812 13.9593 6.15091C13.7558 6.35435 13.4589 6.42748 13.1771 6.36984C12.7983 6.29239 12.4061 6.25006 12.0008 6.25C10.1167 6.25 8.51415 7.15145 7.23028 8.31543C5.94678 9.47919 5.03918 10.8555 4.56426 11.6729C4.43551 11.8945 4.43582 12.1542 4.56524 12.375C4.77587 12.7343 5.07189 13.2012 5.44718 13.7105C5.67623 14.0213 5.65493 14.4552 5.38193 14.7282C5.0671 15.0431 4.54833 15.0189 4.28292 14.6614C3.84652 14.0736 3.50813 13.5369 3.27129 13.1328C2.86831 12.4451 2.86717 11.6088 3.26739 10.9199C3.78185 10.0345 4.77959 8.51239 6.22247 7.2041C7.66547 5.89584 9.61202 4.75 12.0008 4.75Z"
-        fill="currentColor"
-      />
-      <path
-        d="M5 19L19 5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
+  ) : (
+    <g>
+      <path d="M18.6025 9.28503C18.9174 8.9701 19.4364 8.99481 19.7015 9.35271C20.1484 9.95606 20.4943 10.507 20.7342 10.9199C21.134 11.6086 21.1329 12.4454 20.7303 13.1328C20.2144 14.013 19.2151 15.5225 17.7723 16.8193C16.3293 18.1162 14.3852 19.2497 12.0008 19.25C11.4192 19.25 10.8638 19.1823 10.3355 19.0613C9.77966 18.934 9.63498 18.2525 10.0382 17.8493C10.2412 17.6463 10.5374 17.573 10.8188 17.6302C11.1993 17.7076 11.5935 17.75 12.0008 17.75C13.8848 17.7497 15.4867 16.8568 16.7693 15.7041C18.0522 14.5511 18.9606 13.1867 19.4363 12.375C19.5656 12.1543 19.5659 11.8943 19.4373 11.6729C19.2235 11.3049 18.921 10.8242 18.5364 10.3003C18.3085 9.98991 18.3302 9.5573 18.6025 9.28503ZM12.0008 4.75C12.5814 4.75006 13.1358 4.81803 13.6632 4.93953C14.2182 5.06741 14.362 5.74812 13.9593 6.15091C13.7558 6.35435 13.4589 6.42748 13.1771 6.36984C12.7983 6.29239 12.4061 6.25006 12.0008 6.25C10.1167 6.25 8.51415 7.15145 7.23028 8.31543C5.94678 9.47919 5.03918 10.8555 4.56426 11.6729C4.43551 11.8945 4.43582 12.1542 4.56524 12.375C4.77587 12.7343 5.07189 13.2012 5.44718 13.7105C5.67623 14.0213 5.65493 14.4552 5.38193 14.7282C5.0671 15.0431 4.54833 15.0189 4.28292 14.6614C3.84652 14.0736 3.50813 13.5369 3.27129 13.1328C2.86831 12.4451 2.86717 11.6088 3.26739 10.9199C3.78185 10.0345 4.77959 8.51239 6.22247 7.2041C7.66547 5.89584 9.61202 4.75 12.0008 4.75Z" fill="currentColor" />
+      <path d="M5 19L19 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </g>
-  </svg>
-);
+  );
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      {exiting !== null && <CrossfadeGroup exiting>{renderState(exiting)}</CrossfadeGroup>}
+      {renderState(current)}
+    </svg>
+  );
+};
 
 // Animated pause/play icon that transitions between states
-export const IconPausePlayAnimated = ({ size = 24, isPaused = false }: { size?: number; isPaused?: boolean }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <style>{`
-      .pause-bar, .play-triangle {
-        transition: opacity 0.15s ease;
-      }
-    `}</style>
-    {/* Pause bars - visible when not paused */}
-    <path
-      className="pause-bar"
-      d="M8 6L8 18"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      style={{ opacity: isPaused ? 0 : 1 }}
-    />
-    <path
-      className="pause-bar"
-      d="M16 18L16 6"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      style={{ opacity: isPaused ? 0 : 1 }}
-    />
-    {/* Play triangle - visible when paused */}
-    <path
-      className="play-triangle"
-      d="M17.75 10.701C18.75 11.2783 18.75 12.7217 17.75 13.299L8.75 18.4952C7.75 19.0725 6.5 18.3509 6.5 17.1962L6.5 6.80384C6.5 5.64914 7.75 4.92746 8.75 5.50481L17.75 10.701Z"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      style={{ opacity: isPaused ? 1 : 0 }}
-    />
-  </svg>
-);
+export const IconPausePlayAnimated = ({ size = 24, isPaused = false }: { size?: number; isPaused?: boolean }) => {
+  const { current, exiting } = useCrossfade(isPaused);
+
+  const renderState = (paused: boolean) => paused ? (
+    <g>
+      <path
+        d="M17.75 10.701C18.75 11.2783 18.75 12.7217 17.75 13.299L8.75 18.4952C7.75 19.0725 6.5 18.3509 6.5 17.1962L6.5 6.80384C6.5 5.64914 7.75 4.92746 8.75 5.50481L17.75 10.701Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+    </g>
+  ) : (
+    <g>
+      <path d="M8 6L8 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M16 18L16 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </g>
+  );
+
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      {exiting !== null && <CrossfadeGroup exiting>{renderState(exiting)}</CrossfadeGroup>}
+      {renderState(current)}
+    </svg>
+  );
+};
 
 // Eye with minus (hidden/collapsed state)
 export const IconEyeMinus = ({ size = 16 }: { size?: number }) => (

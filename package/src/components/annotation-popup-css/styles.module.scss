@@ -2,9 +2,18 @@
 // Uses CSS animations for all transitions
 
 // Protect stroke-based icons from host page `svg { fill: currentColor }` rules.
-// Only targets SVGs with explicit fill="none" attribute to avoid breaking icons that use fill.
-svg[fill="none"] {
-  fill: none !important;
+// Scoped to agentation's own container to avoid breaking host SVGs that use
+// fill="none" with CSS-based fills (e.g. Tailwind's fill-current).
+// Also targets descendants to handle host rules like `svg * { fill: currentColor }`.
+// See: https://github.com/benjitaylor/agentation/issues/58
+.popup {
+  svg[fill="none"] {
+    fill: none !important;
+  }
+
+  svg[fill="none"] :not([fill]) {
+    fill: none !important;
+  }
 }
 
 $blue: #3c82f7;

@@ -1,0 +1,25 @@
+// Icon crossfade transitions.
+// Uses a CSS animation for the exiting state — the element is removed from the
+// DOM after the animation completes, so host CSS cannot permanently reveal it.
+// Keyframe names are scoped by CSS modules (hashed), preventing host interference.
+// See: https://github.com/benjitaylor/agentation/issues/58
+
+@keyframes iconFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+.exiting {
+  animation: iconFadeOut 0.15s ease forwards;
+  pointer-events: none;
+}
+
+.sending {
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+}
