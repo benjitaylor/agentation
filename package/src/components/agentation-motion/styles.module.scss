@@ -1,0 +1,62 @@
+// =============================================================================
+// AgentationMotion — trigger button styles
+// =============================================================================
+@use "sass:color";
+
+$accent: #6366f1;
+
+.triggerBtn {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 5rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #1c1c24;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  box-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+
+  &:hover {
+    background: #26263a;
+    color: #fff;
+    transform: scale(1.06);
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.12);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &.panelOpen {
+    background: rgba($accent, 0.22);
+    color: color.scale($accent, $lightness: 60%);
+    box-shadow:
+      0 2px 12px rgba($accent, 0.35),
+      0 0 0 1px rgba($accent, 0.3);
+
+    &:hover {
+      background: rgba($accent, 0.3);
+    }
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+  }
+}

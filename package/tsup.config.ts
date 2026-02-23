@@ -100,4 +100,21 @@ export default defineConfig((options) => [
       js: '"use client";',
     },
   },
+  // Motion sub-entry
+  {
+    entry: ["src/motion.ts"],
+    format: ["cjs", "esm"],
+    dts: true,
+    splitting: false,
+    sourcemap: true,
+    clean: false,
+    external: ["react", "react-dom"],
+    esbuildPlugins: [scssModulesPlugin()],
+    define: {
+      __VERSION__: JSON.stringify(VERSION),
+    },
+    banner: {
+      js: '"use client";',
+    },
+  },
 ]);

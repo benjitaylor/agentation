@@ -17,6 +17,17 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
+    },
+    "./motion": {
+      "types": "./dist/motion.d.ts",
+      "import": {
+        "types": "./dist/motion.d.mts",
+        "default": "./dist/motion.mjs"
+      },
+      "require": {
+        "types": "./dist/motion.d.ts",
+        "default": "./dist/motion.js"
+      }
     }
   },
   "files": [
