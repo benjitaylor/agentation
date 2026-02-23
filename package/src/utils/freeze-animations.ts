@@ -143,6 +143,7 @@ if (typeof window !== "undefined" && !_s.installed) {
 // ---------------------------------------------------------------------------
 export const originalSetTimeout = _s.origSetTimeout;
 export const originalSetInterval = _s.origSetInterval;
+export const originalRAF = _s.origRAF;
 
 // ---------------------------------------------------------------------------
 // Freeze / Unfreeze

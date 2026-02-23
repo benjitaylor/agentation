@@ -1,0 +1,777 @@
+// =============================================================================
+// Motion Timeline Panel Styles
+// =============================================================================
+
+$bg: #1a1a1f;
+$bg-raised: #222228;
+$bg-hover: #2a2a32;
+$border: rgba(255, 255, 255, 0.08);
+$border-strong: rgba(255, 255, 255, 0.14);
+$text: #e8e8f0;
+$text-muted: rgba(232, 232, 240, 0.5);
+$text-dim: rgba(232, 232, 240, 0.3);
+$accent: #6366f1;
+$playhead: #f43f5e;
+$track-h: 42px;
+$ruler-h: 24px;
+$label-w: 200px;
+$header-h: 44px;
+$enter-color: #6366f1;
+$idle-color: #10b981;
+$exit-color: #f59e0b;
+
+// ── Panel container ───────────────────────────────────────────────────────────
+
+.panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 310px;
+  z-index: 99998;
+  background: $bg;
+  border-top: 1px solid $border-strong;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  color: $text;
+  font-size: 12px;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
+
+  &.panelEnter {
+    animation: panelSlideUp 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  &.panelExit {
+    animation: panelSlideDown 0.18s ease-in both;
+  }
+}
+
+@keyframes panelSlideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+@keyframes panelSlideDown {
+  from { transform: translateY(0);    opacity: 1; }
+  to   { transform: translateY(100%); opacity: 0; }
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  height: $header-h;
+  border-bottom: 1px solid $border;
+  flex-shrink: 0;
+}
+
+.headerTitle {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: $text-muted;
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+
+.headerDivider {
+  width: 1px;
+  height: 16px;
+  background: $border-strong;
+  margin: 0 4px;
+}
+
+.headerSpacer {
+  flex: 1;
+}
+
+.modeBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid $border;
+  background: transparent;
+  color: $text-muted;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    background: $bg-hover;
+    color: $text;
+  }
+
+  &.active {
+    background: rgba($accent, 0.15);
+    border-color: rgba($accent, 0.35);
+    color: $accent;
+  }
+}
+
+.controlBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    background: $bg-hover;
+    color: $text;
+  }
+
+  &.active {
+    color: $accent;
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.timeDisplay {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: $text-muted;
+  min-width: 52px;
+  text-align: right;
+  font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+}
+
+.exportBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid $border;
+  background: $bg-raised;
+  color: $text-muted;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    background: $bg-hover;
+    color: $text;
+    border-color: $border-strong;
+  }
+}
+
+.closeBtn {
+  @extend .controlBtn;
+  margin-left: 2px;
+}
+
+// ── Body ──────────────────────────────────────────────────────────────────────
+
+.body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+// ── Track list (left sidebar) ─────────────────────────────────────────────────
+
+.trackList {
+  width: $label-w;
+  flex-shrink: 0;
+  border-right: 1px solid $border;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+
+  // Ruler spacer
+  &::before {
+    content: "";
+    height: $ruler-h;
+    flex-shrink: 0;
+    border-bottom: 1px solid $border;
+    display: block;
+  }
+}
+
+.trackLabel {
+  height: $track-h;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 10px;
+  border-bottom: 1px solid $border;
+  flex-shrink: 0;
+  cursor: default;
+
+  &:hover .trackRemoveBtn {
+    opacity: 1;
+  }
+}
+
+.trackDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.trackName {
+  flex: 1;
+  font-size: 11px;
+  color: $text;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+}
+
+.trackRemoveBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: none;
+  background: transparent;
+  color: $text-dim;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(244, 63, 94, 0.15);
+    color: $playhead;
+  }
+
+  svg {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+.emptyState {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: $text-dim;
+  font-size: 11px;
+  text-align: center;
+  padding: 16px;
+  line-height: 1.5;
+  margin-top: -$ruler-h;
+}
+
+.emptyIcon {
+  font-size: 22px;
+  opacity: 0.4;
+}
+
+// ── Timeline grid (right area) ────────────────────────────────────────────────
+
+.timelineArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.ruler {
+  height: $ruler-h;
+  border-bottom: 1px solid $border;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.rulerTick {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &::before {
+    content: "";
+    display: block;
+    width: 1px;
+    height: 6px;
+    background: $border-strong;
+  }
+}
+
+.rulerLabel {
+  font-size: 9px;
+  color: $text-dim;
+  margin-top: 1px;
+  font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.tracksArea {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.trackLane {
+  height: $track-h;
+  position: relative;
+  border-bottom: 1px solid $border;
+  flex-shrink: 0;
+}
+
+// ── Phase blocks ──────────────────────────────────────────────────────────────
+
+.phaseBlock {
+  position: absolute;
+  top: 8px;
+  height: 26px;
+  border-radius: 5px;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  user-select: none;
+  transition: filter 0.1s, box-shadow 0.1s;
+  overflow: hidden;
+  min-width: 24px;
+
+  &:hover {
+    filter: brightness(1.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  &.selected {
+    box-shadow: 0 0 0 2px white, 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  &.dragging {
+    cursor: grabbing;
+    opacity: 0.85;
+  }
+
+  &.disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  &.enter {
+    background: rgba($enter-color, 0.25);
+    border: 1px solid rgba($enter-color, 0.5);
+    color: lighten($enter-color, 30%);
+  }
+
+  &.idle {
+    background: rgba($idle-color, 0.18);
+    border: 1px solid rgba($idle-color, 0.4);
+    color: lighten($idle-color, 20%);
+  }
+
+  &.exit {
+    background: rgba($exit-color, 0.2);
+    border: 1px solid rgba($exit-color, 0.4);
+    color: lighten($exit-color, 10%);
+  }
+}
+
+.phaseLabel {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 0 6px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.resizeHandle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: ew-resize;
+  z-index: 2;
+
+  &::after {
+    content: "";
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 12px;
+    border-radius: 1px;
+    background: currentColor;
+    opacity: 0.4;
+  }
+}
+
+// ── Playhead ──────────────────────────────────────────────────────────────────
+
+.playheadContainer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  z-index: 10;
+  pointer-events: none;
+
+  &.draggable {
+    pointer-events: all;
+    cursor: ew-resize;
+  }
+}
+
+.playheadLine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background: $playhead;
+  opacity: 0.85;
+}
+
+.playheadHead {
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  background: $playhead;
+  border-radius: 2px;
+  pointer-events: all;
+  cursor: ew-resize;
+}
+
+// ── Properties panel ──────────────────────────────────────────────────────────
+
+.propertiesPanel {
+  border-top: 1px solid $border;
+  background: $bg-raised;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+  max-height: 130px;
+  overflow-y: auto;
+}
+
+.propsHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.propsTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: $text;
+}
+
+.phaseBadge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+
+  &.enter { background: rgba($enter-color, 0.2); color: lighten($enter-color, 30%); }
+  &.idle  { background: rgba($idle-color, 0.15);  color: lighten($idle-color, 20%);  }
+  &.exit  { background: rgba($exit-color, 0.18);  color: lighten($exit-color, 10%);  }
+}
+
+.propsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.propGroup {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.propLabel {
+  font-size: 10px;
+  color: $text-muted;
+  white-space: nowrap;
+}
+
+.propInput {
+  background: $bg;
+  border: 1px solid $border-strong;
+  border-radius: 4px;
+  color: $text;
+  font-size: 11px;
+  padding: 3px 6px;
+  width: 70px;
+  font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+
+  &:focus {
+    outline: none;
+    border-color: rgba($accent, 0.5);
+  }
+
+  &.wide { width: 140px; }
+  &.narrow { width: 50px; }
+}
+
+.easingPresets {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.easingPreset {
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid $border;
+  background: transparent;
+  color: $text-muted;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.12s;
+
+  &:hover { background: $bg-hover; color: $text; }
+  &.active { background: rgba($accent, 0.15); border-color: rgba($accent, 0.35); color: $accent; }
+}
+
+.keyframesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.keyframeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.keyframeLabel {
+  font-size: 9px;
+  color: $text-dim;
+  width: 24px;
+  font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+}
+
+.kfPropInput {
+  @extend .propInput;
+  width: 90px;
+}
+
+.kfValInput {
+  @extend .propInput;
+  flex: 1;
+  min-width: 60px;
+}
+
+.addKfPropBtn {
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px dashed $border-strong;
+  background: transparent;
+  color: $text-dim;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.12s;
+
+  &:hover { color: $text; border-color: $border-strong; background: $bg-hover; }
+}
+
+// ── Export panel ──────────────────────────────────────────────────────────────
+
+.exportPanel {
+  position: absolute;
+  right: 12px;
+  bottom: calc(100% + 6px);
+  width: 440px;
+  background: $bg-raised;
+  border: 1px solid $border-strong;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  overflow: hidden;
+  animation: exportIn 0.15s ease-out both;
+}
+
+@keyframes exportIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.exportHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid $border;
+}
+
+.exportFormatBtns {
+  display: flex;
+  gap: 4px;
+}
+
+.exportFormatBtn {
+  padding: 3px 9px;
+  border-radius: 5px;
+  border: 1px solid $border;
+  background: transparent;
+  color: $text-muted;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.12s;
+
+  &:hover { background: $bg-hover; color: $text; }
+  &.active { background: rgba($accent, 0.15); border-color: rgba($accent, 0.35); color: $accent; }
+}
+
+.exportSpacer {
+  flex: 1;
+}
+
+.exportCopyBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid $border;
+  background: $bg;
+  color: $text-muted;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.12s;
+
+  &:hover { background: $bg-hover; color: $text; }
+
+  svg { width: 12px; height: 12px; }
+}
+
+.exportCode {
+  display: block;
+  width: 100%;
+  height: 180px;
+  background: $bg;
+  border: none;
+  padding: 12px;
+  color: $text;
+  font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  resize: none;
+  overflow: auto;
+
+  &:focus { outline: none; }
+}
+
+// ── Hover highlight (tag mode) ────────────────────────────────────────────────
+
+.hoverHighlight {
+  position: fixed;
+  border: 2px solid rgba(99, 102, 241, 0.6);
+  background: rgba(99, 102, 241, 0.06);
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 99997;
+  box-sizing: border-box;
+  animation: highlightIn 0.1s ease-out both;
+}
+
+@keyframes highlightIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+// ── Tagged element overlay ────────────────────────────────────────────────────
+
+.tagOverlay {
+  position: fixed;
+  border: 2px solid;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 99997;
+  box-sizing: border-box;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.tagOverlayLabel {
+  position: absolute;
+  top: -18px;
+  left: -2px;
+  font-size: 9px;
+  font-weight: 600;
+  font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+  background: currentColor;
+  padding: 1px 5px;
+  border-radius: 2px 2px 0 0;
+  white-space: nowrap;
+  color: white;
+  pointer-events: none;
+}
+
+// ── Crosshair cursor (tag mode) ───────────────────────────────────────────────
+
+.tagCursor {
+  cursor: crosshair;
+}
+
+// ── Tag mode empty / prompt banner ────────────────────────────────────────────
+
+.tagPrompt {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, calc(-50% - 165px));
+  background: rgba(26, 26, 31, 0.92);
+  border: 1px solid $border-strong;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 12px;
+  color: $text-muted;
+  pointer-events: none;
+  z-index: 99999;
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  animation: highlightIn 0.18s ease-out both;
+
+  strong {
+    color: $text;
+  }
+}
