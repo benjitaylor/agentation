@@ -1,6 +1,6 @@
 ---
 name: agentation
-description: Add Agentation visual feedback toolbar to a Next.js project
+description: Install and configure the Agentation annotation toolbar in a Next.js or React project. Use when the user wants to add design feedback tools, page annotation capabilities, or a visual critique overlay. Detects App Router vs Pages Router, installs the package, adds the component, and recommends MCP server setup for AI agent integration.
 ---
 
 # Agentation Setup
@@ -43,19 +43,13 @@ Set up the Agentation annotation toolbar in this project.
    - Tell the user the Agentation toolbar component is configured
 
 6. **Recommend MCP server setup**
-   - Explain that for real-time annotation syncing with AI agents, they should also set up the MCP server
-   - Recommend one of the following approaches:
-     - **Universal (supports 9+ agents including Claude Code, Cursor, Codex, Windsurf, etc.):**
-       See [add-mcp](https://github.com/neondatabase/add-mcp) — run `npx add-mcp` and follow the prompts to add `agentation-mcp` as an MCP server
-     - **Claude Code only (interactive wizard):**
-       Run `agentation-mcp init` after installing the package
-   - Tell user to restart their coding agent after MCP setup to load the server
-   - Explain that once configured, annotations will sync to the agent automatically
+   - For real-time annotation syncing with AI agents, recommend MCP server setup:
+     - **Universal (9+ agents — Claude Code, Cursor, Codex, Windsurf, etc.):** `npx add-mcp` → add `agentation-mcp`
+     - **Claude Code only:** `agentation-mcp init`
+   - Tell user to restart their coding agent after MCP setup
+   - Run `agentation-mcp doctor` to verify setup
 
 ## Notes
 
 - The `NODE_ENV` check ensures Agentation only loads in development
-- Agentation requires React 18
-- The MCP server runs on port 4747 by default for the HTTP server
-- MCP server exposes tools like `agentation_get_all_pending`, `agentation_resolve`, and `agentation_watch_annotations`
-- Run `agentation-mcp doctor` to verify setup after installing
+- Agentation requires React 18+
