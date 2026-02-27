@@ -302,13 +302,13 @@ function classifyStrokeGesture(
   const start = viewportPoints[0];
   const end = viewportPoints[viewportPoints.length - 1];
   const startEndDist = Math.hypot(end.x - start.x, end.y - start.y);
-  const closedLoop = startEndDist < bboxDiag * 0.35;
+  const closedLoop = startEndDist < bboxDiag * 0.45;
   const aspectRatio = bboxW / Math.max(bboxH, 1);
 
   if (closedLoop && bboxDiag > 20) {
-    // Only classify as Circle if very clearly round (similar width/height, no corners)
+    // Classify as Circle for roughly round closed loops (hand-drawn circles are often elliptical)
     const ar = Math.max(aspectRatio, 1 / Math.max(aspectRatio, 0.01));
-    if (ar < 1.4) return "Circle";
+    if (ar < 2.0) return "Circle";
     // Everything else that's closed → just call it Drawing
     return "Drawing";
   } else if (!closedLoop && aspectRatio > 3 && bboxH < 40) {
@@ -1372,6 +1372,10 @@ export function PageFeedbackToolbarCSS({
   const exitingStrokeIdRef = useRef<string | null>(null);
   const exitingAlphaRef = useRef(1);
 
+
+  // Pencil cursor for draw mode — matches the toolbar IconPencil, with white outline for contrast
+  // Hotspot at pencil tip (bottom-left corner at ~4,16 in the 20x20 space)
+  const pencilCursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M15.8787 4.87868C16.6597 4.09763 17.9261 4.09763 18.7071 4.87868L19.1213 5.29289C19.9024 6.07394 19.9024 7.34027 19.1213 8.12132L9.58579 17.6569C9.21071 18.0319 8.70201 18.2426 8.17157 18.2426H5.75V15.8284C5.75 15.298 5.96071 14.7893 6.33579 14.4142L15.8787 4.87868Z' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M15.8787 4.87868C16.6597 4.09763 17.9261 4.09763 18.7071 4.87868L19.1213 5.29289C19.9024 6.07394 19.9024 7.34027 19.1213 8.12132L9.58579 17.6569C9.21071 18.0319 8.70201 18.2426 8.17157 18.2426H5.75V15.8284C5.75 15.298 5.96071 14.7893 6.33579 14.4142L15.8787 4.87868Z' stroke='%23222' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M14.5 6.5L17.5 9.5' stroke='%23222' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") 4 16, crosshair`;
 
   // Cmd+shift+click multi-select state
   const [pendingMultiSelectElements, setPendingMultiSelectElements] = useState<
@@ -3679,6 +3683,19 @@ export function PageFeedbackToolbarCSS({
     return () => cancelAnimationFrame(raf);
   }, [isActive, hoveredDrawingIdx, pendingAnnotation?.drawingIndex, editingAnnotation?.drawingIndex, drawStrokes, redrawCanvas]);
 
+  // Pencil cursor for draw mode (uses setProperty to override global !important rule)
+  useEffect(() => {
+    const canvas = drawCanvasRef.current;
+    if (!canvas) return;
+    if (isDrawMode && hoveredDrawingIdx == null) {
+      canvas.style.setProperty("cursor", pencilCursor, "important");
+    } else if (isDrawMode && hoveredDrawingIdx != null) {
+      canvas.style.setProperty("cursor", "pointer", "important");
+    } else {
+      canvas.style.removeProperty("cursor");
+    }
+  }, [isDrawMode, hoveredDrawingIdx, pencilCursor]);
+
   // Fire webhook for annotation events - returns true on success, false on failure
   const fireWebhook = useCallback(
     async (
@@ -4442,7 +4459,13 @@ export function PageFeedbackToolbarCSS({
         target.isContentEditable;
 
       if (e.key === "Escape") {
-        // Exit draw mode first if active
+        // In draw mode with a popup open: close the popup but stay in draw mode
+        if (isDrawMode && (pendingAnnotation || editingAnnotation)) {
+          if (pendingAnnotation) cancelAnnotation();
+          if (editingAnnotation) cancelEditAnnotation();
+          return;
+        }
+        // Exit draw mode if active (no popup open)
         if (isDrawMode) {
           setIsDrawMode(false);
           return;
@@ -4599,6 +4622,9 @@ export function PageFeedbackToolbarCSS({
     isActive,
     isDrawMode,
     pendingAnnotation,
+    editingAnnotation,
+    cancelAnnotation,
+    cancelEditAnnotation,
     annotations.length,
     settings.webhookUrl,
     webhookUrl,

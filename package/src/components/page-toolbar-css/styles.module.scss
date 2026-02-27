@@ -2109,7 +2109,7 @@ $green: #34c759;
 
   &.active {
     pointer-events: auto !important;
-    cursor: crosshair !important;
+    // Cursor set via inline style (pencil in draw mode, crosshair otherwise)
 
     &[data-stroke-hover] {
       cursor: pointer !important;
