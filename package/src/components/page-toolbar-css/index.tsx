@@ -763,7 +763,8 @@ export function PageFeedbackToolbarCSS({
     (window.location.hostname === "localhost" ||
       window.location.hostname === "127.0.0.1" ||
       window.location.hostname === "0.0.0.0" ||
-      window.location.hostname.endsWith(".local"));
+      window.location.hostname.endsWith(".local") ||
+      window.location.hostname.endsWith(".test"));
 
   // Effective React mode - derived from outputDetail when enabled
   const effectiveReactMode: ReactComponentMode =
