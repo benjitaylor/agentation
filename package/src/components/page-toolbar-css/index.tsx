@@ -3515,6 +3515,14 @@ export function PageFeedbackToolbarCSS({
     const DRAG_THRESHOLD = 10; // pixels
 
     const handleMouseMove = (e: MouseEvent) => {
+      // Self-heal if mouseup was missed (e.g. touch synthesized events,
+      // focus loss, iframe capture). buttons === 0 means no button is pressed.
+      if (e.buttons === 0) {
+        setIsDraggingToolbar(false);
+        setDragStartPos(null);
+        return;
+      }
+
       const deltaX = e.clientX - dragStartPos.x;
       const deltaY = e.clientY - dragStartPos.y;
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
@@ -3581,6 +3589,13 @@ export function PageFeedbackToolbarCSS({
   // Handle toolbar drag start
   const handleToolbarMouseDown = useCallback(
     (e: React.MouseEvent) => {
+      // Disable dragging on touch devices — iOS synthesizes mousedown/mouseup
+      // synchronously after touchend, but the useEffect that adds the mouseup
+      // listener runs after React re-renders, so mouseup fires before the
+      // listener exists and dragStartPos leaks, causing the next tap to
+      // reposition the toolbar instead of creating an annotation.
+      if (navigator.maxTouchPoints > 0) return;
+
       // Only drag when clicking the toolbar background (not buttons or settings)
       if (
         (e.target as HTMLElement).closest("button") ||
