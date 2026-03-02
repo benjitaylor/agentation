@@ -3,7 +3,7 @@
   "name": "Agentation",
   "description": "Visual feedback tool for AI coding agents. Annotate elements, add notes, copy structured output.",
   "version": "0.1.0",
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage", "activeTab", "tabs"],
   "content_scripts": [
     {
       "matches": [
