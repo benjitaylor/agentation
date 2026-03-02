@@ -128,6 +128,7 @@ type HoverInfo = {
   elementPath: string;
   rect: DOMRect | null;
   reactComponents?: string | null;
+  isPiercing?: boolean;
 };
 
 type OutputDetailLevel = "compact" | "standard" | "detailed" | "forensic";
@@ -206,22 +207,113 @@ const COLOR_OPTIONS = [
 // =============================================================================
 
 /**
- * Recursively pierces shadow DOMs to find the deepest element at a point.
- * document.elementFromPoint() stops at shadow hosts, so we need to
- * recursively check inside open shadow roots to find the actual target.
+ * Pierce through shadow DOMs to find the actual element.
+ */
+function pierceShadowDOM(
+  element: HTMLElement,
+  x: number,
+  y: number,
+): HTMLElement {
+  let el = element;
+  while (el?.shadowRoot) {
+    const deeper = el.shadowRoot.elementFromPoint(x, y) as HTMLElement | null;
+    if (!deeper || deeper === el) break;
+    el = deeper;
+  }
+  return el;
+}
+
+/**
+ * Finds the deepest element at a point, piercing shadow DOMs.
  */
 function deepElementFromPoint(x: number, y: number): HTMLElement | null {
-  let element = document.elementFromPoint(x, y) as HTMLElement | null;
+  const element = document.elementFromPoint(x, y) as HTMLElement | null;
   if (!element) return null;
+  return pierceShadowDOM(element, x, y);
+}
 
-  // Keep drilling down through shadow roots
-  while (element?.shadowRoot) {
-    const deeper = element.shadowRoot.elementFromPoint(x, y) as HTMLElement | null;
-    if (!deeper || deeper === element) break;
-    element = deeper;
+// =============================================================================
+// Pierce mode (Cmd+hover) — scans through container wrappers and invisible
+// elements to find the actual content underneath. Useful for annotation in
+// animation-heavy frameworks (Remotion, Framer Motion, etc.) where empty
+// overlay divs intercept pointer events.
+// =============================================================================
+
+const GENERIC_CONTAINER_TAGS = new Set([
+  "DIV", "SPAN", "SECTION", "ARTICLE", "MAIN", "ASIDE", "HEADER", "FOOTER", "NAV",
+]);
+
+function isEffectivelyInvisible(el: HTMLElement): boolean {
+  if (typeof el.checkVisibility === "function") {
+    return !el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true });
+  }
+  let current: HTMLElement | null = el;
+  while (current && current !== document.body) {
+    if (window.getComputedStyle(current).opacity === "0") return true;
+    current = current.parentElement;
+  }
+  return false;
+}
+
+function hasDirectContent(el: HTMLElement): boolean {
+  if (!GENERIC_CONTAINER_TAGS.has(el.tagName)) return true;
+  for (const child of el.childNodes) {
+    if (child.nodeType === Node.TEXT_NODE && child.textContent?.trim()) return true;
+  }
+  return false;
+}
+
+/**
+ * Pierce mode: scans all elements at a point to find the deepest one with
+ * visible, meaningful content. Two-pass approach:
+ *   1. Find elements with direct text content (skips empty wrappers)
+ *   2. If no text found, return the smallest visible element (catches
+ *      visual-only elements like timeline bars, chart segments, swatches)
+ * Activated by holding Cmd (Mac) / Ctrl (Windows) while hovering.
+ */
+function pierceElementFromPoint(x: number, y: number): HTMLElement | null {
+  const topElement = document.elementFromPoint(x, y) as HTMLElement | null;
+  if (!topElement) return null;
+
+  const pierced = pierceShadowDOM(topElement, x, y);
+  if (hasDirectContent(pierced) && !isEffectivelyInvisible(pierced))
+    return pierced;
+
+  const allElements = document.elementsFromPoint(x, y) as HTMLElement[];
+
+  // Pass 1: find first element with direct text content
+  for (const candidate of allElements) {
+    if (candidate === topElement) continue;
+    if (candidate === document.documentElement || candidate === document.body)
+      continue;
+    const deep = pierceShadowDOM(candidate, x, y);
+    if (hasDirectContent(deep) && !isEffectivelyInvisible(deep))
+      return deep;
   }
 
-  return element;
+  // Pass 2: no text content found — return the smallest visible element.
+  // Catches visual-only elements (timeline bars, color swatches, progress
+  // indicators, chart segments) that communicate through color/size, not text.
+  const topRect = pierced.getBoundingClientRect();
+  const topArea = topRect.width * topRect.height;
+  let smallest: HTMLElement | null = null;
+  let smallestArea = topArea;
+
+  for (const candidate of allElements) {
+    if (candidate === topElement) continue;
+    if (candidate === document.documentElement || candidate === document.body)
+      continue;
+    if (isEffectivelyInvisible(candidate)) continue;
+    const deep = pierceShadowDOM(candidate, x, y);
+    const rect = deep.getBoundingClientRect();
+    const area = rect.width * rect.height;
+    if (area > 0 && area < smallestArea) {
+      smallest = deep;
+      smallestArea = area;
+    }
+  }
+
+  return smallest || pierced;
 }
 
 function isElementFixed(element: HTMLElement): boolean {
@@ -1499,7 +1591,11 @@ export function PageFeedbackToolbarCSS({
         return;
       }
 
-      const elementUnder = deepElementFromPoint(e.clientX, e.clientY);
+      // Cmd (Mac) / Ctrl (Win) = pierce mode: scan through overlays
+      const piercing = e.metaKey || e.ctrlKey;
+      const elementUnder = piercing
+        ? pierceElementFromPoint(e.clientX, e.clientY)
+        : deepElementFromPoint(e.clientX, e.clientY);
       if (
         !elementUnder ||
         closestCrossingShadow(elementUnder, "[data-feedback-toolbar]")
@@ -1518,6 +1614,7 @@ export function PageFeedbackToolbarCSS({
         elementPath: path,
         rect,
         reactComponents,
+        isPiercing: piercing,
       });
       setHoverPosition({ x: e.clientX, y: e.clientY });
     };
@@ -1544,11 +1641,12 @@ export function PageFeedbackToolbarCSS({
       if (closestCrossingShadow(target, "[data-annotation-marker]")) return;
 
       // Handle cmd+shift+click for multi-element selection
+      // Cmd is held so pierce mode is active — use pierceElementFromPoint
       if (e.metaKey && e.shiftKey && !pendingAnnotation && !editingAnnotation) {
         e.preventDefault();
         e.stopPropagation();
 
-        const elementUnder = deepElementFromPoint(e.clientX, e.clientY);
+        const elementUnder = pierceElementFromPoint(e.clientX, e.clientY);
         if (!elementUnder) return;
 
         const rect = elementUnder.getBoundingClientRect();
@@ -1615,7 +1713,11 @@ export function PageFeedbackToolbarCSS({
 
       e.preventDefault();
 
-      const elementUnder = deepElementFromPoint(e.clientX, e.clientY);
+      // Cmd (Mac) / Ctrl (Win) without Shift = pierce mode click
+      const piercing = (e.metaKey || e.ctrlKey) && !e.shiftKey;
+      const elementUnder = piercing
+        ? pierceElementFromPoint(e.clientX, e.clientY)
+        : deepElementFromPoint(e.clientX, e.clientY);
       if (!elementUnder) return;
 
       const { name, path, reactComponents } = identifyElementWithReact(
@@ -3862,6 +3964,7 @@ export function PageFeedbackToolbarCSS({
                   height: hoverInfo.rect.height,
                   borderColor: `${settings.annotationColor}80`,
                   backgroundColor: `${settings.annotationColor}0A`,
+                  ...(hoverInfo.isPiercing ? { borderStyle: "dashed" } : {}),
                 }}
               />
             )}
@@ -3993,11 +4096,16 @@ export function PageFeedbackToolbarCSS({
                   Math.min(hoverPosition.x, window.innerWidth - 100),
                 ),
                 top: Math.max(
-                  hoverPosition.y - (hoverInfo.reactComponents ? 48 : 32),
+                  hoverPosition.y - (hoverInfo.isPiercing ? 62 : hoverInfo.reactComponents ? 48 : 32),
                   8,
                 ),
               }}
             >
+              {hoverInfo.isPiercing && (
+                <div className={styles.hoverPierceIndicator}>
+                  {"⇣ deep select"}
+                </div>
+              )}
               {hoverInfo.reactComponents && (
                 <div className={styles.hoverReactPath}>
                   {hoverInfo.reactComponents}

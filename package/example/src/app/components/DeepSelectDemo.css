@@ -1,0 +1,221 @@
+/* ─────────────────────────────────────────────────────────
+ * Deep Select Demo
+ * Reuses shared demo-window / demo-browser-bar / demo-content
+ * from FeaturesDemo.css
+ * ───────────────────────────────────────────────────────── */
+
+/* Page layout — sidebar + main */
+.dsd-page-layout {
+  display: flex;
+  gap: 12px;
+  height: 100%;
+}
+
+.dsd-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 2px;
+}
+
+.dsd-sidebar-item {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.06);
+}
+
+.dsd-sidebar-item.active {
+  background: rgba(0,0,0,0.12);
+}
+
+.dsd-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.dsd-faux-title {
+  width: 90px;
+  height: 8px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+/* Dashboard card */
+.dsd-card {
+  position: relative;
+  background: white;
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.dsd-card-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.dsd-card-icon {
+  width: 24px;
+  height: 24px;
+  background: #3b82f6;
+  border-radius: 6px;
+  opacity: 0.15;
+}
+
+.dsd-card-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(0,0,0,0.4);
+  font-family: system-ui, sans-serif;
+}
+
+.dsd-card-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: rgba(0,0,0,0.8);
+  font-family: system-ui, sans-serif;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+/* Mini bar chart — stronger opacity so bars read as data */
+.dsd-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 28px;
+  margin-bottom: 10px;
+}
+
+.dsd-chart-bar {
+  flex: 1;
+  background: #3b82f6;
+  border-radius: 3px 3px 0 0;
+  opacity: 0.22;
+}
+
+.dsd-chart-bar:nth-child(n+5) {
+  opacity: 0.35;
+}
+
+/* Export button — the target element */
+.dsd-export-btn {
+  display: inline-block;
+  padding: 6px 14px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: system-ui, sans-serif;
+  border-radius: 6px;
+}
+
+/* Secondary metric cards below the main card */
+.dsd-mini-cards {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.dsd-mini-card {
+  flex: 1;
+  background: white;
+  border-radius: 8px;
+  padding: 8px 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.dsd-mini-label {
+  font-size: 9px;
+  font-weight: 500;
+  color: rgba(0,0,0,0.35);
+  font-family: system-ui, sans-serif;
+  margin-bottom: 2px;
+}
+
+.dsd-mini-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(0,0,0,0.7);
+  font-family: system-ui, sans-serif;
+  letter-spacing: -0.3px;
+}
+
+/* Invisible overlay — the problem this feature solves */
+.dsd-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  z-index: 2;
+  background: rgba(239, 68, 68, 0);
+  transition: background 0.3s ease;
+}
+
+.dsd-overlay.flash {
+  background: rgba(239, 68, 68, 0.05);
+}
+
+/* Hover highlight */
+.ds-highlight {
+  position: absolute;
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 30;
+  opacity: 0;
+  transition: opacity 0.15s ease, border-color 0.15s ease;
+}
+
+.ds-highlight.visible {
+  opacity: 1;
+}
+
+.ds-highlight.normal {
+  border: 2px solid #3b82f6;
+}
+
+.ds-highlight.pierce {
+  border: 2px dashed #3b82f6;
+}
+
+/* Hover tooltip — shows element name */
+.ds-tooltip {
+  position: absolute;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 500;
+  font-family: 'SF Mono', SFMono-Regular, ui-monospace, monospace;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 35;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.ds-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ds-tooltip.wrong {
+  background: rgba(0,0,0,0.75);
+  color: rgba(255,255,255,0.5);
+}
+
+.ds-tooltip.correct {
+  background: rgba(0,0,0,0.85);
+  color: rgba(255,255,255,0.95);
+}
+
+/* Pierce label on tooltip — readable, not decorative */
+.ds-pierce-label {
+  font-size: 9px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.03em;
+  margin-bottom: 1px;
+}
