@@ -43,6 +43,23 @@ The toolbar appears in the bottom-right corner. Click to activate, then click an
 
 Agentation captures class names, selectors, and element positions so AI agents can `grep` for the exact code you're referring to. Instead of describing "the blue button in the sidebar," you give the agent `.sidebar > button.primary` and your feedback.
 
+## Chrome Extension
+
+Use Agentation on any localhost page without adding it to your project.
+
+### Install from release
+
+Download `agentation-extension.zip` from [Releases](https://github.com/benjitaylor/agentation/releases), unzip, then:
+`chrome://extensions` → Developer mode → Load unpacked → select the folder.
+
+### Build from source
+
+```bash
+pnpm extension:build
+```
+
+Then load `extension/` as an unpacked extension.
+
 ## Requirements
 
 - React 18+
