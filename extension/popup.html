@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 280px;
+      padding: 16px;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    h1 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    p {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot.active { background: #34c759; }
+    .dot.inactive { background: rgba(255,255,255,0.2); }
+    .label { color: rgba(255,255,255,0.5); }
+    .value { color: #fff; margin-left: auto; }
+    .settings {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      padding: 4px 0;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-family: ui-monospace, monospace;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      outline: none;
+      margin-top: 4px;
+    }
+    input[type="text"]:focus {
+      border-color: #3c82f7;
+    }
+    .endpoint-section {
+      margin-top: 8px;
+    }
+    .endpoint-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Agentation</h1>
+  <p>Visual feedback for AI coding agents. Active on localhost pages.</p>
+
+  <div class="status" id="toolbar-status">
+    <span class="dot active"></span>
+    <span class="label">Toolbar</span>
+    <span class="value">Active</span>
+  </div>
+  <div class="status" id="mcp-status">
+    <span class="dot inactive" id="mcp-dot"></span>
+    <span class="label">MCP Server</span>
+    <span class="value" id="mcp-value">Checking...</span>
+  </div>
+
+  <div class="settings">
+    <div class="endpoint-section">
+      <div class="endpoint-label">MCP Endpoint</div>
+      <input type="text" id="endpoint" value="http://localhost:4440" placeholder="http://localhost:4440" />
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

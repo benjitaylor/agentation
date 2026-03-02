@@ -2,3 +2,4 @@ packages:
   - 'package'
   - 'package/example'
   - 'mcp'
+  - 'extension'
