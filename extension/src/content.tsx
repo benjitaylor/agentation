@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { Agentation } from "agentation";
 
-const MCP_DEFAULT_ENDPOINT = "http://localhost:4440";
+const MCP_DEFAULT_ENDPOINT = "http://localhost:4747";
 
 function AgentationExtension() {
   const [endpoint, setEndpoint] = React.useState<string | undefined>(undefined);

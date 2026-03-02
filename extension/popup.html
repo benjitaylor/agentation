@@ -32,7 +32,9 @@
       padding: 8px 10px;
       background: rgba(0,0,0,0.03);
       border-radius: 8px;
+      margin-bottom: 6px;
     }
+    .status:last-of-type { margin-bottom: 0; }
     .dot {
       width: 8px;
       height: 8px;
@@ -53,6 +55,11 @@
     <span class="dot inactive" id="toolbar-dot"></span>
     <span class="label">Toolbar</span>
     <span class="value" id="toolbar-value">Checking...</span>
+  </div>
+  <div class="status" id="mcp-status">
+    <span class="dot inactive" id="mcp-dot"></span>
+    <span class="label">MCP Server</span>
+    <span class="value" id="mcp-value">Checking...</span>
   </div>
 
   <script src="popup.js"></script>
