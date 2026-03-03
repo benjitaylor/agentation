@@ -32,3 +32,4 @@ tsup.config.bundled_*.mjs
 # npm pack output
 *.tgz
 BRANCH_NOTES.md
+.pnpm-store

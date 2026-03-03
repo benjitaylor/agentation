@@ -61,6 +61,8 @@ import {
   saveSessionId,
   clearSessionId,
   saveAnnotationsWithSyncMarker,
+  loadToolbarHidden,
+  saveToolbarHidden,
 } from "../../utils/storage";
 import {
   createSession,
@@ -201,6 +203,8 @@ const COLOR_OPTIONS = [
   { value: "#FF9500", label: "Orange" },
   { value: "#FF3B30", label: "Red" },
 ];
+
+const TOOLBAR_HIDE_ANIMATION_MS = 500;
 
 // =============================================================================
 // Utils
@@ -756,6 +760,10 @@ export function PageFeedbackToolbarCSS({
   const [settings, setSettings] = useState<ToolbarSettings>(DEFAULT_SETTINGS);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [showEntranceAnimation, setShowEntranceAnimation] = useState(false);
+  const [isToolbarHidden, setIsToolbarHidden] = useState(() =>
+    loadToolbarHidden(),
+  );
+  const [isToolbarHiding, setIsToolbarHiding] = useState(false);
 
   // Check if running on localhost - React detection only works locally
   const isLocalhost =
@@ -924,6 +932,8 @@ export function PageFeedbackToolbarCSS({
     } catch (e) {
       // Ignore localStorage errors
     }
+
+    setIsToolbarHidden(loadToolbarHidden());
   }, [pathname]);
 
   // Save settings
@@ -1296,6 +1306,19 @@ export function PageFeedbackToolbarCSS({
       syncLocalAnnotations();
     }
   }, [connectionStatus, endpoint, mounted, currentSessionId, pathname]);
+
+  const hideToolbarTemporarily = useCallback(() => {
+    if (isToolbarHiding || isToolbarHidden) return;
+
+    setIsToolbarHiding(true);
+    originalSetTimeout(() => {
+      saveToolbarHidden(true);
+      setShowSettings(false);
+      setIsActive(false);
+      setIsToolbarHidden(true);
+      setIsToolbarHiding(false);
+    }, TOOLBAR_HIDE_ANIMATION_MS);
+  }, [isToolbarHidden, isToolbarHiding]);
 
   // Demo annotations
   useEffect(() => {
@@ -3793,6 +3816,7 @@ export function PageFeedbackToolbarCSS({
   ]);
 
   if (!mounted) return null;
+  if (isToolbarHidden) return null;
 
   const hasAnnotations = annotations.length > 0;
 
@@ -3869,7 +3893,7 @@ export function PageFeedbackToolbarCSS({
       >
         {/* Morphing container */}
         <div
-          className={`${styles.toolbarContainer} ${!isDarkMode ? styles.light : ""} ${isActive ? styles.expanded : styles.collapsed} ${showEntranceAnimation ? styles.entrance : ""} ${isDraggingToolbar ? styles.dragging : ""} ${!settings.webhooksEnabled && (isValidUrl(settings.webhookUrl) || isValidUrl(webhookUrl || "")) ? styles.serverConnected : ""}`}
+          className={`${styles.toolbarContainer} ${!isDarkMode ? styles.light : ""} ${isActive ? styles.expanded : styles.collapsed} ${showEntranceAnimation ? styles.entrance : ""} ${isDraggingToolbar ? styles.dragging : ""} ${isToolbarHiding ? styles.hiding : ""} ${!settings.webhooksEnabled && (isValidUrl(settings.webhookUrl) || isValidUrl(webhookUrl || "")) ? styles.serverConnected : ""}`}
           onClick={
             !isActive
               ? (e) => {
@@ -4248,6 +4272,31 @@ export function PageFeedbackToolbarCSS({
                             reactEnabled: !s.reactEnabled,
                           }))
                         }
+                      />
+                      <span className={styles.toggleSlider} />
+                    </label>
+                  </div>
+
+                  <div className={`${styles.settingsRow} ${styles.settingsRowMarginTop}`}>
+                    <div
+                      className={`${styles.settingsLabel} ${!isDarkMode ? styles.light : ""}`}
+                    >
+                      Hide Until Restart
+                      <Tooltip content="Hides the toolbar until you restart the session.">
+                        <span className={styles.helpIcon}>
+                          <IconHelp size={20} />
+                        </span>
+                      </Tooltip>
+                    </div>
+                    <label className={styles.toggleSwitch}>
+                      <input
+                        type="checkbox"
+                        checked={isToolbarHidden || isToolbarHiding}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            hideToolbarTemporarily();
+                          }
+                        }}
                       />
                       <span className={styles.toggleSlider} />
                     </label>

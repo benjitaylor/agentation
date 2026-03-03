@@ -142,6 +142,7 @@ export function clearSyncMarkers(pathname: string): void {
 // =============================================================================
 
 const SESSION_PREFIX = "agentation-session-";
+const TOOLBAR_HIDDEN_SESSION_KEY = `${SESSION_PREFIX}toolbar-hidden`;
 
 export function getSessionStorageKey(pathname: string): string {
   return `${SESSION_PREFIX}${pathname}`;
@@ -169,6 +170,29 @@ export function clearSessionId(pathname: string): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.removeItem(getSessionStorageKey(pathname));
+  } catch {
+    // ignore
+  }
+}
+
+export function loadToolbarHidden(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return false
+    // return sessionStorage.getItem(TOOLBAR_HIDDEN_SESSION_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function saveToolbarHidden(hidden: boolean): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (hidden) {
+      sessionStorage.setItem(TOOLBAR_HIDDEN_SESSION_KEY, "1");
+    } else {
+      sessionStorage.removeItem(TOOLBAR_HIDDEN_SESSION_KEY);
+    }
   } catch {
     // ignore
   }
