@@ -178,8 +178,7 @@ export function clearSessionId(pathname: string): void {
 export function loadToolbarHidden(): boolean {
   if (typeof window === "undefined") return false;
   try {
-    return false
-    // return sessionStorage.getItem(TOOLBAR_HIDDEN_SESSION_KEY) === "1";
+    return sessionStorage.getItem(TOOLBAR_HIDDEN_SESSION_KEY) === "1";
   } catch {
     return false;
   }
