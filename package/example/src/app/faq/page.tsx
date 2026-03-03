@@ -27,7 +27,7 @@ const faqCategories: FAQCategory[] = [
       },
       {
         question: "How do I install it?",
-        answer: "Install via npm with <code>npm install agentation -D</code>, then import and add the <code>&lt;Agentation /&gt;</code> component to your app. Works with React 18 and Next.js."
+        answer: "For React apps, install via npm with <code>npm install agentation -D</code>, then import and add the <code>&lt;Agentation /&gt;</code> component to your app. If you just want a browser toolbar on a plain HTML page, load <code>https://cdn.jsdelivr.net/npm/agentation@2.2.1/dist/agentation.browser.min.js</code> and call <code>window.Agentation.mount()</code>."
       },
       {
         question: "Is there a Claude Code integration?",
@@ -94,7 +94,7 @@ const faqCategories: FAQCategory[] = [
     items: [
       {
         question: "Is there a React dependency?",
-        answer: "Yes, Agentation requires React 18+ as a peer dependency. It's built as a React component to integrate seamlessly with modern React applications."
+        answer: "The default React component entrypoint requires React 18+ as a peer dependency. The script-tag browser bundle is self-contained, so if you load <code>dist/agentation.browser.min.js</code> from jsDelivr you do not need to install <code>react</code> or <code>react-dom</code> separately."
       },
       {
         question: "Does it work with TypeScript?",

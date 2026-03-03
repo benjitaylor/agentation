@@ -11,6 +11,20 @@
 npm install agentation -D
 ```
 
+## Script Tag / Browser
+
+Load the self-contained browser bundle directly from jsDelivr:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/agentation@2.2.1/dist/agentation.browser.min.js"></script>
+<script>
+  window.Agentation.mount();
+</script>
+```
+
+This bundle includes its own React runtime, so there is no separate `react` or
+`react-dom` dependency for script-tag usage.
+
 ## Usage
 
 ```tsx
@@ -28,6 +42,20 @@ function App() {
 
 The toolbar appears in the bottom-right corner. Click to activate, then click any element to annotate it.
 
+### Browser Module
+
+If you want an imperative browser API without using a script tag:
+
+```ts
+import { mountAgentation } from "agentation/browser";
+
+const agentation = mountAgentation();
+
+agentation.update({ copyToClipboard: false });
+// ...
+agentation.destroy();
+```
+
 ## Features
 
 - **Click to annotate** – Click any element with automatic selector identification
@@ -38,7 +66,7 @@ The toolbar appears in the bottom-right corner. Click to activate, then click an
 - **Structured output** – Copy markdown with selectors, positions, and context
 - **Programmatic access** – Callback prop for direct integration with tools
 - **Dark/light mode** – Toggle in settings, persists to localStorage
-- **Zero dependencies** – Pure CSS animations, no runtime libraries
+- **Self-contained browser bundle** – Script-tag usage includes the runtime it needs
 
 ## Props
 
@@ -121,7 +149,8 @@ Agentation captures class names, selectors, and element positions so AI agents c
 
 ## Requirements
 
-- React 18+
+- React 18+ for the React component entrypoint
+- No React install required for the self-contained browser bundle
 - Desktop browser (mobile not supported)
 
 ## Docs

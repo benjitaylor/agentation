@@ -82,22 +82,79 @@ export default {};
   };
 }
 
-export default defineConfig((options) => [
-  // React component
-  {
-    entry: ["src/index.ts"],
-    format: ["cjs", "esm"],
-    dts: true,
-    splitting: false,
-    sourcemap: true,
-    clean: !options.watch,
-    external: ["react", "react-dom"],
-    esbuildPlugins: [scssModulesPlugin()],
-    define: {
-      __VERSION__: JSON.stringify(VERSION),
+export default defineConfig((options) => {
+  if (!options.watch) {
+    fs.rmSync("dist", { recursive: true, force: true });
+  }
+
+  return [
+    // React component
+    {
+      entry: ["src/index.ts"],
+      format: ["cjs", "esm"],
+      dts: true,
+      splitting: false,
+      sourcemap: true,
+      clean: false,
+      external: ["react", "react-dom"],
+      esbuildPlugins: [scssModulesPlugin()],
+      define: {
+        __VERSION__: JSON.stringify(VERSION),
+        "process.env.NODE_ENV": JSON.stringify("production"),
+      },
+      banner: {
+        js: '"use client";',
+      },
     },
-    banner: {
-      js: '"use client";',
+    // Browser module API
+    {
+      entry: {
+        browser: "src/browser.tsx",
+      },
+      format: ["cjs", "esm"],
+      dts: true,
+      splitting: false,
+      sourcemap: true,
+      clean: false,
+      esbuildPlugins: [scssModulesPlugin()],
+      define: {
+        __VERSION__: JSON.stringify(VERSION),
+        "process.env.NODE_ENV": JSON.stringify("production"),
+      },
+      banner: {
+        js: '"use client";',
+      },
     },
-  },
-]);
+    // Script-tag bundle
+    {
+      entry: {
+        agentation: "src/browser.tsx",
+      },
+      format: ["iife"],
+      globalName: "Agentation",
+      dts: false,
+      splitting: false,
+      sourcemap: false,
+      minify: true,
+      clean: false,
+      esbuildPlugins: [scssModulesPlugin()],
+      define: {
+        __VERSION__: JSON.stringify(VERSION),
+        "process.env.NODE_ENV": JSON.stringify("production"),
+      },
+      outExtension({ format }) {
+        if (format === "iife") {
+          return {
+            js: ".browser.min.js",
+          };
+        }
+        return {
+          js: ".js",
+        };
+      },
+      banner: {
+        js: '"use client";',
+      },
+    },
+  ];
+});
