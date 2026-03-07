@@ -83,6 +83,14 @@ import {
   originalSetTimeout,
   originalSetInterval,
 } from "../../utils/freeze-animations";
+import {
+  DEFAULT_ACTIVATION_SHORTCUT,
+  detectShortcutPlatform,
+  eventToActivationShortcut,
+  formatActivationShortcut,
+  matchesActivationShortcut,
+  type ActivationShortcut,
+} from "../../utils/activation-shortcut";
 
 import type { Annotation } from "../../types";
 import styles from "./styles.module.scss";
@@ -146,6 +154,7 @@ type ToolbarSettings = {
   outputDetail: OutputDetailLevel;
   autoClearAfterCopy: boolean;
   annotationColor: string;
+  activationShortcut: ActivationShortcut;
   blockInteractions: boolean;
   reactEnabled: boolean; // Simple toggle - mode derived from outputDetail
   markerClickBehavior: MarkerClickBehavior;
@@ -157,6 +166,7 @@ const DEFAULT_SETTINGS: ToolbarSettings = {
   outputDetail: "standard",
   autoClearAfterCopy: false,
   annotationColor: "#3c82f7",
+  activationShortcut: DEFAULT_ACTIVATION_SHORTCUT,
   blockInteractions: true,
   reactEnabled: true,
   markerClickBehavior: "edit",
@@ -581,6 +591,7 @@ export function PageFeedbackToolbarCSS({
   const [settingsPage, setSettingsPage] = useState<"main" | "automations">(
     "main",
   );
+  const [isCapturingShortcut, setIsCapturingShortcut] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [tooltipsHidden, setTooltipsHidden] = useState(false);
   const [tooltipSessionActive, setTooltipSessionActive] = useState(false);
@@ -738,6 +749,11 @@ export function PageFeedbackToolbarCSS({
   const [settings, setSettings] = useState<ToolbarSettings>(DEFAULT_SETTINGS);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [showEntranceAnimation, setShowEntranceAnimation] = useState(false);
+  const shortcutPlatform = detectShortcutPlatform();
+  const formattedActivationShortcut = formatActivationShortcut(
+    settings.activationShortcut,
+    shortcutPlatform,
+  );
 
   // Check if running in development mode - React detection only works in development mode
   const isDevMode = process.env.NODE_ENV === "development";
@@ -809,6 +825,7 @@ export function PageFeedbackToolbarCSS({
       setTooltipsHidden(false);
       // Reset to main page when settings close
       setSettingsPage("main");
+      setIsCapturingShortcut(false);
       const timer = originalSetTimeout(() => setShowSettingsVisible(false), 0);
       return () => clearTimeout(timer);
     }
@@ -2903,6 +2920,8 @@ export function PageFeedbackToolbarCSS({
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isCapturingShortcut) return;
+
       // Don't trigger shortcuts when typing in inputs
       const target = e.target as HTMLElement;
       const isTyping =
@@ -2924,8 +2943,7 @@ export function PageFeedbackToolbarCSS({
         }
       }
 
-      // Cmd+Shift+F / Ctrl+Shift+F to toggle feedback mode
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === "f" || e.key === "F")) {
+      if (matchesActivationShortcut(e, settings.activationShortcut)) {
         e.preventDefault();
         hideTooltipsUntilMouseLeave();
         setIsActive((prev) => !prev);
@@ -2991,6 +3009,8 @@ export function PageFeedbackToolbarCSS({
     isActive,
     pendingAnnotation,
     annotations.length,
+    isCapturingShortcut,
+    settings.activationShortcut,
     settings.webhookUrl,
     webhookUrl,
     sendState,
@@ -3155,6 +3175,7 @@ export function PageFeedbackToolbarCSS({
 
             <div className={styles.buttonWrapper}>
               <button
+                aria-label="Open settings"
                 className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -3362,6 +3383,57 @@ export function PageFeedbackToolbarCSS({
                 </div>
 
                 <div className={styles.settingsSection}>
+                  <div className={styles.settingsRow}>
+                    <div
+                      className={`${styles.settingsLabel} ${!isDarkMode ? styles.light : ""}`}
+                    >
+                      Activation Shortcut
+                      <Tooltip content="Toggle Agentation on or off. Press a new combo with Cmd/Ctrl plus a key.">
+                        <span className={styles.helpIcon}>
+                          <IconHelp size={20} />
+                        </span>
+                      </Tooltip>
+                    </div>
+                    <button
+                      aria-label="Set activation shortcut"
+                      className={`${styles.cycleButton} ${!isDarkMode ? styles.light : ""}`}
+                      onBlur={() => setIsCapturingShortcut(false)}
+                      onClick={() => setIsCapturingShortcut(true)}
+                      onFocus={() => setIsCapturingShortcut(true)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Escape") {
+                          e.preventDefault();
+                          setIsCapturingShortcut(false);
+                          return;
+                        }
+
+                        const shortcut = eventToActivationShortcut(e.nativeEvent);
+                        if (!shortcut) return;
+
+                        e.preventDefault();
+                        setSettings((s) => ({
+                          ...s,
+                          activationShortcut: shortcut,
+                        }));
+                        setIsCapturingShortcut(false);
+                      }}
+                      type="button"
+                    >
+                      <span
+                        key={
+                          isCapturingShortcut
+                            ? "capturing"
+                            : formattedActivationShortcut
+                        }
+                        className={styles.cycleButtonText}
+                      >
+                        {isCapturingShortcut
+                          ? "Press shortcut..."
+                          : formattedActivationShortcut}
+                      </span>
+                    </button>
+                  </div>
+
                   <div className={styles.settingsRow}>
                     <div
                       className={`${styles.settingsLabel} ${!isDarkMode ? styles.light : ""}`}
