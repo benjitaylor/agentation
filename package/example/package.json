@@ -20,6 +20,8 @@
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "modern-screenshot": "^4.6.8",
+    "portless": "^0.5.2",
     "sass": "^1.69.0",
     "typescript": "^5.0.0"
   }
