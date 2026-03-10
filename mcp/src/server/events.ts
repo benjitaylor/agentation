@@ -47,6 +47,9 @@ class EventBus {
 
   /**
    * Emit an event to all subscribers.
+   * Assigns a sequence number and immediately notifies subscribers.
+   * For SQLite-backed stores, use nextSequence() + notify() instead
+   * to ensure the sequence is persisted before subscribers see it.
    */
   emit(
     type: AFSEventType,
@@ -61,6 +64,22 @@ class EventBus {
       payload,
     };
 
+    this.notify(event);
+    return event;
+  }
+
+  /**
+   * Get the next unique sequence number.
+   */
+  nextSequence(): number {
+    return ++globalSequence;
+  }
+
+  /**
+   * Notify all subscribers of an event.
+   * The event must already have a valid sequence assigned.
+   */
+  notify(event: AFSEvent): void {
     // Notify global subscribers
     for (const handler of this.handlers) {
       try {
@@ -71,7 +90,7 @@ class EventBus {
     }
 
     // Notify session-specific subscribers
-    const sessionHandlers = this.sessionHandlers.get(sessionId);
+    const sessionHandlers = this.sessionHandlers.get(event.sessionId);
     if (sessionHandlers) {
       for (const handler of sessionHandlers) {
         try {
@@ -81,8 +100,6 @@ class EventBus {
         }
       }
     }
-
-    return event;
   }
 
   /**
@@ -188,6 +205,15 @@ class UserEventBus {
       payload,
     };
 
+    this.notifyForUser(userId, event);
+    return event;
+  }
+
+  /**
+   * Notify all subscribers for a specific user of an event.
+   * The event must already have a valid sequence assigned.
+   */
+  notifyForUser(userId: string, event: AFSEvent): void {
     // Notify user-specific global subscribers
     const userHandlers = this.userHandlers.get(userId);
     if (userHandlers) {
@@ -203,7 +229,7 @@ class UserEventBus {
     // Notify user-specific session subscribers
     const userSessions = this.userSessionHandlers.get(userId);
     if (userSessions) {
-      const sessionHandlers = userSessions.get(sessionId);
+      const sessionHandlers = userSessions.get(event.sessionId);
       if (sessionHandlers) {
         for (const handler of sessionHandlers) {
           try {
@@ -214,8 +240,6 @@ class UserEventBus {
         }
       }
     }
-
-    return event;
   }
 
   /**
