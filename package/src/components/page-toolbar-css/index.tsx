@@ -1579,29 +1579,31 @@ export function PageFeedbackToolbarCSS({
     };
   }, [isActive]);
 
-  // Handle mouse move
+  // Handle mouse move + instant Cmd/Ctrl re-evaluation via keydown/keyup
   useEffect(() => {
     if (!isActive || pendingAnnotation) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      // Use composedPath to get actual target inside shadow DOM
-      const target = (e.composedPath()[0] || e.target) as HTMLElement;
-      if (closestCrossingShadow(target, "[data-feedback-toolbar]")) {
-        setHoverInfo(null);
-        return;
-      }
+    const lastMouse = { x: 0, y: 0, hasMoved: false };
 
-      // Cmd (Mac) / Ctrl (Win) = pierce mode: scan through overlays
-      const piercing = e.metaKey || e.ctrlKey;
+    const evaluateHover = (clientX: number, clientY: number, piercing: boolean) => {
       const elementUnder = piercing
-        ? pierceElementFromPoint(e.clientX, e.clientY)
-        : deepElementFromPoint(e.clientX, e.clientY);
+        ? pierceElementFromPoint(clientX, clientY)
+        : deepElementFromPoint(clientX, clientY);
       if (
         !elementUnder ||
         closestCrossingShadow(elementUnder, "[data-feedback-toolbar]")
       ) {
         setHoverInfo(null);
         return;
+      }
+
+      // When piercing, suppress indicator if result is same as normal hover
+      let effectivePiercing = piercing;
+      if (piercing) {
+        const normalElement = deepElementFromPoint(clientX, clientY);
+        if (normalElement === elementUnder) {
+          effectivePiercing = false;
+        }
       }
 
       const { name, elementName, path, reactComponents } =
@@ -1614,13 +1616,39 @@ export function PageFeedbackToolbarCSS({
         elementPath: path,
         rect,
         reactComponents,
-        isPiercing: piercing,
+        isPiercing: effectivePiercing,
       });
-      setHoverPosition({ x: e.clientX, y: e.clientY });
+      setHoverPosition({ x: clientX, y: clientY });
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Use composedPath to get actual target inside shadow DOM
+      const target = (e.composedPath()[0] || e.target) as HTMLElement;
+      if (closestCrossingShadow(target, "[data-feedback-toolbar]")) {
+        setHoverInfo(null);
+        return;
+      }
+      lastMouse.x = e.clientX;
+      lastMouse.y = e.clientY;
+      lastMouse.hasMoved = true;
+      evaluateHover(e.clientX, e.clientY, e.metaKey || e.ctrlKey);
+    };
+
+    // Re-evaluate immediately when Cmd/Ctrl is pressed or released
+    const handleKeyChange = (e: KeyboardEvent) => {
+      if ((e.key === "Meta" || e.key === "Control") && lastMouse.hasMoved) {
+        evaluateHover(lastMouse.x, lastMouse.y, e.metaKey || e.ctrlKey);
+      }
     };
 
     document.addEventListener("mousemove", handleMouseMove);
-    return () => document.removeEventListener("mousemove", handleMouseMove);
+    document.addEventListener("keydown", handleKeyChange);
+    document.addEventListener("keyup", handleKeyChange);
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("keydown", handleKeyChange);
+      document.removeEventListener("keyup", handleKeyChange);
+    };
   }, [isActive, pendingAnnotation, effectiveReactMode]);
 
   // Handle click
@@ -4096,16 +4124,11 @@ export function PageFeedbackToolbarCSS({
                   Math.min(hoverPosition.x, window.innerWidth - 100),
                 ),
                 top: Math.max(
-                  hoverPosition.y - (hoverInfo.isPiercing ? 62 : hoverInfo.reactComponents ? 48 : 32),
+                  hoverPosition.y - (hoverInfo.reactComponents ? 48 : 32),
                   8,
                 ),
               }}
             >
-              {hoverInfo.isPiercing && (
-                <div className={styles.hoverPierceIndicator}>
-                  {"⇣ deep select"}
-                </div>
-              )}
               {hoverInfo.reactComponents && (
                 <div className={styles.hoverReactPath}>
                   {hoverInfo.reactComponents}

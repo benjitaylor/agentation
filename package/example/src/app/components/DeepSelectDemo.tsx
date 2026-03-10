@@ -11,30 +11,33 @@ function delay(ms: number) {
 /* ─────────────────────────────────────────────────────────
  * ANIMATION STORYBOARD
  *
- *    0ms   reset — cursor top-right, caption: idle
- *  600ms   cursor moves toward "Export" button
- * 1000ms   NORMAL: solid highlight on entire card + overlay flash
- *          → tooltip: div.AnimatePresence (wrong/dimmed)
- *          → caption: "Normal hover selects the invisible wrapper."
- * 2600ms   highlight + tooltip fade out
- * 3000ms   caption: "Hold ⌘ to pierce through overlay layers."
- * 5000ms   PIERCE: dashed highlight on just the button
- *          → tooltip: button "Export" (correct/bright)
- *          → caption: "Deep select finds the actual element underneath."
- * 6400ms   popup appears, types "Add loading state"
- * 8200ms   popup closes, marker placed
- * 10200ms  marker fades, loop
+ *    0ms   reset — hero content hidden, cursor top-right
+ *  200ms   hero entrance (fade up + scale — the motion.div animation)
+ *  800ms   crosshair cursor moves toward CTA button
+ * 1200ms   NORMAL: solid highlight on entire hero wrapper
+ *          → tooltip: div.motion-container (wrong/dimmed)
+ *          → overlay flash
+ * 2800ms   highlight + tooltip fade out
+ * 3000ms   caption: "Hold ⌘ to select through invisible layers."
+ * 4600ms   PIERCE: dashed highlight on just the CTA button
+ *          → tooltip: button "Get Started" (correct/bright)
+ * 6000ms   click — popup appears, highlight/tooltip hide
+ *          → cursor switches to pointer, moves to input area
+ * 6600ms   typing feedback
+ * 7800ms   cursor moves to Add button
+ * 8200ms   click Add — popup closes, marker placed
+ *          → cursor switches back to crosshair
+ *10200ms   marker fades, loop
  * ───────────────────────────────────────────────────────── */
 
 const LOOP_INTERVAL = 11800;
-const CHART_HEIGHTS = [45, 60, 35, 75, 55, 90, 70, 85];
 
 type CaptionKey = "idle" | "cmd" | "correct";
 
 const CAPTIONS: Record<CaptionKey, string> = {
-  idle: "Normal hover selects the invisible animation wrapper.",
-  cmd: "Hold \u2318 to pierce through overlay layers.",
-  correct: "Deep select finds the actual element underneath.",
+  idle: "Animation wrappers intercept hover on the element you want.",
+  cmd: "Hold \u2318 to select through invisible layers.",
+  correct: "Deep select finds what\u2019s actually underneath.",
 };
 
 export function DeepSelectDemo() {
@@ -59,26 +62,30 @@ export function DeepSelectDemo() {
   const [typedText, setTypedText] = useState("");
   const [showMarker, setShowMarker] = useState(false);
   const [overlayFlash, setOverlayFlash] = useState(false);
+  const [heroEntered, setHeroEntered] = useState(false);
+  const [isCrosshair, setIsCrosshair] = useState(true);
 
-  const cardRef = useRef<HTMLDivElement>(null);
-  const btnRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const addBtnRef = useRef<HTMLDivElement>(null);
+  const addBtnPosRef = useRef({ x: 0, y: 0 });
 
-  const cardPosRef = useRef({ x: 0, y: 0, w: 0, h: 0 });
-  const btnPosRef = useRef({ x: 0, y: 0, w: 0, h: 0 });
+  const wrapperPosRef = useRef({ x: 0, y: 0, w: 0, h: 0 });
+  const ctaPosRef = useRef({ x: 0, y: 0, w: 0, h: 0 });
 
   const measure = () => {
-    if (!cardRef.current || !btnRef.current || !contentRef.current) return;
+    if (!wrapperRef.current || !ctaRef.current || !contentRef.current) return;
     const cRect = contentRef.current.getBoundingClientRect();
-    const cardRect = cardRef.current.getBoundingClientRect();
-    const bRect = btnRef.current.getBoundingClientRect();
-    cardPosRef.current = {
-      x: cardRect.left - cRect.left,
-      y: cardRect.top - cRect.top,
-      w: cardRect.width,
-      h: cardRect.height,
+    const wRect = wrapperRef.current.getBoundingClientRect();
+    const bRect = ctaRef.current.getBoundingClientRect();
+    wrapperPosRef.current = {
+      x: wRect.left - cRect.left,
+      y: wRect.top - cRect.top,
+      w: wRect.width,
+      h: wRect.height,
     };
-    btnPosRef.current = {
+    ctaPosRef.current = {
       x: bRect.left - cRect.left,
       y: bRect.top - cRect.top,
       w: bRect.width,
@@ -97,7 +104,7 @@ export function DeepSelectDemo() {
 
   useEffect(() => {
     let cancelled = false;
-    const feedbackText = "Add loading state";
+    const feedbackText = "Add hover state";
 
     const run = async () => {
       // Reset
@@ -108,67 +115,82 @@ export function DeepSelectDemo() {
       setTypedText("");
       setShowMarker(false);
       setOverlayFlash(false);
+      setHeroEntered(false);
+      setIsCrosshair(true);
       setActiveCaption("idle");
 
+      await delay(200);
+      if (cancelled) return;
+
+      // Hero entrance — the motion.div animation
+      setHeroEntered(true);
       await delay(600);
       if (cancelled) return;
 
-      // Re-measure before using positions (layout may have shifted)
+      // Re-measure after entrance (content is now in final position)
       measure();
-      const card = cardPosRef.current;
-      const btn = btnPosRef.current;
-      setCursorPos({ x: btn.x + btn.w / 2, y: btn.y + btn.h / 2 });
+      const wrapper = wrapperPosRef.current;
+      const cta = ctaPosRef.current;
+      setCursorPos({ x: cta.x + cta.w / 2 - 8.5, y: cta.y + cta.h / 2 - 8.5 });
       await delay(400);
       if (cancelled) return;
 
-      // Normal hover — highlights the whole card (the overlay intercepts)
+      // Normal hover — highlights the entire hero wrapper (animation container intercepts)
       setOverlayFlash(true);
       setHighlight({
         visible: true,
         mode: "normal",
-        rect: { x: card.x - 3, y: card.y - 3, w: card.w + 6, h: card.h + 6 },
+        rect: { x: wrapper.x - 3, y: wrapper.y - 3, w: wrapper.w + 6, h: wrapper.h + 6 },
       });
       setTooltip({
         visible: true,
-        text: "div.AnimatePresence",
+        text: "div.motion-container",
         type: "wrong",
-        x: card.x + card.w / 2,
-        y: card.y - 10,
+        x: wrapper.x + wrapper.w / 2,
+        y: wrapper.y - 10,
       });
       await delay(1600);
       if (cancelled) return;
 
-      // Fade highlight + tooltip + overlay flash
+      // Fade out
       setHighlight((h) => ({ ...h, visible: false }));
       setTooltip((t) => ({ ...t, visible: false }));
       setOverlayFlash(false);
       await delay(400);
       if (cancelled) return;
 
-      // ⌘ beat — caption explains the feature
+      // ⌘ beat
       setActiveCaption("cmd");
-      await delay(2000);
+      await delay(1600);
       if (cancelled) return;
 
-      // Pierce hover — highlights just the button
+      // Pierce hover — highlights just the CTA button
       setActiveCaption("correct");
       setHighlight({
         visible: true,
         mode: "pierce",
-        rect: { x: btn.x - 3, y: btn.y - 3, w: btn.w + 6, h: btn.h + 6 },
+        rect: { x: cta.x - 3, y: cta.y - 3, w: cta.w + 6, h: cta.h + 6 },
       });
       setTooltip({
         visible: true,
-        text: 'button "Export"',
+        text: 'button "Get Started"',
         type: "correct",
-        x: btn.x + btn.w / 2,
-        y: btn.y - 10,
+        x: cta.x + cta.w / 2,
+        y: cta.y - 10,
       });
       await delay(1400);
       if (cancelled) return;
 
-      // Click — show popup
+      // Click — show popup, hide highlight/tooltip
       setShowPopup(true);
+      setHighlight((h) => ({ ...h, visible: false }));
+      setTooltip((t) => ({ ...t, visible: false }));
+      await delay(300);
+      if (cancelled) return;
+
+      // Switch to pointer cursor, move to input area
+      setIsCrosshair(false);
+      setCursorPos({ x: 280, y: 100 });
       await delay(300);
       if (cancelled) return;
 
@@ -176,24 +198,34 @@ export function DeepSelectDemo() {
       for (let i = 0; i <= feedbackText.length; i++) {
         if (cancelled) return;
         setTypedText(feedbackText.slice(0, i));
-        await delay(30);
+        await delay(35);
       }
       await delay(400);
       if (cancelled) return;
 
-      // Close popup, show marker
+      // Move cursor to Add button
+      if (addBtnRef.current && contentRef.current) {
+        const abr = addBtnRef.current.getBoundingClientRect();
+        const cr = contentRef.current.getBoundingClientRect();
+        addBtnPosRef.current = { x: abr.left - cr.left + abr.width / 2, y: abr.top - cr.top + abr.height / 2 };
+      }
+      setCursorPos({ x: addBtnPosRef.current.x, y: addBtnPosRef.current.y });
+      await delay(400);
+      if (cancelled) return;
+
+      // Click Add — close popup, show marker, switch back to crosshair
       setShowPopup(false);
-      setHighlight((h) => ({ ...h, visible: false }));
-      setTooltip((t) => ({ ...t, visible: false }));
+      setIsCrosshair(true);
       await delay(200);
       if (cancelled) return;
       setShowMarker(true);
 
-      await delay(2200);
+      await delay(2000);
       if (cancelled) return;
 
       // Clean up for next loop
       setShowMarker(false);
+      setHighlight((h) => ({ ...h, visible: false }));
       await delay(300);
     };
 
@@ -227,48 +259,49 @@ export function DeepSelectDemo() {
           <div className="demo-dot" />
           <div className="demo-dot" />
           <div className="demo-dot" />
-          <div className="demo-url">localhost:3000/dashboard</div>
+          <div className="demo-url">localhost:3000</div>
         </div>
 
         <div className="demo-content" ref={contentRef}>
-          <div className="dsd-page-layout">
-            {/* Sidebar nav */}
-            <div className="dsd-sidebar">
-              <div className="dsd-sidebar-item active" />
-              <div className="dsd-sidebar-item" />
-              <div className="dsd-sidebar-item" />
-              <div className="dsd-sidebar-item" />
+          <div className="dsd-page">
+            {/* Nav */}
+            <div className="dsd-nav">
+              <div className="dsd-logo">
+                <div className="dsd-logo-mark" />
+                Acme
+              </div>
+              <div className="dsd-nav-links">
+                <span className="dsd-nav-link">Features</span>
+                <span className="dsd-nav-link">Pricing</span>
+              </div>
             </div>
 
-            {/* Main content area */}
-            <div className="dsd-main">
-              <div className="dsd-faux-title" />
+            {/* Hero wrapper — the animation container */}
+            <div className="dsd-hero-wrapper" ref={wrapperRef}>
+              {/* Invisible animation overlay — the problem */}
+              <div className={`dsd-overlay ${overlayFlash ? "flash" : ""}`} />
+              <div className="dsd-wrapper-label">&lt;motion.div&gt;</div>
 
-              <div className="dsd-card" ref={cardRef}>
-                {/* Invisible overlay — the problem */}
-                <div className={`dsd-overlay ${overlayFlash ? "flash" : ""}`} />
-                <div className="dsd-card-header">
-                  <div className="dsd-card-icon" />
-                  <div className="dsd-card-label">Monthly Revenue</div>
+              <div className={`dsd-hero ${heroEntered ? "entered" : ""}`}>
+                <div className="dsd-heading">
+                  Ship <span className="dsd-heading-accent">faster</span> with
+                  <br />
+                  better feedback
                 </div>
-                <div className="dsd-card-value">$12.4k</div>
-                <div className="dsd-chart">
-                  {CHART_HEIGHTS.map((h, i) => (
-                    <div key={i} className="dsd-chart-bar" style={{ height: `${h}%` }} />
-                  ))}
+                <div className="dsd-subtitle">
+                  The modern way to collect design annotations.
                 </div>
-                <div className="dsd-export-btn" ref={btnRef}>Export</div>
-              </div>
-
-              {/* Secondary metric cards */}
-              <div className="dsd-mini-cards">
-                <div className="dsd-mini-card">
-                  <div className="dsd-mini-label">Users</div>
-                  <div className="dsd-mini-value">1,847</div>
+                <div className="dsd-cta" ref={ctaRef}>
+                  Get Started <span className="dsd-cta-arrow">&rarr;</span>
                 </div>
-                <div className="dsd-mini-card">
-                  <div className="dsd-mini-label">Conversion</div>
-                  <div className="dsd-mini-value">3.2%</div>
+                <div className="dsd-social-proof">
+                  <div className="dsd-avatars">
+                    <div className="dsd-mini-avatar" style={{ background: '#6366f1' }} />
+                    <div className="dsd-mini-avatar" style={{ background: '#3b82f6' }} />
+                    <div className="dsd-mini-avatar" style={{ background: '#8b5cf6' }} />
+                    <div className="dsd-mini-avatar" style={{ background: '#06b6d4' }} />
+                  </div>
+                  <span className="dsd-social-text">Trusted by 500+ teams</span>
                 </div>
               </div>
             </div>
@@ -290,19 +323,18 @@ export function DeepSelectDemo() {
             className={`ds-tooltip ${tooltip.visible ? "visible" : ""} ${tooltip.type}`}
             style={{ left: tooltip.x, top: tooltip.y, transform: "translate(-50%, -100%)" }}
           >
-            {tooltip.type === "correct" && <div className="ds-pierce-label">{"\u21E3"} deep select</div>}
             {tooltip.text}
           </div>
 
           {/* Popup */}
-          <div className={`demo-popup ${showPopup ? "visible" : ""}`} style={{ top: 80 }}>
-            <div className="demo-popup-header">button &quot;Export&quot;</div>
+          <div className={`demo-popup ${showPopup ? "visible" : ""}`} style={{ top: 70 }}>
+            <div className="demo-popup-header">button &quot;Get Started&quot;</div>
             <div className="demo-popup-input">
               {typedText}<span style={{ opacity: 0.4 }}>|</span>
             </div>
             <div className="demo-popup-actions">
               <div className="demo-popup-btn cancel">Cancel</div>
-              <div className="demo-popup-btn submit">Add</div>
+              <div className="demo-popup-btn submit" ref={addBtnRef}>Add</div>
             </div>
           </div>
 
@@ -310,19 +342,29 @@ export function DeepSelectDemo() {
           <div
             className={`demo-marker ${showMarker ? "visible" : ""}`}
             style={{
-              top: btnPosRef.current.y + btnPosRef.current.h / 2,
-              left: btnPosRef.current.x + btnPosRef.current.w + 4,
+              top: ctaPosRef.current.y + ctaPosRef.current.h / 2,
+              left: ctaPosRef.current.x + ctaPosRef.current.w / 2,
             }}
           >
             1
           </div>
 
-          {/* Cursor — offset by half SVG size so crosshair center lands on target */}
-          <div className="demo-cursor" style={{ left: cursorPos.x - 8.5, top: cursorPos.y - 8.5 }}>
-            <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
-              <line x1="8.5" y1="0" x2="8.5" y2="17" stroke="black" strokeWidth="1" />
-              <line x1="0" y1="8.5" x2="17" y2="8.5" stroke="black" strokeWidth="1" />
-            </svg>
+          {/* Cursor — dual mode like Computed Styles demo */}
+          <div className="demo-cursor" style={{ left: cursorPos.x, top: cursorPos.y }}>
+            <div className={`demo-cursor-pointer ${isCrosshair ? "hidden" : ""}`}>
+              <svg height="24" width="24" viewBox="0 0 32 32">
+                <g fill="none" fillRule="evenodd" transform="translate(10 7)">
+                  <path d="m6.148 18.473 1.863-1.003 1.615-.839-2.568-4.816h4.332l-11.379-11.408v16.015l3.316-3.221z" fill="#fff"/>
+                  <path d="m6.431 17 1.765-.941-2.775-5.202h3.604l-8.025-8.043v11.188l2.53-2.442z" fill="#000"/>
+                </g>
+              </svg>
+            </div>
+            <div className={`demo-cursor-crosshair ${isCrosshair ? "" : "hidden"}`}>
+              <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+                <line x1="8.5" y1="0" x2="8.5" y2="17" stroke="black" strokeWidth="1" />
+                <line x1="0" y1="8.5" x2="17" y2="8.5" stroke="black" strokeWidth="1" />
+              </svg>
+            </div>
           </div>
 
           {/* Toolbar */}
@@ -340,7 +382,7 @@ export function DeepSelectDemo() {
         </div>
       </div>
 
-      {/* Caption — updates with animation state, matching SmartIdentificationDemo pattern */}
+      {/* Caption */}
       <p key={activeCaption} style={{ marginTop: '1rem', fontSize: '0.75rem', color: 'rgba(0,0,0,0.5)', lineHeight: 1.5, animation: 'fadeIn 0.3s ease' }}>
         {CAPTIONS[activeCaption]}
       </p>

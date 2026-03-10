@@ -87,7 +87,7 @@ export default function FeaturesPage() {
         <h2 id="deep-select">Deep select</h2>
         <p>
           Hold <code>⌘</code> while hovering to pierce through invisible wrappers and select the actual element underneath.
-          Useful when animation libraries, video frameworks, or overlay patterns render empty divs on top of your content.
+          Useful when gesture libraries, animation frameworks, or overlay patterns render empty divs on top of your content.
         </p>
         <DeepSelectDemo />
       </section>
