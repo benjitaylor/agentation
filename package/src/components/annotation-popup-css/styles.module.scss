@@ -15,6 +15,13 @@
   }
 }
 
+.popup,
+.popup *,
+.popup *::before,
+.popup *::after {
+  box-sizing: border-box;
+}
+
 $blue: #3c82f7;
 $green: #34c759;
 

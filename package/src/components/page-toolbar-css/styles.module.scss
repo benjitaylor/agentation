@@ -24,6 +24,21 @@
 // Only reset cosmetic properties that global CSS commonly overrides —
 // avoid `all: unset` which also nukes layout props (box-sizing,
 // appearance, line-height) that component styles don't re-set.
+.toolbar,
+.toolbar *,
+.toolbar *::before,
+.toolbar *::after,
+.markersLayer,
+.markersLayer *,
+.markersLayer *::before,
+.markersLayer *::after,
+.fixedMarkersLayer,
+.fixedMarkersLayer *,
+.fixedMarkersLayer *::before,
+.fixedMarkersLayer *::after {
+  box-sizing: border-box;
+}
+
 .toolbar :where(button, input, select, textarea, label) {
   background: unset;
   border: unset;
@@ -233,7 +248,7 @@ $green: #34c759;
   position: fixed;
   bottom: 1.25rem;
   right: 1.25rem;
-  width: 297px;
+  width: 291px;
   z-index: 100000;
   font-family:
     system-ui,
@@ -260,6 +275,7 @@ $green: #34c759;
   background: #1a1a1a;
   color: #fff;
   border: none;
+  outline: none;
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.2),
     0 4px 16px rgba(0, 0, 0, 0.1);
@@ -310,10 +326,10 @@ $green: #34c759;
     height: 44px;
     border-radius: 1.5rem;
     padding: 0.375rem;
-    width: 257px;
+    width: 291px;
 
     &.serverConnected {
-      width: 297px;
+      width: 331px;
     }
   }
 }
@@ -657,33 +673,11 @@ $green: #34c759;
   }
 }
 
-// Review queue button wrapper - animates in when resolved annotations exist
+// Review queue button wrapper - always visible, disabled when empty
 .reviewQueueButtonWrapper {
-  width: 0;
-  opacity: 0;
-  overflow: hidden;
-  pointer-events: none;
-  margin-left: -0.375rem;
-  transition:
-    width 0.4s cubic-bezier(0.19, 1, 0.22, 1),
-    opacity 0.3s cubic-bezier(0.19, 1, 0.22, 1),
-    margin 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-
-  .controlButton {
-    transform: scale(0.8);
-    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-  }
-
-  &.reviewQueueButtonVisible {
-    width: 34px;
-    opacity: 1;
-    overflow: visible;
-    pointer-events: auto;
-    margin-left: 0;
-
-    .controlButton {
-      transform: scale(1);
-    }
+  .controlButton:disabled {
+    opacity: 0.3;
+    cursor: default;
   }
 }
 

@@ -4,3 +4,4 @@ mcp/dist
 .DS_Store
 *.tgz
 /package/coverage
+storybook-static

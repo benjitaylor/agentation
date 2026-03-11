@@ -3459,10 +3459,11 @@ export function PageFeedbackToolbarCSS({
             </div>
 
             <div
-              className={`${styles.buttonWrapper} ${styles.reviewQueueButtonWrapper} ${resolvedAnnotations.length > 0 ? styles.reviewQueueButtonVisible : ""}`}
+              className={`${styles.buttonWrapper} ${styles.reviewQueueButtonWrapper}`}
             >
               <button
                 className={`${styles.controlButton} ${!isDarkMode ? styles.light : ""}`}
+                disabled={resolvedAnnotations.length === 0}
                 onClick={(e) => {
                   e.stopPropagation();
                   hideTooltipsUntilMouseLeave();

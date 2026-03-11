@@ -11,7 +11,8 @@
     "mcp": "pnpm --filter agentation-mcp start",
     "publish:agentation": "pnpm --filter agentation publish --access public",
     "publish:mcp": "pnpm --filter agentation-mcp publish --access public",
-    "publish:all": "pnpm publish:agentation && pnpm publish:mcp"
+    "publish:all": "pnpm publish:agentation && pnpm publish:mcp",
+    "storybook": "pnpm --filter agentation storybook"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
