@@ -72,11 +72,7 @@ import {
   requestAction,
 } from "../../utils/sync";
 import { getReactComponentName } from "../../utils/react-detection";
-import {
-  getSourceLocation,
-  findNearestComponentSource,
-  formatSourceLocation,
-} from "../../utils/source-location";
+import { resolveSource, formatStackFrame } from "element-source";
 import {
   freeze as freezeAll,
   unfreeze as unfreezeAll,
@@ -300,14 +296,10 @@ function getActiveButtonStyle(
   };
 }
 
-function detectSourceFile(element: Element): string | undefined {
-  const result = getSourceLocation(element as HTMLElement);
-  const loc = result.found ? result : findNearestComponentSource(element as HTMLElement);
-  if (loc.found && loc.source) {
-    return formatSourceLocation(loc.source, "path");
-  }
-  return undefined;
-}
+const detectSourceFile = async (element: Element): Promise<string | undefined> => {
+  const source = await resolveSource(element);
+  return source ? formatStackFrame(source) : undefined;
+};
 
 function generateOutput(
   annotations: Annotation[],
@@ -1410,7 +1402,7 @@ export function PageFeedbackToolbarCSS({
   }, [isFrozen, freezeAnimations, unfreezeAnimations]);
 
   // Create pending annotation from cmd+shift+click multi-select
-  const createMultiSelectPendingAnnotation = useCallback(() => {
+  const createMultiSelectPendingAnnotation = useCallback(async () => {
     if (pendingMultiSelectElements.length === 0) return;
 
     const firstItem = pendingMultiSelectElements[0];
@@ -1448,7 +1440,7 @@ export function PageFeedbackToolbarCSS({
         cssClasses: getElementClasses(firstEl),
         nearbyText: getNearbyText(firstEl),
         reactComponents: firstItem.reactComponents,
-        sourceFile: detectSourceFile(firstEl),
+        sourceFile: await detectSourceFile(firstEl),
       });
     } else {
       // Multiple elements - multi-select annotation
@@ -1507,7 +1499,7 @@ export function PageFeedbackToolbarCSS({
         nearbyElements: getNearbyElements(firstEl),
         cssClasses: getElementClasses(firstEl),
         nearbyText: getNearbyText(firstEl),
-        sourceFile: detectSourceFile(firstEl),
+        sourceFile: await detectSourceFile(firstEl),
       });
     }
 
@@ -1635,7 +1627,7 @@ export function PageFeedbackToolbarCSS({
   useEffect(() => {
     if (!isActive) return;
 
-    const handleClick = (e: MouseEvent) => {
+    const handleClick = async (e: MouseEvent) => {
       if (justFinishedDragRef.current) {
         justFinishedDragRef.current = false;
         return;
@@ -1765,7 +1757,7 @@ export function PageFeedbackToolbarCSS({
         computedStylesObj,
         nearbyElements: getNearbyElements(elementUnder),
         reactComponents: reactComponents ?? undefined,
-        sourceFile: detectSourceFile(elementUnder),
+        sourceFile: await detectSourceFile(elementUnder),
         targetElement: elementUnder, // Store for live position queries
       });
       setHoverInfo(null);
@@ -2106,7 +2098,7 @@ export function PageFeedbackToolbarCSS({
   useEffect(() => {
     if (!isActive) return;
 
-    const handleMouseUp = (e: MouseEvent) => {
+    const handleMouseUp = async (e: MouseEvent) => {
       const wasDragging = isDragging;
       const dragStart = dragStartRef.current;
 
@@ -2215,7 +2207,7 @@ export function PageFeedbackToolbarCSS({
             nearbyElements: getNearbyElements(firstElement),
             cssClasses: getElementClasses(firstElement),
             nearbyText: getNearbyText(firstElement),
-            sourceFile: detectSourceFile(firstElement),
+            sourceFile: await detectSourceFile(firstElement),
           });
         } else {
           // No elements selected, but allow annotation on empty area

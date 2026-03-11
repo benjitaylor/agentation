@@ -31,6 +31,9 @@
     "test:watch": "vitest",
     "prepublishOnly": "pnpm build"
   },
+  "dependencies": {
+    "element-source": "^0.0.3"
+  },
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
