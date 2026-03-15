@@ -6,6 +6,25 @@ import { IconTrash } from "../icons";
 import { originalSetTimeout } from "../../utils/freeze-animations";
 
 // =============================================================================
+// Helpers
+// =============================================================================
+
+/** Focus an element while temporarily blocking focus-trap libraries (e.g. Radix
+ *  FocusScope) from reclaiming focus via focusin/focusout handlers. */
+function focusBypassingTraps(el: HTMLElement | null) {
+  if (!el) return;
+  const trap = (e: Event) => e.stopImmediatePropagation();
+  document.addEventListener("focusin", trap, true);
+  document.addEventListener("focusout", trap, true);
+  try {
+    el.focus();
+  } finally {
+    document.removeEventListener("focusin", trap, true);
+    document.removeEventListener("focusout", trap, true);
+  }
+}
+
+// =============================================================================
 // Types
 // =============================================================================
 
@@ -99,7 +118,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
       const focusTimer = originalSetTimeout(() => {
         const textarea = textareaRef.current;
         if (textarea) {
-          textarea.focus();
+          focusBypassingTraps(textarea);
           textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
           textarea.scrollTop = textarea.scrollHeight;
         }
@@ -118,7 +137,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
       setIsShaking(true);
       shakeTimerRef.current = originalSetTimeout(() => {
         setIsShaking(false);
-        textareaRef.current?.focus();
+        focusBypassingTraps(textareaRef.current);
       }, 250);
     }, []);
 
@@ -144,6 +163,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
     // Handle keyboard
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        e.stopPropagation();
         if (e.nativeEvent.isComposing) return;
         if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault();
@@ -182,7 +202,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
                 setIsStylesExpanded(!isStylesExpanded);
                 if (wasExpanded) {
                   // Refocus textarea when closing
-                  originalSetTimeout(() => textareaRef.current?.focus(), 0);
+                  originalSetTimeout(() => focusBypassingTraps(textareaRef.current), 0);
                 }
               }}
               type="button"

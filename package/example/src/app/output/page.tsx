@@ -63,6 +63,7 @@ const outputExamples: Record<OutputFormat, string> = {
 
 ### 1. button.submit-btn
 **Location:** \`.form-container > .actions > button.submit-btn\`
+**Source:** src/components/FormActions.tsx:42:5
 **Classes:** \`submit-btn primary\`
 **React:** \`<App> <Dashboard> <FormActions> <SubmitButton>\`
 **Position:** 450, 320 (120x40)
@@ -70,6 +71,7 @@ const outputExamples: Record<OutputFormat, string> = {
 
 ### 2. span.nav-label
 **Location:** \`.sidebar > nav > .nav-item > span\`
+**Source:** src/components/Sidebar.tsx:28:12
 **React:** \`<App> <Sidebar> <NavItem>\`
 **Selected:** "Settigns"
 **Feedback:** Typo - should be "Settings"`,
@@ -84,6 +86,7 @@ const outputExamples: Record<OutputFormat, string> = {
 ### 1. button.submit-btn
 
 **Selector:** \`.form-container > .actions > button.submit-btn\`
+**Source:** src/components/FormActions.tsx:42:5
 **Classes:** \`.submit-btn\`, \`.primary\`
 **React:** \`<App> <Dashboard> <FormActions> <SubmitButton>\`
 **Bounding box:** x:450, y:320, 120x40px
@@ -96,6 +99,7 @@ const outputExamples: Record<OutputFormat, string> = {
 ### 2. span.nav-label
 
 **Selector:** \`.sidebar > nav > .nav-item > span\`
+**Source:** src/components/Sidebar.tsx:28:12
 **Classes:** \`.nav-label\`
 **React:** \`<App> <Sidebar> <NavItem>\`
 **Selected text:** "Settigns"
@@ -109,11 +113,9 @@ const outputExamples: Record<OutputFormat, string> = {
 
   compact: `## Feedback: /dashboard
 
-1. **.submit-btn**
-   Button text should say "Save" not "Submit"
+1. **.submit-btn** (src/components/FormActions.tsx:42): Button text should say "Save" not "Submit"
 
-2. **.nav-label** ("Settigns...")
-   Typo - should be "Settings"`,
+2. **.nav-label** (src/components/Sidebar.tsx:28): Typo - should be "Settings" (re: "Settigns")`,
 
   forensic: `## Page Feedback: /dashboard
 
@@ -129,6 +131,7 @@ const outputExamples: Record<OutputFormat, string> = {
 ### 1. button.submit-btn
 
 **Full DOM Path:** \`body > div.app > main.dashboard > div.form-container > div.actions > button.submit-btn\`
+**Source:** src/components/FormActions.tsx:42:5
 **React:** \`<App> <Dashboard> <FormActions> <SubmitButton>\`
 
 **CSS Classes:** \`submit-btn, primary\`
@@ -146,6 +149,7 @@ const outputExamples: Record<OutputFormat, string> = {
 ### 2. span.nav-label
 
 **Full DOM Path:** \`body > div.app > aside.sidebar > nav > div.nav-item:nth-child(2) > span.nav-label\`
+**Source:** src/components/Sidebar.tsx:28:12
 **React:** \`<App> <Sidebar> <NavItem>\`
 
 **CSS Classes:** \`nav-label\`
@@ -242,6 +246,16 @@ export default function OutputPage() {
           The level of detail adapts to your output format: Compact omits React data,
           Standard shows filtered components, Detailed uses smart matching, and Forensic shows everything.
           Toggle React detection on/off in settings.
+        </p>
+      </section>
+
+      <section>
+        <h2>Source file detection</h2>
+        <p>
+          In development mode, Agentation automatically detects the source file and line number
+          for annotated elements (e.g., <code>src/components/Button.tsx:42</code>).
+          This works with Vite, Next.js, Webpack, and Turbopack. Agents can use the <strong>Source</strong> line
+          to jump directly to the right file instead of searching.
         </p>
       </section>
 

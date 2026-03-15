@@ -455,11 +455,19 @@ function App() {
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.875rem" }}>
             <tbody>
               <tr>
-                <td style={{ padding: "0.5rem 0", width: "35%" }}>
+                <td style={{ padding: "0.5rem 0", borderBottom: "1px solid rgba(0,0,0,0.06)", width: "35%" }}>
                   <code>copyToClipboard</code>
                 </td>
-                <td style={{ padding: "0.5rem 0", color: "rgba(0,0,0,0.5)", textAlign: "right" }}>
+                <td style={{ padding: "0.5rem 0", borderBottom: "1px solid rgba(0,0,0,0.06)", color: "rgba(0,0,0,0.5)", textAlign: "right" }}>
                   Auto-copy on add (default: <code style={{ color: "rgba(0,0,0,0.7)" }}>true</code>)
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: "0.5rem 0", width: "35%" }}>
+                  <code>className</code>
+                </td>
+                <td style={{ padding: "0.5rem 0", color: "rgba(0,0,0,0.5)", textAlign: "right" }}>
+                  Custom class for positioning or z-index adjustments
                 </td>
               </tr>
             </tbody>

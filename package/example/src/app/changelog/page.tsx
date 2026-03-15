@@ -30,6 +30,47 @@ function isMajorVersion(version: string): boolean {
 
 const releases: Release[] = [
   {
+    version: "2.3.3",
+    date: "March 14, 2026",
+    changes: [
+      { type: "improved", text: "Marker colors now use Display P3 on wide-gamut screens, with sRGB fallback" },
+      { type: "fixed", text: <><code>className</code> prop can now override toolbar positioning without <code>!important</code></> },
+    ],
+  },
+  {
+    version: "2.3.2",
+    date: "March 9, 2026",
+    changes: [
+      { type: "fixed", text: "Host page SVG icons broken by unscoped fill protection rule (e.g. Tailwind's fill-current)" },
+      { type: "fixed", text: "Toolbar icon states rendering simultaneously when host CSS overrides inline opacity" },
+      { type: "fixed", text: "Annotation textarea losing focus when annotating inputs inside modals and drawers (Radix, shadcn, vaul)" },
+      { type: "fixed", text: "Next.js App Router internals (SegmentViewNode) shown instead of actual React component names" },
+    ],
+  },
+  {
+    version: "2.3.1",
+    date: "March 9, 2026",
+    changes: [
+      { type: "fixed", text: "Host app keyboard shortcuts firing while typing in annotation text areas and settings inputs" },
+    ],
+  },
+  {
+    version: "2.3.0",
+    date: "March 7, 2026",
+    changes: [
+      { type: "added", text: <>Source file detection — annotations now include the source file path and line number (e.g. <code>src/components/Button.tsx:42</code>), works with Next.js, Vite, Webpack, and Turbopack</> },
+      { type: "added", text: <><code>className</code> prop for custom toolbar positioning</> },
+      { type: "added", text: "\"Hide Until Restart\" setting to dismiss the toolbar per-tab" },
+      { type: "improved", text: "Toolbar CSS fully isolated from host page styles" },
+      { type: "improved", text: "Instant tooltips when moving between toolbar buttons" },
+      { type: "improved", text: <><code>sideEffects: false</code> for better tree-shaking</> },
+      { type: "fixed", text: "Dev mode detection for non-standard environments" },
+      { type: "fixed", text: "Send button pointer events not registering" },
+      { type: "fixed", text: "Toolbar portal events triggering host app click-outside handlers" },
+      { type: "fixed", text: "Resolved and dismissed annotations reappearing after sync" },
+    ],
+  },
+  {
     version: "2.2.1",
     date: "February 11, 2026",
     changes: [

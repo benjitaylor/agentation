@@ -288,7 +288,7 @@ button {
   }
 
   // Hide on smaller screens where it would overlap content
-  @media (max-width: 900px) {
+  @media (max-width: 980px) {
     display: none;
   }
 }
@@ -309,7 +309,7 @@ button {
   margin: 0 auto;
   padding: 4rem 1.5rem 3rem;
 
-  @media (max-width: 900px) {
+  @media (max-width: 980px) {
     padding-top: 2rem;
   }
 
@@ -318,6 +318,19 @@ button {
     flex-direction: column;
     gap: 0.25rem;
     padding-bottom: 0.75rem;
+
+    .heading-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: last baseline;
+
+      @media (max-width: 500px) {
+        flex-direction: column;
+        align-items: flex-start;
+        row-gap: 8px;
+        margin-bottom: 12px;
+      }
+    }
 
     .tagline {
       color: rgba(0, 0, 0, 0.65);
@@ -708,7 +721,7 @@ button {
 
 // Hide on mobile utility
 .hide-on-mobile {
-  @media (max-width: 900px) {
+  @media (max-width: 980px) {
     display: none !important;
   }
 }
@@ -727,7 +740,7 @@ button {
   color: rgba(0, 0, 0, 0.5);
   letter-spacing: 0.01em;
 
-  @media (max-width: 900px) {
+  @media (max-width: 980px) {
     display: flex;
   }
 
@@ -742,7 +755,7 @@ button {
 .mobile-nav {
   display: none;
 
-  @media (max-width: 900px) {
+  @media (max-width: 980px) {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -973,14 +986,10 @@ button {
 // =============================================================================
 
 .install-snippet {
-  position: absolute;
-  top: 3rem; // Align with second line of title
-  right: 0;
-  z-index: 10;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.25rem 0.5rem;
+  position: relative;
   background: none;
   border: none;
   cursor: pointer;
@@ -988,6 +997,12 @@ button {
   font-size: 0.6875rem;
   color: rgba(0, 0, 0, 0.4);
   transition: color 0.15s ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -0.25rem -0.5rem;
+  }
 
   &:hover {
     color: rgba(0, 0, 0, 0.7);

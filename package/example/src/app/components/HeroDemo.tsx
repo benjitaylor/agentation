@@ -578,7 +578,7 @@ Make this more prominent`;
 
   return (
     <div className="hero-demo-container">
-      <style>{`
+      <style suppressHydrationWarning>{`
         .hero-demo-container {
           position: relative;
           width: 100%;

@@ -154,8 +154,8 @@ function ShadowModal({ isOpen, isExiting, onClose }: { isOpen: boolean; isExitin
     <div ref={hostRef} style={{ position: 'fixed', inset: 0, zIndex: 9998, pointerEvents: 'none' }}>
       {mounted && shadowRootRef.current && createPortal(
         <div style={{ pointerEvents: 'auto' }}>{modalContent}</div>,
-        shadowRootRef.current as unknown as Element
-      )}
+          shadowRootRef.current as unknown as Element
+        )}
     </div>
   );
 }
@@ -223,9 +223,11 @@ export default function AgentationDocs() {
           <span><span style={{ fontWeight: 500 }}>New in 2.0:</span> Real-time agent sync</span>
           <span style={{ color: '#4a9eff', marginLeft: '0.5rem' }}>&rarr;</span>
         </Link>
-        <header style={{ position: 'relative' }}>
-          <InstallSnippet />
-          <h1 style={{ fontSize: '2rem', lineHeight: 1.15, marginBottom: '0.5rem' }}><span className="sketchy-underline">Point at bugs.</span><br />Let AI <span className="pen-underline">fix them.</span></h1>
+        <header>
+          <div className="heading-container">
+            <h1 style={{ fontSize: "2rem", lineHeight: 1.15, marginBottom: "0.5rem" }}><span className="sketchy-underline">Point at bugs.</span><br />Let AI <span className="pen-underline">fix them.</span></h1>
+            <InstallSnippet />
+          </div>
           <p className="tagline">Agentation turns UI annotations into structured context that AI coding agents can understand and act on. Click any element, add a note, and paste the output into Claude Code, Cursor, or any AI tool.</p>
         </header>
 
@@ -260,7 +262,8 @@ export default function AgentationDocs() {
           </p>
           <ul>
             <li><strong>CSS selectors</strong> to grep your codebase</li>
-            <li><strong>React component names</strong> to find the right file</li>
+            <li><strong>Source file paths</strong> to jump directly to the right line</li>
+            <li><strong>React component tree</strong> to understand the hierarchy</li>
             <li><strong>Computed styles</strong> to understand current appearance</li>
             <li><strong>Your feedback</strong> with intent and priority</li>
           </ul>

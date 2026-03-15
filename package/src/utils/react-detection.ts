@@ -105,6 +105,8 @@ export const DEFAULT_SKIP_PATTERNS: RegExp[] = [
   /^(Inner|Outer)/, // InnerLayoutRouter
   /Router$/, // AppRouter, BrowserRouter
   /^Client(Page|Segment|Root)/, // ClientPageRoot, ClientSegmentRoot
+  /^Segment(ViewNode|Node)$/, // Next.js App Router internals
+  /^LayoutSegment/, // Next.js layout segment wrappers
   /^Server(Root|Component|Render)/, // ServerRoot (not ServerStatus)
   /^RSC/, // RSCComponent
   /Context$/, // LayoutRouterContext

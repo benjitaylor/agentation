@@ -2,14 +2,42 @@
 // Uses CSS animations for all transitions
 
 // Protect stroke-based icons from host page `svg { fill: currentColor }` rules.
-// Only targets SVGs with explicit fill="none" attribute to avoid breaking icons that use fill.
-svg[fill="none"] {
-  fill: none !important;
+// Scoped to agentation's own containers to avoid breaking host SVGs that use
+// fill="none" with CSS-based fills (e.g. Tailwind's fill-current).
+// See: https://github.com/benjitaylor/agentation/issues/58
+.toolbar,
+.markersLayer,
+.fixedMarkersLayer {
+  svg[fill="none"] {
+    fill: none !important;
+  }
+
+  svg[fill="none"] :not([fill]) {
+    fill: none !important;
+  }
 }
 
-$blue: #3c82f7;
-$red: #ff3b30;
-$green: #34c759;
+// Protect toolbar elements from host page global CSS.
+// The toolbar is portaled to document.body, so global rules like
+// `button { background: black }` leak in. :where() zeroes specificity
+// so our component class styles (0,1,0) always win by source order.
+// Only reset cosmetic properties that global CSS commonly overrides —
+// avoid `all: unset` which also nukes layout props (box-sizing,
+// appearance, line-height) that component styles don't re-set.
+.toolbar :where(button, input, select, textarea, label) {
+  background: unset;
+  border: unset;
+  border-radius: unset;
+  padding: unset;
+  margin: unset;
+  color: unset;
+  font: unset;
+  letter-spacing: unset;
+  text-transform: unset;
+  text-decoration: unset;
+  box-shadow: unset;
+  outline: unset;
+}
 
 // =============================================================================
 // Animation Keyframes
@@ -23,6 +51,17 @@ $green: #34c759;
   to {
     opacity: 1;
     transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes toolbarHide {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.8);
   }
 }
 
@@ -182,14 +221,17 @@ $green: #34c759;
   }
 }
 
+// Disable transitions on theme toggle
+.disableTransitions :is(*, *::before, *::after) {
+  transition: none !important;
+}
+
 // =============================================================================
 // Toolbar
 // =============================================================================
 
 .toolbar {
   position: fixed;
-  bottom: 1.25rem;
-  right: 1.25rem;
   width: 297px;
   z-index: 100000;
   font-family:
@@ -205,6 +247,13 @@ $green: #34c759;
     top 0s,
     right 0s,
     bottom 0s; // Instant positioning changes
+}
+
+// Positional defaults use :where() for zero specificity so consumer className can override.
+// See: https://github.com/benjitaylor/agentation/issues/146
+:where(.toolbar) {
+  bottom: 1.25rem;
+  right: 1.25rem;
 }
 
 .toolbarContainer {
@@ -236,6 +285,11 @@ $green: #34c759;
 
   &.entrance {
     animation: toolbarEnter 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+  }
+
+  &.hiding {
+    animation: toolbarHide 0.4s cubic-bezier(0.4, 0, 1, 1) forwards;
+    pointer-events: none;
   }
 
   &.collapsed {
@@ -323,7 +377,7 @@ $green: #34c759;
   height: 18px;
   padding: 0 5px;
   border-radius: 9px;
-  background: $blue;
+  background-color: var(--agentation-color-accent);
   color: white;
   font-size: 0.625rem;
   font-weight: 600;
@@ -370,7 +424,9 @@ $green: #34c759;
 
   &:hover:not(:disabled):not([data-active="true"]):not(
       [data-failed="true"]
-    ):not([data-auto-sync="true"]):not([data-error="true"]):not([data-no-hover="true"]) {
+    ):not([data-auto-sync="true"]):not([data-error="true"]):not(
+      [data-no-hover="true"]
+    ) {
     background: rgba(255, 255, 255, 0.12);
     color: #fff;
   }
@@ -385,20 +441,32 @@ $green: #34c759;
   }
 
   &[data-active="true"] {
-    color: $blue;
-    background: rgba($blue, 0.25);
+    color: var(--agentation-color-blue);
+    background-color: color-mix(
+      in srgb,
+      var(--agentation-color-blue) 25%,
+      transparent
+    );
   }
 
   &[data-error="true"] {
-    color: $red;
-    background: rgba($red, 0.25);
+    color: var(--agentation-color-red);
+    background-color: color-mix(
+      in srgb,
+      var(--agentation-color-red) 25%,
+      transparent
+    );
   }
 
   &[data-danger]:hover:not(:disabled):not([data-active="true"]):not(
       [data-failed="true"]
     ) {
-    background: rgba($red, 0.25);
-    color: $red;
+    background-color: color-mix(
+      in srgb,
+      var(--agentation-color-red) 25%,
+      transparent
+    );
+    color: var(--agentation-color-red);
   }
 
   &[data-no-hover="true"],
@@ -410,15 +478,19 @@ $green: #34c759;
 
   // Auto-sync mode (Claude Code) - green, non-interactive
   &[data-auto-sync="true"] {
-    color: $green;
+    color: var(--agentation-color-green);
     background: transparent;
     cursor: default;
   }
 
   // Failed state (no listeners) - red like danger hover
   &[data-failed="true"] {
-    color: $red;
-    background: rgba($red, 0.25);
+    color: var(--agentation-color-red);
+    background-color: color-mix(
+      in srgb,
+      var(--agentation-color-red) 25%,
+      transparent
+    );
   }
 }
 
@@ -430,7 +502,7 @@ $green: #34c759;
   height: 16px;
   padding: 0 4px;
   border-radius: 8px;
-  background: $blue;
+  background-color: var(--agentation-color-accent);
   color: white;
   font-size: 0.625rem;
   font-weight: 600;
@@ -442,7 +514,7 @@ $green: #34c759;
     0 1px 3px rgba(0, 0, 0, 0.2);
   pointer-events: none;
 
-  &.light {
+  [data-agentation-theme="light"] & {
     box-shadow:
       0 0 0 2px #fff,
       0 1px 3px rgba(0, 0, 0, 0.2);
@@ -453,20 +525,24 @@ $green: #34c759;
 @keyframes mcpIndicatorPulseConnected {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba($green, 0.5);
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--agentation-color-green) 50%, transparent);
   }
   50% {
-    box-shadow: 0 0 0 5px rgba($green, 0);
+    box-shadow: 0 0 0 5px
+      color-mix(in srgb, var(--agentation-color-green) 0%, transparent);
   }
 }
 
 @keyframes mcpIndicatorPulseConnecting {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(#f5a623, 0.5);
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--agentation-color-yellow) 50%, transparent);
   }
   50% {
-    box-shadow: 0 0 0 5px rgba(#f5a623, 0);
+    box-shadow: 0 0 0 5px
+      color-mix(in srgb, var(--agentation-color-yellow) 0%, transparent);
   }
 }
 
@@ -479,19 +555,19 @@ $green: #34c759;
   border-radius: 50%;
   pointer-events: none;
   transition:
-    background 0.3s ease,
+    background-color 0.3s ease,
     opacity 0.15s ease,
     transform 0.15s ease;
   opacity: 1;
   transform: scale(1);
 
   &.connected {
-    background: $green;
+    background-color: var(--agentation-color-green);
     animation: mcpIndicatorPulseConnected 2.5s ease-in-out infinite;
   }
 
   &.connecting {
-    background: #f5a623;
+    background-color: var(--agentation-color-yellow);
     animation: mcpIndicatorPulseConnecting 1.5s ease-in-out infinite;
   }
 
@@ -530,7 +606,7 @@ $green: #34c759;
   opacity: 0;
   transition:
     opacity 0.3s ease,
-    background 0.3s ease;
+    background-color 0.3s ease;
   cursor: default;
 }
 
@@ -539,17 +615,17 @@ $green: #34c759;
 }
 
 .connectionIndicatorConnected {
-  background: $green;
+  background-color: var(--agentation-color-green);
   animation: connectionPulse 2.5s ease-in-out infinite;
 }
 
 .connectionIndicatorDisconnected {
-  background: $red;
+  background-color: var(--agentation-color-red);
   animation: none;
 }
 
 .connectionIndicatorConnecting {
-  background: #f59e0b;
+  background-color: var(--agentation-color-yellow);
   animation: connectionPulse 1s ease-in-out infinite;
 }
 
@@ -573,6 +649,10 @@ $green: #34c759;
     opacity: 0;
     visibility: hidden;
   }
+}
+
+.tooltipsInSession .buttonWrapper:hover .buttonTooltip {
+  transition-delay: 0s;
 }
 
 // Send button wrapper - animates width when MCP connects/disconnects
@@ -765,10 +845,15 @@ $green: #34c759;
 
 .hoverHighlight {
   position: fixed;
-  border: 2px solid rgba($blue, 0.5);
+  border: 2px solid
+    color-mix(in srgb, var(--agentation-color-accent) 50%, transparent);
   border-radius: 4px;
+  background-color: color-mix(
+    in srgb,
+    var(--agentation-color-accent) 4%,
+    transparent
+  );
   pointer-events: none !important;
-  background: rgba($blue, 0.04);
   box-sizing: border-box;
   will-change: opacity;
   contain: layout style;
@@ -780,10 +865,15 @@ $green: #34c759;
 
 .multiSelectOutline {
   position: fixed;
-  border: 2px dashed rgba($green, 0.6);
+  border: 2px dashed
+    color-mix(in srgb, var(--agentation-color-green) 60%, transparent);
   border-radius: 4px;
   pointer-events: none !important;
-  background: rgba($green, 0.05);
+  background-color: color-mix(
+    in srgb,
+    var(--agentation-color-green) 5%,
+    transparent
+  );
   box-sizing: border-box;
   will-change: opacity;
 
@@ -798,10 +888,15 @@ $green: #34c759;
 
 .singleSelectOutline {
   position: fixed;
-  border: 2px solid rgba($blue, 0.6);
+  border: 2px solid
+    color-mix(in srgb, var(--agentation-color-blue) 60%, transparent);
   border-radius: 4px;
   pointer-events: none !important;
-  background: rgba($blue, 0.05);
+  background-color: color-mix(
+    in srgb,
+    var(--agentation-color-blue) 5%,
+    transparent
+  );
   box-sizing: border-box;
   will-change: opacity;
 
@@ -886,7 +981,7 @@ $green: #34c759;
   position: absolute;
   width: 22px;
   height: 22px;
-  background: $blue;
+  background: var(--agentation-color-blue);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -937,7 +1032,7 @@ $green: #34c759;
 
   &.pending {
     position: fixed;
-    background: $blue;
+    background-color: var(--agentation-color-blue);
   }
 
   &.fixed {
@@ -945,19 +1040,19 @@ $green: #34c759;
   }
 
   &.multiSelect {
-    background: $green;
+    background-color: var(--agentation-color-green);
     width: 26px;
     height: 26px;
     border-radius: 6px;
     font-size: 0.75rem;
 
     &.pending {
-      background: $green;
+      background-color: var(--agentation-color-green);
     }
   }
 
   &.hovered {
-    background: $red;
+    background-color: var(--agentation-color-red);
   }
 }
 
@@ -1062,7 +1157,7 @@ $green: #34c759;
     0 1px 8px rgba(0, 0, 0, 0.25),
     0 0 0 1px rgba(0, 0, 0, 0.04);
   transition:
-    background 0.25s ease,
+    background-color 0.25s ease,
     box-shadow 0.25s ease;
 
   // Gradient overlays for smooth edge fade during transitions
@@ -1101,10 +1196,9 @@ $green: #34c759;
   .customCheckbox,
   .sliderLabel,
   .slider,
-  .helpIcon,
   .themeToggle {
     transition:
-      background 0.25s ease,
+      background-color 0.25s ease,
       color 0.25s ease,
       border-color 0.25s ease;
   }
@@ -1130,7 +1224,7 @@ $green: #34c759;
       filter 0.1s ease;
   }
 
-  &.dark {
+  [data-agentation-theme="dark"] & {
     background: #1a1a1a;
     box-shadow:
       0 4px 20px rgba(0, 0, 0, 0.3),
@@ -1165,31 +1259,28 @@ $green: #34c759;
   position: relative;
   display: flex;
   padding: 0 1rem;
-
-  &.transitioning {
-    overflow-x: clip;
-    overflow-y: visible;
-  }
 }
 
 .settingsPage {
   min-width: 100%;
   flex-shrink: 0;
   transition:
-    transform 0.35s cubic-bezier(0.32, 0.72, 0, 1),
-    opacity 0.2s ease-out;
+    transform 0.2s ease,
+    opacity 0.2s ease;
+  transition-delay: 0s;
   opacity: 1;
 }
 
 .settingsPage.slideLeft {
-  transform: translateX(-100%);
+  transform: translateX(-24px);
   opacity: 0;
+  pointer-events: none;
 }
 
 .automationsPage {
   position: absolute;
   top: 0;
-  left: 100%;
+  left: 24px;
   width: 100%;
   height: 100%;
   padding: 3px 1rem 0;
@@ -1197,14 +1288,16 @@ $green: #34c759;
   display: flex;
   flex-direction: column;
   transition:
-    transform 0.35s cubic-bezier(0.32, 0.72, 0, 1),
-    opacity 0.25s ease-out 0.1s;
+    transform 0.2s ease,
+    opacity 0.2s ease;
   opacity: 0;
+  pointer-events: none;
 }
 
 .automationsPage.slideIn {
-  transform: translateX(-100%);
+  transform: translateX(-24px);
   opacity: 1;
+  pointer-events: auto;
 }
 
 .settingsNavLink {
@@ -1226,7 +1319,7 @@ $green: #34c759;
     color: rgba(255, 255, 255, 0.9);
   }
 
-  &.light {
+  [data-agentation-theme="light"] & {
     color: rgba(0, 0, 0, 0.5);
 
     &:hover {
@@ -1243,11 +1336,11 @@ $green: #34c759;
     color: #fff;
   }
 
-  &.light svg {
+  [data-agentation-theme="light"] & svg {
     color: rgba(0, 0, 0, 0.25);
   }
 
-  &.light:hover svg {
+  [data-agentation-theme="light"] &:hover svg {
     color: rgba(0, 0, 0, 0.8);
   }
 }
@@ -1265,12 +1358,12 @@ $green: #34c759;
   flex-shrink: 0;
 
   &.connected {
-    background: $green;
+    background-color: var(--agentation-color-green);
     animation: mcpPulse 2.5s ease-in-out infinite;
   }
 
   &.connecting {
-    background: #f5a623;
+    background-color: var(--agentation-color-yellow);
     animation: mcpPulse 1.5s ease-in-out infinite;
   }
 }
@@ -1302,14 +1395,20 @@ $green: #34c759;
   }
 
   &:hover {
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+
     svg {
       opacity: 1;
     }
   }
 
-  &.light {
+  [data-agentation-theme="light"] & {
     color: rgba(0, 0, 0, 0.85);
     border-bottom-color: rgba(0, 0, 0, 0.08);
+
+    &:hover {
+      border-bottom-color: rgba(0, 0, 0, 0.08);
+    }
   }
 }
 
@@ -1321,11 +1420,7 @@ $green: #34c759;
   font-weight: 400;
   color: #fff;
 
-  .helpIcon svg {
-    transform: none;
-  }
-
-  &.light {
+  [data-agentation-theme="light"] & {
     color: rgba(0, 0, 0, 0.85);
   }
 }
@@ -1337,7 +1432,7 @@ $green: #34c759;
   margin-top: 2px;
   line-height: 14px;
 
-  &.light {
+  [data-agentation-theme="light"] & {
     color: rgba(0, 0, 0, 0.5);
   }
 }
@@ -1353,7 +1448,7 @@ $green: #34c759;
     color: #fff;
   }
 
-  &.light {
+  [data-agentation-theme="light"] & {
     color: rgba(0, 0, 0, 0.6);
     text-decoration-color: rgba(0, 0, 0, 0.2);
 
@@ -1377,13 +1472,14 @@ $green: #34c759;
 
   &.active {
     color: #66b8ff;
+    color: color(display-p3 0.4 0.72 1);
   }
 
-  &.light {
+  [data-agentation-theme="light"] & {
     color: rgba(0, 0, 0, 0.4);
 
     &.active {
-      color: $blue;
+      color: var(--agentation-color-blue);
     }
   }
 }
@@ -1409,7 +1505,7 @@ $green: #34c759;
   user-select: text;
   transition:
     border-color 0.15s ease,
-    background 0.15s ease,
+    background-color 0.15s ease,
     box-shadow 0.15s ease;
 
   &::placeholder {
@@ -1421,7 +1517,7 @@ $green: #34c759;
     background: rgba(255, 255, 255, 0.08);
   }
 
-  &.light {
+  [data-agentation-theme="light"] & {
     border-color: rgba(0, 0, 0, 0.1);
     background: rgba(0, 0, 0, 0.03);
     color: rgba(0, 0, 0, 0.85);
@@ -1455,7 +1551,8 @@ $green: #34c759;
 }
 
 .settingsBrandSlash {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--agentation-color-accent);
+  transition: color 0.2s ease;
 }
 
 .settingsVersion {
@@ -1541,7 +1638,7 @@ $green: #34c759;
   cursor: pointer;
   letter-spacing: -0.0094em;
 
-  &.light {
+  [data-agentation-theme="light"] & {
     color: rgba(0, 0, 0, 0.85);
   }
 
@@ -1555,7 +1652,7 @@ $green: #34c759;
   .settingsLabel {
     color: rgba(255, 255, 255, 0.2);
 
-    &.light {
+    [data-agentation-theme="light"] & {
       color: rgba(0, 0, 0, 0.2);
     }
   }
@@ -1603,7 +1700,7 @@ $green: #34c759;
     transform: scale(1);
   }
 
-  &.light {
+  [data-agentation-theme="light"] & {
     background: rgba(0, 0, 0, 0.2);
 
     &.active {
@@ -1665,7 +1762,7 @@ $green: #34c759;
   align-items: center;
   gap: 0.125rem;
 
-  &.light {
+  [data-agentation-theme="light"] & {
     color: rgba(0, 0, 0, 0.5);
   }
 }
@@ -1703,8 +1800,12 @@ $green: #34c759;
   }
 
   &.selected {
-    background: rgba($blue, 0.15);
-    color: $blue;
+    background: color-mix(
+      in srgb,
+      var(--agentation-color-blue) 15%,
+      transparent
+    );
+    color: var(--agentation-color-blue);
   }
 }
 
@@ -1796,8 +1897,13 @@ $green: #34c759;
   height: 20px;
   border-radius: 50%;
   border: 2px solid transparent;
+  background-color: var(--swatch);
   cursor: pointer;
   transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+
+  @supports (color: color(display-p3 0 0 0)) {
+    background-color: var(--swatch-p3);
+  }
 
   &:hover {
     transform: scale(1.15);
@@ -1805,7 +1911,6 @@ $green: #34c759;
 
   &.selected {
     transform: scale(0.83);
-    // border-color: rgba(255, 255, 255, 0.4);
   }
 }
 
@@ -1818,6 +1923,11 @@ $green: #34c759;
   transition: border-color 0.3s ease;
 
   &.selected {
+    border-color: var(--swatch);
+
+    @supports (color: color(display-p3 0 0 0)) {
+      border-color: var(--swatch-p3);
+    }
   }
 }
 
@@ -1855,7 +1965,7 @@ $green: #34c759;
   justify-content: center;
   flex-shrink: 0;
   transition:
-    background 0.25s ease,
+    background-color 0.25s ease,
     border-color 0.25s ease;
 
   svg {
@@ -1870,7 +1980,7 @@ $green: #34c759;
   }
 
   // Light mode variant (unchecked state)
-  &.light {
+  [data-agentation-theme="light"] & {
     border: 1px solid rgba(0, 0, 0, 0.15);
     background: #fff;
 
@@ -1895,7 +2005,7 @@ $green: #34c759;
   align-items: center;
   gap: 0.25rem;
 
-  &.light {
+  [data-agentation-theme="light"] & {
     color: rgba(0, 0, 0, 0.5);
   }
 }
@@ -1908,7 +2018,9 @@ $green: #34c759;
   height: 16px;
   flex-shrink: 0;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition:
+    background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
   input {
     opacity: 0;
@@ -1917,7 +2029,7 @@ $green: #34c759;
   }
 
   input:checked + .toggleSlider {
-    background: $blue;
+    background-color: var(--agentation-color-blue);
   }
 
   input:checked + .toggleSlider::before {
@@ -1941,7 +2053,7 @@ $green: #34c759;
   border-radius: 16px;
   background: #484848; // Dark mode unchecked
 
-  .light & {
+  [data-agentation-theme="light"] & {
     background: #dddddd; // Light mode unchecked
   }
 
@@ -1955,32 +2067,39 @@ $green: #34c759;
     background: white;
     border-radius: 50%;
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
 }
 
 // MCP Status Dot
 @keyframes mcpPulse {
   0% {
-    box-shadow: 0 0 0 0 rgba($green, 0.5);
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--agentation-color-green) 50%, transparent);
   }
   70% {
-    box-shadow: 0 0 0 6px rgba($green, 0);
+    box-shadow: 0 0 0 6px
+      color-mix(in srgb, var(--agentation-color-green) 0%, transparent);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba($green, 0);
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--agentation-color-green) 0%, transparent);
   }
 }
 
 @keyframes mcpPulseError {
   0% {
-    box-shadow: 0 0 0 0 rgba($red, 0.5);
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--agentation-color-red) 50%, transparent);
   }
+
   70% {
-    box-shadow: 0 0 0 6px rgba($red, 0);
+    box-shadow: 0 0 0 6px
+      color-mix(in srgb, var(--agentation-color-red) 0%, transparent);
   }
+
   100% {
-    box-shadow: 0 0 0 0 rgba($red, 0);
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--agentation-color-red) 0%, transparent);
   }
 }
 
@@ -1992,56 +2111,20 @@ $green: #34c759;
 
   // Connecting state
   &.connecting {
-    background: #f5a623;
+    background-color: var(--agentation-color-yellow);
     animation: mcpPulse 1.5s infinite;
   }
 
   // Connected state - subtle pulse
   &.connected {
-    background: $green;
+    background-color: var(--agentation-color-green);
     animation: mcpPulse 2.5s ease-in-out infinite;
   }
 
   // Disconnected/error state
   &.disconnected {
-    background: $red;
+    background-color: var(--agentation-color-red);
     animation: mcpPulseError 2s infinite;
-  }
-}
-
-.helpIcon {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: help;
-  margin-left: 0;
-
-  svg {
-    display: block;
-    transform: translateY(1px);
-    color: rgba(255, 255, 255, 0.2);
-    transition: color 0.15s ease;
-  }
-
-  &:hover svg {
-    color: rgba(255, 255, 255, 0.5);
-  }
-
-  &.helpIconNudgeDown svg {
-    transform: translateY(1px);
-  }
-
-  &.helpIconNoNudge svg {
-    transform: translateY(0.5px);
-  }
-
-  &.helpIconNudge1-5 svg {
-    transform: translateY(1.5px);
-  }
-
-  &.helpIconNudge2 svg {
-    transform: translateY(2px);
   }
 }
 
@@ -2053,9 +2136,14 @@ $green: #34c759;
   position: fixed;
   top: 0;
   left: 0;
-  border: 2px solid rgba($green, 0.6);
+  border: 2px solid
+    color-mix(in srgb, var(--agentation-color-green) 60%, transparent);
   border-radius: 4px;
-  background: rgba($green, 0.08);
+  background-color: color-mix(
+    in srgb,
+    var(--agentation-color-green) 8%,
+    transparent
+  );
   pointer-events: none;
   z-index: 99997;
   will-change: transform, width, height;
@@ -2067,7 +2155,7 @@ $green: #34c759;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: $green;
+  background-color: var(--agentation-color-green);
   color: white;
   font-size: 0.875rem;
   font-weight: 600;
@@ -2089,9 +2177,10 @@ $green: #34c759;
   position: fixed;
   top: 0;
   left: 0;
-  border: 2px solid rgba($green, 0.5);
+  border: 2px solid
+    color-mix(in srgb, var(--agentation-color-green) 50%, transparent);
   border-radius: 4px;
-  background: rgba($green, 0.06);
+  background: color-mix(in srgb, var(--agentation-color-green) 6%, transparent);
   pointer-events: none;
   will-change: transform, width, height;
   contain: layout style;
@@ -2101,9 +2190,9 @@ $green: #34c759;
 // Light Mode
 // =============================================================================
 
-.light {
+[data-agentation-theme="light"] {
   // Toolbar container
-  &.toolbarContainer {
+  .toolbarContainer {
     background: #fff;
     color: rgba(0, 0, 0, 0.85);
     box-shadow:
@@ -2117,47 +2206,65 @@ $green: #34c759;
   }
 
   // Control buttons in toolbar
-  &.controlButton {
+  .controlButton {
     color: rgba(0, 0, 0, 0.5);
 
     &:hover:not(:disabled):not([data-active="true"]):not(
         [data-failed="true"]
-      ):not([data-auto-sync="true"]):not([data-error="true"]):not([data-no-hover="true"]) {
+      ):not([data-auto-sync="true"]):not([data-error="true"]):not(
+        [data-no-hover="true"]
+      ) {
       background: rgba(0, 0, 0, 0.06);
       color: rgba(0, 0, 0, 0.85);
     }
 
     &[data-active="true"] {
-      color: $blue;
-      background: rgba($blue, 0.15);
+      color: var(--agentation-color-blue);
+      background: color-mix(
+        in srgb,
+        var(--agentation-color-blue) 15%,
+        transparent
+      );
     }
 
     &[data-error="true"] {
-      color: $red;
-      background: rgba($red, 0.15);
+      color: var(--agentation-color-red);
+      background: color-mix(
+        in srgb,
+        var(--agentation-color-red) 15%,
+        transparent
+      );
     }
 
     &[data-danger]:hover:not(:disabled):not([data-active="true"]):not(
         [data-failed="true"]
       ) {
-      background: rgba($red, 0.15);
-      color: $red;
+      color: var(--agentation-color-red);
+      background: color-mix(
+        in srgb,
+        var(--agentation-color-red) 15%,
+        transparent
+      );
     }
 
     &[data-auto-sync="true"] {
-      color: $green;
+      color: var(--agentation-color-green);
       background: transparent;
     }
 
-    // Failed state (no listeners) - red like danger hover
+    // Failed state (no listeners)
     &[data-failed="true"] {
-      color: $red;
-      background: rgba($red, 0.15);
+      color: var(--agentation-color-red);
+      background: color-mix(
+        in srgb,
+        var(--agentation-color-red) 15%,
+        transparent
+      );
     }
   }
 
   // Button tooltips
-  &.buttonTooltip {
+  .buttonTooltip {
     background: #fff;
     color: rgba(0, 0, 0, 0.85);
     box-shadow:
@@ -2171,12 +2278,12 @@ $green: #34c759;
   }
 
   // Divider
-  &.divider {
+  .divider {
     background: rgba(0, 0, 0, 0.1);
   }
 
   // Marker tooltip
-  &.markerTooltip {
+  .markerTooltip {
     background: #fff;
     box-shadow:
       0 4px 20px rgba(0, 0, 0, 0.12),
@@ -2196,7 +2303,7 @@ $green: #34c759;
   }
 
   // Settings panel
-  &.settingsPanel {
+  .settingsPanel {
     background: #fff;
     box-shadow:
       0 2px 8px rgba(0, 0, 0, 0.08),
@@ -2217,10 +2324,6 @@ $green: #34c759;
 
     .settingsBrand {
       color: rgba(0, 0, 0, 0.85);
-    }
-
-    .settingsBrandSlash {
-      color: rgba(0, 0, 0, 0.4);
     }
 
     .settingsVersion {
@@ -2296,14 +2399,6 @@ $green: #34c759;
         background: #1a1a1a;
       }
     }
-
-    .helpIcon svg {
-      color: rgba(0, 0, 0, 0.2);
-    }
-
-    .helpIcon:hover svg {
-      color: rgba(0, 0, 0, 0.5);
-    }
   }
 }
 
@@ -2329,7 +2424,7 @@ $green: #34c759;
     color: rgba(255, 255, 255, 0.8);
   }
 
-  .light & {
+  [data-agentation-theme="light"] & {
     color: rgba(0, 0, 0, 0.4);
 
     &:hover {

@@ -173,3 +173,31 @@ export function clearSessionId(pathname: string): void {
     // ignore
   }
 }
+
+// =============================================================================
+// Toolbar Visibility (per-tab session)
+// =============================================================================
+
+const TOOLBAR_HIDDEN_SESSION_KEY = `${SESSION_PREFIX}toolbar-hidden`;
+
+export function loadToolbarHidden(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return sessionStorage.getItem(TOOLBAR_HIDDEN_SESSION_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function saveToolbarHidden(hidden: boolean): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (hidden) {
+      sessionStorage.setItem(TOOLBAR_HIDDEN_SESSION_KEY, "1");
+    } else {
+      sessionStorage.removeItem(TOOLBAR_HIDDEN_SESSION_KEY);
+    }
+  } catch {
+    // ignore
+  }
+}

@@ -1,3 +1,5 @@
+import React from "react";
+
 // =============================================================================
 // Source Location Detection Utilities
 // =============================================================================
@@ -374,6 +376,281 @@ function findDebugSourceReact19(
   return null;
 }
 
+// =============================================================================
+// Stack-Trace Fallback for Source File Detection
+// =============================================================================
+//
+// When _debugSource is unavailable (e.g. Next.js with SWC), we fall back to
+// invoking the component function with a throwing hooks dispatcher, parsing
+// the error stack trace, and stripping bundler URL prefixes. In dev mode,
+// stack frames already contain original source paths.
+// =============================================================================
+
+/** Cache: component function → probed SourceLocation (or null if unresolvable) */
+const sourceProbeCache = new Map<Function, SourceLocation | null>();
+
+/**
+ * Extract the callable function from a fiber, handling wrappers.
+ * Returns null for class components, host elements, or unrecognized types.
+ */
+function unwrapComponentType(fiber: ReactFiber): Function | null {
+  const tag = fiber.tag;
+  const type = fiber.type;
+  const elementType = fiber.elementType as Record<string, unknown> | null | undefined;
+
+  // Host elements (div, span, etc.)
+  if (typeof type === "string" || type == null) return null;
+
+  // Class components — skip (need `new`, different lifecycle)
+  if (
+    typeof type === "function" &&
+    (type as { prototype?: { isReactComponent?: boolean } }).prototype?.isReactComponent
+  ) {
+    return null;
+  }
+
+  // FunctionComponent / IndeterminateComponent
+  if (
+    (tag === FIBER_TAGS.FunctionComponent || tag === FIBER_TAGS.IndeterminateComponent) &&
+    typeof type === "function"
+  ) {
+    return type as Function;
+  }
+
+  // ForwardRef
+  if (tag === FIBER_TAGS.ForwardRef && elementType) {
+    const render = elementType.render;
+    if (typeof render === "function") return render as Function;
+  }
+
+  // Memo / SimpleMemo
+  if (
+    (tag === FIBER_TAGS.MemoComponent || tag === FIBER_TAGS.SimpleMemoComponent) &&
+    elementType
+  ) {
+    const inner = elementType.type;
+    if (typeof inner === "function") return inner as Function;
+  }
+
+  // Generic fallback: if type is a plain function, use it
+  if (typeof type === "function") return type as Function;
+
+  return null;
+}
+
+/**
+ * Access the React hooks dispatcher from React's module internals.
+ * These are properties on the `react` module export, NOT on `window`.
+ * Returns get/set helpers or null if not found.
+ */
+function getReactDispatcher(): {
+  get: () => unknown;
+  set: (d: unknown) => void;
+} | null {
+  // Access React internals from the imported module
+  const reactModule = React as unknown as Record<string, unknown>;
+
+  // React 19: __CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE.H
+  const r19 = reactModule.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE as
+    | Record<string, unknown>
+    | undefined;
+  if (r19 && "H" in r19) {
+    return {
+      get: () => r19.H,
+      set: (d: unknown) => { r19.H = d; },
+    };
+  }
+
+  // React 16-18: __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentDispatcher.current
+  const r18 = reactModule.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED as
+    | Record<string, unknown>
+    | undefined;
+  if (r18) {
+    const dispatcher = r18.ReactCurrentDispatcher as
+      | { current: unknown }
+      | undefined;
+    if (dispatcher && "current" in dispatcher) {
+      return {
+        get: () => dispatcher.current,
+        set: (d: unknown) => { dispatcher.current = d; },
+      };
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Parse the first non-internal frame from an error stack string.
+ */
+function parseComponentFrame(
+  stack: string
+): { fileName: string; line: number; column?: number } | null {
+  const lines = stack.split("\n");
+
+  // Patterns to skip: our own bundle, React internals, node_modules, chunk files
+  const skipPatterns = [
+    /source-location/,
+    /\/dist\/index\./,       // Our bundled output (dist/index.mjs, dist/index.js)
+    /node_modules\//,        // Any package in node_modules
+    /react-dom/,
+    /react\.development/,
+    /react\.production/,
+    /chunk-[A-Z0-9]+/i,
+    /react-stack-bottom-frame/,
+    /react-reconciler/,
+    /scheduler/,
+    /<anonymous>/,           // Proxy handler frames
+  ];
+
+  // V8 format: "    at FnName (file:line:col)" or "    at file:line:col"
+  const v8Re = /^\s*at\s+(?:.*?\s+\()?(.+?):(\d+):(\d+)\)?$/;
+  // WebKit/Gecko: "FnName@file:line:col" or "@file:line:col"
+  const webkitRe = /^[^@]*@(.+?):(\d+):(\d+)$/;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    // Skip frames from internal files
+    if (skipPatterns.some((p) => p.test(trimmed))) continue;
+
+    const match = v8Re.exec(trimmed) || webkitRe.exec(trimmed);
+    if (match) {
+      return {
+        fileName: match[1],
+        line: parseInt(match[2], 10),
+        column: parseInt(match[3], 10),
+      };
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Strip bundler URL prefixes from a raw source path.
+ */
+function cleanSourcePath(rawPath: string): string {
+  let path = rawPath;
+
+  // 1. Strip query params and hashes
+  path = path.replace(/[?#].*$/, "");
+
+  // 2. Turbopack project prefix
+  path = path.replace(/^turbopack:\/\/\/\[project\]\//, "");
+
+  // 3. webpack-internal
+  path = path.replace(/^webpack-internal:\/\/\/\.\//, "");
+  path = path.replace(/^webpack-internal:\/\/\//, "");
+
+  // 4. webpack
+  path = path.replace(/^webpack:\/\/\/\.\//, "");
+  path = path.replace(/^webpack:\/\/\//, "");
+
+  // 5. turbopack generic
+  path = path.replace(/^turbopack:\/\/\//, "");
+
+  // 6. http(s)://host:port/
+  path = path.replace(/^https?:\/\/[^/]+\//, "");
+
+  // 7. file:///
+  path = path.replace(/^file:\/\/\//, "/");
+
+  // 8. Webpack chunk group prefixes like (app-pages-browser)/./
+  path = path.replace(/^\([^)]+\)\/\.\//, "");
+
+  // 9. Leading ./
+  path = path.replace(/^\.\//, "");
+
+  return path;
+}
+
+/**
+ * Probe a single fiber's component function by invoking it with a
+ * throwing hooks dispatcher and parsing the resulting error stack.
+ */
+function probeComponentSource(fiber: ReactFiber): SourceLocation | null {
+  const fn = unwrapComponentType(fiber);
+  if (!fn) return null;
+
+  // Check cache
+  if (sourceProbeCache.has(fn)) {
+    return sourceProbeCache.get(fn)!;
+  }
+
+  const dispatcher = getReactDispatcher();
+  if (!dispatcher) {
+    sourceProbeCache.set(fn, null);
+    return null;
+  }
+
+  const original = dispatcher.get();
+  let result: SourceLocation | null = null;
+
+  try {
+    // Install a proxy dispatcher that throws an Error (with stack) on any hook access.
+    // When the component calls useState/useEffect/etc., the proxy's get trap fires,
+    // creating an Error whose stack trace includes the component's source location.
+    const stackCapturingDispatcher = new Proxy(
+      {},
+      {
+        get() {
+          throw new Error("probe");
+        },
+      }
+    );
+    dispatcher.set(stackCapturingDispatcher);
+
+    try {
+      // Invoke the component — it will either:
+      // 1. Call a hook → throws Error with stack (ideal case)
+      // 2. Have no hooks → runs to completion (harmless, discarded), no stack to parse
+      fn({});
+    } catch (e) {
+      if (e instanceof Error && e.message === "probe" && e.stack) {
+        const frame = parseComponentFrame(e.stack);
+        if (frame) {
+          const cleaned = cleanSourcePath(frame.fileName);
+          result = {
+            fileName: cleaned,
+            lineNumber: frame.line,
+            columnNumber: frame.column,
+            componentName: getComponentName(fiber) || undefined,
+          };
+        }
+      }
+    }
+  } finally {
+    dispatcher.set(original);
+  }
+
+  sourceProbeCache.set(fn, result);
+  return result;
+}
+
+/**
+ * Walk the fiber tree via .return, probing each fiber for source info.
+ * Stops at the first success.
+ */
+function probeSourceWalk(
+  fiber: ReactFiber,
+  maxDepth = 15
+): SourceLocation | null {
+  let current: ReactFiber | null | undefined = fiber;
+  let depth = 0;
+
+  while (current && depth < maxDepth) {
+    const source = probeComponentSource(current);
+    if (source) return source;
+
+    current = current.return;
+    depth++;
+  }
+
+  return null;
+}
+
 /**
  * Gets the source file location for a DOM element in a React application
  *
@@ -394,36 +671,15 @@ function findDebugSourceReact19(
  * ```
  */
 export function getSourceLocation(element: HTMLElement): SourceLocationResult {
-  // Detect React environment
-  const reactInfo = detectReactApp();
-
-  if (!reactInfo.isReact) {
-    return {
-      found: false,
-      reason: "not-react-app",
-      isReactApp: false,
-      isProduction: true,
-    };
-  }
-
-  if (reactInfo.isProduction) {
-    return {
-      found: false,
-      reason: "production-build",
-      isReactApp: true,
-      isProduction: true,
-    };
-  }
-
-  // Get fiber from element
+  // Try to get fiber directly from the element (same approach as getReactComponentName)
+  // This avoids detectReactApp() whose production heuristic can give false positives
   const fiber = getFiberFromElement(element);
 
   if (!fiber) {
-    // Element might not be part of React tree (e.g., injected by extension)
     return {
       found: false,
       reason: "no-fiber",
-      isReactApp: true,
+      isReactApp: false,
       isProduction: false,
     };
   }
@@ -436,35 +692,29 @@ export function getSourceLocation(element: HTMLElement): SourceLocationResult {
     debugInfo = findDebugSourceReact19(fiber);
   }
 
-  if (!debugInfo || !debugInfo.source) {
-    // Check if this might be React 19 with changed internals
-    const majorVersion = reactInfo.version?.split(".")[0];
-    if (majorVersion === "19") {
-      return {
-        found: false,
-        reason: "react-19-changed",
-        isReactApp: true,
-        isProduction: false,
-      };
-    }
-
+  if (debugInfo?.source) {
     return {
-      found: false,
-      reason: "no-debug-source",
+      found: true,
+      source: {
+        fileName: debugInfo.source.fileName,
+        lineNumber: debugInfo.source.lineNumber,
+        columnNumber: debugInfo.source.columnNumber,
+        componentName: debugInfo.componentName || undefined,
+      },
       isReactApp: true,
       isProduction: false,
     };
   }
 
+  // Fallback: probe component via stack trace
+  const probed = probeSourceWalk(fiber);
+  if (probed) {
+    return { found: true, source: probed, isReactApp: true, isProduction: false };
+  }
+
   return {
-    found: true,
-    source: {
-      fileName: debugInfo.source.fileName,
-      lineNumber: debugInfo.source.lineNumber,
-      columnNumber: debugInfo.source.columnNumber,
-      componentName: debugInfo.componentName || undefined,
-      reactVersion: reactInfo.version,
-    },
+    found: false,
+    reason: "no-debug-source",
     isReactApp: true,
     isProduction: false,
   };

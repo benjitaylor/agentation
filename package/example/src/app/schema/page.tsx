@@ -397,7 +397,7 @@ type ThreadMessage = {
             Current version: <span style={{ color: "#4a9eff", fontFamily: "'SF Mono', monospace" }}>v1</span>
           </p>
           <p style={{ fontSize: "0.8125rem", color: "rgba(0,0,0,0.55)", marginTop: "0.75rem" }}>
-            Schema URL: <code>https://agentation.dev/schema/annotation.v1.json</code>
+            Schema URL: <code style={{ wordBreak: "break-word" }}>https://agentation.dev/schema/annotation.v1.json</code>
           </p>
         </section>
       </article>
