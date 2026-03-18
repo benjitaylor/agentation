@@ -27,6 +27,24 @@ import { Agentation } from 'agentation';
 
 CSS-only animations, no external runtime dependencies beyond React.
 
+## Programmatic API
+
+The component exposes these callback props (added in 1.2.0):
+
+- `onAnnotationAdd(annotation)` - when annotation created
+- `onAnnotationDelete(annotation)` - when annotation deleted
+- `onAnnotationUpdate(annotation)` - when annotation edited
+- `onAnnotationsClear(annotations[])` - when all cleared
+- `onCopy(markdown)` - when copy button clicked
+- `copyToClipboard` (boolean, default: true)
+
+**API stability**: These are public contracts. Changing signatures or removing callbacks is a breaking change requiring a major version bump.
+
+**Expansion ideas** (for future consideration):
+- `onActivate` / `onDeactivate` - toolbar state changes
+- `getAnnotations()` ref method - programmatic access
+- `onExport` with format options
+
 ## Testing Changes
 
 1. Run `pnpm build` to ensure it compiles

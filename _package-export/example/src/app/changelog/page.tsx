@@ -1,12 +1,13 @@
 "use client";
 
 import { Footer } from "../Footer";
+import { ReactNode } from "react";
 
 type ChangeType = "added" | "fixed" | "improved" | "removed";
 
 interface Change {
   type: ChangeType;
-  text: string;
+  text: ReactNode;
 }
 
 interface Release {
@@ -24,6 +25,22 @@ const badgeLabels: Record<ChangeType, string> = {
 };
 
 const releases: Release[] = [
+  {
+    version: "1.3.0",
+    date: "January 23, 2026",
+    changes: [
+      { type: "added", text: "Collapsible computed styles section in annotation popup — click the chevron to view CSS properties for the selected element" },
+      { type: "improved", text: "Toolbar polish and visual refinements" },
+    ],
+  },
+  {
+    version: "1.2.0",
+    date: "January 22, 2026",
+    changes: [
+      { type: "added", text: <><a href="/api" className="styled-link">Programmatic API</a>: <code>onAnnotationAdd</code>, <code>onAnnotationDelete</code>, <code>onAnnotationUpdate</code>, <code>onAnnotationsClear</code>, <code>onCopy</code> callbacks</> },
+      { type: "added", text: <><code>copyToClipboard</code> prop to control clipboard behavior</> },
+    ],
+  },
   {
     version: "1.1.1",
     date: "January 22, 2026",

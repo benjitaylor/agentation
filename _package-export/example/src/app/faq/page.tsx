@@ -31,7 +31,7 @@ const faqCategories: FAQCategory[] = [
       },
       {
         question: "Is there a Claude Code integration?",
-        answer: "Yes. Run <code>npx add-skill benjitaylor/agentation</code> to install the skill, then <code>/agentation</code> to set up. It detects your framework, installs the package, creates a provider component, and wires it into your layout."
+        answer: "Yes. Run <code>npx add-skill benjitaylor/agentation</code> in your terminal, then <code>/agentation</code> in Claude Code. It detects your framework, installs the package, creates a provider component, and wires it into your layout."
       },
     ]
   },

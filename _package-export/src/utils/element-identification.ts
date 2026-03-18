@@ -358,40 +358,133 @@ export function getComputedStylesSnapshot(target: HTMLElement): string {
   return parts.join(", ");
 }
 
+// Values to filter out when collecting computed styles (browser defaults / uninteresting)
+const DEFAULT_STYLE_VALUES = new Set([
+  "none", "normal", "auto", "0px", "rgba(0, 0, 0, 0)", "transparent", "static", "visible"
+]);
+
+// Element type categories for style property selection
+const TEXT_ELEMENTS = new Set([
+  "p", "span", "h1", "h2", "h3", "h4", "h5", "h6", "label", "li", "td", "th",
+  "blockquote", "figcaption", "caption", "legend", "dt", "dd", "pre", "code",
+  "em", "strong", "b", "i", "a", "time", "cite", "q"
+]);
+const FORM_INPUT_ELEMENTS = new Set(["input", "textarea", "select"]);
+const MEDIA_ELEMENTS = new Set(["img", "video", "canvas", "svg"]);
+const CONTAINER_ELEMENTS = new Set([
+  "div", "section", "article", "nav", "header", "footer", "aside", "main",
+  "ul", "ol", "form", "fieldset"
+]);
+
 /**
- * Gets detailed computed styles for forensic-level debugging
+ * Gets key computed styles for the annotation popup display.
+ * Returns different properties based on element type to show the most relevant
+ * CSS properties for debugging (e.g., typography for text, layout for containers).
  */
 export function getDetailedComputedStyles(target: HTMLElement): Record<string, string> {
   if (typeof window === "undefined") return {};
 
   const styles = window.getComputedStyle(target);
   const result: Record<string, string> = {};
+  const tag = target.tagName.toLowerCase();
 
-  // All the properties that are commonly relevant for debugging
-  const properties = [
-    // Colors
-    "color", "backgroundColor", "borderColor",
-    // Typography
-    "fontSize", "fontWeight", "fontFamily", "lineHeight", "letterSpacing", "textAlign",
-    // Box model
-    "width", "height", "padding", "margin", "border", "borderRadius",
-    // Layout
-    "display", "position", "top", "right", "bottom", "left", "zIndex",
-    "flexDirection", "justifyContent", "alignItems", "gap",
-    // Visual
-    "opacity", "visibility", "overflow", "boxShadow",
-    // Transform
-    "transform",
-  ];
+  // Select relevant properties based on element type
+  let properties: string[];
+
+  if (TEXT_ELEMENTS.has(tag)) {
+    // Typography-focused for text elements
+    properties = ["color", "fontSize", "fontWeight", "fontFamily", "lineHeight"];
+  } else if (tag === "button" || (tag === "a" && target.getAttribute("role") === "button")) {
+    // Appearance and spacing for interactive elements
+    properties = ["backgroundColor", "color", "padding", "borderRadius", "fontSize"];
+  } else if (FORM_INPUT_ELEMENTS.has(tag)) {
+    // Form styling
+    properties = ["backgroundColor", "color", "padding", "borderRadius", "fontSize"];
+  } else if (MEDIA_ELEMENTS.has(tag)) {
+    // Dimensions for media
+    properties = ["width", "height", "objectFit", "borderRadius"];
+  } else if (CONTAINER_ELEMENTS.has(tag)) {
+    // Layout-focused for containers
+    properties = ["display", "padding", "margin", "gap", "backgroundColor"];
+  } else {
+    // Default fallback
+    properties = ["color", "fontSize", "margin", "padding", "backgroundColor"];
+  }
 
   for (const prop of properties) {
-    const value = styles.getPropertyValue(prop.replace(/([A-Z])/g, "-$1").toLowerCase());
-    if (value && value !== "none" && value !== "normal" && value !== "auto" && value !== "0px" && value !== "rgba(0, 0, 0, 0)") {
+    const cssPropertyName = prop.replace(/([A-Z])/g, "-$1").toLowerCase();
+    const value = styles.getPropertyValue(cssPropertyName);
+    if (value && !DEFAULT_STYLE_VALUES.has(value)) {
       result[prop] = value;
     }
   }
 
   return result;
+}
+
+// Comprehensive list of CSS properties for forensic output
+const FORENSIC_PROPERTIES = [
+  // Colors
+  "color", "backgroundColor", "borderColor",
+  // Typography
+  "fontSize", "fontWeight", "fontFamily", "lineHeight", "letterSpacing", "textAlign",
+  // Box model
+  "width", "height", "padding", "margin", "border", "borderRadius",
+  // Layout & positioning
+  "display", "position", "top", "right", "bottom", "left", "zIndex",
+  "flexDirection", "justifyContent", "alignItems", "gap",
+  // Visual effects
+  "opacity", "visibility", "overflow", "boxShadow",
+  // Transform
+  "transform",
+];
+
+/**
+ * Gets full computed styles for forensic output.
+ * Returns a comprehensive semicolon-separated string of all relevant CSS properties
+ * for maximum debugging detail in the forensic output format.
+ */
+export function getForensicComputedStyles(target: HTMLElement): string {
+  if (typeof window === "undefined") return "";
+
+  const styles = window.getComputedStyle(target);
+  const parts: string[] = [];
+
+  for (const prop of FORENSIC_PROPERTIES) {
+    const cssPropertyName = prop.replace(/([A-Z])/g, "-$1").toLowerCase();
+    const value = styles.getPropertyValue(cssPropertyName);
+    if (value && !DEFAULT_STYLE_VALUES.has(value)) {
+      parts.push(`${cssPropertyName}: ${value}`);
+    }
+  }
+
+  return parts.join("; ");
+}
+
+/**
+ * Parses a forensic computed styles string back into a Record.
+ * Inverse of getForensicComputedStyles - used when editing annotations.
+ */
+export function parseComputedStylesString(
+  stylesStr: string | undefined,
+): Record<string, string> | undefined {
+  if (!stylesStr) return undefined;
+
+  const result: Record<string, string> = {};
+  const parts = stylesStr.split(";").map((p) => p.trim()).filter(Boolean);
+
+  for (const part of parts) {
+    const colonIndex = part.indexOf(":");
+    if (colonIndex > 0) {
+      const key = part.slice(0, colonIndex).trim();
+      const value = part.slice(colonIndex + 1).trim();
+      if (key && value) {
+        result[key] = value;
+      }
+    }
+  }
+
+  return Object.keys(result).length > 0 ? result : undefined;
 }
 
 /**

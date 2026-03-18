@@ -15,7 +15,7 @@
 // CSS-only version (default - zero runtime deps)
 export { PageFeedbackToolbarCSS as Agentation } from "./components/page-toolbar-css";
 export { PageFeedbackToolbarCSS } from "./components/page-toolbar-css";
-export type { DemoAnnotation } from "./components/page-toolbar-css";
+export type { DemoAnnotation, AgentationProps } from "./components/page-toolbar-css";
 
 // Shared components (for building custom UIs)
 export { AnnotationPopupCSS } from "./components/annotation-popup-css";

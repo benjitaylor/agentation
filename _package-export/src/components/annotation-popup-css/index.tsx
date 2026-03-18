@@ -32,6 +32,8 @@ export interface AnnotationPopupCSSProps {
   isExiting?: boolean;
   /** Light mode styling */
   lightMode?: boolean;
+  /** Computed styles for the selected element */
+  computedStyles?: Record<string, string>;
 }
 
 export interface AnnotationPopupCSSHandle {
@@ -68,6 +70,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
       accentColor = "#3c82f7",
       isExiting = false,
       lightMode = false,
+      computedStyles,
     },
     ref
   ) {
@@ -75,6 +78,7 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
     const [isShaking, setIsShaking] = useState(false);
     const [animState, setAnimState] = useState<"initial" | "enter" | "entered" | "exit">("initial");
     const [isFocused, setIsFocused] = useState(false);
+    const [isStylesExpanded, setIsStylesExpanded] = useState(false); // Computed styles accordion state
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const popupRef = useRef<HTMLDivElement>(null);
 
@@ -169,9 +173,60 @@ export const AnnotationPopupCSS = forwardRef<AnnotationPopupCSSHandle, Annotatio
         onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.header}>
-          <span className={styles.element}>{element}</span>
+          {computedStyles && Object.keys(computedStyles).length > 0 ? (
+            <button
+              className={styles.headerToggle}
+              onClick={() => {
+                const wasExpanded = isStylesExpanded;
+                setIsStylesExpanded(!isStylesExpanded);
+                if (wasExpanded) {
+                  // Refocus textarea when closing
+                  setTimeout(() => textareaRef.current?.focus(), 0);
+                }
+              }}
+              type="button"
+            >
+              <svg
+                className={`${styles.chevron} ${isStylesExpanded ? styles.expanded : ""}`}
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5.5 10.25L9 7.25L5.75 4"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className={styles.element}>{element}</span>
+            </button>
+          ) : (
+            <span className={styles.element}>{element}</span>
+          )}
           {timestamp && <span className={styles.timestamp}>{timestamp}</span>}
         </div>
+
+        {/* Collapsible computed styles section - uses grid-template-rows for smooth animation */}
+        {computedStyles && Object.keys(computedStyles).length > 0 && (
+          <div className={`${styles.stylesWrapper} ${isStylesExpanded ? styles.expanded : ""}`}>
+            <div className={styles.stylesInner}>
+              <div className={styles.stylesBlock}>
+                {Object.entries(computedStyles).map(([key, value]) => (
+                  <div key={key} className={styles.styleLine}>
+                    <span className={styles.styleProperty}>
+                      {key.replace(/([A-Z])/g, "-$1").toLowerCase()}
+                    </span>
+                    : <span className={styles.styleValue}>{value}</span>;
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {selectedText && (
           <div className={styles.quote}>

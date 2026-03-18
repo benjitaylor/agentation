@@ -40,6 +40,8 @@ import {
   getNearbyText,
   getElementClasses,
   getDetailedComputedStyles,
+  getForensicComputedStyles,
+  parseComputedStylesString,
   getFullElementPath,
   getAccessibilityInfo,
   getNearbyElements,
@@ -243,11 +245,26 @@ export type DemoAnnotation = {
   selectedText?: string;
 };
 
-type PageFeedbackToolbarCSSProps = {
+export type PageFeedbackToolbarCSSProps = {
   demoAnnotations?: DemoAnnotation[];
   demoDelay?: number;
   enableDemoMode?: boolean;
+  /** Callback fired when an annotation is added. */
+  onAnnotationAdd?: (annotation: Annotation) => void;
+  /** Callback fired when an annotation is deleted. */
+  onAnnotationDelete?: (annotation: Annotation) => void;
+  /** Callback fired when an annotation comment is edited. */
+  onAnnotationUpdate?: (annotation: Annotation) => void;
+  /** Callback fired when all annotations are cleared. Receives the annotations that were cleared. */
+  onAnnotationsClear?: (annotations: Annotation[]) => void;
+  /** Callback fired when the copy button is clicked. Receives the markdown output. */
+  onCopy?: (markdown: string) => void;
+  /** Whether to copy to clipboard when the copy button is clicked. Defaults to true. */
+  copyToClipboard?: boolean;
 };
+
+/** Alias for PageFeedbackToolbarCSSProps */
+export type AgentationProps = PageFeedbackToolbarCSSProps;
 
 // =============================================================================
 // Component
@@ -257,6 +274,12 @@ export function PageFeedbackToolbarCSS({
   demoAnnotations,
   demoDelay = 1000,
   enableDemoMode = false,
+  onAnnotationAdd,
+  onAnnotationDelete,
+  onAnnotationUpdate,
+  onAnnotationsClear,
+  onCopy,
+  copyToClipboard = true,
 }: PageFeedbackToolbarCSSProps = {}) {
   const [isActive, setIsActive] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
@@ -282,6 +305,7 @@ export function PageFeedbackToolbarCSS({
     fullPath?: string;
     accessibility?: string;
     computedStyles?: string;
+    computedStylesObj?: Record<string, string>;
     nearbyElements?: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
@@ -726,11 +750,9 @@ export function PageFeedbackToolbarCSS({
         selectedText = selection.toString().trim().slice(0, 500);
       }
 
-      // Capture forensic data
+      // Capture computed styles - filtered for popup, full for forensic output
       const computedStylesObj = getDetailedComputedStyles(elementUnder);
-      const computedStylesStr = Object.entries(computedStylesObj)
-        .map(([k, v]) => `${k}: ${v}`)
-        .join("; ");
+      const computedStylesStr = getForensicComputedStyles(elementUnder);
 
       setPendingAnnotation({
         x,
@@ -751,6 +773,7 @@ export function PageFeedbackToolbarCSS({
         fullPath: getFullElementPath(elementUnder),
         accessibility: getAccessibilityInfo(elementUnder),
         computedStyles: computedStylesStr,
+        computedStylesObj,
         nearbyElements: getNearbyElements(elementUnder),
       });
       setHoverInfo(null);
@@ -1124,15 +1147,11 @@ export function PageFeedbackToolbarCSS({
               ? ` +${finalElements.length - 5} more`
               : "";
 
-          // Capture forensic data from first element (Option A)
+          // Capture computed styles from first element - filtered for popup, full for forensic output
           const firstElement = finalElements[0].element;
           const firstElementComputedStyles =
             getDetailedComputedStyles(firstElement);
-          const firstElementComputedStylesStr = Object.entries(
-            firstElementComputedStyles,
-          )
-            .map(([k, v]) => `${k}: ${v}`)
-            .join("; ");
+          const firstElementComputedStylesStr = getForensicComputedStyles(firstElement);
 
           setPendingAnnotation({
             x,
@@ -1151,6 +1170,7 @@ export function PageFeedbackToolbarCSS({
             fullPath: getFullElementPath(firstElement),
             accessibility: getAccessibilityInfo(firstElement),
             computedStyles: firstElementComputedStylesStr,
+            computedStylesObj: firstElementComputedStyles,
             nearbyElements: getNearbyElements(firstElement),
             cssClasses: getElementClasses(firstElement),
             nearbyText: getNearbyText(firstElement),
@@ -1232,6 +1252,9 @@ export function PageFeedbackToolbarCSS({
         setAnimatedMarkers((prev) => new Set(prev).add(newAnnotation.id));
       }, 250);
 
+      // Fire callback
+      onAnnotationAdd?.(newAnnotation);
+
       // Animate out the pending annotation UI
       setPendingExiting(true);
       setTimeout(() => {
@@ -1241,7 +1264,7 @@ export function PageFeedbackToolbarCSS({
 
       window.getSelection()?.removeAllRanges();
     },
-    [pendingAnnotation],
+    [pendingAnnotation, onAnnotationAdd],
   );
 
   // Cancel annotation with exit animation
@@ -1257,8 +1280,14 @@ export function PageFeedbackToolbarCSS({
   const deleteAnnotation = useCallback(
     (id: string) => {
       const deletedIndex = annotations.findIndex((a) => a.id === id);
+      const deletedAnnotation = annotations[deletedIndex];
       setDeletingMarkerId(id);
       setExitingMarkers((prev) => new Set(prev).add(id));
+
+      // Fire callback
+      if (deletedAnnotation) {
+        onAnnotationDelete?.(deletedAnnotation);
+      }
 
       // Wait for exit animation then remove
       setTimeout(() => {
@@ -1277,7 +1306,7 @@ export function PageFeedbackToolbarCSS({
         }
       }, 150);
     },
-    [annotations],
+    [annotations, onAnnotationDelete],
   );
 
   // Start editing an annotation (right-click)
@@ -1291,11 +1320,16 @@ export function PageFeedbackToolbarCSS({
     (newComment: string) => {
       if (!editingAnnotation) return;
 
+      const updatedAnnotation = { ...editingAnnotation, comment: newComment };
+
       setAnnotations((prev) =>
         prev.map((a) =>
-          a.id === editingAnnotation.id ? { ...a, comment: newComment } : a,
+          a.id === editingAnnotation.id ? updatedAnnotation : a,
         ),
       );
+
+      // Fire callback
+      onAnnotationUpdate?.(updatedAnnotation);
 
       // Animate out the edit popup
       setEditExiting(true);
@@ -1304,7 +1338,7 @@ export function PageFeedbackToolbarCSS({
         setEditExiting(false);
       }, 150);
     },
-    [editingAnnotation],
+    [editingAnnotation, onAnnotationUpdate],
   );
 
   // Cancel editing with exit animation
@@ -1321,6 +1355,9 @@ export function PageFeedbackToolbarCSS({
     const count = annotations.length;
     if (count === 0) return;
 
+    // Fire callback with all annotations before clearing
+    onAnnotationsClear?.(annotations);
+
     setIsClearing(true);
     setCleared(true);
 
@@ -1333,14 +1370,24 @@ export function PageFeedbackToolbarCSS({
     }, totalAnimationTime);
 
     setTimeout(() => setCleared(false), 1500);
-  }, [pathname, annotations.length]);
+  }, [pathname, annotations, onAnnotationsClear]);
 
   // Copy output
   const copyOutput = useCallback(async () => {
     const output = generateOutput(annotations, pathname, settings.outputDetail);
     if (!output) return;
 
-    await navigator.clipboard.writeText(output);
+    if (copyToClipboard) {
+      try {
+        await navigator.clipboard.writeText(output);
+      } catch {
+        // Clipboard may fail (permissions, not HTTPS, etc.) - continue anyway
+      }
+    }
+
+    // Fire callback with markdown output (always, regardless of clipboard success)
+    onCopy?.(output);
+
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
 
@@ -1353,6 +1400,8 @@ export function PageFeedbackToolbarCSS({
     settings.outputDetail,
     settings.autoClearAfterCopy,
     clearAll,
+    copyToClipboard,
+    onCopy,
   ]);
 
   // Toolbar dragging - mousemove and mouseup
@@ -2246,6 +2295,7 @@ export function PageFeedbackToolbarCSS({
                 ref={popupRef}
                 element={pendingAnnotation.element}
                 selectedText={pendingAnnotation.selectedText}
+                computedStyles={pendingAnnotation.computedStylesObj}
                 placeholder={
                   pendingAnnotation.element === "Area selection"
                     ? "What should change in this area?"
@@ -2272,13 +2322,10 @@ export function PageFeedbackToolbarCSS({
                       (pendingAnnotation.x / 100) * window.innerWidth,
                     ),
                   ),
-                  top: Math.max(
-                    20,
-                    Math.min(
-                      pendingAnnotation.clientY + 20,
-                      window.innerHeight - 180,
-                    ),
-                  ),
+                  // Position popup above or below marker to keep marker visible
+                  ...(pendingAnnotation.clientY > window.innerHeight - 290
+                    ? { bottom: window.innerHeight - pendingAnnotation.clientY + 20 }
+                    : { top: pendingAnnotation.clientY + 20 }),
                 }}
               />
             </>
@@ -2310,6 +2357,7 @@ export function PageFeedbackToolbarCSS({
                 ref={editPopupRef}
                 element={editingAnnotation.element}
                 selectedText={editingAnnotation.selectedText}
+                computedStyles={parseComputedStylesString(editingAnnotation.computedStyles)}
                 placeholder="Edit your feedback..."
                 initialValue={editingAnnotation.comment}
                 submitLabel="Save"
@@ -2322,26 +2370,26 @@ export function PageFeedbackToolbarCSS({
                     ? "#34C759"
                     : settings.annotationColor
                 }
-                style={{
-                  // Popup is 280px wide, centered with translateX(-50%), so 140px each side
-                  // Clamp so popup stays 20px from viewport edges
-                  left: Math.max(
-                    160,
-                    Math.min(
-                      window.innerWidth - 160,
-                      (editingAnnotation.x / 100) * window.innerWidth,
+                style={(() => {
+                  const markerY = editingAnnotation.isFixed
+                    ? editingAnnotation.y
+                    : editingAnnotation.y - scrollY;
+                  return {
+                    // Popup is 280px wide, centered with translateX(-50%), so 140px each side
+                    // Clamp so popup stays 20px from viewport edges
+                    left: Math.max(
+                      160,
+                      Math.min(
+                        window.innerWidth - 160,
+                        (editingAnnotation.x / 100) * window.innerWidth,
+                      ),
                     ),
-                  ),
-                  top: Math.max(
-                    20,
-                    Math.min(
-                      (editingAnnotation.isFixed
-                        ? editingAnnotation.y
-                        : editingAnnotation.y - scrollY) + 20,
-                      window.innerHeight - 180,
-                    ),
-                  ),
-                }}
+                    // Position popup above or below marker to keep marker visible
+                    ...(markerY > window.innerHeight - 290
+                      ? { bottom: window.innerHeight - markerY + 20 }
+                      : { top: markerY + 20 }),
+                  };
+                })()}
               />
             </>
           )}
