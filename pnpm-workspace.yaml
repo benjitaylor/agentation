@@ -1,4 +1,5 @@
 packages:
-  - '_package-export'
-  - '_package-export/example'
-  - '_package-export/example-solid'
+  - 'package'
+  - 'package/example'
+  - 'package/example-solid'
+  - 'mcp'

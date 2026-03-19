@@ -1,8 +1,9 @@
 # Agentation
 
 Monorepo containing:
-1. **npm package** (`_package-export/`) - See `_package-export/CLAUDE.md`
-2. **Website/docs** (`_package-export/example/`) - See `_package-export/example/CLAUDE.md`
+
+1. **npm package** (`package/`) - See `package/CLAUDE.md`
+2. **Website/docs** (`package/example/`) - See `package/example/CLAUDE.md`
 
 ## What is Agentation?
 
@@ -18,8 +19,8 @@ pnpm build      # Build package only
 
 ## Important
 
-The npm package is public. Changes to `_package-export/src/` affect all users.
-Website changes (`_package-export/example/`) only affect agentation.dev.
+The npm package is public. Changes to `package/src/` affect all users.
+Website changes (`package/example/`) only affect agentation.dev.
 
 ## PR/Issue Approach
 
@@ -27,3 +28,7 @@ Website changes (`_package-export/example/`) only affect agentation.dev.
 - UI changes need extra scrutiny
 - Plugins/extensions → encourage separate repos
 - External binary files → never accept
+
+## Annotations
+
+Whenever the user brings up annotations, fetch all the pending annotations before doing anything else. And infer whether I am referencing any annotations.

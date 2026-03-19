@@ -1,0 +1,22 @@
+.tooltip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: help;
+}
+
+.tooltipIcon {
+  transform: translateY(0.5px);
+  color: #fff;
+  opacity: 0.2;
+  transition: opacity 0.15s ease;
+  will-change: transform;
+
+  .tooltip:hover & {
+    opacity: 0.5;
+  }
+
+  [data-agentation-theme="light"] & {
+    color: #000;
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentation.dev/schema/annotation.v1.json",
+  "title": "Annotation",
+  "description": "Agentation annotation format for structured UI feedback",
+  "type": "object",
+  "required": ["id", "comment", "elementPath", "timestamp", "x", "y", "element"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier (e.g. \"ann_abc123\")"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Human feedback text"
+    },
+    "elementPath": {
+      "type": "string",
+      "description": "CSS selector path (e.g. \"body > main > button.cta\")"
+    },
+    "timestamp": {
+      "type": "number",
+      "description": "Unix timestamp in milliseconds"
+    },
+    "x": {
+      "type": "number",
+      "description": "Percentage of viewport width (0-100)"
+    },
+    "y": {
+      "type": "number",
+      "description": "Pixels from document top (or viewport if isFixed)"
+    },
+    "element": {
+      "type": "string",
+      "description": "Tag name (e.g. \"button\", \"div\", \"input\")"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Page URL where annotation was created"
+    },
+    "boundingBox": {
+      "type": "object",
+      "description": "Element position at annotation time",
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "width": { "type": "number" },
+        "height": { "type": "number" }
+      },
+      "required": ["x", "y", "width", "height"]
+    },
+    "reactComponents": {
+      "type": "string",
+      "description": "React component tree (e.g. \"App > Dashboard > Button\")"
+    },
+    "cssClasses": {
+      "type": "string",
+      "description": "Element class list"
+    },
+    "computedStyles": {
+      "type": "string",
+      "description": "Key CSS properties"
+    },
+    "accessibility": {
+      "type": "string",
+      "description": "ARIA attributes and role"
+    },
+    "nearbyText": {
+      "type": "string",
+      "description": "Visible text in/around element"
+    },
+    "selectedText": {
+      "type": "string",
+      "description": "Text highlighted by user"
+    },
+    "isFixed": {
+      "type": "boolean",
+      "description": "Element has fixed/sticky positioning"
+    },
+    "isMultiSelect": {
+      "type": "boolean",
+      "description": "Created via drag selection"
+    },
+    "fullPath": {
+      "type": "string",
+      "description": "Full DOM path"
+    },
+    "nearbyElements": {
+      "type": "string",
+      "description": "Info about nearby DOM elements"
+    },
+    "intent": {
+      "type": "string",
+      "enum": ["fix", "change", "question", "approve"],
+      "description": "Feedback classification"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["blocking", "important", "suggestion"],
+      "description": "Issue severity"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "acknowledged", "resolved", "dismissed"],
+      "description": "Annotation lifecycle status"
+    },
+    "resolvedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO timestamp when resolved"
+    },
+    "resolvedBy": {
+      "type": "string",
+      "enum": ["human", "agent"],
+      "description": "Who resolved the annotation"
+    },
+    "thread": {
+      "type": "array",
+      "description": "Back-and-forth conversation",
+      "items": {
+        "type": "object",
+        "required": ["id", "role", "content", "timestamp"],
+        "properties": {
+          "id": { "type": "string" },
+          "role": {
+            "type": "string",
+            "enum": ["human", "agent"]
+          },
+          "content": { "type": "string" },
+          "timestamp": { "type": "number" }
+        }
+      }
+    }
+  }
+}

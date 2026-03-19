@@ -96,7 +96,19 @@
       "Bash(gh pr comment:*)",
       "WebFetch(domain:www.vibe-annotations.com)",
       "Bash(git show:*)",
-      "Bash(npm version:*)"
+      "Bash(npm version:*)",
+      "Bash(sips:*)",
+      "mcp__claude_ai_Vercel__web_fetch_vercel_url",
+      "mcp__claude_ai_Vercel__get_access_to_vercel_url",
+      "Bash(git ls-tree:*)",
+      "Bash(__NEW_LINE_12d29f3d9b87d722__ echo \"\")",
+      "Bash(node -e:*)",
+      "Bash(for id in mkrmm3zz-rbebyx mkrmqadk-9d4tpa mkrmut61-r71a6h)",
+      "Bash(do echo \"=== Session: $id ===\" curl -s \"http://localhost:4747/sessions/$id\")",
+      "Bash(git rev-parse:*)",
+      "Bash(git log:*)",
+      "mcp__agentation__agentation_get_all_pending"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": false
 }

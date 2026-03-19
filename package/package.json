@@ -1,0 +1,91 @@
+{
+  "name": "agentation",
+  "version": "2.3.3",
+  "description": "Visual feedback for AI coding agents",
+  "sideEffects": false,
+  "license": "PolyForm-Shield-1.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./solid": {
+      "types": "./dist/solid.d.ts",
+      "import": {
+        "types": "./dist/solid.d.mts",
+        "default": "./dist/solid.mjs"
+      },
+      "require": {
+        "types": "./dist/solid.d.ts",
+        "default": "./dist/solid.js"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "watch": "tsup --watch",
+    "dev": "pnpm build && pnpm watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "pnpm build"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0",
+    "solid-js": ">=1.7.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    }
+  },
+  "overrides": {
+    "babel-preset-solid": "1.9.9"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.0.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "esbuild-plugin-solid": "^0.6.0",
+    "esbuild-sass-plugin": "^3.6.0",
+    "jsdom": "^25.0.0",
+    "postcss": "^8.5.6",
+    "postcss-modules": "^6.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sass": "^1.97.2",
+    "solid-js": "^1.9.10",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  }
+}
