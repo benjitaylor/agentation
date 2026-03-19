@@ -5,6 +5,7 @@ import postcssModules from "postcss-modules";
 import * as path from "path";
 import * as fs from "fs";
 import type { Plugin } from "esbuild";
+import { solidPlugin } from "esbuild-plugin-solid";
 
 // Read version from package.json at build time
 const pkg = JSON.parse(fs.readFileSync("./package.json", "utf-8"));
@@ -82,13 +83,13 @@ export default {};
   };
 }
 
-export default defineConfig((options) => ({
+// React build configuration
+const reactConfig = {
   entry: ["src/index.ts"],
-  format: ["cjs", "esm"],
+  format: ["cjs", "esm"] as const,
   dts: true,
   splitting: false,
   sourcemap: true,
-  clean: !options.watch, // Only clean on build, not during watch
   external: ["react", "react-dom"],
   esbuildPlugins: [scssModulesPlugin()],
   define: {
@@ -97,4 +98,31 @@ export default defineConfig((options) => ({
   banner: {
     js: '"use client";',
   },
-}));
+};
+
+// Solid build configuration
+const solidConfig = {
+  entry: ["src/solid.ts"],
+  format: ["cjs", "esm"] as const,
+  dts: true,
+  tsconfig: "tsconfig.solid.json",
+  splitting: false,
+  sourcemap: true,
+  external: ["solid-js", "solid-js/web"],
+  esbuildPlugins: [solidPlugin(), scssModulesPlugin()],
+  define: {
+    __VERSION__: JSON.stringify(VERSION),
+  },
+  // No "use client" banner for Solid (SolidStart uses different patterns)
+};
+
+export default defineConfig((options) => [
+  {
+    ...reactConfig,
+    clean: !options.watch,
+  },
+  {
+    ...solidConfig,
+    clean: false, // Don't clean on second build (would delete React output)
+  },
+]);
