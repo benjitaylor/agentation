@@ -2,6 +2,7 @@
 // Icons - SolidJS Version
 // =============================================================================
 
+import { createUniqueId } from "solid-js";
 import type { JSX } from "solid-js";
 
 // Small X for marker delete
@@ -58,44 +59,47 @@ export const IconCheckSmall = (props: { size?: number }) => (
 export const IconListSparkle = (props: {
   size?: number;
   style?: JSX.CSSProperties;
-}) => (
-  <svg width={props.size ?? 24} height={props.size ?? 24} viewBox="0 0 24 24" fill="none" style={props.style}>
-    <g clip-path="url(#clip0_list_sparkle)">
-      <path
-        d="M11.5 12L5.5 12"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-      <path
-        d="M18.5 6.75L5.5 6.75"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-      <path
-        d="M9.25 17.25L5.5 17.25"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-      <path
-        d="M16 12.75L16.5179 13.9677C16.8078 14.6494 17.3506 15.1922 18.0323 15.4821L19.25 16L18.0323 16.5179C17.3506 16.8078 16.8078 17.3506 16.5179 18.0323L16 19.25L15.4821 18.0323C15.1922 17.3506 14.6494 16.8078 13.9677 16.5179L12.75 16L13.9677 15.4821C14.6494 15.1922 15.1922 14.6494 15.4821 13.9677L16 12.75Z"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linejoin="round"
-      />
-    </g>
-    <defs>
-      <clipPath id="clip0_list_sparkle">
-        <rect width="24" height="24" fill="white" />
-      </clipPath>
-    </defs>
-  </svg>
-);
+}) => {
+  const id = createUniqueId();
+  return (
+    <svg width={props.size ?? 24} height={props.size ?? 24} viewBox="0 0 24 24" fill="none" style={props.style}>
+      <g clip-path={`url(#${id})`}>
+        <path
+          d="M11.5 12L5.5 12"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M18.5 6.75L5.5 6.75"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M9.25 17.25L5.5 17.25"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M16 12.75L16.5179 13.9677C16.8078 14.6494 17.3506 15.1922 18.0323 15.4821L19.25 16L18.0323 16.5179C17.3506 16.8078 16.8078 17.3506 16.5179 18.0323L16 19.25L15.4821 18.0323C15.1922 17.3506 14.6494 16.8078 13.9677 16.5179L12.75 16L13.9677 15.4821C14.6494 15.1922 15.1922 14.6494 15.4821 13.9677L16 12.75Z"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id={id}>
+          <rect width="24" height="24" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
 
 // Help/Question mark icon for tooltips
 export const IconHelp = (props: { size?: number }) => (
@@ -508,125 +512,140 @@ export const IconChatEllipsis = (props: {
 );
 
 // Checkmark icon
-export const IconCheckmark = (props: { size?: number }) => (
-  <svg width={props.size ?? 16} height={props.size ?? 16} viewBox="0 0 24 24" fill="none">
-    <g clip-path="url(#clip0_2_45)">
-      <path
-        d="M16.25 8.75L10 15.25L7.25 12.25"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </g>
-    <defs>
-      <clipPath id="clip0_2_45">
-        <rect width="24" height="24" fill="white" />
-      </clipPath>
-    </defs>
-  </svg>
-);
+export const IconCheckmark = (props: { size?: number }) => {
+  const id = createUniqueId();
+  return (
+    <svg width={props.size ?? 16} height={props.size ?? 16} viewBox="0 0 24 24" fill="none">
+      <g clip-path={`url(#${id})`}>
+        <path
+          d="M16.25 8.75L10 15.25L7.25 12.25"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id={id}>
+          <rect width="24" height="24" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
 
 // Large checkmark icon
-export const IconCheckmarkLarge = (props: { size?: number }) => (
-  <svg width={props.size ?? 16} height={props.size ?? 16} viewBox="0 0 24 24" fill="none">
-    <g clip-path="url(#clip0_2_37)">
-      <path
-        d="M17.5962 7.75L9.42308 16.25L6.15385 12.6538"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </g>
-    <defs>
-      <clipPath id="clip0_2_37">
-        <rect width="24" height="24" fill="white" />
-      </clipPath>
-    </defs>
-  </svg>
-);
+export const IconCheckmarkLarge = (props: { size?: number }) => {
+  const id = createUniqueId();
+  return (
+    <svg width={props.size ?? 16} height={props.size ?? 16} viewBox="0 0 24 24" fill="none">
+      <g clip-path={`url(#${id})`}>
+        <path
+          d="M17.5962 7.75L9.42308 16.25L6.15385 12.6538"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id={id}>
+          <rect width="24" height="24" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
 
 // Checkmark in circle icon
-export const IconCheckmarkCircle = (props: { size?: number }) => (
-  <svg width={props.size ?? 24} height={props.size ?? 24} viewBox="0 0 24 24" fill="none">
-    <g clip-path="url(#clip0_checkmark_circle)">
-      <path
-        d="M12 20C7.58172 20 4 16.4182 4 12C4 7.58172 7.58172 4 12 4C16.4182 4 20 7.58172 20 12C20 16.4182 16.4182 20 12 20Z"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-      <path
-        d="M15 10L11 14.25L9.25 12.25"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </g>
-    <defs>
-      <clipPath id="clip0_checkmark_circle">
-        <rect width="24" height="24" fill="white" />
-      </clipPath>
-    </defs>
-  </svg>
-);
+export const IconCheckmarkCircle = (props: { size?: number }) => {
+  const id = createUniqueId();
+  return (
+    <svg width={props.size ?? 24} height={props.size ?? 24} viewBox="0 0 24 24" fill="none">
+      <g clip-path={`url(#${id})`}>
+        <path
+          d="M12 20C7.58172 20 4 16.4182 4 12C4 7.58172 7.58172 4 12 4C16.4182 4 20 7.58172 20 12C20 16.4182 16.4182 20 12 20Z"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M15 10L11 14.25L9.25 12.25"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id={id}>
+          <rect width="24" height="24" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
 
 // X mark / close icon
-export const IconXmark = (props: { size?: number }) => (
-  <svg width={props.size ?? 16} height={props.size ?? 16} viewBox="0 0 24 24" fill="none">
-    <g clip-path="url(#clip0_2_53)">
-      <path
-        d="M16.25 16.25L7.75 7.75"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-      <path
-        d="M7.75 16.25L16.25 7.75"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </g>
-    <defs>
-      <clipPath id="clip0_2_53">
-        <rect width="24" height="24" fill="white" />
-      </clipPath>
-    </defs>
-  </svg>
-);
+export const IconXmark = (props: { size?: number }) => {
+  const id = createUniqueId();
+  return (
+    <svg width={props.size ?? 16} height={props.size ?? 16} viewBox="0 0 24 24" fill="none">
+      <g clip-path={`url(#${id})`}>
+        <path
+          d="M16.25 16.25L7.75 7.75"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M7.75 16.25L16.25 7.75"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id={id}>
+          <rect width="24" height="24" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
 
 // X mark large / close icon (larger variant)
-export const IconXmarkLarge = (props: { size?: number }) => (
-  <svg width={props.size ?? 24} height={props.size ?? 24} viewBox="0 0 24 24" fill="none">
-    <g clip-path="url(#clip0_1_660)">
-      <path
-        d="M17.25 17.25L6.75 6.75"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-      <path
-        d="M6.75 17.25L17.25 6.75"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </g>
-    <defs>
-      <clipPath id="clip0_1_660">
-        <rect width="24" height="24" fill="white" />
-      </clipPath>
-    </defs>
-  </svg>
-);
+export const IconXmarkLarge = (props: { size?: number }) => {
+  const id = createUniqueId();
+  return (
+    <svg width={props.size ?? 24} height={props.size ?? 24} viewBox="0 0 24 24" fill="none">
+      <g clip-path={`url(#${id})`}>
+        <path
+          d="M17.25 17.25L6.75 6.75"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M6.75 17.25L17.25 6.75"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id={id}>
+          <rect width="24" height="24" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
 
 // Sun icon (light mode)
 export const IconSun = (props: { size?: number }) => (

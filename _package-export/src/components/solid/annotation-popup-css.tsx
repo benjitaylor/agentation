@@ -99,10 +99,11 @@ export function AnnotationPopupCSS(props: AnnotationPopupCSSProps) {
 
   // Handle cancel with exit animation
   const handleCancel = () => {
+    if (animState() === "exit") return;
     setAnimState("exit");
     setTimeout(() => {
       props.onCancel();
-    }, 150); // Match exit animation duration
+    }, 150);
   };
 
   // Handle submit

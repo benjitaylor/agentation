@@ -1093,7 +1093,7 @@ export function PageFeedbackToolbarCSS(props: PageFeedbackToolbarCSSProps = {}) 
       });
       setDeletingMarkerId(null);
 
-      if (deletedIndex < annotations().length - 1) {
+      if (deletedIndex < annotations().length) {
         setRenumberFrom(deletedIndex);
         setTimeout(() => setRenumberFrom(null), 200);
       }
