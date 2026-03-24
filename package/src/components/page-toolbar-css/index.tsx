@@ -890,7 +890,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
     return () => clearInterval(interval);
   }, [endpoint, mounted]);
 
-  // Listen for server-side annotation updates (e.g. resolved by agent)
+  // Listen for server-side annotation events (real-time sync with other users)
   useEffect(() => {
     if (!endpoint || !mounted || !currentSessionId) return;
 
@@ -900,11 +900,30 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
 
     const removedStatuses = ["resolved", "dismissed"];
 
-    const handler = (e: MessageEvent) => {
+    const handleCreated = (e: MessageEvent) => {
       try {
         const event = JSON.parse(e.data);
-        if (removedStatuses.includes(event.payload?.status)) {
-          const id = event.payload.id as string;
+        const annotation = event.payload as Annotation;
+        if (!annotation?.id) return;
+        // Skip if we already have this annotation locally (our own create).
+        // Ref check guards the callback; setter check guards state against races.
+        if (annotationsRef.current.some((a) => a.id === annotation.id)) return;
+        setAnnotations((prev) =>
+          prev.some((a) => a.id === annotation.id) ? prev : [...prev, annotation]
+        );
+        onAnnotationAdd?.(annotation);
+      } catch {
+        // Ignore parse errors
+      }
+    };
+
+    const handleUpdated = (e: MessageEvent) => {
+      try {
+        const event = JSON.parse(e.data);
+        const annotation = event.payload as Annotation;
+        if (!annotation?.id) return;
+        if (removedStatuses.includes(annotation.status!)) {
+          const id = annotation.id;
           // Trigger exit animation then remove
           setExitingMarkers((prev) => new Set(prev).add(id));
           originalSetTimeout(() => {
@@ -915,16 +934,47 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
               return next;
             });
           }, 150);
+        } else {
+          setAnnotations((prev) =>
+            prev.map((a) => (a.id === annotation.id ? { ...a, ...annotation } : a))
+          );
         }
+        onAnnotationUpdate?.(annotation);
       } catch {
         // Ignore parse errors
       }
     };
 
-    eventSource.addEventListener("annotation.updated", handler);
+    const handleDeleted = (e: MessageEvent) => {
+      try {
+        const event = JSON.parse(e.data);
+        const id = (event.payload?.id ?? event.payload) as string;
+        if (!id) return;
+        const existing = annotationsRef.current.find((a) => a.id === id);
+        // Always attempt removal (ref may be stale), callback only if found
+        setExitingMarkers((prev) => new Set(prev).add(id));
+        originalSetTimeout(() => {
+          setAnnotations((prev) => prev.filter((a) => a.id !== id));
+          setExitingMarkers((prev) => {
+            const next = new Set(prev);
+            next.delete(id);
+            return next;
+          });
+        }, 150);
+        if (existing) onAnnotationDelete?.(existing);
+      } catch {
+        // Ignore parse errors
+      }
+    };
+
+    eventSource.addEventListener("annotation.created", handleCreated);
+    eventSource.addEventListener("annotation.updated", handleUpdated);
+    eventSource.addEventListener("annotation.deleted", handleDeleted);
 
     return () => {
-      eventSource.removeEventListener("annotation.updated", handler);
+      eventSource.removeEventListener("annotation.created", handleCreated);
+      eventSource.removeEventListener("annotation.updated", handleUpdated);
+      eventSource.removeEventListener("annotation.deleted", handleDeleted);
       eventSource.close();
     };
   }, [endpoint, mounted, currentSessionId]);
