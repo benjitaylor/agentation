@@ -13,6 +13,13 @@ interface BlogPost {
 
 const posts: BlogPost[] = [
   {
+    slug: "layout-mode",
+    title: "Introducing Layout Mode",
+    description: "Show your agent where things go — drag components, rearrange sections, and wireframe pages instead of describing layouts in words.",
+    date: "March 24, 2026",
+    image: "/blog/layout-mode.png",
+  },
+  {
     slug: "introducing-agentation-2",
     title: "Introducing Agentation 2.0",
     description: "Annotations become a two-way conversation. Your AI agent can now see, respond to, and resolve your feedback in real time.",
@@ -45,15 +52,17 @@ export default function BlogPage() {
                     overflow: "hidden",
                   }}
                 >
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
+                  {post.image && (
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  )}
                 </div>
                 <div style={{ padding: "1rem 1.25rem", background: "rgba(0, 0, 0, 0.02)" }}>
                   <div

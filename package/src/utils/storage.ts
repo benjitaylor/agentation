@@ -138,6 +138,111 @@ export function clearSyncMarkers(pathname: string): void {
 }
 
 // =============================================================================
+// Layout Mode Storage
+// =============================================================================
+
+const DESIGN_PREFIX = "agentation-design-";
+
+export function loadDesignPlacements<T = unknown>(pathname: string): T[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const stored = localStorage.getItem(`${DESIGN_PREFIX}${pathname}`);
+    if (!stored) return [];
+    return JSON.parse(stored);
+  } catch {
+    return [];
+  }
+}
+
+export function saveDesignPlacements<T = unknown>(pathname: string, placements: T[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(`${DESIGN_PREFIX}${pathname}`, JSON.stringify(placements));
+  } catch {
+    // localStorage might be full or disabled
+  }
+}
+
+export function clearDesignPlacements(pathname: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(`${DESIGN_PREFIX}${pathname}`);
+  } catch {
+    // ignore
+  }
+}
+
+// =============================================================================
+// Rearrange Mode Storage
+// =============================================================================
+
+const REARRANGE_PREFIX = "agentation-rearrange-";
+
+export function loadRearrangeState<T = unknown>(pathname: string): T | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = localStorage.getItem(`${REARRANGE_PREFIX}${pathname}`);
+    if (!stored) return null;
+    return JSON.parse(stored);
+  } catch {
+    return null;
+  }
+}
+
+export function saveRearrangeState<T = unknown>(pathname: string, state: T): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(`${REARRANGE_PREFIX}${pathname}`, JSON.stringify(state));
+  } catch {
+    // localStorage might be full or disabled
+  }
+}
+
+export function clearRearrangeState(pathname: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(`${REARRANGE_PREFIX}${pathname}`);
+  } catch {
+    // ignore
+  }
+}
+
+// =============================================================================
+// Wireframe Storage (persists wireframe state across page refresh)
+// =============================================================================
+
+const WIREFRAME_PREFIX = "agentation-wireframe-";
+
+export function loadWireframeState<T = unknown>(pathname: string): { rearrange: T | null; placements: unknown[]; purpose: string } | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = localStorage.getItem(`${WIREFRAME_PREFIX}${pathname}`);
+    if (!stored) return null;
+    return JSON.parse(stored);
+  } catch {
+    return null;
+  }
+}
+
+export function saveWireframeState(pathname: string, state: { rearrange: unknown; placements: unknown[]; purpose: string }): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(`${WIREFRAME_PREFIX}${pathname}`, JSON.stringify(state));
+  } catch {
+    // localStorage might be full or disabled
+  }
+}
+
+export function clearWireframeState(pathname: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(`${WIREFRAME_PREFIX}${pathname}`);
+  } catch {
+    // ignore
+  }
+}
+
+// =============================================================================
 // Session Storage
 // =============================================================================
 

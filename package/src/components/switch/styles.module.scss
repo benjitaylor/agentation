@@ -1,0 +1,50 @@
+.switchContainer {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 2px;
+  width: 24px;
+  height: 16px;
+  border-radius: 8px;
+  background-color: #cdcdcd;
+  transition:
+    background-color 0.15s,
+    opacity 0.15s;
+
+  [data-agentation-theme="dark"] & {
+    background-color: #484848;
+  }
+
+  &:has(.switchInput:checked) {
+    background-color: var(--agentation-color-blue);
+  }
+
+  &:has(.switchInput:disabled) {
+    opacity: 0.3;
+  }
+}
+
+.switchInput {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.switchThumb {
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  background-color: #fff;
+  transition: transform 0.15s;
+
+  .switchContainer:has(.switchInput:checked) & {
+    transform: translateX(8px);
+  }
+}

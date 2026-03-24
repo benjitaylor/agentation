@@ -16,8 +16,8 @@ export default function SchemaPage() {
                 fontFamily: "var(--font-primary)",
                 fontSize: "0.5em",
                 fontWeight: 500,
-                color: "#4a9eff",
-                border: "1px solid #4a9eff",
+                color: "#E5484D",
+                border: "1px solid #E5484D",
                 borderRadius: "9999px",
                 padding: "0.15em 0.5em",
                 verticalAlign: "middle",
@@ -25,7 +25,7 @@ export default function SchemaPage() {
                 top: "-0.1em",
               }}
             >
-              v1.0
+              v1.1
             </span>
           </h1>
           <p className="tagline">
@@ -133,6 +133,27 @@ export default function SchemaPage() {
   // Feedback classification
   intent: "fix" | "change" | "question" | "approve";
   severity: "blocking" | "important" | "suggestion";
+
+  // Annotation kind (defaults to "feedback")
+  kind: "feedback" | "placement" | "rearrange";
+
+  // Layout mode: placement data
+  placement: {
+    componentType: string;  // e.g. "Hero", "Card", "Navigation"
+    width: number;          // px
+    height: number;         // px
+    scrollY: number;        // scroll position when placed
+    text?: string;          // optional label text
+  };
+
+  // Layout mode: rearrange data
+  rearrange: {
+    selector: string;       // CSS selector of the section
+    label: string;          // human-readable label
+    tagName: string;        // HTML tag name
+    originalRect: { x: number; y: number; width: number; height: number };
+    currentRect: { x: number; y: number; width: number; height: number };
+  };
 }`}
           />
 
@@ -204,6 +225,25 @@ export default function SchemaPage() {
   intent?: "fix" | "change" | "question" | "approve";
   severity?: "blocking" | "important" | "suggestion";
 
+  // Annotation kind
+  kind?: "feedback" | "placement" | "rearrange";
+
+  // Layout mode data
+  placement?: {
+    componentType: string;
+    width: number;
+    height: number;
+    scrollY: number;
+    text?: string;
+  };
+  rearrange?: {
+    selector: string;
+    label: string;
+    tagName: string;
+    originalRect: { x: number; y: number; width: number; height: number };
+    currentRect: { x: number; y: number; width: number; height: number };
+  };
+
   // Lifecycle
   status?: "pending" | "acknowledged" | "resolved" | "dismissed";
   resolvedAt?: string;
@@ -254,7 +294,7 @@ type ThreadMessage = {
             copyable
             code={`{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agentation.dev/schema/annotation.v1.json",
+  "$id": "https://agentation.dev/schema/annotation.v1.1.json",
   "title": "Annotation",
   "type": "object",
   "required": ["id", "comment", "elementPath", "timestamp", "x", "y", "element"],
@@ -284,6 +324,29 @@ type ThreadMessage = {
     "nearbyElements": { "type": "string" },
     "intent": { "enum": ["fix", "change", "question", "approve"] },
     "severity": { "enum": ["blocking", "important", "suggestion"] },
+    "kind": { "enum": ["feedback", "placement", "rearrange"], "default": "feedback" },
+    "placement": {
+      "type": "object",
+      "properties": {
+        "componentType": { "type": "string" },
+        "width": { "type": "number" },
+        "height": { "type": "number" },
+        "scrollY": { "type": "number" },
+        "text": { "type": "string" }
+      },
+      "required": ["componentType", "width", "height", "scrollY"]
+    },
+    "rearrange": {
+      "type": "object",
+      "properties": {
+        "selector": { "type": "string" },
+        "label": { "type": "string" },
+        "tagName": { "type": "string" },
+        "originalRect": { "$ref": "#/properties/boundingBox" },
+        "currentRect": { "$ref": "#/properties/boundingBox" }
+      },
+      "required": ["selector", "label", "tagName", "originalRect", "currentRect"]
+    },
     "status": { "enum": ["pending", "acknowledged", "resolved", "dismissed"] }
   }
 }`}
@@ -309,6 +372,34 @@ type ThreadMessage = {
   "nearbyText": "Get Started Free",
   "intent": "fix",
   "severity": "blocking",
+  "status": "pending"
+}`}
+          />
+        </section>
+
+        <section>
+          <h2 id="layout-mode-example">Layout Mode Example</h2>
+          <p>
+            Layout mode annotations use the <code>kind</code> field to distinguish from regular feedback:
+          </p>
+          <CodeBlock
+            language="json"
+            code={`{
+  "id": "ann_d3s1gn",
+  "comment": "Place a Hero component here",
+  "elementPath": "body",
+  "timestamp": 1709510400000,
+  "x": 50,
+  "y": 200,
+  "element": "body",
+  "kind": "placement",
+  "placement": {
+    "componentType": "Hero",
+    "width": 800,
+    "height": 400,
+    "scrollY": 0,
+    "text": "Hero"
+  },
   "status": "pending"
 }`}
           />
@@ -394,10 +485,10 @@ type ThreadMessage = {
         <section>
           <h2 id="versioning">Versioning</h2>
           <p>
-            Current version: <span style={{ color: "#4a9eff", fontFamily: "'SF Mono', monospace" }}>v1</span>
+            Current version: <span style={{ color: "#4a9eff", fontFamily: "'SF Mono', monospace" }}>v1.1</span>
           </p>
           <p style={{ fontSize: "0.8125rem", color: "rgba(0,0,0,0.55)", marginTop: "0.75rem" }}>
-            Schema URL: <code style={{ wordBreak: "break-word" }}>https://agentation.dev/schema/annotation.v1.json</code>
+            Schema URL: <code style={{ wordBreak: "break-word" }}>https://agentation.dev/schema/annotation.v1.1.json</code>
           </p>
         </section>
       </article>

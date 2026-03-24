@@ -46,15 +46,15 @@ function scssModulesPlugin(): Plugin {
 const css = ${JSON.stringify(css)};
 const classNames = ${JSON.stringify(classNames)};
 
-// SSR-safe style injection
+// SSR-safe style injection (always update for HMR)
 if (typeof document !== 'undefined') {
   let style = document.getElementById('feedback-tool-styles-${styleId}');
   if (!style) {
     style = document.createElement('style');
     style.id = 'feedback-tool-styles-${styleId}';
-    style.textContent = css;
     document.head.appendChild(style);
   }
+  style.textContent = css;
 }
 
 export default classNames;
@@ -69,9 +69,9 @@ if (typeof document !== 'undefined') {
   if (!style) {
     style = document.createElement('style');
     style.id = 'feedback-tool-styles-${styleId}';
-    style.textContent = css;
     document.head.appendChild(style);
   }
+  style.textContent = css;
 }
 export default {};
 `;

@@ -265,7 +265,9 @@
 
 .demo-cursor-pointer,
 .demo-cursor-text,
-.demo-cursor-crosshair {
+.demo-cursor-crosshair,
+.demo-cursor-grab,
+.demo-cursor-grabbing {
   grid-area: 1 / 1;
   transform: scale(1);
   transform-origin: top left;
@@ -281,6 +283,11 @@
   transform-origin: center center;
 }
 
+.demo-cursor-grab,
+.demo-cursor-grabbing {
+  transform-origin: center center;
+}
+
 .demo-cursor-pointer.hidden {
   transform: scale(0);
   opacity: 0;
@@ -292,6 +299,12 @@
 }
 
 .demo-cursor-crosshair.hidden {
+  transform: scale(0.5);
+  opacity: 0;
+}
+
+.demo-cursor-grab.hidden,
+.demo-cursor-grabbing.hidden {
   transform: scale(0.5);
   opacity: 0;
 }
@@ -842,10 +855,12 @@
   letter-spacing: -0.0094em;
   color: #fff;
   font-family: system-ui, sans-serif;
+  display: flex;
+  align-items: center;
 }
 
 .sd-panel.light .sd-brand {
-  color: rgba(0, 0, 0, 0.85);
+  color: #E5484D;
 }
 
 .sd-brand-slash {
@@ -2280,5 +2295,511 @@
 .acd-diff-removed {
   color: #ef4444;
   font-weight: 500;
+}
+
+/* ============================================================
+   LAYOUT MODE DEMO
+   ============================================================ */
+
+.dmd-outer {
+  width: 100%;
+  margin: 1.5rem 0;
+}
+
+
+/* Extends .demo-window: adds flex column layout for canvas + palette body */
+.dmd-window {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Body wrapper (canvas + palette, below chrome) */
+.dmd-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+/* Canvas area (left side) */
+.dmd-canvas {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+/* Page content */
+.dmd-page {
+  position: absolute;
+  inset: 0;
+  padding: 16px 20px;
+  opacity: 1;
+  transition: opacity 0.25s ease;
+}
+
+.dmd-page.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dmd-page-nav {
+  height: 12px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 3px;
+  margin-bottom: 16px;
+  width: 60%;
+}
+
+.dmd-page-hero {
+  height: 48px;
+  background: rgba(0,0,0,0.07);
+  border-radius: 6px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dmd-page-hero.dragging {
+  z-index: 5;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.dmd-page-hero-text {
+  height: 8px;
+  background: rgba(0,0,0,0.12);
+  border-radius: 2px;
+  width: 45%;
+}
+
+.dmd-page-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dmd-page-card {
+  height: 56px;
+  background: rgba(0,0,0,0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dmd-page-card-title {
+  height: 6px;
+  background: rgba(0,0,0,0.14);
+  border-radius: 2px;
+  width: 60%;
+}
+
+.dmd-page-card-body {
+  height: 5px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 2px;
+  width: 85%;
+}
+
+.dmd-page-footer {
+  height: 32px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 6px;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Section outlines (layout mode selection borders) */
+.dmd-outline {
+  position: absolute;
+  inset: -2px;
+  border: 1.5px solid;
+  border-radius: 8px;
+  pointer-events: none;
+  animation: dmdOutlineIn 0.25s ease;
+}
+
+.dmd-outline.blue { border-color: rgba(59, 130, 246, 0.5); }
+.dmd-outline.purple { border-color: rgba(139, 92, 246, 0.5); }
+.dmd-outline.green { border-color: rgba(34, 197, 94, 0.5); }
+
+.dmd-outline-label {
+  position: absolute;
+  top: -8px;
+  left: 6px;
+  font-size: 7px;
+  font-weight: 600;
+  color: #fff;
+  padding: 1px 4px;
+  border-radius: 3px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.dmd-outline-label.blue { background: #3b82f6; }
+.dmd-outline-label.purple { background: #8b5cf6; }
+.dmd-outline-label.green { background: #22c55e; }
+
+@keyframes dmdOutlineIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Faux toolbar (bottom of window) */
+.dmd-faux-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  background: #1a1a1a;
+  border-radius: 0 0 12px 12px;
+}
+
+.dmd-faux-btn {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+}
+
+.dmd-faux-btn.dim {
+  background: rgba(255,255,255,0.1);
+}
+
+.dmd-faux-divider {
+  width: 1px;
+  height: 10px;
+  background: rgba(255,255,255,0.1);
+  margin: 0 2px;
+}
+
+/* Placement boxes */
+.dmd-placement {
+  position: absolute;
+  border: 1.5px dashed rgba(59, 130, 246, 0.6);
+  border-radius: 6px;
+  background: rgba(59, 130, 246, 0.1);
+  animation: dmdPlacementEnter 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+  transition: opacity 0.2s ease;
+}
+
+.dmd-placement.fading {
+  opacity: 0;
+}
+
+.dmd-placement.dragging {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  z-index: 10;
+  border-style: solid;
+}
+
+.dmd-placement-label {
+  position: absolute;
+  top: -16px;
+  left: 0;
+  font-size: 9px;
+  font-weight: 600;
+  color: #3b82f6;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.dmd-placement-handle {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: #fff;
+  border: 1.5px solid #3b82f6;
+  border-radius: 1.5px;
+}
+
+.dmd-placement-handle.nw { top: -4px; left: -4px; }
+.dmd-placement-handle.ne { top: -4px; right: -4px; }
+.dmd-placement-handle.se { bottom: -4px; right: -4px; }
+.dmd-placement-handle.sw { bottom: -4px; left: -4px; }
+
+@keyframes dmdPlacementEnter {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Ghost preview (drag-and-drop) */
+.dmd-ghost {
+  position: absolute;
+  border: 1.5px dashed rgba(59, 130, 246, 0.6);
+  border-radius: 6px;
+  background: rgba(59, 130, 246, 0.08);
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dmd-ghost-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(59, 130, 246, 0.7);
+  white-space: nowrap;
+}
+
+.dmd-ghost.dropping {
+  transition: left 0.25s cubic-bezier(0.34, 1.2, 0.64, 1),
+              top 0.25s cubic-bezier(0.34, 1.2, 0.64, 1),
+              width 0.25s cubic-bezier(0.34, 1.2, 0.64, 1),
+              height 0.25s cubic-bezier(0.34, 1.2, 0.64, 1),
+              opacity 0.2s ease;
+  opacity: 0;
+}
+
+/* Size label (appears after placement) */
+.dmd-size-label {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  font-weight: 500;
+  color: #fff;
+  background: #3b82f6;
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  animation: dmdSizeLabelIn 0.2s ease;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.dmd-size-label.fading {
+  opacity: 0;
+}
+
+@keyframes dmdSizeLabelIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Palette item hover */
+.dmd-item.hovered {
+  background: rgba(255,255,255,0.1);
+}
+
+.dmd-item.hovered .dmd-item-icon {
+  color: rgba(255,255,255,0.65);
+  border-color: rgba(255,255,255,0.25);
+}
+
+.dmd-item.hovered .dmd-item-label {
+  color: rgba(255,255,255,0.95);
+}
+
+.dmd-section-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 5px;
+  border-radius: 3px;
+  color: #fff;
+  animation: dmdBadgeIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dmd-section-badge.moved {
+  background: #22c55e;
+}
+
+.dmd-section-badge.resized {
+  background: #3b82f6;
+}
+
+@keyframes dmdBadgeIn {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Palette panel — zoom-scaled miniature of real layout mode panel.
+   Rendered at real proportions (256px wide, 13px font, 20×16 icons)
+   then uniformly scaled via CSS zoom so proportions are exact. */
+.dmd-palette {
+  zoom: 0.5;
+  width: 256px;
+  flex-shrink: 0;
+  background: #1c1c1c;
+  padding: 13px 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  margin: 12px 12px 12px 0;
+  border-radius: 16px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.04);
+}
+
+.dmd-palette.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.dmd-palette.fading {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+/* Component items */
+.dmd-items {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  padding: 4px 16px 0;
+  mask-image: linear-gradient(to bottom, black 0, black calc(100% - 24px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0, black calc(100% - 24px), transparent 100%);
+}
+
+.dmd-items > div + div {
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding-top: 8px;
+  margin-top: 8px;
+}
+
+.dmd-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 6px;
+  margin-bottom: 1px;
+  min-height: 24px;
+  transition: background 0.12s ease;
+}
+
+.dmd-item.active {
+  background: #3c82f7;
+}
+
+.dmd-item-icon {
+  width: 20px;
+  height: 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.45);
+  border-radius: 2px;
+  border: 1px dashed rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.04);
+}
+
+.dmd-item-icon svg {
+  width: 20px;
+  height: 16px;
+}
+
+.dmd-item.active .dmd-item-icon {
+  color: #fff;
+  border-color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.15);
+}
+
+.dmd-item-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: -0.0094em;
+  line-height: 1;
+  transition: color 0.12s ease;
+}
+
+.dmd-item.active .dmd-item-label {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Palette section title */
+.dmd-section-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: -0.0094em;
+  padding: 0 0 3px 3px;
+}
+
+/* Palette footer */
+.dmd-palette-footer {
+  margin-top: auto;
+  padding: 8px 16px 0;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.5);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dmd-clear-btn {
+  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+}
+
+/* Blank canvas toggle */
+.dmd-panel-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px dashed rgba(255,255,255,0.1);
+  border-radius: 6px;
+  margin: 0 12px 4px;
+}
+
+.dmd-panel-check {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: #3c82f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dmd-panel-check svg {
+  width: 10px;
+  height: 10px;
+}
+
+.dmd-panel-toggle-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.55);
+}
+
+/* Layout mode cursor uses the shared .demo-cursor system (see top of file) */
+
+/* Responsive */
+@media (max-width: 600px) {
+  .dmd-window {
+    height: 280px;
+  }
+  .dmd-palette {
+    zoom: 0.4;
+    margin: 10px 10px 10px 0;
+  }
 }
 

@@ -13,7 +13,7 @@ interface Change {
 interface Release {
   version: string;
   date: string;
-  summary?: string;
+  summary?: ReactNode;
   changes?: Change[];
 }
 
@@ -29,6 +29,26 @@ function isMajorVersion(version: string): boolean {
 }
 
 const releases: Release[] = [
+  {
+    version: "3.0.1",
+    date: "March 24, 2026",
+    changes: [
+      { type: "fixed", text: "Fixed logo display on npm and settings panel" },
+    ],
+  },
+  {
+    version: "3.0.0",
+    date: "March 24, 2026",
+    summary: <>Show your agent where things go. <a href="/blog/layout-mode" className="styled-link">Layout mode</a> lets you place components, rearrange sections, and wireframe new pages. Your agent gets coordinates and dimensions instead of a paragraph of directions.</>,
+    changes: [
+      { type: "added", text: <>Layout mode — press <code>L</code> to drag components onto the page, rearrange existing sections, or wireframe from scratch</> },
+      { type: "added", text: "Component palette with 65+ draggable types across five categories" },
+      { type: "added", text: "Section detection and rearranging with snap guides, move badges, and CSS selector labels" },
+      { type: "added", text: "Wireframe new page toggle with adjustable page opacity and a purpose field for context" },
+      { type: "added", text: <><a href="/schema" className="styled-link">AFS 1.1</a> — annotations carry a <code>kind</code> field so agents can distinguish feedback from placement and rearrange instructions</> },
+      { type: "improved", text: "Cursor styles scoped to toolbar root, no longer leak into host page" },
+    ],
+  },
   {
     version: "2.3.3",
     date: "March 14, 2026",

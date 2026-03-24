@@ -24,14 +24,17 @@
 // Only reset cosmetic properties that global CSS commonly overrides —
 // avoid `all: unset` which also nukes layout props (box-sizing,
 // appearance, line-height) that component styles don't re-set.
-.toolbar :where(button, input, select, textarea, label) {
+.controlsContent :where(button, input, select, textarea, label) {
   background: unset;
   border: unset;
   border-radius: unset;
   padding: unset;
   margin: unset;
   color: unset;
-  font: unset;
+  font-family: unset;
+  font-weight: unset;
+  font-style: unset;
+  line-height: unset;
   letter-spacing: unset;
   text-transform: unset;
   text-decoration: unset;
@@ -120,28 +123,6 @@
   }
 }
 
-@keyframes markerIn {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.3);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-}
-
-@keyframes markerOut {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.3);
-  }
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -157,19 +138,6 @@
   }
   to {
     opacity: 0;
-  }
-}
-
-@keyframes tooltipIn {
-  from {
-    opacity: 0;
-    // 0.891 = 0.98 * 0.909 (animation start × counter-scale)
-    transform: translateX(-50%) translateY(2px) scale(0.891);
-  }
-  to {
-    opacity: 1;
-    // 0.909 = 1/1.1 counter-scale to offset parent marker's hover scale
-    transform: translateX(-50%) translateY(0) scale(0.909);
   }
 }
 
@@ -195,32 +163,6 @@
   }
 }
 
-@keyframes settingsPanelIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.95);
-    filter: blur(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0px);
-  }
-}
-
-@keyframes settingsPanelOut {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0px);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-    filter: blur(5px);
-  }
-}
-
 // Disable transitions on theme toggle
 .disableTransitions :is(*, *::before, *::after) {
   transition: none !important;
@@ -232,7 +174,9 @@
 
 .toolbar {
   position: fixed;
-  width: 297px;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  width: 337px;
   z-index: 100000;
   font-family:
     system-ui,
@@ -257,6 +201,7 @@
 }
 
 .toolbarContainer {
+  position: relative;
   user-select: none;
   margin-left: auto;
   align-self: flex-end;
@@ -270,18 +215,11 @@
     0 2px 8px rgba(0, 0, 0, 0.2),
     0 4px 16px rgba(0, 0, 0, 0.1);
   pointer-events: auto;
-  cursor: grab;
 
   // Animated properties
   transition:
     width 0.4s cubic-bezier(0.19, 1, 0.22, 1),
     transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-
-  &.dragging {
-    // Remove transition while dragging for immediate feedback
-    transition: width 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-    cursor: grabbing;
-  }
 
   &.entrance {
     animation: toolbarEnter 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
@@ -316,10 +254,10 @@
     height: 44px;
     border-radius: 1.5rem;
     padding: 0.375rem;
-    width: 257px;
+    width: 297px;
 
     &.serverConnected {
-      width: 297px;
+      width: 337px;
     }
   }
 }
@@ -406,7 +344,7 @@
 
 .controlButton {
   position: relative;
-  cursor: pointer !important;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -449,6 +387,7 @@
     );
   }
 
+
   &[data-error="true"] {
     color: var(--agentation-color-red);
     background-color: color-mix(
@@ -471,19 +410,17 @@
 
   &[data-no-hover="true"],
   &.statusShowing {
-    cursor: default !important;
+    cursor: default;
     pointer-events: none;
     background: transparent !important;
   }
 
-  // Auto-sync mode (Claude Code) - green, non-interactive
   &[data-auto-sync="true"] {
     color: var(--agentation-color-green);
     background: transparent;
     cursor: default;
   }
 
-  // Failed state (no listeners) - red like danger hover
   &[data-failed="true"] {
     color: var(--agentation-color-red);
     background-color: color-mix(
@@ -636,7 +573,6 @@
   align-items: center;
   justify-content: center;
 
-  // Show tooltip on wrapper hover (with delay)
   &:hover .buttonTooltip {
     opacity: 1;
     visibility: visible;
@@ -644,7 +580,6 @@
     transition-delay: 0.85s;
   }
 
-  // Don't show tooltip if button inside is disabled
   &:has(.controlButton:disabled):hover .buttonTooltip {
     opacity: 0;
     visibility: hidden;
@@ -655,13 +590,12 @@
   transition-delay: 0s;
 }
 
-// Send button wrapper - animates width when MCP connects/disconnects
 .sendButtonWrapper {
   width: 0;
   opacity: 0;
   overflow: hidden;
   pointer-events: none;
-  margin-left: -0.375rem; // Collapse the gap when hidden
+  margin-left: -0.375rem;
   transition:
     width 0.4s cubic-bezier(0.19, 1, 0.22, 1),
     opacity 0.3s cubic-bezier(0.19, 1, 0.22, 1),
@@ -685,7 +619,6 @@
   }
 }
 
-// Toolbar Button Tooltips
 .buttonTooltip {
   position: absolute;
   bottom: calc(100% + 14px);
@@ -708,7 +641,6 @@
     transform 0.135s ease,
     visibility 0.135s ease;
 
-  // Arrow pointing down (rotated square with rounded tip)
   &::after {
     content: "";
     position: absolute;
@@ -722,13 +654,11 @@
   }
 }
 
-// Keyboard shortcut in tooltip
 .shortcut {
   margin-left: 4px;
   opacity: 0.5;
 }
 
-// Flipped position (tooltip below) - when toolbar near top
 .tooltipBelow .buttonTooltip {
   bottom: auto;
   top: calc(100% + 14px);
@@ -745,15 +675,12 @@
   transform: translateX(-50%) scale(1);
 }
 
-// Hide tooltips immediately after button click
 .tooltipsHidden .buttonTooltip {
   opacity: 0 !important;
   visibility: hidden !important;
   transition: none !important;
 }
 
-// Force tooltip visible (e.g., after Send to Agent click)
-// Needs to override .tooltipsHidden specificity
 .tooltipVisible,
 .tooltipsHidden .tooltipVisible {
   opacity: 1 !important;
@@ -762,8 +689,6 @@
   transition-delay: 0s !important;
 }
 
-// Left-aligned tooltip (for buttons near left edge)
-// Applied directly to buttonWrapper
 .buttonWrapperAlignLeft {
   .buttonTooltip {
     left: 50%;
@@ -789,8 +714,6 @@
   }
 }
 
-// Right-aligned tooltip (for buttons near right edge)
-// Applied directly to buttonWrapper
 .buttonWrapperAlignRight {
   .buttonTooltip {
     left: 50%;
@@ -1033,6 +956,7 @@
   &.pending {
     position: fixed;
     background-color: var(--agentation-color-blue);
+    cursor: default;
   }
 
   &.fixed {
@@ -1501,7 +1425,6 @@
   color: #fff;
   outline: none;
   resize: none;
-  cursor: text !important;
   user-select: text;
   transition:
     border-color 0.15s ease,
@@ -1548,6 +1471,7 @@
   font-weight: 600;
   letter-spacing: -0.0094em;
   color: #fff;
+  text-decoration: none;
 }
 
 .settingsBrandSlash {
@@ -2038,7 +1962,6 @@
 
   &.disabled {
     opacity: 0.4;
-    pointer-events: none;
 
     .toggleSlider {
       cursor: not-allowed;
@@ -2129,6 +2052,27 @@
 }
 
 // =============================================================================
+// Draw Canvas
+// =============================================================================
+
+.drawCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 99996; // Below markers (99998) and overlay (99997)
+  // !important needed to override .overlay > * { pointer-events: auto }
+  pointer-events: none !important;
+
+  &.active {
+    pointer-events: auto !important;
+    cursor: crosshair !important;
+
+    &[data-stroke-hover] {
+      cursor: pointer !important;
+    }
+  }
+}
+
+// =============================================================================
 // Drag Selection
 // =============================================================================
 
@@ -2191,7 +2135,6 @@
 // =============================================================================
 
 [data-agentation-theme="light"] {
-  // Toolbar container
   .toolbarContainer {
     background: #fff;
     color: rgba(0, 0, 0, 0.85);
@@ -2205,7 +2148,6 @@
     }
   }
 
-  // Control buttons in toolbar
   .controlButton {
     color: rgba(0, 0, 0, 0.5);
 
@@ -2252,7 +2194,6 @@
       background: transparent;
     }
 
-    // Failed state (no listeners)
     &[data-failed="true"] {
       color: var(--agentation-color-red);
       background: color-mix(
@@ -2263,7 +2204,6 @@
     }
   }
 
-  // Button tooltips
   .buttonTooltip {
     background: #fff;
     color: rgba(0, 0, 0, 0.85);
@@ -2277,186 +2217,7 @@
     }
   }
 
-  // Divider
   .divider {
     background: rgba(0, 0, 0, 0.1);
-  }
-
-  // Marker tooltip
-  .markerTooltip {
-    background: #fff;
-    box-shadow:
-      0 4px 20px rgba(0, 0, 0, 0.12),
-      0 0 0 1px rgba(0, 0, 0, 0.06);
-
-    .markerQuote {
-      color: rgba(0, 0, 0, 0.5);
-    }
-
-    .markerNote {
-      color: rgba(0, 0, 0, 0.85);
-    }
-
-    .markerHint {
-      color: rgba(0, 0, 0, 0.35);
-    }
-  }
-
-  // Settings panel
-  .settingsPanel {
-    background: #fff;
-    box-shadow:
-      0 2px 8px rgba(0, 0, 0, 0.08),
-      0 4px 16px rgba(0, 0, 0, 0.06),
-      0 0 0 1px rgba(0, 0, 0, 0.04);
-
-    &::before {
-      background: linear-gradient(to right, #fff 0%, transparent 100%);
-    }
-
-    &::after {
-      background: linear-gradient(to left, #fff 0%, transparent 100%);
-    }
-
-    .settingsHeader {
-      border-bottom-color: rgba(0, 0, 0, 0.08);
-    }
-
-    .settingsBrand {
-      color: rgba(0, 0, 0, 0.85);
-    }
-
-    .settingsVersion {
-      color: rgba(0, 0, 0, 0.4);
-    }
-
-    .settingsSection {
-      border-top-color: rgba(0, 0, 0, 0.08);
-    }
-
-    .settingsLabel {
-      color: rgba(0, 0, 0, 0.5);
-    }
-
-    .cycleButton {
-      color: rgba(0, 0, 0, 0.85);
-    }
-
-    .cycleDot {
-      background: rgba(0, 0, 0, 0.2);
-
-      &.active {
-        background: rgba(0, 0, 0, 0.7);
-      }
-    }
-
-    .dropdownButton {
-      color: rgba(0, 0, 0, 0.85);
-
-      &:hover {
-        background: rgba(0, 0, 0, 0.05);
-      }
-    }
-
-    .toggleLabel {
-      color: rgba(0, 0, 0, 0.5);
-    }
-
-    .customCheckbox {
-      border: 1px solid rgba(0, 0, 0, 0.15);
-      background: #fff;
-
-      &.checked {
-        border-color: #1a1a1a;
-        background: #1a1a1a;
-
-        svg {
-          color: #fff;
-        }
-      }
-    }
-
-    .sliderLabel {
-      color: rgba(0, 0, 0, 0.4);
-
-      &:hover {
-        color: rgba(0, 0, 0, 0.7);
-      }
-
-      &.active {
-        color: rgba(0, 0, 0, 0.9);
-      }
-    }
-
-    .slider {
-      background: rgba(0, 0, 0, 0.1);
-
-      &::-webkit-slider-thumb {
-        background: #1a1a1a;
-      }
-
-      &::-moz-range-thumb {
-        background: #1a1a1a;
-      }
-    }
-  }
-}
-
-// Theme toggle button (works in both modes)
-.themeToggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  margin-left: 0.5rem;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.4);
-  cursor: pointer;
-  transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.8);
-  }
-
-  [data-agentation-theme="light"] & {
-    color: rgba(0, 0, 0, 0.4);
-
-    &:hover {
-      background: rgba(0, 0, 0, 0.06);
-      color: rgba(0, 0, 0, 0.7);
-    }
-  }
-}
-
-.themeIconWrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  width: 20px;
-  height: 20px;
-}
-
-.themeIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: themeIconIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-@keyframes themeIconIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.8) rotate(-30deg);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
   }
 }

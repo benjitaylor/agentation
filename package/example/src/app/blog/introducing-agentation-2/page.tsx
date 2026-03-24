@@ -16,7 +16,7 @@ export default function Agentation2Page() {
               margin: "0 0 0.5rem 0",
             }}
           >
-            February 5, 2026 <span style={{ color: "rgba(0, 0, 0, 0.15)", margin: "0 0.375rem" }}>|</span> Posted by Benji Taylor
+            February 5, 2026
           </p>
           <h1>Introducing Agentation 2.0</h1>
           <p className="tagline">A new way for humans and AI to collaborate on UI</p>

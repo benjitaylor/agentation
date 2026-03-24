@@ -1,0 +1,807 @@
+@keyframes cycleTextIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes mcpPulse {
+  0% {
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--agentation-color-green) 50%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 6px
+      color-mix(in srgb, var(--agentation-color-green) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--agentation-color-green) 0%, transparent);
+  }
+}
+
+@keyframes mcpPulseError {
+  0% {
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--agentation-color-red) 50%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 6px
+      color-mix(in srgb, var(--agentation-color-red) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--agentation-color-red) 0%, transparent);
+  }
+}
+
+@keyframes themeIconIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) rotate(-30deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+// =============================================================================
+// Panel container
+// =============================================================================
+
+.settingsPanel {
+  position: absolute;
+  right: 5px;
+  bottom: calc(100% + 0.5rem);
+  z-index: 1;
+  overflow: hidden;
+  background: #1c1c1c;
+  border-radius: 16px;
+  padding: 12px 0;
+  width: 100%;
+  max-width: 253px;
+  min-width: 205px;
+  cursor: default;
+  opacity: 1;
+  box-shadow:
+    0 1px 8px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+  transition:
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 16px;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  &::before {
+    left: 0;
+    background: linear-gradient(to right, #1c1c1c 0%, transparent 100%);
+  }
+
+  &::after {
+    right: 0;
+    background: linear-gradient(to left, #1c1c1c 0%, transparent 100%);
+  }
+
+  .settingsHeader,
+  .settingsBrand,
+  .settingsBrandSlash,
+  .settingsVersion,
+  .settingsSection,
+  .settingsLabel,
+  .cycleButton,
+  .cycleDot,
+  .dropdownButton,
+  .sliderLabel,
+  .slider,
+  .themeToggle {
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  &.enter {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease,
+      filter 0.2s ease;
+  }
+
+  &.exit {
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+    filter: blur(5px);
+    pointer-events: none;
+    transition:
+      opacity 0.1s ease,
+      transform 0.1s ease,
+      filter 0.1s ease;
+  }
+
+  [data-agentation-theme="dark"] & {
+    background: #1a1a1a;
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.08);
+
+    .settingsLabel {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .settingsOption {
+      color: rgba(255, 255, 255, 0.85);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      &.selected {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+      }
+    }
+  }
+}
+
+.settingsPanelContainer {
+  overflow: visible;
+  position: relative;
+  display: flex;
+  padding: 0 16px;
+}
+
+// =============================================================================
+// Pages (main / automations)
+// =============================================================================
+
+.settingsPage {
+  min-width: 100%;
+  flex-shrink: 0;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+  transition-delay: 0s;
+  opacity: 1;
+}
+
+.settingsPage.slideLeft {
+  transform: translateX(-24px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.automationsPage {
+  position: absolute;
+  top: 0;
+  left: 24px;
+  width: 100%;
+  height: 100%;
+  padding: 0 16px 4px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.automationsPage.slideIn {
+  transform: translateX(-24px);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+// =============================================================================
+// Header
+// =============================================================================
+
+.settingsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 24px;
+}
+
+.settingsBrand {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.0094em;
+  color: #fff;
+  text-decoration: none;
+}
+
+.settingsBrandSlash {
+  color: var(--agentation-color-accent);
+  transition: color 0.2s ease;
+}
+
+.settingsVersion {
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: auto;
+  letter-spacing: -0.0094em;
+}
+
+.themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: rgb(255 255 255 / 0.4);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  [data-agentation-theme="light"] & {
+    color: rgba(0, 0, 0, 0.4);
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.06);
+      color: rgba(0, 0, 0, 0.7);
+    }
+  }
+}
+
+.themeIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+.themeIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: themeIconIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+// =============================================================================
+// Sections & rows
+// =============================================================================
+
+.settingsSectionGrow {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.settingsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 24px;
+
+  &.settingsRowMarginTop {
+    margin-top: 8px;
+  }
+}
+
+.settingsRowDisabled {
+  .settingsLabel {
+    color: rgba(255, 255, 255, 0.2);
+
+    [data-agentation-theme="light"] & {
+      color: rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+.settingsLabel {
+  display: flex;
+  align-items: center;
+  column-gap: 2px;
+  line-height: 20px;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: -0.15px;
+  color: rgb(255 255 255 / 0.5);
+
+  [data-agentation-theme="light"] & {
+    color: rgb(0 0 0 / 0.5);
+  }
+}
+
+// =============================================================================
+// Output detail cycle button
+// =============================================================================
+
+.cycleButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  letter-spacing: -0.0094em;
+
+  [data-agentation-theme="light"] & {
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+.cycleButtonText {
+  display: inline-block;
+  animation: cycleTextIn 0.2s ease-out;
+}
+
+.cycleDots {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cycleDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0.667);
+  transition:
+    background-color 0.25s ease-out,
+    transform 0.25s ease-out;
+
+  &.active {
+    background: #fff;
+    transform: scale(1);
+  }
+
+  [data-agentation-theme="light"] & {
+    background: rgba(0, 0, 0, 0.2);
+
+    &.active {
+      background: rgba(0, 0, 0, 0.7);
+    }
+  }
+}
+
+// =============================================================================
+// Color picker
+// =============================================================================
+
+.colorOptions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  height: 26px;
+}
+
+.colorOption {
+  position: relative;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background-color: #fff;
+  cursor: pointer;
+
+  [data-agentation-theme="dark"] & {
+    background-color: #1a1a1a;
+  }
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background-color: var(--swatch);
+    transition:
+      opacity 0.2s,
+      transform 0.2s;
+
+    @supports (color: color(display-p3 0 0 0)) {
+      --color: var(--swatch-p3);
+    }
+  }
+
+  &::after {
+    z-index: -1;
+    transform: scale(1.2);
+    opacity: 0;
+  }
+
+  &.selected {
+    &::before {
+      transform: scale(0.8);
+    }
+
+    &::after {
+      opacity: 1;
+    }
+  }
+}
+
+// =============================================================================
+// Nav link (main → automations)
+// =============================================================================
+
+.settingsNavLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  line-height: 20px;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgb(255 255 255 / 0.5);
+  transition: color 0.15s ease;
+  cursor: pointer;
+
+  &:hover {
+    color: rgb(255 255 255 / 0.9);
+  }
+
+  svg {
+    color: rgb(255 255 255 / 0.4);
+    transition: color 0.15s ease;
+  }
+
+  &:hover svg {
+    color: #fff;
+  }
+
+  [data-agentation-theme="light"] & {
+    color: rgba(0, 0, 0, 0.5);
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.8);
+    }
+
+    svg {
+      color: rgba(0, 0, 0, 0.25);
+    }
+
+    &:hover svg {
+      color: rgba(0, 0, 0, 0.8);
+    }
+  }
+}
+
+.settingsNavLinkRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+// =============================================================================
+// Automations page
+// =============================================================================
+
+.settingsBackButton {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  background: transparent;
+  font-family: inherit;
+  line-height: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.15px;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.12s cubic-bezier(0.32, 0.72, 0, 1);
+
+  svg {
+    opacity: 0.4;
+    flex-shrink: 0;
+    transition:
+      opacity 0.15s ease,
+      transform 0.18s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  &:hover svg {
+    opacity: 1;
+  }
+
+  [data-agentation-theme="light"] & {
+    color: rgba(0, 0, 0, 0.85);
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+  }
+}
+
+.automationHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: #fff;
+
+  [data-agentation-theme="light"] & {
+    color: rgba(0, 0, 0, 0.85);
+  }
+}
+
+.automationDescription {
+  font-size: 0.6875rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
+  line-height: 14px;
+
+  [data-agentation-theme="light"] & {
+    color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+.learnMoreLink {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: rgba(255, 255, 255, 0.2);
+  text-underline-offset: 2px;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #fff;
+  }
+
+  [data-agentation-theme="light"] & {
+    color: rgba(0, 0, 0, 0.6);
+    text-decoration-color: rgba(0, 0, 0, 0.2);
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.85);
+    }
+  }
+}
+
+.autoSendContainer {
+  display: flex;
+  align-items: center;
+}
+
+.autoSendLabel {
+  padding-inline-end: 8px;
+  font-size: 11px;
+  font-weight: 400;
+  color: rgb(255 255 255 / 0.4);
+  transition:
+    color 0.15s,
+    opacity 0.15s;
+  cursor: pointer;
+
+  &.active {
+    color: #66b8ff;
+    color: color(display-p3 0.4 0.72 1);
+  }
+
+  [data-agentation-theme="light"] & {
+    color: rgba(0 0 0 / 0.4);
+
+    &.active {
+      color: var(--agentation-color-blue);
+    }
+  }
+
+  &.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+.mcpStatusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &.connecting {
+    background-color: var(--agentation-color-yellow);
+    animation: mcpPulse 1.5s infinite;
+  }
+
+  &.connected {
+    background-color: var(--agentation-color-green);
+    animation: mcpPulse 2.5s ease-in-out infinite;
+  }
+
+  &.disconnected {
+    background-color: var(--agentation-color-red);
+    animation: mcpPulseError 2s infinite;
+  }
+}
+
+.mcpNavIndicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &.connected {
+    background-color: var(--agentation-color-green);
+    animation: mcpPulse 2.5s ease-in-out infinite;
+  }
+
+  &.connecting {
+    background-color: var(--agentation-color-yellow);
+    animation: mcpPulse 1.5s ease-in-out infinite;
+  }
+}
+
+.webhookUrlInput {
+  display: block;
+  width: 100%;
+  flex: 1;
+  min-height: 60px;
+  box-sizing: border-box;
+  margin-top: 11px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #fff;
+  outline: none;
+  resize: none;
+  user-select: text;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  &:focus {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-agentation-theme="light"] & {
+    border-color: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.03);
+    color: rgba(0, 0, 0, 0.85);
+
+    &::placeholder {
+      color: rgba(0, 0, 0, 0.3);
+    }
+
+    &:focus {
+      border-color: rgba(0, 0, 0, 0.25);
+      background: rgba(0, 0, 0, 0.05);
+    }
+  }
+}
+
+// =============================================================================
+// Light mode overrides
+// =============================================================================
+
+[data-agentation-theme="light"] {
+  .settingsPanel {
+    background: #fff;
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.08),
+      0 4px 16px rgba(0, 0, 0, 0.06),
+      0 0 0 1px rgba(0, 0, 0, 0.04);
+
+    &::before {
+      background: linear-gradient(to right, #fff 0%, transparent 100%);
+    }
+
+    &::after {
+      background: linear-gradient(to left, #fff 0%, transparent 100%);
+    }
+
+    .settingsHeader {
+      border-bottom-color: rgba(0, 0, 0, 0.08);
+    }
+
+    .settingsBrand {
+      color: #E5484D;
+    }
+
+    .settingsVersion {
+      color: rgba(0, 0, 0, 0.4);
+    }
+
+    .settingsSection {
+      border-top-color: rgba(0, 0, 0, 0.08);
+    }
+
+    .settingsLabel {
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    .cycleButton {
+      color: rgba(0, 0, 0, 0.85);
+    }
+
+    .cycleDot {
+      background: rgba(0, 0, 0, 0.2);
+
+      &.active {
+        background: rgba(0, 0, 0, 0.7);
+      }
+    }
+
+    .dropdownButton {
+      color: rgba(0, 0, 0, 0.85);
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+    }
+  }
+}
+
+.checkboxField {
+  &:not(:first-child) {
+    margin-top: 8px;
+  }
+}
+
+.divider {
+  margin-block: 8px;
+  width: 100%;
+  height: 1px;
+  background-color: rgb(26 26 26 / 0.07);
+
+  [data-agentation-theme="dark"] & {
+    background-color: rgb(255 255 255 / 0.07);
+  }
+}

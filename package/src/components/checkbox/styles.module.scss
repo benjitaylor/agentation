@@ -1,0 +1,58 @@
+.checkboxContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border: 1px solid rgb(26 26 26 / 0.2);
+  border-radius: 4px;
+  width: 14px;
+  height: 14px;
+  background-color: #fff;
+  transition: background-color 0.2s ease;
+
+  [data-agentation-theme="dark"] & {
+    border-color: rgb(255 255 255 / 0.2);
+    background-color: #252525;
+  }
+
+  &:has(.checkboxInput:checked) {
+    background-color: #1a1a1a;
+
+    [data-agentation-theme="dark"] & {
+      background-color: #fff;
+    }
+  }
+}
+
+.checkboxInput {
+  position: absolute;
+  z-index: 1;
+  inset: -1px;
+  border-radius: inherit;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkboxCheck {
+  color: #fafafa;
+
+  [data-agentation-theme="dark"] & {
+    color: #1a1a1a;
+  }
+}
+
+.checkboxCheckPath {
+  stroke-dasharray: 9.29px;
+  stroke-dashoffset: 9.29px;
+  color: #fafafa;
+  transition: stroke-dashoffset 0.1s ease;
+
+  [data-agentation-theme="dark"] & {
+    color: #1a1a1a;
+  }
+
+  .checkboxContainer:has(.checkboxInput:checked) & {
+    transition-duration: 0.2s;
+    stroke-dashoffset: 0;
+  }
+}

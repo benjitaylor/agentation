@@ -1,9 +1,14 @@
-<img src="./package/logo.svg" alt="Agentation" width="50" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="package/logo-dark.svg">
+  <img src="package/logo.svg" alt="Agentation" width="200">
+</picture>
+
+<br>
 
 [![npm version](https://img.shields.io/npm/v/agentation)](https://www.npmjs.com/package/agentation)
 [![downloads](https://img.shields.io/npm/dm/agentation)](https://www.npmjs.com/package/agentation)
 
-**[Agentation](https://agentation.dev)** is an agent-agnostic visual feedback tool. Click elements on your page, add notes, and copy structured output that helps AI coding agents find the exact code you're referring to.
+**[Agentation](https://agentation.com)** is an agent-agnostic visual feedback tool. Click elements on your page, add notes, and copy structured output that helps AI coding agents find the exact code you're referring to.
 
 ## Install
 
@@ -50,7 +55,7 @@ Agentation captures class names, selectors, and element positions so AI agents c
 
 ## Docs
 
-Full documentation at [agentation.dev](https://agentation.dev)
+Full documentation at [agentation.com](https://agentation.com)
 
 ## License
 

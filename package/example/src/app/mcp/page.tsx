@@ -195,30 +195,40 @@ npx agentation-mcp help      # Show help`}
 
           <ToolName>agentation_get_pending</ToolName>
           <p style={{ fontSize: "0.8125rem", color: "rgba(0,0,0,0.55)" }}>
-            Get all pending (unacknowledged) annotations for a session. Use this to see what feedback
-            needs attention. Input: <code>sessionId</code>
+            Get all pending (unacknowledged) annotations for a session. Returns feedback, placement, and rearrange
+            annotations. Use the <code>kind</code> field to distinguish between them. Input: <code>sessionId</code>
           </p>
           <CodeBlock
             language="json"
-            code={`// Response
+            code={`// Response — feedback annotation
 {
-  "count": 1,
+  "count": 2,
   "annotations": [{
     "id": "ann_123",
     "comment": "Button is cut off on mobile",
     "element": "button",
     "elementPath": "body > main > .hero > button.cta",
-    "reactComponents": "App > LandingPage > HeroSection > Button",
+    "kind": "feedback",
     "intent": "fix",
     "severity": "blocking"
+  }, {
+    "id": "ann_456",
+    "comment": "Place a Hero component here",
+    "kind": "placement",
+    "placement": {
+      "componentType": "Hero",
+      "width": 800,
+      "height": 400,
+      "scrollY": 0
+    }
   }]
 }`}
           />
 
           <ToolName>agentation_get_all_pending</ToolName>
           <p style={{ fontSize: "0.8125rem", color: "rgba(0,0,0,0.55)" }}>
-            Get all pending annotations across ALL sessions. Use this to see all unaddressed feedback
-            from the human across all pages.
+            Get all pending annotations across ALL sessions. Returns all three annotation kinds: feedback,
+            placement, and rearrange. Use this to see all unaddressed feedback and design requests from the human.
           </p>
 
           <ToolName>agentation_acknowledge</ToolName>
@@ -247,8 +257,9 @@ npx agentation-mcp help      # Show help`}
 
           <ToolName>agentation_watch_annotations</ToolName>
           <p style={{ fontSize: "0.8125rem", color: "rgba(0,0,0,0.55)" }}>
-            Block until new annotations appear, then collect a batch and return them. Triggers automatically
-            when annotations are created &mdash; the user just annotates in the browser and the agent picks them up.
+            Block until new annotations appear, then collect a batch and return them. Picks up all annotation
+            kinds: feedback, placement, and rearrange. Layout mode placements and rearrange changes trigger
+            the watcher just like regular feedback annotations.
             After detecting the first new annotation, waits for a batch window to collect more before returning.
             Use in a loop for hands-free feedback processing.
             Input: optional <code>sessionId</code>, optional <code>batchWindowSeconds</code> (default: 10, max: 60),

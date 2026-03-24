@@ -1,6 +1,6 @@
 "use client";
 
-import s from './icon-transitions.module.scss';
+import s from "./icon-transitions.module.scss";
 
 // =============================================================================
 // Icons
@@ -103,11 +103,33 @@ export const IconListSparkle = ({
 );
 
 // Help/Question mark icon for tooltips
-export const IconHelp = ({ size = 20, ...props }: { size?: number } & React.SVGProps<SVGSVGElement>) => (
-  <svg width={size} height={size} viewBox="0 0 20 20" fill="none" {...props}>
-    <circle cx="10" cy="10" r="6" stroke="currentColor" strokeWidth="1.25"/>
-    <path d="M8.24 8.19C8.38 7.78 8.66 7.44 9.03 7.23C9.4 7.01 9.84 6.93 10.26 7C10.68 7.07 11.06 7.29 11.34 7.62C11.61 7.95 11.76 8.36 11.76 8.79152C11.76 10 10 10.6 10 10.6V10.83" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-    <circle cx="10" cy="13" r="0.625" fill="currentColor"/>
+export const IconHelp = ({
+  size = 20,
+  ...props
+}: { size?: number } & React.SVGProps<SVGSVGElement>) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <circle
+      cx="10"
+      cy="10"
+      r="5.375"
+      stroke="currentColor"
+      strokeWidth="1.25"
+    />
+    <path
+      d="M8.5 8.5C8.73 7.85 9.31 7.49 10 7.5C10.86 7.51 11.5 8.13 11.5 9C11.5 10.08 10 10.5 10 10.5V10.75"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <circle cx="10" cy="12.625" r="0.625" fill="currentColor" />
   </svg>
 );
 
@@ -179,10 +201,20 @@ export const IconCopyAlt = ({ size = 16 }: { size?: number }) => (
 );
 
 // Animated copy/checkmark icon
-export const IconCopyAnimated = ({ size = 24, copied = false }: { size?: number; copied?: boolean }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+export const IconCopyAnimated = ({
+  size = 24,
+  copied = false,
+  tint,
+}: {
+  size?: number;
+  copied?: boolean;
+  tint?: string;
+}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={tint ? { color: tint, transition: 'color 0.3s ease' } : undefined}>
     {/* Copy icon */}
-    <g className={`${s.iconState} ${copied ? s.hiddenScaled : s.visibleScaled}`}>
+    <g
+      className={`${s.iconState} ${copied ? s.hiddenScaled : s.visibleScaled}`}
+    >
       <path
         d="M4.75 11.25C4.75 10.4216 5.42157 9.75 6.25 9.75H12.75C13.5784 9.75 14.25 10.4216 14.25 11.25V17.75C14.25 18.5784 13.5784 19.25 12.75 19.25H6.25C5.42157 19.25 4.75 18.5784 4.75 17.75V11.25Z"
         stroke="currentColor"
@@ -196,7 +228,9 @@ export const IconCopyAnimated = ({ size = 24, copied = false }: { size?: number;
       />
     </g>
     {/* Checkmark circle */}
-    <g className={`${s.iconState} ${copied ? s.visibleScaled : s.hiddenScaled}`}>
+    <g
+      className={`${s.iconState} ${copied ? s.visibleScaled : s.hiddenScaled}`}
+    >
       <path
         d="M12 20C7.58172 20 4 16.4182 4 12C4 7.58172 7.58172 4 12 4C16.4182 4 20 7.58172 20 12C20 16.4182 16.4182 20 12 20Z"
         stroke="var(--agentation-color-green)"
@@ -218,7 +252,7 @@ export const IconCopyAnimated = ({ size = 24, copied = false }: { size?: number;
 // Animated send arrow icon (paper plane style with checkmark/error transition)
 export const IconSendArrow = ({
   size = 24,
-  state = "idle"
+  state = "idle",
 }: {
   size?: number;
   state?: "idle" | "sending" | "sent" | "failed";
@@ -231,7 +265,9 @@ export const IconSendArrow = ({
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       {/* Send arrow */}
-      <g className={`${s.iconStateFast} ${showArrow ? s.visibleScaled : isSending ? s.sending : s.hiddenScaled}`}>
+      <g
+        className={`${s.iconStateFast} ${showArrow ? s.visibleScaled : isSending ? s.sending : s.hiddenScaled}`}
+      >
         <path
           d="M9.875 14.125L12.3506 19.6951C12.7184 20.5227 13.9091 20.4741 14.2083 19.6193L18.8139 6.46032C19.0907 5.6695 18.3305 4.90933 17.5397 5.18611L4.38072 9.79174C3.52589 10.0909 3.47731 11.2816 4.30494 11.6494L9.875 14.125ZM9.875 14.125L13.375 10.625"
           stroke="currentColor"
@@ -241,7 +277,9 @@ export const IconSendArrow = ({
         />
       </g>
       {/* Green checkmark circle */}
-      <g className={`${s.iconStateFast} ${showCheck ? s.visibleScaled : s.hiddenScaled}`}>
+      <g
+        className={`${s.iconStateFast} ${showCheck ? s.visibleScaled : s.hiddenScaled}`}
+      >
         <path
           d="M12 20C7.58172 20 4 16.4182 4 12C4 7.58172 7.58172 4 12 4C16.4182 4 20 7.58172 20 12C20 16.4182 16.4182 20 12 20Z"
           stroke="var(--agentation-color-green)"
@@ -258,7 +296,9 @@ export const IconSendArrow = ({
         />
       </g>
       {/* Red error circle with exclamation */}
-      <g className={`${s.iconStateFast} ${showError ? s.visibleScaled : s.hiddenScaled}`}>
+      <g
+        className={`${s.iconStateFast} ${showError ? s.visibleScaled : s.hiddenScaled}`}
+      >
         <path
           d="M12 20C7.58172 20 4 16.4182 4 12C4 7.58172 7.58172 4 12 4C16.4182 4 20 7.58172 20 12C20 16.4182 16.4182 20 12 20Z"
           stroke="var(--agentation-color-red)"
@@ -272,14 +312,27 @@ export const IconSendArrow = ({
           strokeWidth="1.5"
           strokeLinecap="round"
         />
-        <circle cx="12" cy="15" r="0.5" fill="var(--agentation-color-red)" stroke="var(--agentation-color-red)" strokeWidth="1" />
+        <circle
+          cx="12"
+          cy="15"
+          r="0.5"
+          fill="var(--agentation-color-red)"
+          stroke="var(--agentation-color-red)"
+          strokeWidth="1"
+        />
       </g>
     </svg>
   );
 };
 
 // Animated send/checkmark icon (for "Send to Agent" button)
-export const IconSendAnimated = ({ size = 24, sent = false }: { size?: number; sent?: boolean }) => (
+export const IconSendAnimated = ({
+  size = 24,
+  sent = false,
+}: {
+  size?: number;
+  sent?: boolean;
+}) => (
   <svg width={size} height={size} viewBox="0 0 22 21" fill="none">
     {/* Send icon (document with arrow) */}
     <g className={`${s.iconState} ${sent ? s.hiddenScaled : s.visibleScaled}`}>
@@ -386,7 +439,13 @@ export const IconEyeClosed = ({ size = 24 }: { size?: number }) => (
 );
 
 // Animated eye icon that transitions between open/closed states
-export const IconEyeAnimated = ({ size = 24, isOpen = true }: { size?: number; isOpen?: boolean }) => (
+export const IconEyeAnimated = ({
+  size = 24,
+  isOpen = true,
+}: {
+  size?: number;
+  isOpen?: boolean;
+}) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
     {/* Open state - full outline + pupil */}
     <g className={`${s.iconFade} ${isOpen ? s.visible : s.hidden}`}>
@@ -422,7 +481,13 @@ export const IconEyeAnimated = ({ size = 24, isOpen = true }: { size?: number; i
 );
 
 // Animated pause/play icon that transitions between states
-export const IconPausePlayAnimated = ({ size = 24, isPaused = false }: { size?: number; isPaused?: boolean }) => (
+export const IconPausePlayAnimated = ({
+  size = 24,
+  isPaused = false,
+}: {
+  size?: number;
+  isPaused?: boolean;
+}) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
     {/* Pause bars - visible when not paused */}
     <g className={`${s.iconFadeFast} ${isPaused ? s.hidden : s.visible}`}>
@@ -663,28 +728,94 @@ export const IconXmarkLarge = ({ size = 24 }: { size?: number }) => (
 // Sun icon (light mode)
 export const IconSun = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-    <path d="M9.99999 12.7082C11.4958 12.7082 12.7083 11.4956 12.7083 9.99984C12.7083 8.50407 11.4958 7.2915 9.99999 7.2915C8.50422 7.2915 7.29166 8.50407 7.29166 9.99984C7.29166 11.4956 8.50422 12.7082 9.99999 12.7082Z" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M10 3.9585V5.05698" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M10 14.9429V16.0414" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M5.7269 5.72656L6.50682 6.50649" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M13.4932 13.4932L14.2731 14.2731" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M3.95834 10H5.05683" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M14.9432 10H16.0417" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M5.7269 14.2731L6.50682 13.4932" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M13.4932 6.50649L14.2731 5.72656" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+    <path
+      d="M9.99999 12.7082C11.4958 12.7082 12.7083 11.4956 12.7083 9.99984C12.7083 8.50407 11.4958 7.2915 9.99999 7.2915C8.50422 7.2915 7.29166 8.50407 7.29166 9.99984C7.29166 11.4956 8.50422 12.7082 9.99999 12.7082Z"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M10 3.9585V5.05698"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M10 14.9429V16.0414"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5.7269 5.72656L6.50682 6.50649"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M13.4932 13.4932L14.2731 14.2731"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3.95834 10H5.05683"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M14.9432 10H16.0417"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5.7269 14.2731L6.50682 13.4932"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M13.4932 6.50649L14.2731 5.72656"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 // Moon icon (dark mode)
 export const IconMoon = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 20 20" fill="none">
-    <path d="M15.5 10.4955C15.4037 11.5379 15.0124 12.5314 14.3721 13.3596C13.7317 14.1878 12.8688 14.8165 11.8841 15.1722C10.8995 15.5278 9.83397 15.5957 8.81217 15.3679C7.79038 15.1401 6.8546 14.6259 6.11434 13.8857C5.37408 13.1454 4.85995 12.2096 4.63211 11.1878C4.40427 10.166 4.47215 9.10048 4.82781 8.11585C5.18346 7.13123 5.81218 6.26825 6.64039 5.62791C7.4686 4.98756 8.46206 4.59634 9.5045 4.5C8.89418 5.32569 8.60049 6.34302 8.67685 7.36695C8.75321 8.39087 9.19454 9.35339 9.92058 10.0794C10.6466 10.8055 11.6091 11.2468 12.6331 11.3231C13.657 11.3995 14.6743 11.1058 15.5 10.4955Z" stroke="currentColor" strokeWidth="1.13793" strokeLinecap="round" strokeLinejoin="round"/>
+    <path
+      d="M15.5 10.4955C15.4037 11.5379 15.0124 12.5314 14.3721 13.3596C13.7317 14.1878 12.8688 14.8165 11.8841 15.1722C10.8995 15.5278 9.83397 15.5957 8.81217 15.3679C7.79038 15.1401 6.8546 14.6259 6.11434 13.8857C5.37408 13.1454 4.85995 12.2096 4.63211 11.1878C4.40427 10.166 4.47215 9.10048 4.82781 8.11585C5.18346 7.13123 5.81218 6.26825 6.64039 5.62791C7.4686 4.98756 8.46206 4.59634 9.5045 4.5C8.89418 5.32569 8.60049 6.34302 8.67685 7.36695C8.75321 8.39087 9.19454 9.35339 9.92058 10.0794C10.6466 10.8055 11.6091 11.2468 12.6331 11.3231C13.657 11.3995 14.6743 11.1058 15.5 10.4955Z"
+      stroke="currentColor"
+      strokeWidth="1.13793"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
 // Edit/pencil icon for marker hover
 export const IconEdit = ({ size = 16 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <path
       d="M11.3799 6.9572L9.05645 4.63375M11.3799 6.9572L6.74949 11.5699C6.61925 11.6996 6.45577 11.791 6.277 11.8339L4.29549 12.3092C3.93194 12.3964 3.60478 12.0683 3.69297 11.705L4.16585 9.75693C4.20893 9.57947 4.29978 9.4172 4.42854 9.28771L9.05645 4.63375M11.3799 6.9572L12.3455 5.98759C12.9839 5.34655 12.9839 4.31002 12.3455 3.66897C11.7033 3.02415 10.6594 3.02415 10.0172 3.66897L9.06126 4.62892L9.05645 4.63375"
       stroke="currentColor"
@@ -697,7 +828,13 @@ export const IconEdit = ({ size = 16 }: { size?: number }) => (
 
 // Trash icon for delete button in edit panel
 export const IconTrash = ({ size = 24 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <path
       d="M13.5 4C14.7426 4 15.75 5.00736 15.75 6.25V7H18.5C18.9142 7 19.25 7.33579 19.25 7.75C19.25 8.16421 18.9142 8.5 18.5 8.5H17.9678L17.6328 16.2217C17.61 16.7475 17.5912 17.1861 17.5469 17.543C17.5015 17.9087 17.4225 18.2506 17.2461 18.5723C16.9747 19.0671 16.5579 19.4671 16.0518 19.7168C15.7227 19.8791 15.3772 19.9422 15.0098 19.9717C14.6514 20.0004 14.2126 20 13.6865 20H10.3135C9.78735 20 9.34856 20.0004 8.99023 19.9717C8.62278 19.9422 8.27729 19.8791 7.94824 19.7168C7.44205 19.4671 7.02532 19.0671 6.75391 18.5723C6.57751 18.2506 6.49853 17.9087 6.45312 17.543C6.40883 17.1861 6.39005 16.7475 6.36719 16.2217L6.03223 8.5H5.5C5.08579 8.5 4.75 8.16421 4.75 7.75C4.75 7.33579 5.08579 7 5.5 7H8.25V6.25C8.25 5.00736 9.25736 4 10.5 4H13.5ZM7.86621 16.1562C7.89013 16.7063 7.90624 17.0751 7.94141 17.3584C7.97545 17.6326 8.02151 17.7644 8.06934 17.8516C8.19271 18.0763 8.38239 18.2577 8.6123 18.3711C8.70153 18.4151 8.83504 18.4545 9.11035 18.4766C9.39482 18.4994 9.76335 18.5 10.3135 18.5H13.6865C14.2367 18.5 14.6052 18.4994 14.8896 18.4766C15.165 18.4545 15.2985 18.4151 15.3877 18.3711C15.6176 18.2577 15.8073 18.0763 15.9307 17.8516C15.9785 17.7644 16.0245 17.6326 16.0586 17.3584C16.0938 17.0751 16.1099 16.7063 16.1338 16.1562L16.4668 8.5H7.5332L7.86621 16.1562ZM9.97656 10.75C10.3906 10.7371 10.7371 11.0626 10.75 11.4766L10.875 15.4766C10.8879 15.8906 10.5624 16.2371 10.1484 16.25C9.73443 16.2629 9.38794 15.9374 9.375 15.5234L9.25 11.5234C9.23706 11.1094 9.56255 10.7629 9.97656 10.75ZM14.0244 10.75C14.4383 10.7635 14.7635 11.1105 14.75 11.5244L14.6201 15.5244C14.6066 15.9384 14.2596 16.2634 13.8457 16.25C13.4317 16.2365 13.1067 15.8896 13.1201 15.4756L13.251 11.4756C13.2645 11.0617 13.6105 10.7366 14.0244 10.75ZM10.5 5.5C10.0858 5.5 9.75 5.83579 9.75 6.25V7H14.25V6.25C14.25 5.83579 13.9142 5.5 13.5 5.5H10.5Z"
       fill="currentColor"
@@ -901,5 +1038,36 @@ export const AnimatedBunny = ({
     >
       ˃ ᵕ ˂
     </text>
+  </svg>
+);
+
+// Layout / grid icon for layout mode
+export const IconLayout = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <rect
+      x="3"
+      y="3"
+      width="18"
+      height="18"
+      rx="2"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <line
+      x1="3"
+      y1="9"
+      x2="21"
+      y2="9"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <line
+      x1="9"
+      y1="9"
+      x2="9"
+      y2="21"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
   </svg>
 );

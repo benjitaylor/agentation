@@ -1,0 +1,1686 @@
+// =============================================================================
+// Layout Mode Styles
+// =============================================================================
+
+// Protect stroke-based SVG icons from host page CSS overrides
+svg[fill="none"] {
+  fill: none !important;
+}
+
+$blue: #3c82f7;
+$blue-dim: rgba(59, 130, 246, 0.15);
+$orange: #f97316;
+$orange-dim: rgba(249, 115, 22, 0.15);
+$red: #ef4444;
+
+// =============================================================================
+// Overlay
+// =============================================================================
+
+.overlayExiting {
+  opacity: 0 !important;
+  transition: opacity 0.25s ease !important;
+  pointer-events: none !important;
+}
+
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99995;
+  pointer-events: auto;
+  cursor: default;
+  animation: overlayFadeIn 0.15s ease;
+
+  --agd-stroke: rgba(59, 130, 246, 0.35);
+  --agd-fill: rgba(59, 130, 246, 0.06);
+  --agd-bar: rgba(59, 130, 246, 0.18);
+  --agd-bar-strong: rgba(59, 130, 246, 0.28);
+  --agd-text-3: rgba(255, 255, 255, 0.6);
+  --agd-surface: #fff;
+
+  &.light {
+    --agd-surface: #fff;
+  }
+
+  &:not(.light) {
+    --agd-surface: #141414;
+  }
+
+  &.wireframe {
+    --agd-stroke: rgba(249, 115, 22, 0.35);
+    --agd-fill: rgba(249, 115, 22, 0.06);
+    --agd-bar: rgba(249, 115, 22, 0.18);
+    --agd-bar-strong: rgba(249, 115, 22, 0.28);
+  }
+
+  &.placing {
+    cursor: crosshair;
+  }
+
+  &.passthrough {
+    pointer-events: none;
+  }
+}
+
+// =============================================================================
+// Blank Canvas Backdrop
+// =============================================================================
+
+.blankCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 99994; // below overlay but above page
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+
+  &.visible {
+    opacity: var(--canvas-opacity, 1);
+    pointer-events: auto;
+  }
+
+  // Dot grid — subtle when idle, brighter when interacting
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: 12px 12px;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  &.gridActive::after {
+    opacity: 1;
+    background-image:
+      radial-gradient(circle, rgba(0, 0, 0, 0.22) 1px, transparent 1px);
+  }
+}
+
+// =============================================================================
+// Palette Header (Explore / Wireframe)
+// =============================================================================
+
+.paletteHeader {
+  padding: 0 1rem 0.375rem;
+}
+
+.paletteHeaderTitle {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #fff;
+  letter-spacing: -0.0094em;
+
+  .light & {
+    color: rgba(0, 0, 0, 0.85);
+  }
+}
+
+.paletteHeaderDesc {
+  font-size: 0.6875rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 2px;
+  line-height: 14px;
+
+  .light & {
+    color: rgba(0, 0, 0, 0.45);
+  }
+
+  a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: underline dotted;
+    text-decoration-color: rgba(255, 255, 255, 0.2);
+    text-underline-offset: 2px;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+
+  .light & a {
+    color: rgba(0, 0, 0, 0.6);
+    text-decoration-color: rgba(0, 0, 0, 0.2);
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.85);
+    }
+  }
+}
+
+// =============================================================================
+// Wireframe Purpose Textarea
+// =============================================================================
+
+.wireframePurposeWrap {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.2s ease, opacity 0.15s ease;
+  opacity: 1;
+
+  &.collapsed {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
+
+.wireframePurposeInner {
+  overflow: hidden;
+}
+
+.wireframePurposeInput {
+  display: block;
+  width: calc(100% - 2rem);
+  margin: 0.25rem 1rem 0.375rem;
+  padding: 0.375rem 0.5rem;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.375rem;
+  resize: none;
+  outline: none;
+  transition: border-color 0.15s ease;
+  letter-spacing: -0.0094em;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  &:focus {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .light & {
+    color: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.1);
+
+    &::placeholder {
+      color: rgba(0, 0, 0, 0.3);
+    }
+
+    &:focus {
+      border-color: rgba(0, 0, 0, 0.25);
+      background: rgba(0, 0, 0, 0.05);
+    }
+  }
+}
+
+// =============================================================================
+// Wireframe toggle (was: Blank Canvas Banner)
+// =============================================================================
+
+.canvasToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  margin: 0.25rem 1rem 0.25rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  background: transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  &.active {
+    background: $orange;
+    border-color: transparent;
+    border-style: solid;
+    box-shadow: none;
+  }
+
+  .light & {
+    border-color: rgba(0, 0, 0, 0.08);
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.02);
+      border-color: rgba(0, 0, 0, 0.12);
+    }
+
+    &.active {
+      background: $orange;
+      border-color: transparent;
+      border-style: solid;
+      box-shadow: none;
+    }
+  }
+}
+
+.canvasToggleIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.35);
+
+  .active & {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .light & {
+    color: rgba(0, 0, 0, 0.25);
+  }
+
+  .light .active & {
+    color: rgba(255, 255, 255, 0.85);
+  }
+}
+
+.canvasToggleLabel {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: -0.0094em;
+
+  .active & {
+    color: #fff;
+  }
+
+  .light & {
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  .light .active & {
+    color: #fff;
+  }
+}
+
+.canvasPurposeWrap {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.2s ease, opacity 0.15s ease;
+  opacity: 1;
+
+  &.collapsed {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
+
+.canvasPurposeInner {
+  overflow: hidden;
+}
+
+// Matches .settingsToggle from settings panel
+.canvasPurposeToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  margin: 0.375rem 1rem 0.375rem 1.1875rem;
+
+  input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+}
+
+// Matches .customCheckbox from settings panel
+.canvasPurposeCheck {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.25s ease, border-color 0.25s ease;
+
+  svg {
+    color: #1a1a1a;
+    opacity: 1;
+    transition: opacity 0.15s ease;
+  }
+
+  &.checked {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 1);
+  }
+
+  .light & {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #fff;
+
+    &.checked {
+      border-color: #1a1a1a;
+      background: #1a1a1a;
+
+      svg {
+        color: #fff;
+      }
+    }
+  }
+}
+
+// Matches .toggleLabel from settings panel
+.canvasPurposeLabel {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: -0.0094em;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  .light & {
+    color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+// Matches .helpIcon from settings panel
+.canvasPurposeHelp {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: help;
+
+  svg {
+    color: rgba(255, 255, 255, 0.2);
+    transform: translateY(2px);
+    transition: color 0.15s ease;
+  }
+
+  &:hover svg {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .light & svg {
+    color: rgba(0, 0, 0, 0.2);
+  }
+
+  .light &:hover svg {
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+}
+
+// =============================================================================
+// Placed Component
+// =============================================================================
+
+.placement {
+  position: absolute;
+  border: 1.5px dashed rgba(59, 130, 246, 0.4);
+  border-radius: 6px;
+  background: rgba(59, 130, 246, 0.08);
+  cursor: grab;
+  transition: box-shadow 0.15s, border-color 0.15s, opacity 0.15s ease, transform 0.15s ease;
+  user-select: none;
+  pointer-events: auto;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  animation: placementEnter 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:hover {
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(59, 130, 246, 0.1);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
+  }
+
+  &.selected {
+    border-color: $blue;
+    border-style: solid;
+    background: rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 2px $blue-dim, 0 2px 8px rgba(59, 130, 246, 0.15);
+
+    &:hover {
+      box-shadow: 0 0 0 2px $blue-dim, 0 2px 8px rgba(59, 130, 246, 0.15);
+    }
+  }
+
+  .wireframe & {
+    border-color: rgba(249, 115, 22, 0.4);
+    background: rgba(249, 115, 22, 0.08);
+
+    &:hover {
+      border-color: rgba(249, 115, 22, 0.5);
+      background: rgba(249, 115, 22, 0.1);
+      box-shadow: 0 2px 8px rgba(249, 115, 22, 0.12);
+    }
+
+    &.selected {
+      border-color: $orange;
+      background: rgba(249, 115, 22, 0.1);
+      box-shadow: 0 0 0 2px $orange-dim, 0 2px 8px rgba(249, 115, 22, 0.15);
+
+      &:hover {
+        box-shadow: 0 0 0 2px $orange-dim, 0 2px 8px rgba(249, 115, 22, 0.15);
+      }
+    }
+  }
+
+  &.dragging {
+    opacity: 0.85;
+    z-index: 50;
+  }
+
+  &.exiting {
+    opacity: 0;
+    transform: scale(0.97);
+    pointer-events: none;
+    animation: none;
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+.placementContent {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.placementLabel {
+  position: absolute;
+  top: -18px;
+  left: 0;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(59, 130, 246, 0.7);
+  white-space: nowrap;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.8), 0 0 8px rgba(255, 255, 255, 0.5);
+
+  .selected & {
+    color: $blue;
+  }
+
+  .wireframe & {
+    color: rgba(249, 115, 22, 0.7);
+  }
+
+  .wireframe .selected & {
+    color: $orange;
+  }
+}
+
+.placementAnnotation {
+  position: absolute;
+  bottom: -18px;
+  left: 0;
+  right: 0;
+  font-weight: 450;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+
+  &.annotationVisible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sectionAnnotation {
+  position: absolute;
+  bottom: -18px;
+  left: 0;
+  right: 0;
+  font-weight: 450;
+  color: rgba(59, 130, 246, 0.6);
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+
+  &.annotationVisible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// =============================================================================
+// Resize Handles (corner dots)
+// =============================================================================
+
+.handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border: 1.5px solid $blue;
+  border-radius: 2px;
+  z-index: 12;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  transform: scale(0.3);
+  pointer-events: none;
+  will-change: opacity, transform;
+  transition: opacity 0.2s ease-out, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  .placement:hover &,
+  .sectionOutline:hover &,
+  .ghostOutline:hover &,
+  .placement:active &,
+  .sectionOutline:active &,
+  .ghostOutline:active &,
+  .selected & {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+
+  .sectionOutline & {
+    border-color: inherit;
+  }
+
+  .wireframe & {
+    border-color: $orange;
+  }
+}
+
+.handleNw { top: -4px; left: -4px; cursor: nw-resize; }
+.handleNe { top: -4px; right: -4px; cursor: ne-resize; }
+.handleSe { bottom: -4px; right: -4px; cursor: se-resize; }
+.handleSw { bottom: -4px; left: -4px; cursor: sw-resize; }
+
+// Hide midpoint dot handles (replaced by edge bars)
+.handleN, .handleE, .handleS, .handleW { opacity: 0 !important; pointer-events: none !important; }
+
+// =============================================================================
+// Edge Resize Bars (wide hit areas + arrow indicators)
+// =============================================================================
+
+.edgeHandle {
+  position: absolute;
+  z-index: 11;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // Pill indicator
+  &::after {
+    content: "";
+    position: absolute;
+    border-radius: 4px;
+    background: $blue;
+
+    .wireframe & {
+      background: $orange;
+    }
+    opacity: 0;
+    transition: opacity 0.1s ease, transform 0.1s ease;
+    transform: scale(0.8);
+  }
+
+  &:hover::after {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+
+  // Arrow icon
+  svg {
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.1s ease;
+    filter: drop-shadow(0 0 2px var(--agd-surface));
+  }
+
+  &:hover svg {
+    opacity: 1;
+  }
+}
+
+// Horizontal edges (top/bottom) — full width, 12px tall
+.edgeN, .edgeS {
+  left: 12px;
+  right: 12px;
+  height: 12px;
+  cursor: n-resize;
+
+  &::after {
+    width: 24px;
+    height: 4px;
+  }
+}
+
+.edgeN { top: -6px; }
+.edgeS { bottom: -6px; cursor: s-resize; }
+
+// Vertical edges (left/right) — full height, 12px wide
+.edgeE, .edgeW {
+  top: 12px;
+  bottom: 12px;
+  width: 12px;
+  cursor: e-resize;
+
+  &::after {
+    width: 4px;
+    height: 24px;
+  }
+}
+
+.edgeE { right: -6px; }
+.edgeW { left: -6px; cursor: w-resize; }
+
+// =============================================================================
+// Delete Button
+// =============================================================================
+
+.deleteButton {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  line-height: 1;
+  z-index: 15;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.8);
+  will-change: opacity, transform;
+  transition: opacity 0.2s ease-out, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.12s ease, color 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+
+  .placement:hover &,
+  .selected &,
+  .sectionOutline:hover &,
+  .sectionOutline.selected &,
+  .ghostOutline:hover &,
+  .ghostOutline.selected & {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+
+  &:hover {
+    background: $red;
+    color: #fff;
+    border-color: $red;
+    box-shadow: 0 1px 4px rgba(239, 68, 68, 0.3);
+    transform: scale(1.1);
+  }
+
+  .overlay:not(.light) &,
+  .rearrangeOverlay:not(.light) & {
+    background: rgba(40, 40, 40, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+
+    &:hover {
+      background: $red;
+      color: #fff;
+      border-color: $red;
+    }
+  }
+}
+
+// =============================================================================
+// Draw Box (drag-to-place preview)
+// =============================================================================
+
+.drawBox {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99996;
+  border: 2px solid $blue;
+  border-radius: 6px;
+  background: $blue-dim;
+}
+
+// =============================================================================
+// Selection Box
+// =============================================================================
+
+.selectBox {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99996;
+  border: 1px dashed $blue;
+  background: rgba(59, 130, 246, 0.08);
+  border-radius: 2px;
+}
+
+// =============================================================================
+// Size Indicator
+// =============================================================================
+
+.sizeIndicator {
+  position: fixed;
+  pointer-events: none;
+  z-index: 100001;
+  font-size: 10px;
+  color: #fff;
+  background: $blue;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+// =============================================================================
+// Smart Alignment Guides
+// =============================================================================
+
+.guideLine {
+  pointer-events: none;
+  z-index: 100001;
+  background: #f0f;
+  opacity: 0.5;
+}
+
+// =============================================================================
+// Drag Preview (dragging from palette onto page)
+// =============================================================================
+
+.dragPreview {
+  position: fixed;
+  z-index: 100002;
+  pointer-events: none;
+  border: 1.5px dashed $blue;
+  border-radius: 6px;
+  background: rgba(59, 130, 246, 0.1);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+  color: $blue;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+  transition: width 0.08s ease, height 0.08s ease, opacity 0.08s ease;
+}
+
+.dragPreviewWireframe {
+  border-color: $orange;
+  background: rgba(249, 115, 22, 0.1);
+  color: $orange;
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.15);
+}
+
+// =============================================================================
+// Palette Panel — matches settings panel exactly
+// =============================================================================
+
+.palette {
+  position: absolute;
+  right: 5px;
+  bottom: calc(100% + 0.5rem);
+  width: 256px;
+  overflow: hidden;
+  background: #1c1c1c;
+  border: none;
+  border-radius: 1rem;
+  padding: 13px 0 16px;
+  box-shadow:
+    0 1px 8px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+  z-index: 100001;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  cursor: default;
+
+  // Initial state (before enter transition triggers)
+  opacity: 0;
+  filter: blur(5px);
+
+
+  // Child element transitions (match settings panel)
+  .paletteItem,
+  .paletteItemLabel,
+  .paletteSectionTitle,
+  .paletteFooter {
+    transition:
+      background 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  // Enter/exit transitions
+  &.enter {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease,
+      filter 0.2s ease;
+  }
+
+  &.exit {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(5px);
+    pointer-events: none;
+    transition:
+      opacity 0.1s ease,
+      transform 0.1s ease,
+      filter 0.1s ease;
+  }
+
+  &.light {
+    background: #fff;
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.08),
+      0 4px 16px rgba(0, 0, 0, 0.06),
+      0 0 0 1px rgba(0, 0, 0, 0.04);
+  }
+}
+
+.paletteSection {
+  padding: 0 1rem;
+
+  & + & {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .light & + & {
+    border-top-color: rgba(0, 0, 0, 0.07);
+  }
+}
+
+.paletteSectionTitle {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: -0.0094em;
+  padding: 0 0 3px 3px;
+
+  .light & {
+    color: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.paletteItem {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.25rem;
+  margin-bottom: 1px;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+  border: 1px solid transparent;
+  user-select: none;
+  min-height: 24px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  &.active {
+    background: $blue;
+    border-color: transparent;
+  }
+
+  &.wireframe.active {
+    background: #f97316;
+  }
+
+  .light & {
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    &.active {
+      background: $blue;
+      border-color: transparent;
+    }
+
+    &.wireframe.active {
+      background: #f97316;
+    }
+  }
+}
+
+.paletteItemIcon {
+  width: 20px;
+  height: 16px;
+  border-radius: 2px;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.45);
+
+  svg {
+    display: block;
+    width: 20px;
+    height: 16px;
+  }
+
+  .active & {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
+
+  .light & {
+    border-color: rgba(0, 0, 0, 0.12);
+    background: rgba(0, 0, 0, 0.02);
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+  .light .active & {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
+}
+
+.paletteItemLabel {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: -0.0094em;
+  line-height: 1;
+  min-width: 0;
+
+  .active & {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .light & {
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .light .active & {
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+// =============================================================================
+// Component scroll area
+// =============================================================================
+
+.placeScroll {
+  max-height: 240px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 0.25rem;
+
+  &.fadeTop {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 32px);
+    mask-image: linear-gradient(to bottom, transparent 0, black 32px);
+  }
+  &.fadeBottom {
+    -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 32px), transparent 100%);
+    mask-image: linear-gradient(to bottom, black calc(100% - 32px), transparent 100%);
+  }
+  &.fadeTop.fadeBottom {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 32px, black calc(100% - 32px), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, black 32px, black calc(100% - 32px), transparent 100%);
+  }
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 2px;
+  }
+
+  .light & {
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+// =============================================================================
+// Palette Footer (placement count + clear)
+// =============================================================================
+
+.paletteFooterWrap {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+
+  &.footerHidden {
+    grid-template-rows: 0fr;
+  }
+}
+
+.paletteFooterInnerContent {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+
+  .footerHidden & {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+.paletteFooterInner {
+  overflow: hidden;
+}
+
+.paletteFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 24px;
+  padding: 0 1rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+
+  .light & {
+    border-top-color: rgba(0, 0, 0, 0.07);
+  }
+}
+
+.paletteFooterCount {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: -0.0094em;
+  color: rgba(255, 255, 255, 0.5);
+
+  .light & {
+    color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+.paletteFooterClear {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: -0.0094em;
+  color: rgba(255, 255, 255, 0.5);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .light & {
+    color: rgba(0, 0, 0, 0.5);
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+}
+
+.paletteFooterActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+
+// Rolling count number
+.rollingWrap {
+  display: inline-block;
+  overflow: hidden;
+  height: 1.15em;
+  position: relative;
+  vertical-align: bottom;
+}
+
+.rollingNum {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.exitUp { animation: numExitUp 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
+.enterUp { animation: numEnterUp 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
+.exitDown { animation: numExitDown 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
+.enterDown { animation: numEnterDown 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
+
+@keyframes numExitUp {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-110%); opacity: 0; }
+}
+@keyframes numEnterUp {
+  from { transform: translateY(110%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes numExitDown {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(110%); opacity: 0; }
+}
+@keyframes numEnterDown {
+  from { transform: translateY(-110%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+
+// =============================================================================
+// Rearrange Overlay
+// =============================================================================
+
+.rearrangeOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99995;
+  pointer-events: none;
+  cursor: default;
+  user-select: none;
+  animation: overlayFadeIn 0.15s ease;
+}
+
+// =============================================================================
+// Hover Highlight (uncaptured element preview)
+// =============================================================================
+
+.hoverHighlight {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99994;
+  border: 2px dashed rgba(59, 130, 246, 0.5);
+  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.06);
+  animation: highlightFadeIn 0.12s ease;
+}
+
+// =============================================================================
+// Section Outlines
+// =============================================================================
+
+.sectionOutline {
+  position: fixed;
+  border: 2px solid;
+  border-radius: 4px;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+  transition: box-shadow 0.15s, border-color 0.3s, background-color 0.3s, border-style 0s;
+  user-select: none;
+  pointer-events: auto;
+  animation: sectionEnter 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &.selected {
+    border-style: solid;
+    box-shadow: 0 0 0 2px $blue-dim, 0 2px 8px rgba(59, 130, 246, 0.15);
+
+    &:hover {
+      box-shadow: 0 0 0 2px $blue-dim, 0 2px 8px rgba(59, 130, 246, 0.15);
+    }
+  }
+
+  // Settled: moved/resized but not selected — subtle dashed border, no fill
+  &.settled:not(.selected) {
+    border: 1.5px dashed rgba(150, 150, 150, 0.35);
+    background-color: transparent !important;
+    box-shadow: none;
+
+    &:hover {
+      border-color: rgba(150, 150, 150, 0.6);
+      box-shadow: none;
+    }
+
+    .sectionLabel {
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    &:hover .sectionLabel {
+      opacity: 1;
+    }
+
+    .movedBadge,
+    .sectionDimensions {
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    &:hover .sectionDimensions {
+      opacity: 1;
+    }
+  }
+
+  &.exiting {
+    opacity: 0;
+    transform: scale(0.97);
+    pointer-events: none;
+    animation: none;
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+.sectionLabel {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  max-width: calc(100% - 8px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.movedBadge {
+  position: absolute;
+  bottom: 22px;
+  right: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  background: #22c55e;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+
+  &.badgeVisible {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 0.2s cubic-bezier(0.34, 1.2, 0.64, 1), transform 0.2s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+}
+
+.resizedBadge {
+  background: $blue;
+  bottom: 40px;
+}
+
+.sectionDimensions {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-size: 9px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 1px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  .light & {
+    color: rgba(0, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.7);
+  }
+}
+
+// =============================================================================
+// Wireframe Notice (bottom-left hint)
+// =============================================================================
+
+.wireframeNotice {
+  position: fixed;
+  bottom: 16px;
+  left: 24px;
+  z-index: 99995;
+  font-size: 9.5px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.4);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  pointer-events: auto;
+  animation: overlayFadeIn 0.3s ease;
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+.wireframeOpacityRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.wireframeOpacityLabel {
+  font-size: 9px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.32);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.wireframeOpacitySlider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 56px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.13);
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: $orange;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  &::-webkit-slider-thumb:hover {
+    background: darken(#f97316, 8%);
+  }
+
+  &::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: $orange;
+    border: none;
+    cursor: pointer;
+  }
+
+  &::-moz-range-track {
+    background: rgba(0, 0, 0, 0.08);
+    height: 4px;
+    border-radius: 2px;
+  }
+}
+
+.wireframeNoticeTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 2px;
+}
+
+.wireframeNoticeTitle {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.wireframeNoticeDivider {
+  width: 1px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 0 8px;
+  flex-shrink: 0;
+}
+
+.wireframeStartOver {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  text-decoration: none;
+  transition: color 0.12s ease;
+  white-space: nowrap;
+
+  &:hover {
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+
+// =============================================================================
+// Ghost Outlines (suggested placement)
+// =============================================================================
+
+.ghostOutline {
+  position: fixed;
+  border: 1.5px dashed rgba(59, 130, 246, 0.4);
+  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.04);
+  cursor: grab;
+  opacity: 0.5;
+  user-select: none;
+  pointer-events: auto;
+  animation: ghostEnter 0.25s ease;
+  transition: box-shadow 0.15s, border-color 0.3s, opacity 0.25s;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:hover {
+    opacity: 0.7;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  &.selected {
+    opacity: 1;
+    border-style: solid;
+    border-width: 2px;
+    border-color: $blue;
+    background: rgba(59, 130, 246, 0.08);
+    box-shadow: 0 0 0 2px $blue-dim, 0 2px 8px rgba(59, 130, 246, 0.15);
+  }
+
+  &.exiting {
+    opacity: 0;
+    transform: scale(0.97);
+    pointer-events: none;
+    animation: none;
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+.ghostBadge {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: -1px;
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(59, 130, 246, 0.9);
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  padding: 1px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  animation: badgeSlideIn 0.2s ease both;
+}
+
+@keyframes badgeSlideIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ghostBadgeExtra {
+  display: inline;
+  animation: badgeExtraIn 0.2s ease both;
+}
+
+@keyframes badgeExtraIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+// =============================================================================
+// Original Outlines (source position marker)
+// =============================================================================
+
+.originalOutline {
+  position: fixed;
+  border: 1.5px dashed rgba(150, 150, 150, 0.3);
+  border-radius: 4px;
+  background: transparent;
+  pointer-events: none;
+  user-select: none;
+  animation: sectionEnter 0.2s ease;
+}
+
+.originalLabel {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: 9px;
+  font-weight: 500;
+  color: rgba(150, 150, 150, 0.5);
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: rgba(150, 150, 150, 0.08);
+}
+
+// =============================================================================
+// Annotation Connector Lines (SVG)
+// =============================================================================
+
+.connectorSvg {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99996;
+}
+
+.connectorLine {
+  transition: opacity 0.2s ease;
+  animation: connectorDraw 0.3s ease both;
+}
+
+.connectorDot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: connectorDotIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+
+@keyframes connectorDraw {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes connectorDotIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.connectorExiting {
+  animation: connectorOut 0.2s ease forwards;
+
+  .connectorDot {
+    animation: connectorDotOut 0.2s ease forwards;
+  }
+}
+
+@keyframes connectorOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes connectorDotOut {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(0); opacity: 0; }
+}
+
+// =============================================================================
+// Element Animations
+// =============================================================================
+
+@keyframes placementEnter {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes sectionEnter {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes highlightFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ghostEnter {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 0.6; transform: scale(1); }
+}
+
+

@@ -147,7 +147,6 @@ button {
   -webkit-tap-highlight-color: transparent;
 
   &:disabled {
-    pointer-events: none;
     cursor: not-allowed;
   }
 }
@@ -192,7 +191,7 @@ button {
   .side-nav-logo {
     font-size: 0.875rem;
     font-weight: 500;
-    color: rgba(0, 0, 0, 0.85);
+    color: #E5484D;
     margin-bottom: 1rem;
     display: flex;
     flex-direction: column;
@@ -229,7 +228,7 @@ button {
 
   .nav-badge {
     font-size: 0.5625rem;
-    color: #3b82f6;
+    color: #E5484D;
     font-weight: 500;
     font-variation-settings: 'wght' 500;
     text-transform: uppercase;
@@ -258,7 +257,8 @@ button {
     font-size: 0.625rem;
     color: rgba(0, 0, 0, 0.25);
     font-weight: 450;
-    text-decoration: underline dotted;
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
     text-underline-offset: 2px;
     transition: color 0.15s ease;
 
@@ -307,7 +307,7 @@ button {
   gap: 0.875rem;
   max-width: 36rem;
   margin: 0 auto;
-  padding: 4rem 1.5rem 3rem;
+  padding: 3.5rem 1.5rem 3rem;
 
   @media (max-width: 980px) {
     padding-top: 2rem;
@@ -759,7 +759,7 @@ button {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    padding: 1rem 1.5rem 0.375rem;
+    padding: 1rem 1.5rem 0.375rem 2.25rem;
   }
 
   .mobile-nav-header {

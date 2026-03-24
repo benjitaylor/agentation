@@ -217,18 +217,13 @@ export default function AgentationDocs() {
 
   return (
     <>
-      <article className="article">
-        <Link href="/blog/introducing-agentation-2" className="announcement-banner">
-          <span className="pulse-dot" />
-          <span><span style={{ fontWeight: 500 }}>New in 2.0:</span> Real-time agent sync</span>
-          <span style={{ color: '#4a9eff', marginLeft: '0.5rem' }}>&rarr;</span>
-        </Link>
+      <article className="article" style={{ paddingTop: '3.75rem' }}>
         <header>
           <div className="heading-container">
-            <h1 style={{ fontSize: "2rem", lineHeight: 1.15, marginBottom: "0.5rem" }}><span className="sketchy-underline">Point at bugs.</span><br />Let AI <span className="pen-underline">fix them.</span></h1>
+            <h1 style={{ fontSize: "2rem", lineHeight: 1.15, marginBottom: "0.5rem" }}><span className="sketchy-underline">Visual feedback.</span><br />For <span className="pen-underline">agents.</span></h1>
             <InstallSnippet />
           </div>
-          <p className="tagline">Agentation turns UI annotations into structured context that AI coding agents can understand and act on. Click any element, add a note, and paste the output into Claude Code, Cursor, or any AI tool.</p>
+          <p className="tagline">Agentation turns UI annotations into structured context that AI coding agents can understand and act on. Click any element, add a note, and paste the output into Claude Code, Codex, or any AI tool.</p>
         </header>
 
         {/* Animated demo */}

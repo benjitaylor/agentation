@@ -193,6 +193,8 @@ function rowToApiKey(row: Record<string, unknown>): ApiKey {
 }
 
 function rowToAnnotation(row: Record<string, unknown>): Annotation {
+  const extra = row.extra ? JSON.parse(row.extra as string) : undefined;
+  const kind = (row.kind as Annotation["kind"]) || "feedback";
   return {
     id: row.id as string,
     sessionId: row.session_id as string,
@@ -213,6 +215,9 @@ function rowToAnnotation(row: Record<string, unknown>): Annotation {
     isMultiSelect: Boolean(row.is_multi_select),
     isFixed: Boolean(row.is_fixed),
     reactComponents: row.react_components as string | undefined,
+    kind,
+    ...(kind === "placement" && extra?.placement ? { placement: extra.placement } : {}),
+    ...(kind === "rearrange" && extra?.rearrange ? { rearrange: extra.rearrange } : {}),
     url: row.url as string | undefined,
     intent: row.intent as Annotation["intent"],
     severity: row.severity as Annotation["severity"],
@@ -234,6 +239,10 @@ export function createSQLiteStore(dbPath?: string): AFSStore {
   const db = new Database(dbPath ?? getDbPath());
   db.pragma("journal_mode = WAL");
   initDatabase(db);
+
+  // Safe migrations for new columns (no-ops if already exist)
+  try { db.exec("ALTER TABLE annotations ADD COLUMN kind TEXT DEFAULT 'feedback'"); } catch {}
+  try { db.exec("ALTER TABLE annotations ADD COLUMN extra TEXT"); } catch {}
 
   // Restore event sequence from last event
   const lastEvent = db.prepare("SELECT MAX(sequence) as seq FROM events").get() as { seq: number | null };
@@ -261,13 +270,13 @@ export function createSQLiteStore(dbPath?: string): AFSStore {
         selected_text, bounding_box, nearby_text, css_classes, nearby_elements,
         computed_styles, full_path, accessibility, is_multi_select, is_fixed,
         react_components, url, intent, severity, status, thread, created_at,
-        updated_at, resolved_at, resolved_by, author_id
+        updated_at, resolved_at, resolved_by, author_id, kind, extra
       ) VALUES (
         @id, @sessionId, @x, @y, @comment, @element, @elementPath, @timestamp,
         @selectedText, @boundingBox, @nearbyText, @cssClasses, @nearbyElements,
         @computedStyles, @fullPath, @accessibility, @isMultiSelect, @isFixed,
         @reactComponents, @url, @intent, @severity, @status, @thread, @createdAt,
-        @updatedAt, @resolvedAt, @resolvedBy, @authorId
+        @updatedAt, @resolvedAt, @resolvedBy, @authorId, @kind, @extra
       )
     `),
     getAnnotation: db.prepare("SELECT * FROM annotations WHERE id = ?"),
@@ -393,6 +402,14 @@ export function createSQLiteStore(dbPath?: string): AFSStore {
         createdAt: new Date().toISOString(),
       };
 
+      // Build extra JSON for structured data (placement/rearrange)
+      let extraJson: string | null = null;
+      if (annotation.placement) {
+        extraJson = JSON.stringify({ placement: annotation.placement });
+      } else if (annotation.rearrange) {
+        extraJson = JSON.stringify({ rearrange: annotation.rearrange });
+      }
+
       stmts.insertAnnotation.run({
         id: annotation.id,
         sessionId: annotation.sessionId,
@@ -423,6 +440,8 @@ export function createSQLiteStore(dbPath?: string): AFSStore {
         resolvedAt: null,
         resolvedBy: null,
         authorId: annotation.authorId ?? null,
+        kind: annotation.kind ?? "feedback",
+        extra: extraJson,
       });
 
       const event = eventBus.emit("annotation.created", sessionId, annotation);
@@ -589,6 +608,10 @@ export function createTenantStore(dbPath?: string): TenantStore {
   const db = new Database(dbPath ?? getDbPath());
   db.pragma("journal_mode = WAL");
   initDatabase(db);
+
+  // Safe migrations for new columns (no-ops if already exist)
+  try { db.exec("ALTER TABLE annotations ADD COLUMN kind TEXT DEFAULT 'feedback'"); } catch {}
+  try { db.exec("ALTER TABLE annotations ADD COLUMN extra TEXT"); } catch {}
 
   // Restore event sequence from last event
   const lastEvent = db.prepare("SELECT MAX(sequence) as seq FROM events").get() as { seq: number | null };

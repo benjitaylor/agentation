@@ -155,7 +155,7 @@ export const TOOLS = [
   {
     name: "agentation_get_pending",
     description:
-      "Get all pending (unacknowledged) annotations for a session. Use this to see what feedback the human has given that needs attention.",
+      "Get all pending (unacknowledged) annotations for a session. Annotations have a `kind` field: \"feedback\" (default), \"placement\" (design component placements), or \"rearrange\" (section reorder/resize). Placement and rearrange annotations include structured data.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -170,7 +170,7 @@ export const TOOLS = [
   {
     name: "agentation_get_all_pending",
     description:
-      "Get all pending annotations across ALL sessions. Use this to see all unaddressed feedback from the human across all pages they've visited.",
+      "Get all pending annotations across ALL sessions. Includes feedback, design placements, and rearrange annotations. Each annotation has a `kind` field.",
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -254,7 +254,8 @@ export const TOOLS = [
     description:
       "Block until new annotations appear, then collect a batch and return them. " +
       "Triggers automatically when annotations are created — the user just annotates in the browser " +
-      "and the agent picks them up. After detecting the first new annotation, waits for a batch window " +
+      "and the agent picks them up. Includes all annotation kinds: feedback, placement (design components), " +
+      "and rearrange (section reorder/resize). After detecting the first new annotation, waits for a batch window " +
       "to collect more before returning. Use in a loop for hands-free processing. " +
       "After addressing each annotation, call agentation_resolve with the annotation ID and a summary " +
       "of what you did. Only resolve annotations the user accepted — if the user rejects your change, " +
@@ -304,6 +305,21 @@ type Annotation = {
   nearbyText?: string;
   reactComponents?: string;
   status: string;
+  kind?: "feedback" | "placement" | "rearrange";
+  placement?: {
+    componentType: string;
+    width: number;
+    height: number;
+    scrollY: number;
+    text?: string;
+  };
+  rearrange?: {
+    selector: string;
+    label: string;
+    tagName: string;
+    originalRect: { x: number; y: number; width: number; height: number };
+    currentRect: { x: number; y: number; width: number; height: number };
+  };
 };
 
 type SessionWithAnnotations = Session & {
@@ -314,6 +330,25 @@ type PendingResponse = {
   count: number;
   annotations: Annotation[];
 };
+
+/** Map an annotation to the shape returned by MCP tools */
+function mapAnnotationForMcp(a: Annotation) {
+  return {
+    id: a.id,
+    kind: a.kind || "feedback",
+    comment: a.comment,
+    element: a.element,
+    elementPath: a.elementPath,
+    url: a.url,
+    intent: a.intent,
+    severity: a.severity,
+    timestamp: a.timestamp,
+    nearbyText: a.nearbyText,
+    reactComponents: a.reactComponents,
+    ...(a.kind === "placement" && a.placement ? { placement: a.placement } : {}),
+    ...(a.kind === "rearrange" && a.rearrange ? { rearrange: a.rearrange } : {}),
+  };
+}
 
 // -----------------------------------------------------------------------------
 // Tool Handlers
@@ -519,18 +554,7 @@ export async function handleTool(name: string, args: unknown): Promise<ToolResul
       const response = await httpGet<PendingResponse>(`/sessions/${sessionId}/pending`);
       return success({
         count: response.count,
-        annotations: response.annotations.map((a) => ({
-          id: a.id,
-          comment: a.comment,
-          element: a.element,
-          elementPath: a.elementPath,
-          url: a.url,
-          intent: a.intent,
-          severity: a.severity,
-          timestamp: a.timestamp,
-          nearbyText: a.nearbyText,
-          reactComponents: a.reactComponents,
-        })),
+        annotations: response.annotations.map(mapAnnotationForMcp),
       });
     }
 
@@ -538,18 +562,7 @@ export async function handleTool(name: string, args: unknown): Promise<ToolResul
       const response = await httpGet<PendingResponse>("/pending");
       return success({
         count: response.count,
-        annotations: response.annotations.map((a) => ({
-          id: a.id,
-          comment: a.comment,
-          element: a.element,
-          elementPath: a.elementPath,
-          url: a.url,
-          intent: a.intent,
-          severity: a.severity,
-          timestamp: a.timestamp,
-          nearbyText: a.nearbyText,
-          reactComponents: a.reactComponents,
-        })),
+        annotations: response.annotations.map(mapAnnotationForMcp),
       });
     }
 
@@ -642,18 +655,7 @@ export async function handleTool(name: string, args: unknown): Promise<ToolResul
             timeout: false,
             count: pending.count,
             sessions,
-            annotations: pending.annotations.map((a) => ({
-              id: a.id,
-              comment: a.comment,
-              element: a.element,
-              elementPath: a.elementPath,
-              url: a.url,
-              intent: a.intent,
-              severity: a.severity,
-              timestamp: a.timestamp,
-              nearbyText: a.nearbyText,
-              reactComponents: a.reactComponents,
-            })),
+            annotations: pending.annotations.map(mapAnnotationForMcp),
           });
         }
       } catch (err) {
@@ -672,18 +674,7 @@ export async function handleTool(name: string, args: unknown): Promise<ToolResul
             timeout: false,
             count: result.annotations.length,
             sessions: result.sessions,
-            annotations: result.annotations.map((a) => ({
-              id: a.id,
-              comment: a.comment,
-              element: a.element,
-              elementPath: a.elementPath,
-              url: a.url,
-              intent: a.intent,
-              severity: a.severity,
-              timestamp: a.timestamp,
-              nearbyText: a.nearbyText,
-              reactComponents: a.reactComponents,
-            })),
+            annotations: result.annotations.map(mapAnnotationForMcp),
           });
         case "timeout":
           return success({

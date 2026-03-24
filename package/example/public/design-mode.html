@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentation — Layout Mode</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0a0a;
+  --surface: #141414;
+  --surface-2: #1a1a1a;
+  --surface-3: #222;
+  --border: rgba(255,255,255,0.08);
+  --border-2: rgba(255,255,255,0.12);
+  --text: #e5e5e5;
+  --text-2: #999;
+  --text-3: #666;
+  --accent: #3b82f6;
+  --accent-dim: rgba(59,130,246,0.15);
+  --accent-glow: rgba(59,130,246,0.3);
+  --skel-stroke: rgba(255,255,255,0.2);
+  --skel-fill: rgba(255,255,255,0.04);
+  --skel-bar: rgba(255,255,255,0.12);
+  --skel-bar-strong: rgba(255,255,255,0.18);
+  --danger: #ef4444;
+  --success: #22c55e;
+  --grid-dot: rgba(255,255,255,0.06);
+  --palette-w: 220px;
+  --topbar-h: 48px;
+}
+html, body { height: 100%; overflow: hidden; font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+
+/* ── Top bar ── */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--topbar-h); z-index: 100;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 16px; gap: 12px;
+}
+.topbar-title { font-size: 13px; font-weight: 600; color: var(--text-2); letter-spacing: 0.02em; }
+.topbar-title span { color: var(--accent); }
+.topbar-sep { width: 1px; height: 20px; background: var(--border-2); }
+.topbar-btn {
+  height: 30px; padding: 0 12px; border-radius: 6px; border: 1px solid var(--border-2);
+  background: var(--surface-2); color: var(--text-2); font: 500 12px 'Inter', sans-serif;
+  cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s;
+}
+.topbar-btn:hover { background: var(--surface-3); color: var(--text); border-color: rgba(255,255,255,0.2); }
+.topbar-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+.topbar-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.topbar-btn.primary:hover { filter: brightness(1.1); }
+.topbar-btn.danger { border-color: var(--danger); color: var(--danger); }
+.topbar-btn.danger:hover { background: rgba(239,68,68,0.1); }
+.topbar-spacer { flex: 1; }
+.topbar-count { font-size: 11px; color: var(--text-3); }
+.topbar-kbd { font-size: 10px; color: var(--text-3); background: var(--surface); padding: 2px 5px; border-radius: 3px; border: 1px solid var(--border); margin-left: 4px; }
+
+/* ── Palette ── */
+.palette {
+  position: fixed; top: var(--topbar-h); left: 0; bottom: 0; width: var(--palette-w); z-index: 90;
+  background: var(--surface); border-right: 1px solid var(--border);
+  overflow-y: auto; padding: 12px 10px;
+}
+.palette::-webkit-scrollbar { width: 4px; }
+.palette::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 2px; }
+.palette-section { margin-bottom: 16px; }
+.palette-section-title { font-size: 10px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em; padding: 0 6px; margin-bottom: 8px; }
+.palette-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px;
+  cursor: grab; transition: all 0.15s; border: 1px solid transparent; user-select: none;
+}
+.palette-item:hover { background: var(--surface-2); border-color: var(--border); }
+.palette-item.selected { background: var(--accent-dim); border-color: var(--accent); }
+.palette-item-icon {
+  width: 36px; height: 28px; border-radius: 4px; border: 1px dashed var(--skel-stroke);
+  background: var(--skel-fill); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; position: relative; overflow: hidden;
+}
+.palette-item-label { font-size: 12px; font-weight: 500; color: var(--text-2); }
+.palette-item:hover .palette-item-label { color: var(--text); }
+.palette-item.selected .palette-item-label { color: var(--accent); }
+.palette-item-size { font-size: 10px; color: var(--text-3); }
+
+/* ── Mini skeleton icons in palette ── */
+.pi-bar { height: 2px; background: var(--skel-bar); border-radius: 1px; }
+.pi-block { background: var(--skel-fill); border: 1px solid var(--skel-stroke); border-radius: 2px; }
+.pi-circle { border-radius: 50%; border: 1px solid var(--skel-stroke); background: var(--skel-fill); }
+
+/* ── Canvas ── */
+.canvas {
+  position: fixed; top: var(--topbar-h); left: var(--palette-w); right: 0; bottom: 0;
+  overflow: auto; background: var(--bg);
+  background-image: radial-gradient(circle, var(--grid-dot) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.canvas.placing { cursor: crosshair; }
+.canvas-inner { position: relative; width: 100%; min-height: 100%; }
+
+/* ── Placed component ── */
+.placed {
+  position: absolute; border: 1.5px dashed var(--skel-stroke); border-radius: 6px;
+  background: var(--skel-fill); overflow: hidden; cursor: move;
+  transition: box-shadow 0.15s;
+}
+.placed:hover { border-color: rgba(255,255,255,0.25); box-shadow: 0 0 0 1px rgba(255,255,255,0.05); }
+.placed.selected { border-color: var(--accent); border-style: solid; box-shadow: 0 0 0 2px var(--accent-dim); }
+.placed.dragging { opacity: 0.85; z-index: 50; }
+.placed-label {
+  position: absolute; top: -20px; left: 0; font-size: 10px; font-weight: 500;
+  color: var(--text-3); white-space: nowrap; pointer-events: none;
+}
+.placed.selected .placed-label { color: var(--accent); }
+
+/* ── Resize handles ── */
+.handle {
+  position: absolute; width: 8px; height: 8px; background: var(--accent);
+  border: 1.5px solid var(--bg); border-radius: 2px; z-index: 10; display: none;
+}
+.placed.selected .handle { display: block; }
+.handle-nw { top: -4px; left: -4px; cursor: nw-resize; }
+.handle-n  { top: -4px; left: 50%; margin-left: -4px; cursor: n-resize; }
+.handle-ne { top: -4px; right: -4px; cursor: ne-resize; }
+.handle-e  { top: 50%; margin-top: -4px; right: -4px; cursor: e-resize; }
+.handle-se { bottom: -4px; right: -4px; cursor: se-resize; }
+.handle-s  { bottom: -4px; left: 50%; margin-left: -4px; cursor: s-resize; }
+.handle-sw { bottom: -4px; left: -4px; cursor: sw-resize; }
+.handle-w  { top: 50%; margin-top: -4px; left: -4px; cursor: w-resize; }
+
+/* ── Delete button on hover ── */
+.placed-delete {
+  position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 4px;
+  background: rgba(0,0,0,0.6); border: 1px solid var(--border-2); color: var(--text-3);
+  cursor: pointer; display: none; align-items: center; justify-content: center;
+  font-size: 12px; line-height: 1; z-index: 5; transition: all 0.1s;
+}
+.placed:hover .placed-delete, .placed.selected .placed-delete { display: flex; }
+.placed-delete:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+/* ── Skeleton content inside placed components ── */
+.skel { width: 100%; height: 100%; padding: 8px; position: relative; pointer-events: none; }
+.skel-bar { background: var(--skel-bar); border-radius: 2px; }
+.skel-bar-strong { background: var(--skel-bar-strong); border-radius: 2px; }
+.skel-block { background: var(--skel-fill); border: 1px dashed var(--skel-stroke); border-radius: 3px; }
+.skel-circle { border-radius: 50%; background: var(--skel-fill); border: 1px dashed var(--skel-stroke); }
+.skel-divider { height: 1px; background: var(--skel-stroke); }
+.skel-type-label {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-size: 10px; font-weight: 600; color: var(--text-3); text-transform: uppercase;
+  letter-spacing: 0.06em; opacity: 0.5;
+}
+
+/* ── Ghost preview ── */
+.ghost {
+  position: absolute; pointer-events: none; z-index: 40;
+  border: 1.5px dashed var(--accent); border-radius: 6px;
+  background: var(--accent-dim); opacity: 0.6;
+}
+
+/* ── Selection box ── */
+.select-box {
+  position: absolute; pointer-events: none; z-index: 45;
+  border: 1px solid var(--accent); background: rgba(59,130,246,0.08);
+  border-radius: 2px;
+}
+
+/* ── Copy modal ── */
+.copy-overlay {
+  position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.6);
+  display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.copy-overlay.open { display: flex; }
+.copy-modal {
+  width: 640px; max-height: 80vh; background: var(--surface); border: 1px solid var(--border-2);
+  border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
+}
+.copy-modal-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex;
+  align-items: center; justify-content: space-between;
+}
+.copy-modal-header h3 { font-size: 14px; font-weight: 600; }
+.copy-modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+.copy-modal-body pre {
+  font: 12px/1.6 'Cascadia Code', 'Fira Code', monospace; color: var(--text-2);
+  white-space: pre-wrap; word-break: break-word;
+}
+.copy-modal-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+.copy-toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 300;
+  background: var(--success); color: #fff; padding: 8px 16px; border-radius: 8px;
+  font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.2s;
+  pointer-events: none;
+}
+.copy-toast.show { opacity: 1; }
+
+/* ── Snap guides ── */
+.snap-guide {
+  position: absolute; pointer-events: none; z-index: 35;
+  background: var(--accent);
+}
+.snap-guide-h { height: 1px; left: 0; right: 0; }
+.snap-guide-v { width: 1px; top: 0; bottom: 0; }
+
+/* ── Placement draw box ── */
+.draw-box {
+  position: absolute; pointer-events: none; z-index: 42;
+  border: 2px solid var(--accent); border-radius: 6px;
+  background: var(--accent-dim);
+}
+
+/* ── Size indicator ── */
+.size-indicator {
+  position: absolute; pointer-events: none; z-index: 50;
+  font-size: 10px; color: var(--accent); background: var(--surface);
+  padding: 2px 6px; border-radius: 4px; border: 1px solid var(--accent);
+  white-space: nowrap; font-weight: 500;
+}
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="topbar-title"><span>●</span> Layout Mode</div>
+  <div class="topbar-sep"></div>
+  <button class="topbar-btn" id="btn-snap" onclick="toggleSnap()">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 1v14M8 1v14M13 1v14M1 3h14M1 8h14M1 13h14"/></svg>
+    Snap
+    <span class="topbar-kbd">G</span>
+  </button>
+  <button class="topbar-btn" id="btn-select-all" onclick="selectAll()">Select All <span class="topbar-kbd">⌘A</span></button>
+  <button class="topbar-btn danger" id="btn-clear" onclick="clearAll()">Clear</button>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-count" id="component-count">0 components</div>
+  <div class="topbar-sep"></div>
+  <button class="topbar-btn" id="btn-undo" onclick="undo()">
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h7a3 3 0 010 6H8M3 7l3-3M3 7l3 3"/></svg>
+    Undo <span class="topbar-kbd">⌘Z</span>
+  </button>
+  <button class="topbar-btn primary" id="btn-copy" onclick="showCopyModal()">
+    Copy Layout <span class="topbar-kbd">⌘⏎</span>
+  </button>
+</div>
+
+<!-- Palette -->
+<div class="palette" id="palette"></div>
+
+<!-- Canvas -->
+<div class="canvas" id="canvas">
+  <div class="canvas-inner" id="canvas-inner"></div>
+</div>
+
+<!-- Ghost preview -->
+<div class="ghost" id="ghost" style="display:none;"></div>
+
+<!-- Copy modal -->
+<div class="copy-overlay" id="copy-overlay" onclick="closeCopyModal(event)">
+  <div class="copy-modal">
+    <div class="copy-modal-header">
+      <h3>Layout Feedback</h3>
+      <button class="topbar-btn" onclick="closeCopyModal()" style="border:none;padding:4px 8px;">✕</button>
+    </div>
+    <div class="copy-modal-body"><pre id="copy-output"></pre></div>
+    <div class="copy-modal-footer">
+      <button class="topbar-btn" onclick="closeCopyModal()">Close</button>
+      <button class="topbar-btn primary" onclick="copyToClipboard()">Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
+
+<div class="copy-toast" id="copy-toast">Copied to clipboard</div>
+
+<script>
+// ─── Component Registry ────────────────────────────────────────
+const COMPONENTS = [
+  { section: 'Layout', items: [
+    { type: 'navigation', label: 'Navigation', w: 800, h: 56, icon: 'nav' },
+    { type: 'hero', label: 'Hero Section', w: 800, h: 320, icon: 'hero' },
+    { type: 'sidebar', label: 'Sidebar', w: 240, h: 400, icon: 'sidebar' },
+    { type: 'footer', label: 'Footer', w: 800, h: 160, icon: 'footer' },
+    { type: 'modal', label: 'Modal / Dialog', w: 480, h: 300, icon: 'modal' },
+  ]},
+  { section: 'Content', items: [
+    { type: 'card', label: 'Card', w: 280, h: 240, icon: 'card' },
+    { type: 'text', label: 'Text Block', w: 400, h: 120, icon: 'text' },
+    { type: 'image', label: 'Image', w: 320, h: 200, icon: 'image' },
+    { type: 'table', label: 'Table', w: 560, h: 220, icon: 'table' },
+    { type: 'list', label: 'List', w: 300, h: 180, icon: 'list' },
+  ]},
+  { section: 'Controls', items: [
+    { type: 'button', label: 'Button', w: 140, h: 40, icon: 'button' },
+    { type: 'input', label: 'Input Field', w: 280, h: 56, icon: 'input' },
+    { type: 'form', label: 'Form', w: 360, h: 320, icon: 'form' },
+    { type: 'dropdown', label: 'Dropdown', w: 240, h: 40, icon: 'dropdown' },
+    { type: 'search', label: 'Search Bar', w: 320, h: 40, icon: 'search' },
+    { type: 'tabs', label: 'Tabs', w: 480, h: 240, icon: 'tabs' },
+  ]},
+  { section: 'Elements', items: [
+    { type: 'avatar', label: 'Avatar', w: 48, h: 48, icon: 'avatar' },
+    { type: 'badge', label: 'Badge', w: 80, h: 28, icon: 'badge' },
+    { type: 'divider', label: 'Divider', w: 400, h: 2, icon: 'divider' },
+  ]},
+];
+
+// Flat lookup
+const COMP_MAP = {};
+COMPONENTS.forEach(s => s.items.forEach(c => COMP_MAP[c.type] = c));
+
+// ─── State ─────────────────────────────────────────────────────
+let placed = [];         // { id, type, x, y, w, h }
+let selectedIds = new Set();
+let activeType = null;   // palette selection
+let snapEnabled = false;
+let undoStack = [];
+let nextId = 1;
+
+// Interaction state
+let interaction = null;  // { kind, ... }
+// kind: 'place-drag' | 'move' | 'resize' | 'select-box'
+
+// ─── Palette Rendering ─────────────────────────────────────────
+function renderPalette() {
+  const el = document.getElementById('palette');
+  el.innerHTML = COMPONENTS.map(section => `
+    <div class="palette-section">
+      <div class="palette-section-title">${section.section}</div>
+      ${section.items.map(c => `
+        <div class="palette-item${activeType === c.type ? ' selected' : ''}" data-type="${c.type}"
+             onmousedown="selectPaletteItem('${c.type}', event)">
+          <div class="palette-item-icon">${paletteIcon(c.type)}</div>
+          <div>
+            <div class="palette-item-label">${c.label}</div>
+            <div class="palette-item-size">${c.w} × ${c.h}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function paletteIcon(type) {
+  // Tiny SVG wireframe icons for each type
+  const s = { stroke: 'var(--skel-bar-strong)', fill: 'none', sw: '0.8' };
+  const bar = (x, y, w) => `<rect x="${x}" y="${y}" width="${w}" height="2" rx="1" fill="var(--skel-bar-strong)"/>`;
+  const block = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1" stroke="var(--skel-stroke)" fill="var(--skel-fill)" stroke-width="0.6"/>`;
+  const circle = (cx, cy, r) => `<circle cx="${cx}" cy="${cy}" r="${r}" stroke="var(--skel-stroke)" fill="var(--skel-fill)" stroke-width="0.6"/>`;
+
+  const icons = {
+    nav: `<svg viewBox="0 0 36 28" width="36" height="28">${block(2,8,32,12)}${bar(5,13,4)}${bar(12,13,5)}${bar(19,13,5)}${bar(26,13,5)}</svg>`,
+    hero: `<svg viewBox="0 0 36 28" width="36" height="28">${block(2,2,32,24)}${bar(10,10,16)}${bar(12,14,12)}${block(13,18,10,4)}</svg>`,
+    sidebar: `<svg viewBox="0 0 36 28" width="36" height="28">${block(2,2,12,24)}${bar(4,6,8)}${bar(4,10,7)}${bar(4,14,8)}${bar(4,18,6)}</svg>`,
+    footer: `<svg viewBox="0 0 36 28" width="36" height="28">${block(2,14,32,12)}${bar(4,17,6)}${bar(4,20,5)}${bar(14,17,6)}${bar(14,20,5)}${bar(24,17,8)}${bar(24,20,5)}</svg>`,
+    modal: `<svg viewBox="0 0 36 28" width="36" height="28">${block(6,4,24,20)}${bar(8,7,14)}${bar(8,12,18)}${bar(8,15,12)}${block(18,20,10,3)}</svg>`,
+    card: `<svg viewBox="0 0 36 28" width="36" height="28">${block(4,2,28,24)}${block(6,4,24,10)}${bar(6,17,16)}${bar(6,20,20)}${bar(6,23,12)}</svg>`,
+    text: `<svg viewBox="0 0 36 28" width="36" height="28">${bar(4,7,28)}${bar(4,11,24)}${bar(4,15,26)}${bar(4,19,18)}</svg>`,
+    image: `<svg viewBox="0 0 36 28" width="36" height="28">${block(4,3,28,22)}<line x1="4" y1="3" x2="32" y2="25" stroke="var(--skel-stroke)" stroke-width="0.5"/><line x1="32" y1="3" x2="4" y2="25" stroke="var(--skel-stroke)" stroke-width="0.5"/></svg>`,
+    table: `<svg viewBox="0 0 36 28" width="36" height="28">${block(2,4,32,20)}<line x1="2" y1="9" x2="34" y2="9" stroke="var(--skel-stroke)" stroke-width="0.5"/><line x1="2" y1="14" x2="34" y2="14" stroke="var(--skel-stroke)" stroke-width="0.5"/><line x1="2" y1="19" x2="34" y2="19" stroke="var(--skel-stroke)" stroke-width="0.5"/><line x1="14" y1="4" x2="14" y2="24" stroke="var(--skel-stroke)" stroke-width="0.5"/><line x1="24" y1="4" x2="24" y2="24" stroke="var(--skel-stroke)" stroke-width="0.5"/></svg>`,
+    list: `<svg viewBox="0 0 36 28" width="36" height="28">${circle(6,8,2)}${bar(10,7,20)}${circle(6,14,2)}${bar(10,13,18)}${circle(6,20,2)}${bar(10,19,22)}</svg>`,
+    button: `<svg viewBox="0 0 36 28" width="36" height="28">${block(6,9,24,10)}${bar(12,13,12)}</svg>`,
+    input: `<svg viewBox="0 0 36 28" width="36" height="28">${bar(4,7,12)}${block(4,11,28,10)}${bar(7,15,14)}</svg>`,
+    form: `<svg viewBox="0 0 36 28" width="36" height="28">${bar(4,3,10)}${block(4,5,28,5)}${bar(4,13,12)}${block(4,15,28,5)}${block(10,22,16,4)}</svg>`,
+    dropdown: `<svg viewBox="0 0 36 28" width="36" height="28">${block(4,9,28,10)}${bar(7,13,14)}<path d="M27 12l2 3 2-3" stroke="var(--skel-bar-strong)" fill="none" stroke-width="0.8"/></svg>`,
+    search: `<svg viewBox="0 0 36 28" width="36" height="28">${block(4,9,28,10)}${circle(9,14,3)}${bar(14,13,14)}</svg>`,
+    tabs: `<svg viewBox="0 0 36 28" width="36" height="28">${block(2,8,32,18)}${block(2,4,10,5)}${bar(4,6,6)}${block(12,4,10,5)}${bar(14,6,6)}</svg>`,
+    avatar: `<svg viewBox="0 0 36 28" width="36" height="28">${circle(18,14,10)}<circle cx="18" cy="11" r="3.5" stroke="var(--skel-stroke)" fill="var(--skel-fill)" stroke-width="0.6"/><path d="M11 22c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="var(--skel-stroke)" fill="none" stroke-width="0.6"/></svg>`,
+    badge: `<svg viewBox="0 0 36 28" width="36" height="28"><rect x="6" y="9" width="24" height="10" rx="5" stroke="var(--skel-stroke)" fill="var(--skel-fill)" stroke-width="0.6"/>${bar(10,13,16)}</svg>`,
+    divider: `<svg viewBox="0 0 36 28" width="36" height="28"><line x1="2" y1="14" x2="34" y2="14" stroke="var(--skel-bar-strong)" stroke-width="1" stroke-dasharray="3 2"/></svg>`,
+  };
+  return icons[type] || '';
+}
+
+// ─── Canvas Skeleton Rendering ─────────────────────────────────
+function renderSkeleton(type, w, h) {
+  // Returns HTML for the skeleton content scaled to the given dimensions
+  const renderers = {
+    navigation: (w, h) => {
+      const pad = Math.max(8, h * 0.2);
+      return `<div style="display:flex;align-items:center;height:100%;padding:0 ${pad}px;gap:${w*0.02}px;">
+        <div class="skel-block" style="width:${Math.max(20, h*0.5)}px;height:${Math.max(12, h*0.4)}px;flex-shrink:0;"></div>
+        <div style="flex:1;display:flex;gap:${w*0.03}px;margin-left:${w*0.04}px;">
+          <div class="skel-bar" style="width:${w*0.06}px;height:3px;"></div>
+          <div class="skel-bar" style="width:${w*0.07}px;height:3px;"></div>
+          <div class="skel-bar" style="width:${w*0.05}px;height:3px;"></div>
+          <div class="skel-bar" style="width:${w*0.06}px;height:3px;"></div>
+        </div>
+        <div class="skel-block" style="width:${w*0.1}px;height:${Math.min(28, h*0.5)}px;border-radius:4px;flex-shrink:0;"></div>
+      </div>`;
+    },
+    hero: (w, h) => `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:${h*0.05}px;">
+      <div class="skel-bar-strong" style="width:${w*0.5}px;height:${Math.max(6, h*0.04)}px;"></div>
+      <div class="skel-bar" style="width:${w*0.6}px;height:3px;margin-top:4px;"></div>
+      <div class="skel-bar" style="width:${w*0.4}px;height:3px;"></div>
+      <div class="skel-block" style="width:${Math.min(140, w*0.2)}px;height:${Math.min(36, h*0.12)}px;border-radius:6px;margin-top:${h*0.06}px;"></div>
+    </div>`,
+    sidebar: (w, h) => {
+      const items = Math.max(3, Math.floor(h / 36));
+      return `<div style="padding:${w*0.08}px;display:flex;flex-direction:column;gap:${h*0.03}px;">
+        <div class="skel-bar-strong" style="width:${w*0.6}px;height:4px;margin-bottom:${h*0.04}px;"></div>
+        ${Array.from({length: items}, (_,i) => `<div style="display:flex;align-items:center;gap:6px;">
+          <div class="skel-block" style="width:10px;height:10px;border-radius:2px;flex-shrink:0;"></div>
+          <div class="skel-bar" style="width:${w*(0.4 + Math.random()*0.3)}px;height:3px;"></div>
+        </div>`).join('')}
+      </div>`;
+    },
+    footer: (w, h) => {
+      const cols = Math.max(2, Math.min(4, Math.floor(w / 160)));
+      return `<div style="display:flex;padding:${h*0.12}px ${w*0.03}px;gap:${w*0.05}px;">
+        ${Array.from({length: cols}, () => `<div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+          <div class="skel-bar-strong" style="width:60%;height:3px;margin-bottom:4px;"></div>
+          <div class="skel-bar" style="width:80%;height:2px;"></div>
+          <div class="skel-bar" style="width:70%;height:2px;"></div>
+          <div class="skel-bar" style="width:60%;height:2px;"></div>
+        </div>`).join('')}
+      </div>`;
+    },
+    modal: (w, h) => `<div style="height:100%;display:flex;flex-direction:column;">
+      <div style="padding:10px 12px;border-bottom:1px solid var(--skel-stroke);display:flex;align-items:center;justify-content:space-between;">
+        <div class="skel-bar-strong" style="width:${w*0.3}px;height:4px;"></div>
+        <div style="width:14px;height:14px;border:1px solid var(--skel-stroke);border-radius:3px;"></div>
+      </div>
+      <div style="flex:1;padding:12px;display:flex;flex-direction:column;gap:6px;">
+        <div class="skel-bar" style="width:90%;height:3px;"></div>
+        <div class="skel-bar" style="width:70%;height:3px;"></div>
+        <div class="skel-bar" style="width:80%;height:3px;"></div>
+      </div>
+      <div style="padding:10px 12px;border-top:1px solid var(--skel-stroke);display:flex;justify-content:flex-end;gap:8px;">
+        <div class="skel-block" style="width:70px;height:26px;border-radius:4px;"></div>
+        <div class="skel-block" style="width:70px;height:26px;border-radius:4px;background:var(--skel-bar);"></div>
+      </div>
+    </div>`,
+    card: (w, h) => `<div style="height:100%;display:flex;flex-direction:column;">
+      <div class="skel-block" style="height:40%;border-radius:0;border:none;border-bottom:1px dashed var(--skel-stroke);"></div>
+      <div style="flex:1;padding:10px;display:flex;flex-direction:column;gap:5px;">
+        <div class="skel-bar-strong" style="width:70%;height:4px;"></div>
+        <div class="skel-bar" style="width:95%;height:2px;margin-top:4px;"></div>
+        <div class="skel-bar" style="width:85%;height:2px;"></div>
+        <div class="skel-bar" style="width:50%;height:2px;"></div>
+      </div>
+    </div>`,
+    text: (w, h) => {
+      const lines = Math.max(2, Math.floor(h / 18));
+      return `<div style="display:flex;flex-direction:column;gap:6px;padding:4px;">
+        <div class="skel-bar-strong" style="width:${w*0.6}px;height:5px;margin-bottom:4px;"></div>
+        ${Array.from({length: lines}, (_,i) => `<div class="skel-bar" style="width:${70 + Math.random()*25}%;height:2px;"></div>`).join('')}
+      </div>`;
+    },
+    image: (w, h) => `<div style="height:100%;position:relative;">
+      <svg width="100%" height="100%" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+        <line x1="0" y1="0" x2="${w}" y2="${h}" stroke="var(--skel-stroke)" stroke-width="1"/>
+        <line x1="${w}" y1="0" x2="0" y2="${h}" stroke="var(--skel-stroke)" stroke-width="1"/>
+        <circle cx="${w*0.3}" cy="${h*0.3}" r="${Math.min(w,h)*0.08}" fill="var(--skel-fill)" stroke="var(--skel-stroke)" stroke-width="0.8"/>
+        <path d="M${w*0.15} ${h*0.75} L${w*0.4} ${h*0.45} L${w*0.6} ${h*0.6} L${w*0.75} ${h*0.5} L${w*0.9} ${h*0.75}Z" fill="var(--skel-fill)" stroke="var(--skel-stroke)" stroke-width="0.8"/>
+      </svg>
+    </div>`,
+    table: (w, h) => {
+      const cols = Math.max(2, Math.min(5, Math.floor(w / 100)));
+      const rows = Math.max(2, Math.min(6, Math.floor(h / 32)));
+      const colW = 100 / cols;
+      return `<div style="height:100%;display:flex;flex-direction:column;">
+        <div style="display:flex;border-bottom:1px solid var(--skel-stroke);padding:6px 0;">
+          ${Array.from({length: cols}, () => `<div style="flex:1;padding:0 8px;"><div class="skel-bar-strong" style="width:70%;height:3px;"></div></div>`).join('')}
+        </div>
+        ${Array.from({length: rows}, () => `<div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.03);padding:6px 0;">
+          ${Array.from({length: cols}, () => `<div style="flex:1;padding:0 8px;"><div class="skel-bar" style="width:${50+Math.random()*40}%;height:2px;"></div></div>`).join('')}
+        </div>`).join('')}
+      </div>`;
+    },
+    list: (w, h) => {
+      const items = Math.max(2, Math.floor(h / 28));
+      return `<div style="display:flex;flex-direction:column;gap:4px;padding:4px;">
+        ${Array.from({length: items}, () => `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;">
+          <div class="skel-circle" style="width:8px;height:8px;flex-shrink:0;"></div>
+          <div class="skel-bar" style="width:${55+Math.random()*35}%;height:2px;"></div>
+        </div>`).join('')}
+      </div>`;
+    },
+    button: (w, h) => `<div class="skel-block" style="height:100%;border-radius:${Math.min(8, h/3)}px;display:flex;align-items:center;justify-content:center;border-style:solid;">
+      <div class="skel-bar-strong" style="width:${Math.max(20, w*0.5)}px;height:3px;"></div>
+    </div>`,
+    input: (w, h) => `<div style="display:flex;flex-direction:column;gap:4px;height:100%;justify-content:center;">
+      <div class="skel-bar" style="width:${Math.min(80, w*0.3)}px;height:2px;"></div>
+      <div class="skel-block" style="height:${Math.min(36, h*0.6)}px;border-radius:4px;display:flex;align-items:center;padding-left:8px;">
+        <div class="skel-bar" style="width:40%;height:2px;opacity:0.5;"></div>
+      </div>
+    </div>`,
+    form: (w, h) => {
+      const fields = Math.max(2, Math.min(5, Math.floor(h / 56)));
+      return `<div style="display:flex;flex-direction:column;gap:${h*0.04}px;padding:8px;">
+        ${Array.from({length: fields}, () => `<div style="display:flex;flex-direction:column;gap:4px;">
+          <div class="skel-bar" style="width:${60+Math.random()*30}px;height:2px;"></div>
+          <div class="skel-block" style="height:28px;border-radius:4px;"></div>
+        </div>`).join('')}
+        <div class="skel-block" style="width:${Math.min(120, w*0.35)}px;height:30px;border-radius:6px;margin-top:8px;align-self:flex-end;background:var(--skel-bar);"></div>
+      </div>`;
+    },
+    dropdown: (w, h) => `<div class="skel-block" style="height:100%;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;border-style:solid;">
+      <div class="skel-bar" style="width:40%;height:2px;opacity:0.5;"></div>
+      <svg width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke="var(--skel-bar-strong)" fill="none" stroke-width="1.2"/></svg>
+    </div>`,
+    search: (w, h) => `<div class="skel-block" style="height:100%;border-radius:${Math.min(20, h/2)}px;display:flex;align-items:center;padding:0 12px;gap:8px;border-style:solid;">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--skel-bar-strong)" stroke-width="1.2"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5"/></svg>
+      <div class="skel-bar" style="width:40%;height:2px;opacity:0.5;"></div>
+    </div>`,
+    tabs: (w, h) => {
+      const tabCount = Math.max(2, Math.min(4, Math.floor(w / 120)));
+      const tabW = Math.min(100, w / tabCount - 8);
+      return `<div style="height:100%;display:flex;flex-direction:column;">
+        <div style="display:flex;gap:2px;border-bottom:1px solid var(--skel-stroke);">
+          ${Array.from({length: tabCount}, (_,i) => `<div style="padding:8px 12px;${i===0?'border-bottom:2px solid var(--skel-bar-strong);':''}">
+            <div class="skel-bar${i===0?'-strong':''}" style="width:${tabW*0.6}px;height:3px;"></div>
+          </div>`).join('')}
+        </div>
+        <div style="flex:1;padding:12px;display:flex;flex-direction:column;gap:6px;">
+          <div class="skel-bar" style="width:80%;height:2px;"></div>
+          <div class="skel-bar" style="width:65%;height:2px;"></div>
+          <div class="skel-bar" style="width:75%;height:2px;"></div>
+        </div>
+      </div>`;
+    },
+    avatar: (w, h) => {
+      const r = Math.min(w, h) / 2;
+      return `<svg width="100%" height="100%" viewBox="0 0 ${w} ${h}">
+        <circle cx="${w/2}" cy="${h/2}" r="${r-1}" stroke="var(--skel-stroke)" fill="var(--skel-fill)" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <circle cx="${w/2}" cy="${h*0.38}" r="${r*0.28}" stroke="var(--skel-stroke)" fill="var(--skel-fill)" stroke-width="0.8"/>
+        <path d="M${w/2-r*0.55} ${h*0.78} C${w/2-r*0.55} ${h*0.55} ${w/2+r*0.55} ${h*0.55} ${w/2+r*0.55} ${h*0.78}" stroke="var(--skel-stroke)" fill="var(--skel-fill)" stroke-width="0.8"/>
+      </svg>`;
+    },
+    badge: (w, h) => `<div class="skel-block" style="height:100%;border-radius:${h/2}px;display:flex;align-items:center;justify-content:center;border-style:solid;">
+      <div class="skel-bar-strong" style="width:${Math.max(16, w*0.5)}px;height:2px;"></div>
+    </div>`,
+    divider: (w, h) => `<div style="height:100%;display:flex;align-items:center;"><div style="width:100%;height:1px;border-top:1px dashed var(--skel-bar-strong);"></div></div>`,
+  };
+
+  return renderers[type] ? renderers[type](w, h) : `<div class="skel-type-label">${type}</div>`;
+}
+
+// ─── Canvas Rendering ──────────────────────────────────────────
+function render() {
+  const inner = document.getElementById('canvas-inner');
+  inner.innerHTML = placed.map(c => {
+    const sel = selectedIds.has(c.id);
+    return `<div class="placed${sel ? ' selected' : ''}" id="comp-${c.id}" data-id="${c.id}"
+        style="left:${c.x}px;top:${c.y}px;width:${c.w}px;height:${c.h}px;"
+        onmousedown="onComponentMouseDown(event, ${c.id})">
+      <div class="placed-label">${COMP_MAP[c.type]?.label || c.type}</div>
+      <div class="skel">${renderSkeleton(c.type, c.w, c.h)}</div>
+      <div class="placed-delete" onmousedown="event.stopPropagation()" onclick="deleteComponent(${c.id})">✕</div>
+      <div class="handle handle-nw" data-dir="nw" onmousedown="startResize(event, ${c.id}, 'nw')"></div>
+      <div class="handle handle-n" data-dir="n" onmousedown="startResize(event, ${c.id}, 'n')"></div>
+      <div class="handle handle-ne" data-dir="ne" onmousedown="startResize(event, ${c.id}, 'ne')"></div>
+      <div class="handle handle-e" data-dir="e" onmousedown="startResize(event, ${c.id}, 'e')"></div>
+      <div class="handle handle-se" data-dir="se" onmousedown="startResize(event, ${c.id}, 'se')"></div>
+      <div class="handle handle-s" data-dir="s" onmousedown="startResize(event, ${c.id}, 's')"></div>
+      <div class="handle handle-sw" data-dir="sw" onmousedown="startResize(event, ${c.id}, 'sw')"></div>
+      <div class="handle handle-w" data-dir="w" onmousedown="startResize(event, ${c.id}, 'w')"></div>
+    </div>`;
+  }).join('');
+
+  // Update count
+  document.getElementById('component-count').textContent = `${placed.length} component${placed.length !== 1 ? 's' : ''}`;
+}
+
+// ─── Palette Interaction ───────────────────────────────────────
+function selectPaletteItem(type, e) {
+  e.preventDefault();
+  if (activeType === type) {
+    activeType = null;
+    document.getElementById('canvas').classList.remove('placing');
+  } else {
+    activeType = type;
+    selectedIds.clear();
+    document.getElementById('canvas').classList.add('placing');
+    render();
+  }
+  renderPalette();
+}
+
+function deselectPalette() {
+  activeType = null;
+  document.getElementById('canvas').classList.remove('placing');
+  renderPalette();
+}
+
+// ─── Undo ──────────────────────────────────────────────────────
+function pushUndo() {
+  undoStack.push(JSON.parse(JSON.stringify(placed)));
+  if (undoStack.length > 50) undoStack.shift();
+}
+
+function undo() {
+  if (undoStack.length === 0) return;
+  placed = undoStack.pop();
+  selectedIds.clear();
+  render();
+}
+
+// ─── Component Interactions ────────────────────────────────────
+function onComponentMouseDown(e, id) {
+  if (e.target.classList.contains('handle') || e.target.classList.contains('placed-delete')) return;
+  e.stopPropagation();
+  e.preventDefault();
+
+  // Select
+  if (e.shiftKey) {
+    if (selectedIds.has(id)) selectedIds.delete(id);
+    else selectedIds.add(id);
+  } else if (!selectedIds.has(id)) {
+    selectedIds.clear();
+    selectedIds.add(id);
+  }
+  render();
+
+  // Start drag
+  const comp = placed.find(c => c.id === id);
+  if (!comp) return;
+
+  const canvas = document.getElementById('canvas');
+  const rect = canvas.getBoundingClientRect();
+  const startX = e.clientX;
+  const startY = e.clientY;
+
+  // Store start positions for all selected
+  const startPositions = new Map();
+  placed.filter(c => selectedIds.has(c.id)).forEach(c => {
+    startPositions.set(c.id, { x: c.x, y: c.y });
+  });
+
+  pushUndo();
+  let moved = false;
+
+  function onMove(ev) {
+    const dx = ev.clientX - startX;
+    const dy = ev.clientY - startY;
+    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) moved = true;
+    if (!moved) return;
+
+    startPositions.forEach((start, cid) => {
+      const c = placed.find(p => p.id === cid);
+      if (!c) return;
+      let nx = start.x + dx;
+      let ny = start.y + dy;
+      if (snapEnabled) { nx = snap(nx); ny = snap(ny); }
+      c.x = Math.max(0, nx);
+      c.y = Math.max(0, ny);
+    });
+    render();
+  }
+
+  function onUp() {
+    if (!moved) undoStack.pop(); // No actual move happened
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('mouseup', onUp);
+  }
+
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+}
+
+function startResize(e, id, dir) {
+  e.stopPropagation();
+  e.preventDefault();
+
+  const comp = placed.find(c => c.id === id);
+  if (!comp) return;
+
+  selectedIds.clear();
+  selectedIds.add(id);
+
+  const startX = e.clientX;
+  const startY = e.clientY;
+  const startW = comp.w;
+  const startH = comp.h;
+  const startLeft = comp.x;
+  const startTop = comp.y;
+
+  pushUndo();
+
+  // Size indicator
+  let indicator = document.createElement('div');
+  indicator.className = 'size-indicator';
+  document.body.appendChild(indicator);
+
+  function onMove(ev) {
+    const dx = ev.clientX - startX;
+    const dy = ev.clientY - startY;
+
+    let nw = startW, nh = startH, nx = startLeft, ny = startTop;
+
+    if (dir.includes('e')) nw = Math.max(20, startW + dx);
+    if (dir.includes('w')) { nw = Math.max(20, startW - dx); nx = startLeft + startW - nw; }
+    if (dir.includes('s')) nh = Math.max(20, startH + dy);
+    if (dir.includes('n')) { nh = Math.max(20, startH - dy); ny = startTop + startH - nh; }
+
+    if (snapEnabled) {
+      nw = snap(nw); nh = snap(nh);
+      if (dir.includes('w')) nx = snap(nx);
+      if (dir.includes('n')) ny = snap(ny);
+    }
+
+    comp.w = nw; comp.h = nh; comp.x = nx; comp.y = ny;
+
+    // Update indicator
+    indicator.textContent = `${Math.round(nw)} × ${Math.round(nh)}`;
+    indicator.style.left = (ev.clientX + 12) + 'px';
+    indicator.style.top = (ev.clientY + 12) + 'px';
+    indicator.style.display = 'block';
+
+    render();
+  }
+
+  function onUp() {
+    indicator.remove();
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('mouseup', onUp);
+  }
+
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+}
+
+function deleteComponent(id) {
+  pushUndo();
+  placed = placed.filter(c => c.id !== id);
+  selectedIds.delete(id);
+  render();
+}
+
+// ─── Canvas Click/Drag to Place ────────────────────────────────
+const canvas = document.getElementById('canvas');
+
+canvas.addEventListener('mousedown', function(e) {
+  if (e.target.closest('.placed')) return; // handled by component
+
+  if (activeType) {
+    // Place by drag
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const startX = e.clientX - rect.left + canvas.scrollLeft;
+    const startY = e.clientY - rect.top + canvas.scrollTop;
+
+    let drawBox = document.createElement('div');
+    drawBox.className = 'draw-box';
+    document.getElementById('canvas-inner').appendChild(drawBox);
+
+    let indicator = document.createElement('div');
+    indicator.className = 'size-indicator';
+    document.body.appendChild(indicator);
+
+    let isDrag = false;
+    let endX = startX, endY = startY;
+
+    function onMove(ev) {
+      endX = ev.clientX - rect.left + canvas.scrollLeft;
+      endY = ev.clientY - rect.top + canvas.scrollTop;
+      const dx = Math.abs(endX - startX);
+      const dy = Math.abs(endY - startY);
+      if (dx > 5 || dy > 5) isDrag = true;
+
+      if (isDrag) {
+        const x = Math.min(startX, endX);
+        const y = Math.min(startY, endY);
+        const w = Math.abs(endX - startX);
+        const h = Math.abs(endY - startY);
+        drawBox.style.left = x + 'px';
+        drawBox.style.top = y + 'px';
+        drawBox.style.width = w + 'px';
+        drawBox.style.height = h + 'px';
+        drawBox.style.display = 'block';
+
+        indicator.textContent = `${Math.round(w)} × ${Math.round(h)}`;
+        indicator.style.left = (ev.clientX + 12) + 'px';
+        indicator.style.top = (ev.clientY + 12) + 'px';
+        indicator.style.display = 'block';
+      }
+    }
+
+    function onUp(ev) {
+      drawBox.remove();
+      indicator.remove();
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+
+      const def = COMP_MAP[activeType];
+      let x, y, w, h;
+
+      if (isDrag) {
+        x = Math.min(startX, endX);
+        y = Math.min(startY, endY);
+        w = Math.max(20, Math.abs(endX - startX));
+        h = Math.max(20, Math.abs(endY - startY));
+      } else {
+        // Single click — place at default size, centered on click
+        w = def.w;
+        h = def.h;
+        x = startX - w / 2;
+        y = startY - h / 2;
+      }
+
+      if (snapEnabled) { x = snap(x); y = snap(y); w = snap(w); h = snap(h); }
+      x = Math.max(0, x);
+      y = Math.max(0, y);
+
+      pushUndo();
+      const id = nextId++;
+      placed.push({ id, type: activeType, x, y, w, h });
+      selectedIds.clear();
+      selectedIds.add(id);
+
+      // Stay in place mode if shift held, otherwise deselect
+      if (!ev.shiftKey) deselectPalette();
+      render();
+    }
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+
+  } else {
+    // Deselect or start select box
+    if (!e.shiftKey) {
+      selectedIds.clear();
+      render();
+    }
+
+    // Select box
+    const rect = canvas.getBoundingClientRect();
+    const startX = e.clientX - rect.left + canvas.scrollLeft;
+    const startY = e.clientY - rect.top + canvas.scrollTop;
+    let selBox = document.createElement('div');
+    selBox.className = 'select-box';
+    document.getElementById('canvas-inner').appendChild(selBox);
+    let isDrag = false;
+
+    function onMove(ev) {
+      const cx = ev.clientX - rect.left + canvas.scrollLeft;
+      const cy = ev.clientY - rect.top + canvas.scrollTop;
+      if (Math.abs(cx - startX) > 4 || Math.abs(cy - startY) > 4) isDrag = true;
+      if (!isDrag) return;
+
+      const x = Math.min(startX, cx);
+      const y = Math.min(startY, cy);
+      selBox.style.left = x + 'px';
+      selBox.style.top = y + 'px';
+      selBox.style.width = Math.abs(cx - startX) + 'px';
+      selBox.style.height = Math.abs(cy - startY) + 'px';
+      selBox.style.display = 'block';
+    }
+
+    function onUp(ev) {
+      if (isDrag) {
+        const cx = ev.clientX - rect.left + canvas.scrollLeft;
+        const cy = ev.clientY - rect.top + canvas.scrollTop;
+        const boxX = Math.min(startX, cx);
+        const boxY = Math.min(startY, cy);
+        const boxW = Math.abs(cx - startX);
+        const boxH = Math.abs(cy - startY);
+
+        placed.forEach(c => {
+          if (c.x + c.w > boxX && c.x < boxX + boxW && c.y + c.h > boxY && c.y < boxY + boxH) {
+            selectedIds.add(c.id);
+          }
+        });
+        render();
+      }
+      selBox.remove();
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    }
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }
+});
+
+// ─── Snap ──────────────────────────────────────────────────────
+const GRID = 20;
+function snap(v) { return Math.round(v / GRID) * GRID; }
+
+function toggleSnap() {
+  snapEnabled = !snapEnabled;
+  document.getElementById('btn-snap').classList.toggle('active', snapEnabled);
+}
+
+// ─── Keyboard Shortcuts ────────────────────────────────────────
+document.addEventListener('keydown', function(e) {
+  // Escape: deselect all / cancel placement
+  if (e.key === 'Escape') {
+    if (activeType) { deselectPalette(); }
+    else { selectedIds.clear(); render(); }
+    return;
+  }
+
+  // Don't handle shortcuts if in modal
+  if (document.getElementById('copy-overlay').classList.contains('open')) {
+    if (e.key === 'Escape') closeCopyModal();
+    return;
+  }
+
+  // Delete selected
+  if ((e.key === 'Backspace' || e.key === 'Delete') && selectedIds.size > 0) {
+    e.preventDefault();
+    pushUndo();
+    placed = placed.filter(c => !selectedIds.has(c.id));
+    selectedIds.clear();
+    render();
+    return;
+  }
+
+  // Cmd+Z undo
+  if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+    e.preventDefault();
+    undo();
+    return;
+  }
+
+  // Cmd+A select all
+  if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
+    e.preventDefault();
+    selectAll();
+    return;
+  }
+
+  // Cmd+Enter copy
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    e.preventDefault();
+    showCopyModal();
+    return;
+  }
+
+  // G for grid snap
+  if (e.key === 'g' && !e.metaKey && !e.ctrlKey) {
+    toggleSnap();
+    return;
+  }
+
+  // Arrow keys to nudge selected
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key) && selectedIds.size > 0) {
+    e.preventDefault();
+    const step = e.shiftKey ? 20 : (snapEnabled ? GRID : 1);
+    const dx = e.key === 'ArrowLeft' ? -step : e.key === 'ArrowRight' ? step : 0;
+    const dy = e.key === 'ArrowUp' ? -step : e.key === 'ArrowDown' ? step : 0;
+    pushUndo();
+    placed.filter(c => selectedIds.has(c.id)).forEach(c => {
+      c.x = Math.max(0, c.x + dx);
+      c.y = Math.max(0, c.y + dy);
+    });
+    render();
+    return;
+  }
+
+  // D to duplicate selected
+  if (e.key === 'd' && !e.metaKey && !e.ctrlKey && selectedIds.size > 0) {
+    e.preventDefault();
+    pushUndo();
+    const newIds = new Set();
+    placed.filter(c => selectedIds.has(c.id)).forEach(c => {
+      const id = nextId++;
+      placed.push({ id, type: c.type, x: c.x + 20, y: c.y + 20, w: c.w, h: c.h });
+      newIds.add(id);
+    });
+    selectedIds = newIds;
+    render();
+    return;
+  }
+});
+
+// ─── Select all ────────────────────────────────────────────────
+function selectAll() {
+  placed.forEach(c => selectedIds.add(c.id));
+  render();
+}
+
+function clearAll() {
+  if (placed.length === 0) return;
+  if (!confirm('Clear all components?')) return;
+  pushUndo();
+  placed = [];
+  selectedIds.clear();
+  render();
+}
+
+// ─── Copy/Output Generation ────────────────────────────────────
+function generateOutput() {
+  if (placed.length === 0) return 'No components placed yet.';
+
+  const sorted = [...placed].sort((a, b) => {
+    if (Math.abs(a.y - b.y) < 20) return a.x - b.x;
+    return a.y - b.y;
+  });
+
+  let out = '# Layout Mode — Layout Feedback\n\n';
+  out += `> ${placed.length} component${placed.length !== 1 ? 's' : ''} placed\n\n`;
+  out += '## Components\n\n';
+
+  sorted.forEach((c, i) => {
+    const def = COMP_MAP[c.type];
+    const label = def?.label || c.type;
+    out += `${i + 1}. **${label}** — \`${Math.round(c.w)}×${Math.round(c.h)}px\` at \`(${Math.round(c.x)}, ${Math.round(c.y)})\`\n`;
+  });
+
+  // Spatial relationships
+  out += '\n## Layout Analysis\n\n';
+
+  // Group by vertical position (within 30px = same "row")
+  const rows = [];
+  sorted.forEach(c => {
+    const existing = rows.find(r => Math.abs(r.y - c.y) < 30);
+    if (existing) { existing.items.push(c); }
+    else { rows.push({ y: c.y, items: [c] }); }
+  });
+
+  rows.sort((a, b) => a.y - b.y);
+  rows.forEach((row, i) => {
+    row.items.sort((a, b) => a.x - b.x);
+    const labels = row.items.map(c => COMP_MAP[c.type]?.label || c.type);
+    if (row.items.length === 1) {
+      const c = row.items[0];
+      out += `- **Row ${i + 1}** (y≈${Math.round(row.y)}): ${labels[0]} (${Math.round(c.w)}×${Math.round(c.h)})\n`;
+    } else {
+      out += `- **Row ${i + 1}** (y≈${Math.round(row.y)}): ${labels.join(' | ')} — ${row.items.length} items side by side\n`;
+    }
+  });
+
+  // Check for full-width components
+  const canvasW = document.getElementById('canvas').clientWidth;
+  const fullWidth = sorted.filter(c => c.w > canvasW * 0.8);
+  if (fullWidth.length > 0) {
+    out += '\n### Full-width components\n';
+    fullWidth.forEach(c => {
+      out += `- ${COMP_MAP[c.type]?.label || c.type}\n`;
+    });
+  }
+
+  // Detect common patterns
+  out += '\n## Suggested Implementation\n\n';
+
+  const hasNav = sorted.some(c => c.type === 'navigation');
+  const hasHero = sorted.some(c => c.type === 'hero');
+  const hasSidebar = sorted.some(c => c.type === 'sidebar');
+  const hasFooter = sorted.some(c => c.type === 'footer');
+  const cards = sorted.filter(c => c.type === 'card');
+
+  if (hasNav) out += '- Add a top navigation bar with logo + nav links + CTA\n';
+  if (hasHero) out += '- Hero section with heading, subtext, and call-to-action button\n';
+  if (hasSidebar) out += '- Sidebar layout — consider CSS Grid with sidebar + main content area\n';
+  if (cards.length > 1) out += `- ${cards.length}-column card grid — use CSS Grid or Flexbox with gap\n`;
+  if (hasFooter) out += '- Multi-column footer with links\n';
+
+  const forms = sorted.filter(c => c.type === 'form');
+  const tables = sorted.filter(c => c.type === 'table');
+  if (forms.length > 0) out += `- ${forms.length} form${forms.length > 1 ? 's' : ''} — add proper labels, validation, and submit handling\n`;
+  if (tables.length > 0) out += `- Data table — consider sortable columns and pagination\n`;
+
+  return out;
+}
+
+function showCopyModal() {
+  const output = generateOutput();
+  document.getElementById('copy-output').textContent = output;
+  document.getElementById('copy-overlay').classList.add('open');
+}
+
+function closeCopyModal(e) {
+  if (e && e.target !== document.getElementById('copy-overlay')) return;
+  document.getElementById('copy-overlay').classList.remove('open');
+}
+
+function copyToClipboard() {
+  const output = generateOutput();
+  navigator.clipboard.writeText(output).then(() => {
+    const toast = document.getElementById('copy-toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+    closeCopyModal();
+  });
+}
+
+// ─── Init ──────────────────────────────────────────────────────
+renderPalette();
+render();
+</script>
+</body>
+</html>

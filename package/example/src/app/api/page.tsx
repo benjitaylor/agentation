@@ -169,6 +169,25 @@ function App() {
   // Browser component fields
   isFixed?: boolean;       // Fixed-position element
   isMultiSelect?: boolean; // Created via drag selection
+
+  // Annotation kind (defaults to "feedback")
+  kind?: "feedback" | "placement" | "rearrange";
+
+  // Layout mode data
+  placement?: {
+    componentType: string;
+    width: number;
+    height: number;
+    scrollY: number;
+    text?: string;
+  };
+  rearrange?: {
+    selector: string;
+    label: string;
+    tagName: string;
+    originalRect: { x: number; y: number; width: number; height: number };
+    currentRect: { x: number; y: number; width: number; height: number };
+  };
 };`}
           />
         </section>
@@ -295,8 +314,8 @@ curl -N -H "Last-Event-ID: 42" http://localhost:4747/sessions/:id/events`}
           />
           <h3 style={{ marginTop: "1.25rem" }}>Event types</h3>
           <ul style={{ fontSize: "0.8125rem", color: "rgba(0,0,0,0.65)", marginTop: "0.5rem" }}>
-            <li><code>annotation.created</code> &mdash; New annotation added</li>
-            <li><code>annotation.updated</code> &mdash; Annotation modified (comment, status, etc.)</li>
+            <li><code>annotation.created</code> &mdash; New annotation added (includes <code>kind</code> field for design annotations)</li>
+            <li><code>annotation.updated</code> &mdash; Annotation modified (comment, status, design data, etc.)</li>
             <li><code>annotation.deleted</code> &mdash; Annotation removed</li>
             <li><code>session.created</code> &mdash; New session started</li>
             <li><code>session.updated</code> &mdash; Session updated</li>

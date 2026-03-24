@@ -22,6 +22,27 @@ export type Annotation = {
   isFixed?: boolean; // true if element has fixed/sticky positioning (marker stays fixed)
   reactComponents?: string; // React component hierarchy (e.g. "<App> <Dashboard> <Button>")
 
+  // Annotation kind (defaults to "feedback" when undefined — backward compat)
+  kind?: "feedback" | "placement" | "rearrange";
+
+  // Structured data for placement annotations
+  placement?: {
+    componentType: string;
+    width: number;
+    height: number;
+    scrollY: number;
+    text?: string;
+  };
+
+  // Structured data for rearrange annotations
+  rearrange?: {
+    selector: string;
+    label: string;
+    tagName: string;
+    originalRect: { x: number; y: number; width: number; height: number };
+    currentRect: { x: number; y: number; width: number; height: number };
+  };
+
   // Protocol fields (added when syncing to server)
   sessionId?: string;
   url?: string;
