@@ -10,7 +10,10 @@
     "mcp": "pnpm --filter agentation-mcp start",
     "publish:agentation": "pnpm --filter agentation publish --access public",
     "publish:mcp": "pnpm --filter agentation-mcp publish --access public",
-    "publish:all": "pnpm publish:agentation && pnpm publish:mcp"
+    "publish:all": "pnpm publish:agentation && pnpm publish:mcp",
+    "extension:build": "pnpm --filter agentation-extension build",
+    "extension:watch": "pnpm --filter agentation-extension watch",
+    "extension:zip": "pnpm --filter agentation-extension zip"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

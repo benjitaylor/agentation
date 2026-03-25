@@ -1,0 +1,24 @@
+{
+  "name": "agentation-extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "zip": "zip -r agentation-extension.zip manifest.json popup.html popup.js icons/ dist/content.js"
+  },
+  "dependencies": {
+    "agentation": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "esbuild": "^0.27.0",
+    "postcss": "^8.5.6",
+    "postcss-modules": "^6.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sass": "^1.97.2"
+  }
+}
