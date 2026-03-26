@@ -196,6 +196,9 @@ function CopyablePackageManager({ name, command }: { name: string; command: stri
 }
 
 export default function InstallPage() {
+  const browserBundleUrl =
+    "https://cdn.jsdelivr.net/npm/agentation@2.2.1/dist/agentation.browser.min.js";
+
   return (
     <>
       <article className="article">
@@ -251,6 +254,45 @@ function App() {
     </>
   );
 }`}
+            language="tsx"
+          />
+        </section>
+
+        <section>
+          <h2>Use without React</h2>
+          <p>
+            If you just want the toolbar on a plain HTML page, CMS, or non-React app,
+            load the self-contained browser bundle from jsDelivr and call{" "}
+            <code>window.Agentation.mount()</code>.
+          </p>
+          <CodeBlock
+            code={`<script src="${browserBundleUrl}"></script>
+<script>
+  window.Agentation.mount();
+</script>`}
+            language="html"
+          />
+          <p
+            style={{
+              fontSize: "0.875rem",
+              color: "rgba(0,0,0,0.5)",
+              marginTop: "0.5rem",
+            }}
+          >
+            The script bundle includes its own React runtime. No separate{" "}
+            <code>react</code> or <code>react-dom</code> install is required.
+          </p>
+          <p style={{ marginTop: "1rem" }}>
+            If you want the same browser-style lifecycle from code, import the
+            browser entrypoint:
+          </p>
+          <CodeBlock
+            code={`import { mountAgentation } from "agentation/browser";
+
+const agentation = mountAgentation();
+
+agentation.update({ copyToClipboard: false });
+agentation.destroy();`}
             language="tsx"
           />
         </section>
@@ -375,7 +417,10 @@ function App() {
           <h2>Requirements</h2>
           <ul>
             <li>
-              <strong>React 18+</strong> &mdash; Uses modern React features
+              <strong>React 18+</strong> &mdash; Required for the React component entrypoint
+            </li>
+            <li>
+              <strong>Script tag option</strong> &mdash; The browser bundle is self-contained and does not need a React install
             </li>
             <li>
               <strong>Client-side only</strong> &mdash; Requires DOM access
@@ -385,8 +430,8 @@ function App() {
               devices
             </li>
             <li>
-              <strong>Zero dependencies</strong> &mdash; No runtime deps beyond
-              React
+              <strong>Self-contained bundle</strong> &mdash; CDN usage ships with
+              its own runtime
             </li>
           </ul>
         </section>
