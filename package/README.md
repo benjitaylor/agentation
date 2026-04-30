@@ -37,7 +37,7 @@ The toolbar appears in the bottom-right corner. Click to activate, then click an
 
 - **Click to annotate** – Click any element with automatic selector identification
 - **Text selection** – Select text to annotate specific content
-- **Multi-select** – Drag to select multiple elements at once
+- **Multi-select** – Hold Cmd/Ctrl to build a selection by clicking elements individually, or drag to select multiple at once
 - **Area selection** – Drag to annotate any region, even empty space
 - **Animation pause** – Freeze all animations (CSS, JS, videos) to capture specific states
 - **Structured output** – Copy markdown with selectors, positions, and context

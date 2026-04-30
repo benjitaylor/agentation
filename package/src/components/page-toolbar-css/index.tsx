@@ -139,6 +139,14 @@ type HoverInfo = {
   reactComponents?: string | null;
 };
 
+type PendingMultiSelectElement = {
+  element: HTMLElement;
+  rect: DOMRect;
+  name: string;
+  path: string;
+  reactComponents?: string;
+};
+
 export type OutputDetailLevel = "compact" | "standard" | "detailed" | "forensic";
 // ReactComponentMode is now derived from outputDetail when reactEnabled is true
 export type ReactComponentMode = "smart" | "filtered" | "all" | "off";
@@ -184,6 +192,11 @@ const OUTPUT_TO_REACT_MODE: Record<OutputDetailLevel, ReactComponentMode> = {
   detailed: "smart",
   forensic: "all",
 };
+
+const isPrimaryMultiSelectModifierActive = (event: {
+  metaKey: boolean;
+  ctrlKey: boolean;
+}): boolean => event.metaKey || event.ctrlKey;
 
 export const COLOR_OPTIONS = [
   { id: "indigo",  label: "Indigo",  srgb: "#6155F5", p3: "color(display-p3 0.38 0.33 0.96)" },
@@ -396,7 +409,7 @@ export function PageFeedbackToolbarCSS({
       width: number;
       height: number;
     }>;
-    // Element references for cmd+shift+click multi-select (for live position queries)
+    // Element references for modifier-click multi-select (for live position queries)
     multiSelectElements?: HTMLElement[];
     // Element reference for single-select (for live position queries)
     targetElement?: HTMLElement;
@@ -412,7 +425,7 @@ export function PageFeedbackToolbarCSS({
     useState<HTMLElement | null>(null);
   const [hoveredTargetElements, setHoveredTargetElements] = useState<
     HTMLElement[]
-  >([]); // For cmd+shift+click multi-select hover
+  >([]); // For modifier-click multi-select hover
   const [deletingMarkerId, setDeletingMarkerId] = useState<string | null>(null);
   const [renumberFrom, setRenumberFrom] = useState<number | null>(null);
   const [editingAnnotation, setEditingAnnotation] = useState<Annotation | null>(
@@ -422,7 +435,7 @@ export function PageFeedbackToolbarCSS({
     useState<HTMLElement | null>(null);
   const [editingTargetElements, setEditingTargetElements] = useState<
     HTMLElement[]
-  >([]); // For cmd+shift+click multi-select
+  >([]); // For modifier-click multi-select
   const [scrollY, setScrollY] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -502,17 +515,11 @@ export function PageFeedbackToolbarCSS({
     null,
   );
 
-  // Cmd+shift+click multi-select state
+  // Primary-modifier multi-select state
   const [pendingMultiSelectElements, setPendingMultiSelectElements] = useState<
-    Array<{
-      element: HTMLElement;
-      rect: DOMRect;
-      name: string;
-      path: string;
-      reactComponents?: string;
-    }>
+    PendingMultiSelectElement[]
   >([]);
-  const modifiersHeldRef = useRef({ cmd: false, shift: false });
+  const multiSelectModifiersHeldRef = useRef({ meta: false, ctrl: false });
 
   // Hide tooltips after button click until mouse leaves
   const hideTooltipsUntilMouseLeave = () => {
@@ -1660,7 +1667,25 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
     }
   }, [isFrozen, freezeAnimations, unfreezeAnimations]);
 
-  // Create pending annotation from cmd+shift+click multi-select
+  const appendPendingMultiSelectElements = useCallback(
+    (elements: PendingMultiSelectElement[]) => {
+      if (elements.length === 0) return;
+
+      setPendingMultiSelectElements((prev) => {
+        const next = [...prev];
+        for (const item of elements) {
+          if (next.some((existing) => existing.element === item.element)) {
+            continue;
+          }
+          next.push(item);
+        }
+        return next;
+      });
+    },
+    [],
+  );
+
+  // Create pending annotation from modifier-click multi-select
   const createMultiSelectPendingAnnotation = useCallback(() => {
     if (pendingMultiSelectElements.length === 0) return;
 
@@ -1776,7 +1801,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
       setHoverInfo(null);
       setShowSettings(false); // Close settings when toolbar closes
       setPendingMultiSelectElements([]); // Clear multi-select
-      modifiersHeldRef.current = { cmd: false, shift: false }; // Reset modifier tracking
+      multiSelectModifiersHeldRef.current = { meta: false, ctrl: false }; // Reset modifier tracking
       if (isFrozen) {
         unfreezeAnimations();
       }
@@ -1940,8 +1965,12 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
       if (closestCrossingShadow(target, "[data-annotation-popup]")) return;
       if (closestCrossingShadow(target, "[data-annotation-marker]")) return;
 
-      // Handle cmd+shift+click for multi-element selection
-      if (e.metaKey && e.shiftKey && !pendingAnnotation && !editingAnnotation) {
+      // Handle modifier-click for multi-element selection
+      if (
+        isPrimaryMultiSelectModifierActive(e) &&
+        !pendingAnnotation &&
+        !editingAnnotation
+      ) {
         e.preventDefault();
         e.stopPropagation();
 
@@ -2077,38 +2106,36 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
     pendingMultiSelectElements,
   ]);
 
-  // Cmd+shift+click multi-select: keyup listener for modifier release
+  // Modifier-click multi-select: keyup listener for modifier release
   useEffect(() => {
     if (!isActive) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Meta") modifiersHeldRef.current.cmd = true;
-      if (e.key === "Shift") modifiersHeldRef.current.shift = true;
+      if (e.key === "Meta") multiSelectModifiersHeldRef.current.meta = true;
+      if (e.key === "Control") multiSelectModifiersHeldRef.current.ctrl = true;
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      const wasHoldingBoth =
-        modifiersHeldRef.current.cmd && modifiersHeldRef.current.shift;
+      const wasHoldingModifier =
+        multiSelectModifiersHeldRef.current.meta ||
+        multiSelectModifiersHeldRef.current.ctrl;
 
-      if (e.key === "Meta") modifiersHeldRef.current.cmd = false;
-      if (e.key === "Shift") modifiersHeldRef.current.shift = false;
+      if (e.key === "Meta") multiSelectModifiersHeldRef.current.meta = false;
+      if (e.key === "Control") multiSelectModifiersHeldRef.current.ctrl = false;
 
-      const nowHoldingBoth =
-        modifiersHeldRef.current.cmd && modifiersHeldRef.current.shift;
+      const nowHoldingModifier =
+        multiSelectModifiersHeldRef.current.meta ||
+        multiSelectModifiersHeldRef.current.ctrl;
 
       // Released modifier while holding elements → trigger popup
-      if (
-        wasHoldingBoth &&
-        !nowHoldingBoth &&
-        pendingMultiSelectElements.length > 0
-      ) {
+      if (wasHoldingModifier && !nowHoldingModifier && pendingMultiSelectElements.length > 0) {
         createMultiSelectPendingAnnotation();
       }
     };
 
     // Reset modifier state AND clear selection when window loses focus (e.g., cmd+tab away)
     const handleBlur = () => {
-      modifiersHeldRef.current = { cmd: false, shift: false };
+      multiSelectModifiersHeldRef.current = { meta: false, ctrl: false };
       setPendingMultiSelectElements([]);
     };
 
@@ -2175,7 +2202,10 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
         "SUP",
       ]);
 
-      if (textTags.has(target.tagName) || target.isContentEditable) {
+      if (
+        !isPrimaryMultiSelectModifierActive(e) &&
+        (textTags.has(target.tagName) || target.isContentEditable)
+      ) {
         return;
       }
 
@@ -2457,63 +2487,83 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
 
         const x = (e.clientX / window.innerWidth) * 100;
         const y = e.clientY + window.scrollY;
+        const shouldAccumulateMultiSelect =
+          isPrimaryMultiSelectModifierActive(e) &&
+          !pendingAnnotation &&
+          !editingAnnotation;
 
         if (finalElements.length > 0) {
-          const bounds = finalElements.reduce(
-            (acc, { rect }) => ({
-              left: Math.min(acc.left, rect.left),
-              top: Math.min(acc.top, rect.top),
-              right: Math.max(acc.right, rect.right),
-              bottom: Math.max(acc.bottom, rect.bottom),
-            }),
-            {
-              left: Infinity,
-              top: Infinity,
-              right: -Infinity,
-              bottom: -Infinity,
-            },
-          );
+          if (shouldAccumulateMultiSelect) {
+            appendPendingMultiSelectElements(
+              finalElements.map(({ element, rect }) => {
+                const { name, path, reactComponents } =
+                  identifyElementWithReact(element, effectiveReactMode);
+                return {
+                  element,
+                  rect,
+                  name,
+                  path,
+                  reactComponents: reactComponents ?? undefined,
+                };
+              }),
+            );
+          } else {
+            const bounds = finalElements.reduce(
+              (acc, { rect }) => ({
+                left: Math.min(acc.left, rect.left),
+                top: Math.min(acc.top, rect.top),
+                right: Math.max(acc.right, rect.right),
+                bottom: Math.max(acc.bottom, rect.bottom),
+              }),
+              {
+                left: Infinity,
+                top: Infinity,
+                right: -Infinity,
+                bottom: -Infinity,
+              },
+            );
 
-          const elementNames = finalElements
-            .slice(0, 5)
-            .map(({ element }) => identifyElement(element).name)
-            .join(", ");
-          const suffix =
-            finalElements.length > 5
-              ? ` +${finalElements.length - 5} more`
-              : "";
+            const elementNames = finalElements
+              .slice(0, 5)
+              .map(({ element }) => identifyElement(element).name)
+              .join(", ");
+            const suffix =
+              finalElements.length > 5
+                ? ` +${finalElements.length - 5} more`
+                : "";
 
-          // Capture computed styles from first element - filtered for popup, full for forensic output
-          const firstElement = finalElements[0].element;
-          const firstElementComputedStyles =
-            getDetailedComputedStyles(firstElement);
-          const firstElementComputedStylesStr =
-            getForensicComputedStyles(firstElement);
+            // Capture computed styles from first element - filtered for popup, full for forensic output
+            const firstElement = finalElements[0].element;
+            const firstElementComputedStyles =
+              getDetailedComputedStyles(firstElement);
+            const firstElementComputedStylesStr =
+              getForensicComputedStyles(firstElement);
 
-          setPendingAnnotation({
-            x,
-            y,
-            clientY: e.clientY,
-            element: `${finalElements.length} elements: ${elementNames}${suffix}`,
-            elementPath: "multi-select",
-            boundingBox: {
-              x: bounds.left,
-              y: bounds.top + window.scrollY,
-              width: bounds.right - bounds.left,
-              height: bounds.bottom - bounds.top,
-            },
-            isMultiSelect: true,
-            // Forensic data from first element
-            fullPath: getFullElementPath(firstElement),
-            accessibility: getAccessibilityInfo(firstElement),
-            computedStyles: firstElementComputedStylesStr,
-            computedStylesObj: firstElementComputedStyles,
-            nearbyElements: getNearbyElements(firstElement),
-            cssClasses: getElementClasses(firstElement),
-            nearbyText: getNearbyText(firstElement),
-            sourceFile: detectSourceFile(firstElement),
-          });
-        } else {
+            setPendingAnnotation({
+              x,
+              y,
+              clientY: e.clientY,
+              element: `${finalElements.length} elements: ${elementNames}${suffix}`,
+              elementPath: "multi-select",
+              boundingBox: {
+                x: bounds.left,
+                y: bounds.top + window.scrollY,
+                width: bounds.right - bounds.left,
+                height: bounds.bottom - bounds.top,
+              },
+              isMultiSelect: true,
+              // Forensic data from first element
+              fullPath: getFullElementPath(firstElement),
+              accessibility: getAccessibilityInfo(firstElement),
+              computedStyles: firstElementComputedStylesStr,
+              computedStylesObj: firstElementComputedStyles,
+              nearbyElements: getNearbyElements(firstElement),
+              cssClasses: getElementClasses(firstElement),
+              nearbyText: getNearbyText(firstElement),
+              sourceFile: detectSourceFile(firstElement),
+            });
+          }
+        } else if (!shouldAccumulateMultiSelect) {
           // No elements selected, but allow annotation on empty area
           const width = Math.abs(right - left);
           const height = Math.abs(bottom - top);
@@ -2552,7 +2602,14 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
 
     document.addEventListener("mouseup", handleMouseUp);
     return () => document.removeEventListener("mouseup", handleMouseUp);
-  }, [isActive, isDragging]);
+  }, [
+    isActive,
+    isDragging,
+    pendingAnnotation,
+    editingAnnotation,
+    effectiveReactMode,
+    appendPendingMultiSelectElements,
+  ]);
 
   // Fire webhook for annotation events - returns true on success, false on failure
   const fireWebhook = useCallback(
@@ -4294,7 +4351,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
               />
             )}
 
-          {/* Cmd+shift+click multi-select highlights (during selection, before releasing modifiers) */}
+          {/* Modifier-click multi-select highlights (during selection, before releasing modifiers) */}
           {pendingMultiSelectElements
             .filter((item) => document.contains(item.element))
             .map((item, index) => {
@@ -4335,7 +4392,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
               );
               if (!hoveredAnnotation?.boundingBox) return null;
 
-              // Render individual element boxes if available (cmd+shift+click multi-select)
+              // Render individual element boxes if available (modifier-click multi-select)
               if (hoveredAnnotation.elementBoundingBoxes?.length) {
                 // Use live positions from hoveredTargetElements when available
                 if (hoveredTargetElements.length > 0) {
