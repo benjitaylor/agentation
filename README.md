@@ -53,6 +53,10 @@ Agentation captures class names, selectors, and element positions so AI agents c
 - React 18+
 - Desktop browser (mobile not supported)
 
+## Framework Integrations
+
+- [Angular Integration Guide](docs/angular-integration.md) — Use Agentation in Angular (v16+) projects via Web Component Wrapper
+
 ## Docs
 
 Full documentation at [agentation.com](https://agentation.com)
