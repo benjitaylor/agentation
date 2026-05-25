@@ -2,9 +2,19 @@
 // Layout Mode Styles
 // =============================================================================
 
-// Protect stroke-based SVG icons from host page CSS overrides
-svg[fill="none"] {
-  fill: none !important;
+// Protect stroke-based SVG icons from host page CSS overrides.
+// Scoped to design-mode's own containers to avoid breaking host SVGs that use
+// fill="none" with CSS-based fills (e.g. Tailwind's fill-current).
+// See: https://github.com/benjitaylor/agentation/issues/181
+.overlay,
+.rearrangeOverlay {
+  svg[fill="none"] {
+    fill: none !important;
+  }
+
+  svg[fill="none"] :not([fill]) {
+    fill: none !important;
+  }
 }
 
 $blue: #3c82f7;
