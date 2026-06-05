@@ -160,6 +160,7 @@ function App() {
 
   // Context (varies by output format)
   reactComponents?: string;   // Component tree
+  sourceFile?: string;        // Source file:line ("src/Button.tsx:42")
   cssClasses?: string;
   computedStyles?: string;
   accessibility?: string;
