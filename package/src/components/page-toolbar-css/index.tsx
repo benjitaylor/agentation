@@ -88,6 +88,7 @@ import styles from "./styles.module.scss";
 import { generateOutput } from "../../utils/generate-output";
 import { AnnotationMarker, ExitingMarker, PendingMarker } from "./annotation-marker";
 import { SettingsPanel } from "./settings-panel";
+import { copyTextToClipboard } from "../../utils/clipboard";
 
 /**
  * Composes element identification with React component detection.
@@ -3107,11 +3108,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
     }
 
     if (copyToClipboard) {
-      try {
-        await navigator.clipboard.writeText(output);
-      } catch {
-        // Clipboard may fail (permissions, not HTTPS, etc.) - continue anyway
-      }
+      await copyTextToClipboard(output);
     }
 
     // Fire callback with markdown output (always, regardless of clipboard success)
