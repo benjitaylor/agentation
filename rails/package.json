@@ -1,0 +1,24 @@
+{
+  "name": "agentation-rails-build",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Build pipeline for agentation-rails gem — bundles React + Agentation into a standalone IIFE",
+  "scripts": {
+    "build": "tsup",
+    "watch": "tsup --watch"
+  },
+  "dependencies": {
+    "agentation": "workspace:*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "postcss": "^8.5.6",
+    "postcss-modules": "^6.0.1",
+    "sass": "^1.97.2",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}

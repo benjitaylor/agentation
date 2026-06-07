@@ -121,6 +121,40 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
+  rails:
+    dependencies:
+      agentation:
+        specifier: workspace:*
+        version: link:../package
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.28
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.7(@types/react@18.3.28)
+      postcss:
+        specifier: ^8.5.6
+        version: 8.5.6
+      postcss-modules:
+        specifier: ^6.0.1
+        version: 6.0.1(postcss@8.5.6)
+      sass:
+        specifier: ^1.97.2
+        version: 1.97.3
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.6)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
 packages:
 
   '@asamuzakjp/css-color@3.2.0':
