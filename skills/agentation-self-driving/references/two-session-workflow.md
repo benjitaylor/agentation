@@ -23,12 +23,12 @@ This session opens the headed browser, scans the page, and adds design annotatio
 
 ```bash
 claude
-> Watch for agentation annotations and fix each one. Use agentation_watch_annotations
-> in a loop. For each annotation: read the target code, make the fix, then call
-> agentation_resolve with a summary of what you changed.
+> /agentation-fixer watch
 ```
 
-This session blocks on `agentation_watch_annotations`, receives each annotation as it's created by Terminal 1, and edits the codebase to address the feedback.
+This session blocks on `agentation_watch_annotations`, receives each annotation as it's created by Terminal 1, and edits the codebase to address the feedback. See the [`agentation-fixer` skill](../../agentation-fixer/SKILL.md) for full details.
+
+> **Without the skill**: You can also run the fixer with a manual prompt — `Watch for agentation annotations and fix each one. Use agentation_watch_annotations in a loop. For each annotation: read the target code, make the fix, then call agentation_resolve with a summary.`
 
 ## How It Connects
 
