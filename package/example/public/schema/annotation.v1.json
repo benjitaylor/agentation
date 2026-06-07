@@ -54,6 +54,10 @@
       "type": "string",
       "description": "React component tree (e.g. \"App > Dashboard > Button\")"
     },
+    "sourceFile": {
+      "type": "string",
+      "description": "Source file path and line (e.g. \"src/Button.tsx:42\")"
+    },
     "cssClasses": {
       "type": "string",
       "description": "Element class list"

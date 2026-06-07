@@ -208,6 +208,7 @@ npx agentation-mcp help      # Show help`}
     "comment": "Button is cut off on mobile",
     "element": "button",
     "elementPath": "body > main > .hero > button.cta",
+    "sourceFile": "src/components/CTAButton.tsx:42",
     "kind": "feedback",
     "intent": "fix",
     "severity": "blocking"

@@ -122,6 +122,7 @@ export default function SchemaPage() {
             code={`{
   // React-specific (when available)
   reactComponents: string;  // Component tree ("App > Dashboard > Button")
+  sourceFile: string;       // Source file:line ("src/Button.tsx:42")
 
   // Element details
   cssClasses: string;       // Class list ("btn btn-primary disabled")
@@ -209,6 +210,7 @@ export default function SchemaPage() {
 
   // Optional context
   reactComponents?: string;
+  sourceFile?: string;     // Source file:line (dev mode only)
   cssClasses?: string;
   computedStyles?: string;
   accessibility?: string;
@@ -318,6 +320,7 @@ type ThreadMessage = {
       "required": ["x", "y", "width", "height"]
     },
     "reactComponents": { "type": "string" },
+    "sourceFile": { "type": "string", "description": "Source file:line" },
     "isFixed": { "type": "boolean" },
     "isMultiSelect": { "type": "boolean" },
     "fullPath": { "type": "string" },
@@ -368,6 +371,7 @@ type ThreadMessage = {
   "url": "http://localhost:3000/landing",
   "boundingBox": { "x": 120, "y": 480, "width": 200, "height": 48 },
   "reactComponents": "App > LandingPage > HeroSection > CTAButton",
+  "sourceFile": "src/components/CTAButton.tsx:42",
   "cssClasses": "cta btn-primary",
   "nearbyText": "Get Started Free",
   "intent": "fix",
