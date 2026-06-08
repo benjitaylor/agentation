@@ -480,6 +480,7 @@ export function PageFeedbackToolbarCSS({
 
   // Shadow annotation tracking (design → server sync)
   const placementAnnotationMap = useRef(new Map<string, string>()); // placementId → server annotationId
+  const placementSyncedTextMap = useRef(new Map<string, string | undefined>()); // placementId → last-synced p.text
   const rearrangeAnnotationMap = useRef(new Map<string, string>()); // sectionId → server annotationId
   const rearrangeDebounceTimer = useRef<ReturnType<typeof originalSetTimeout>>();
 
@@ -998,6 +999,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
             for (const [placementId, annotationId] of placementAnnotationMap.current) {
               if (annotationId === id) {
                 placementAnnotationMap.current.delete(placementId);
+                placementSyncedTextMap.current.delete(placementId);
                 setDesignPlacements((prev) => prev.filter((p) => p.id !== placementId));
                 break;
               }
@@ -1340,32 +1342,66 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
     if (!endpoint || !currentSessionId) return;
 
     const currentMap = placementAnnotationMap.current;
+    const syncedTextMap = placementSyncedTextMap.current;
     const currentIds = new Set(designPlacements.map((p) => p.id));
 
-    // Create annotations for new placements
+    const buildPlacementComment = (p: DesignPlacement) =>
+      `Place ${p.type} at (${Math.round(p.x)}, ${Math.round(p.y)}), ${p.width}×${p.height}px${p.text ? ` — "${p.text}"` : ""}`;
+
+    // Create or update annotations for each placement
     for (const p of designPlacements) {
-      if (currentMap.has(p.id)) continue;
+      if (!currentMap.has(p.id)) {
+        // Mark as in-flight to avoid duplicates
+        currentMap.set(p.id, "");
+        syncedTextMap.set(p.id, p.text);
 
-      // Mark as in-flight to avoid duplicates
-      currentMap.set(p.id, "");
+        const pageUrl =
+          typeof window !== "undefined"
+            ? window.location.pathname + window.location.search + window.location.hash
+            : pathname;
 
-      const pageUrl =
-        typeof window !== "undefined"
-          ? window.location.pathname + window.location.search + window.location.hash
-          : pathname;
+        syncAnnotation(endpoint, currentSessionId, {
+          id: p.id,
+          x: (p.x / window.innerWidth) * 100,
+          y: p.y,
+          comment: buildPlacementComment(p),
+          element: `[design:${p.type}]`,
+          elementPath: "[placement]",
+          timestamp: p.timestamp,
+          url: pageUrl,
+          intent: "change",
+          severity: "important",
+          kind: "placement",
+          placement: {
+            componentType: p.type,
+            width: p.width,
+            height: p.height,
+            scrollY: p.scrollY,
+            text: p.text,
+          },
+        } as Annotation)
+          .then((serverAnnotation) => {
+            // Update map with real server ID
+            if (currentMap.has(p.id)) {
+              currentMap.set(p.id, serverAnnotation.id);
+            }
+          })
+          .catch((err) => {
+            console.warn("[Agentation] Failed to sync placement annotation:", err);
+            currentMap.delete(p.id);
+            syncedTextMap.delete(p.id);
+          });
+        continue;
+      }
 
-      syncAnnotation(endpoint, currentSessionId, {
-        id: p.id,
-        x: (p.x / window.innerWidth) * 100,
-        y: p.y,
-        comment: `Place ${p.type} at (${Math.round(p.x)}, ${Math.round(p.y)}), ${p.width}×${p.height}px${p.text ? ` — "${p.text}"` : ""}`,
-        element: `[design:${p.type}]`,
-        elementPath: "[placement]",
-        timestamp: p.timestamp,
-        url: pageUrl,
-        intent: "change",
-        severity: "important",
-        kind: "placement",
+      // Existing placement — push note updates once we have a server id
+      const existingId = currentMap.get(p.id);
+      if (!existingId) continue;
+      if (syncedTextMap.get(p.id) === p.text) continue;
+
+      syncedTextMap.set(p.id, p.text);
+      updateAnnotationOnServer(endpoint, existingId, {
+        comment: buildPlacementComment(p),
         placement: {
           componentType: p.type,
           width: p.width,
@@ -1373,23 +1409,16 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
           scrollY: p.scrollY,
           text: p.text,
         },
-      } as Annotation)
-        .then((serverAnnotation) => {
-          // Update map with real server ID
-          if (currentMap.has(p.id)) {
-            currentMap.set(p.id, serverAnnotation.id);
-          }
-        })
-        .catch((err) => {
-          console.warn("[Agentation] Failed to sync placement annotation:", err);
-          currentMap.delete(p.id);
-        });
+      }).catch((err) => {
+        console.warn("[Agentation] Failed to update placement annotation:", err);
+      });
     }
 
     // Delete annotations for removed placements
     for (const [placementId, annotationId] of currentMap) {
       if (!currentIds.has(placementId)) {
         currentMap.delete(placementId);
+        syncedTextMap.delete(placementId);
         if (annotationId) {
           deleteAnnotationFromServer(endpoint, annotationId).catch(() => {});
         }
@@ -1435,8 +1464,8 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
           Math.abs(orig.width - curr.width) > 1 ||
           Math.abs(orig.height - curr.height) > 1;
 
-        if (!hasMoved) {
-          // Section returned to original — delete annotation if exists
+        if (!hasMoved && !section.note) {
+          // Section returned to original with no note — delete annotation if exists
           const existingId = currentMap.get(section.id);
           if (existingId) {
             currentMap.delete(section.id);
@@ -1445,11 +1474,16 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
           continue;
         }
 
+        const notePart = section.note ? ` — "${section.note}"` : "";
+        const comment = hasMoved
+          ? `Move ${section.label} section (${section.tagName}) — from (${Math.round(orig.x)},${Math.round(orig.y)}) ${Math.round(orig.width)}×${Math.round(orig.height)} to (${Math.round(curr.x)},${Math.round(curr.y)}) ${Math.round(curr.width)}×${Math.round(curr.height)}${notePart}`
+          : `Note on ${section.label} section (${section.tagName})${notePart}`;
+
         const existingAnnotationId = currentMap.get(section.id);
         if (existingAnnotationId) {
           // Update existing
           updateAnnotationOnServer(endpoint, existingAnnotationId, {
-            comment: `Move ${section.label} section (${section.tagName}) — from (${Math.round(orig.x)},${Math.round(orig.y)}) ${Math.round(orig.width)}×${Math.round(orig.height)} to (${Math.round(curr.x)},${Math.round(curr.y)}) ${Math.round(curr.width)}×${Math.round(curr.height)}`,
+            comment,
           }).catch((err) => {
             console.warn("[Agentation] Failed to update rearrange annotation:", err);
           });
@@ -1461,7 +1495,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
             id: section.id,
             x: (curr.x / window.innerWidth) * 100,
             y: curr.y,
-            comment: `Move ${section.label} section (${section.tagName}) — from (${Math.round(orig.x)},${Math.round(orig.y)}) ${Math.round(orig.width)}×${Math.round(orig.height)} to (${Math.round(curr.x)},${Math.round(curr.y)}) ${Math.round(curr.width)}×${Math.round(curr.height)}`,
+            comment,
             element: section.selector,
             elementPath: "[rearrange]",
             timestamp: Date.now(),
@@ -2894,6 +2928,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
         }
       }
       placementAnnotationMap.current.clear();
+      placementSyncedTextMap.current.clear();
 
       // Delete shadow annotations for rearrange
       for (const [, annotationId] of rearrangeAnnotationMap.current) {

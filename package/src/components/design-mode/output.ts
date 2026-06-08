@@ -105,6 +105,9 @@ export function generateDesignOutput(
     sorted.forEach((c, i) => {
       const label = COMPONENT_MAP[c.type]?.label || c.type;
       out += `${i + 1}. **${label}** — \`${Math.round(c.width)}×${Math.round(c.height)}px\` at \`(${Math.round(c.x)}, ${Math.round(c.y)})\`\n`;
+      if (c.text) {
+        out += `   - Note: "${c.text}"\n`;
+      }
     });
     return out;
   }
@@ -120,6 +123,10 @@ export function generateDesignOutput(
     const rect = { x: c.x, y: c.y, width: c.width, height: c.height };
 
     out += `${i + 1}. **${label}** — \`${Math.round(c.width)}×${Math.round(c.height)}px\` at \`(${Math.round(c.x)}, ${Math.round(c.y)})\`\n`;
+
+    if (c.text) {
+      out += `   - Note: "${c.text}"\n`;
+    }
 
     // Spatial context
     const ctx = getSpatialContext(rect);
@@ -272,8 +279,9 @@ export function generateRearrangeOutput(
 
     const posMoved = Math.abs(o.x - c.x) > 1 || Math.abs(o.y - c.y) > 1;
     const sizeChanged = Math.abs(o.width - c.width) > 1 || Math.abs(o.height - c.height) > 1;
+    const hasNote = !!s.note;
 
-    if (!posMoved && !sizeChanged) {
+    if (!posMoved && !sizeChanged && !hasNote) {
       if (detailLevel === "forensic") {
         changed.push({ section: s, posMoved: false, sizeChanged: false });
       }
@@ -285,7 +293,11 @@ export function generateRearrangeOutput(
 
   // Nothing changed
   if (changed.length === 0) return "";
-  if (detailLevel !== "forensic" && changed.every((e) => !e.posMoved && !e.sizeChanged)) return "";
+  if (
+    detailLevel !== "forensic" &&
+    changed.every((e) => !e.posMoved && !e.sizeChanged && !e.section.note)
+  )
+    return "";
 
   let out = "## Suggested Layout Changes\n\n";
 
@@ -319,7 +331,12 @@ export function generateRearrangeOutput(
     const c = s.currentRect;
 
     if (!posMoved && !sizeChanged) {
-      out += `- ${s.label} — unchanged at (${Math.round(c.x)}, ${Math.round(c.y)}) ${Math.round(c.width)}×${Math.round(c.height)}px\n`;
+      if (s.note) {
+        out += `- **${s.label}** — note only\n`;
+        out += `  - Note: "${s.note}"\n`;
+      } else {
+        out += `- ${s.label} — unchanged at (${Math.round(c.x)}, ${Math.round(c.y)}) ${Math.round(c.width)}×${Math.round(c.height)}px\n`;
+      }
       continue;
     }
 
@@ -332,6 +349,9 @@ export function generateRearrangeOutput(
       } else {
         out += `- Suggested: resize **${s.label}** to ${Math.round(c.width)}×${Math.round(c.height)}px\n`;
       }
+      if (s.note) {
+        out += `  - Note: "${s.note}"\n`;
+      }
       continue;
     }
 
@@ -342,6 +362,10 @@ export function generateRearrangeOutput(
       out += `- Suggested: move **${s.label}**\n`;
     } else {
       out += `- Suggested: resize **${s.label}** from ${Math.round(o.width)}×${Math.round(o.height)}px to ${Math.round(c.width)}×${Math.round(c.height)}px\n`;
+    }
+
+    if (s.note) {
+      out += `  - Note: "${s.note}"\n`;
     }
 
     if (posMoved) {
