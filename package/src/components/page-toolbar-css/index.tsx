@@ -231,22 +231,193 @@ injectAgentationColorTokens();
 // =============================================================================
 
 /**
- * Recursively pierces shadow DOMs to find the deepest element at a point.
- * document.elementFromPoint() stops at shadow hosts, so we need to
- * recursively check inside open shadow roots to find the actual target.
+ * Checks whether an iframe's contentDocument is accessible (same-origin).
+ * Cross-origin iframes throw a SecurityError when accessing contentDocument.
+ */
+function isSameOriginIframe(iframe: HTMLIFrameElement): boolean {
+  try {
+    const doc = iframe.contentDocument;
+    // Accessing contentDocument on a cross-origin iframe returns null in some browsers
+    // or throws in others. If we can read it and it has a body, it's same-origin.
+    return doc !== null && doc.body !== null;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Gets all accessible (same-origin) iframes in a document, recursively.
+ */
+function getAllSameOriginIframes(doc: Document = document): HTMLIFrameElement[] {
+  const iframes: HTMLIFrameElement[] = [];
+  const allIframes = doc.querySelectorAll("iframe");
+  for (const iframe of allIframes) {
+    if (isSameOriginIframe(iframe)) {
+      iframes.push(iframe);
+      // Recurse into nested iframes
+      try {
+        const nested = getAllSameOriginIframes(iframe.contentDocument!);
+        iframes.push(...nested);
+      } catch {
+        // Ignore errors from nested access
+      }
+    }
+  }
+  return iframes;
+}
+
+/**
+ * Recursively pierces shadow DOMs and same-origin iframes to find the deepest
+ * element at a point.
+ *
+ * document.elementFromPoint() stops at shadow hosts and iframe elements, so we
+ * need to recursively check inside open shadow roots and same-origin iframe
+ * contentDocuments to find the actual target.
  */
 function deepElementFromPoint(x: number, y: number): HTMLElement | null {
   let element = document.elementFromPoint(x, y) as HTMLElement | null;
   if (!element) return null;
 
-  // Keep drilling down through shadow roots
-  while (element?.shadowRoot) {
-    const deeper = element.shadowRoot.elementFromPoint(x, y) as HTMLElement | null;
-    if (!deeper || deeper === element) break;
-    element = deeper;
+  // Keep drilling down through shadow roots and iframes
+  let changed = true;
+  while (changed) {
+    changed = false;
+
+    // Drill into shadow roots
+    while (element?.shadowRoot) {
+      const deeper = element.shadowRoot.elementFromPoint(x, y) as HTMLElement | null;
+      if (!deeper || deeper === element) break;
+      element = deeper;
+      changed = true;
+    }
+
+    // Drill into same-origin iframes
+    if (element?.tagName === "IFRAME") {
+      const iframe = element as HTMLIFrameElement;
+      if (isSameOriginIframe(iframe)) {
+        const iframeRect = iframe.getBoundingClientRect();
+        const iframeX = x - iframeRect.left;
+        const iframeY = y - iframeRect.top;
+        try {
+          const deeper = iframe.contentDocument!.elementFromPoint(iframeX, iframeY) as HTMLElement | null;
+          if (deeper && deeper !== iframe) {
+            element = deeper;
+            changed = true;
+          }
+        } catch {
+          // Cross-origin or other access error — stop here
+        }
+      }
+    }
   }
 
   return element;
+}
+
+/**
+ * Converts an element's bounding rect to viewport coordinates, accounting for
+ * the element potentially being inside one or more nested iframes.
+ */
+function getViewportRect(element: HTMLElement): DOMRect {
+  const rect = element.getBoundingClientRect();
+  let offsetX = 0;
+  let offsetY = 0;
+
+  // Walk up through iframe boundaries to accumulate offsets
+  let currentDoc = element.ownerDocument;
+  while (currentDoc !== document) {
+    const frameElement = currentDoc.defaultView?.frameElement as HTMLIFrameElement | null;
+    if (!frameElement) break;
+    const frameRect = frameElement.getBoundingClientRect();
+    offsetX += frameRect.left;
+    offsetY += frameRect.top;
+    currentDoc = frameElement.ownerDocument;
+  }
+
+  return new DOMRect(
+    rect.x + offsetX,
+    rect.y + offsetY,
+    rect.width,
+    rect.height,
+  );
+}
+
+/**
+ * Like document.querySelectorAll but also searches inside same-origin iframes.
+ * Returns elements from all accessible documents. The returned elements'
+ * getBoundingClientRect() values are in their own iframe's coordinate space,
+ * so callers should use getViewportRect() for viewport-relative positions.
+ */
+function querySelectorAllWithIframes(selector: string): HTMLElement[] {
+  const results: HTMLElement[] = [];
+
+  function searchDoc(doc: Document) {
+    const elements = doc.querySelectorAll(selector);
+    for (const el of elements) {
+      if (el instanceof HTMLElement) results.push(el);
+    }
+    // Recurse into same-origin iframes
+    const iframes = doc.querySelectorAll("iframe");
+    for (const iframe of iframes) {
+      if (isSameOriginIframe(iframe as HTMLIFrameElement)) {
+        try {
+          searchDoc((iframe as HTMLIFrameElement).contentDocument!);
+        } catch {
+          // Ignore access errors
+        }
+      }
+    }
+  }
+
+  searchDoc(document);
+  return results;
+}
+
+/**
+ * Like document.elementsFromPoint but also checks same-origin iframes.
+ * Coordinates are in viewport space.
+ */
+function elementsFromPointWithIframes(x: number, y: number): HTMLElement[] {
+  const results: HTMLElement[] = [];
+
+  // Main document
+  const mainElements = document.elementsFromPoint(x, y);
+  for (const el of mainElements) {
+    if (el instanceof HTMLElement) results.push(el);
+  }
+
+  // Check same-origin iframes
+  const iframes = getAllSameOriginIframes();
+  for (const iframe of iframes) {
+    try {
+      const iframeRect = iframe.getBoundingClientRect();
+      // Walk up through nested iframes to get true viewport offset
+      let offsetX = iframeRect.left;
+      let offsetY = iframeRect.top;
+      let parentDoc = iframe.ownerDocument;
+      while (parentDoc !== document) {
+        const parentFrame = parentDoc.defaultView?.frameElement as HTMLIFrameElement | null;
+        if (!parentFrame) break;
+        const parentRect = parentFrame.getBoundingClientRect();
+        offsetX += parentRect.left;
+        offsetY += parentRect.top;
+        parentDoc = parentFrame.ownerDocument;
+      }
+
+      const iframeX = x - offsetX;
+      const iframeY = y - offsetY;
+      if (iframeX >= 0 && iframeY >= 0) {
+        const iframeElements = iframe.contentDocument!.elementsFromPoint(iframeX, iframeY);
+        for (const el of iframeElements) {
+          if (el instanceof HTMLElement) results.push(el);
+        }
+      }
+    } catch {
+      // Ignore access errors
+    }
+  }
+
+  return results;
 }
 
 function isElementFixed(element: HTMLElement): boolean {
@@ -2248,19 +2419,19 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
         ];
 
         for (const [x, y] of points) {
-          const elements = document.elementsFromPoint(x, y);
+          const elements = elementsFromPointWithIframes(x, y);
           for (const el of elements) {
             if (el instanceof HTMLElement) candidateElements.add(el);
           }
         }
 
-        // Also check nearby elements
-        const nearbyElements = document.querySelectorAll(
+        // Also check nearby elements (including inside same-origin iframes)
+        const nearbyElements = querySelectorAllWithIframes(
           "button, a, input, img, p, h1, h2, h3, h4, h5, h6, li, label, td, th, div, span, section, article, aside, nav",
         );
         for (const el of nearbyElements) {
           if (el instanceof HTMLElement) {
-            const rect = el.getBoundingClientRect();
+            const rect = getViewportRect(el);
             // Check if element's center point is inside or if it overlaps significantly
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
@@ -2420,7 +2591,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
         const selector =
           "button, a, input, img, p, h1, h2, h3, h4, h5, h6, li, label, td, th";
 
-        document.querySelectorAll(selector).forEach((el) => {
+        querySelectorAllWithIframes(selector).forEach((el) => {
           if (!(el instanceof HTMLElement)) return;
           if (
             closestCrossingShadow(el, "[data-feedback-toolbar]") ||
@@ -2771,7 +2942,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
           const centerX = bb.x + bb.width / 2;
           const centerY = bb.y + bb.height / 2 - window.scrollY;
           // Use elementsFromPoint to look through the marker if it's covering
-          const allEls = document.elementsFromPoint(centerX, centerY);
+          const allEls = elementsFromPointWithIframes(centerX, centerY);
           const el = allEls.find(
             (e) => !e.closest('[data-annotation-marker]') && !e.closest('[data-agentation-root]'),
           ) as HTMLElement | undefined;
