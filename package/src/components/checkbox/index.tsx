@@ -2,10 +2,24 @@ import styles from "./styles.module.scss";
 
 interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-export const Checkbox = ({ className = "", ...props }: CheckboxProps) => {
+export const Checkbox = ({
+  className = "",
+  checked,
+  onChange,
+  ...props
+}: CheckboxProps) => {
   return (
-    <div className={`${styles.checkboxContainer} ${className}`}>
-      <input className={styles.checkboxInput} type="checkbox" {...props} />
+    <div
+      className={`${styles.checkboxContainer} ${className}`}
+      data-checked={checked ? "" : undefined}
+    >
+      <input
+        className={styles.checkboxInput}
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        {...props}
+      />
       <svg
         className={styles.checkboxCheck}
         width="14"

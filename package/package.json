@@ -49,6 +49,7 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.3.0",
+    "esbuild": "^0.27.4",
     "esbuild-sass-plugin": "^3.6.0",
     "jsdom": "^25.0.0",
     "postcss": "^8.5.6",

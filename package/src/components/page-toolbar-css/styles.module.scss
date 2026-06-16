@@ -202,6 +202,7 @@
 
 .toolbarContainer {
   position: relative;
+  -webkit-user-select: none;
   user-select: none;
   margin-left: auto;
   align-self: flex-end;
@@ -310,6 +311,7 @@
   position: absolute;
   top: -13px;
   right: -13px;
+  -webkit-user-select: none;
   user-select: none;
   min-width: 18px;
   height: 18px;
@@ -386,7 +388,6 @@
       transparent
     );
   }
-
 
   &[data-error="true"] {
     color: var(--agentation-color-red);
@@ -918,6 +919,7 @@
   box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.2),
     inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+  -webkit-user-select: none;
   user-select: none;
   will-change: transform, opacity;
   contain: layout style;
@@ -1874,122 +1876,6 @@
 
   &.settingsToggleMarginBottom {
     margin-bottom: calc(0.5rem + 6px);
-  }
-}
-
-.customCheckbox {
-  position: relative;
-  width: 14px;
-  height: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition:
-    background-color 0.25s ease,
-    border-color 0.25s ease;
-
-  svg {
-    color: #1a1a1a;
-    opacity: 1;
-    transition: opacity 0.15s ease;
-  }
-
-  input[type="checkbox"]:checked + & {
-    border-color: rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 1);
-  }
-
-  // Light mode variant (unchecked state)
-  [data-agentation-theme="light"] & {
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    background: #fff;
-
-    // Checked state in light mode
-    &.checked {
-      border-color: #1a1a1a;
-      background: #1a1a1a;
-
-      svg {
-        color: #fff;
-      }
-    }
-  }
-}
-
-.toggleLabel {
-  font-size: 0.8125rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.5);
-  letter-spacing: -0.0094em;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-
-  [data-agentation-theme="light"] & {
-    color: rgba(0, 0, 0, 0.5);
-  }
-}
-
-// iOS-style toggle switch
-.toggleSwitch {
-  position: relative;
-  display: inline-block;
-  width: 24px;
-  height: 16px;
-  flex-shrink: 0;
-  cursor: pointer;
-  transition:
-    background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-  input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  input:checked + .toggleSlider {
-    background-color: var(--agentation-color-blue);
-  }
-
-  input:checked + .toggleSlider::before {
-    transform: translateX(8px);
-  }
-
-  &.disabled {
-    opacity: 0.4;
-
-    .toggleSlider {
-      cursor: not-allowed;
-    }
-  }
-}
-
-.toggleSlider {
-  position: absolute;
-  cursor: pointer;
-  inset: 0;
-  border-radius: 16px;
-  background: #484848; // Dark mode unchecked
-
-  [data-agentation-theme="light"] & {
-    background: #dddddd; // Light mode unchecked
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    height: 12px;
-    width: 12px;
-    left: 2px;
-    bottom: 2px;
-    background: white;
-    border-radius: 50%;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 

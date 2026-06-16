@@ -6,6 +6,7 @@ import { AnnotationPopupCSS } from "../annotation-popup-css";
 import type { DetectedSection, RearrangeState } from "./types";
 import styles from "./styles.module.scss";
 import { originalSetTimeout } from "../../utils/freeze-animations";
+import { useShadowRoot } from "../../utils/use-shadow-root";
 
 // =============================================================================
 // Rearrange Overlay — Click-to-capture, free drag, resize
@@ -291,8 +292,12 @@ export function RearrangeOverlay({ rearrangeState, onChange, isDarkMode, exiting
   // --- Prevent text selection while rearrange mode is active ---
   useEffect(() => {
     const prev = document.body.style.userSelect;
+    document.body.style.webkitUserSelect = "none";
     document.body.style.userSelect = "none";
-    return () => { document.body.style.userSelect = prev; };
+    return () => { 
+      document.body.style.webkitUserSelect = prev;
+      document.body.style.userSelect = prev;
+    };
   }, []);
 
   // --- Mousedown to capture new elements (+ immediate drag) ---
@@ -360,7 +365,7 @@ export function RearrangeOverlay({ rearrangeState, onChange, isDarkMode, exiting
           lastDy = snappedDy;
 
           // Ghost mode: only move outline (ghost preview), not the page element
-          const outlineEl = document.querySelector(`[data-rearrange-section="${section.id}"]`) as HTMLElement | null;
+          const outlineEl = shadowRoot.querySelector(`[data-rearrange-section="${section.id}"]`) as HTMLElement | null;
           if (outlineEl) outlineEl.style.transform = `translate(${snappedDx}px, ${snappedDy}px)`;
           // Update live drag position for connector lines
           setDragPositions(new Map([[section.id, { x: startPos.x + snappedDx, y: startPos.y + snappedDy, width: section.currentRect.width, height: section.currentRect.height }]]));
@@ -373,7 +378,7 @@ export function RearrangeOverlay({ rearrangeState, onChange, isDarkMode, exiting
           interactionRef.current = null;
           setSnapGuides([]);
           setDragPositions(new Map());
-          const outlineEl = document.querySelector(`[data-rearrange-section="${section.id}"]`) as HTMLElement | null;
+          const outlineEl = shadowRoot.querySelector(`[data-rearrange-section="${section.id}"]`) as HTMLElement | null;
           if (outlineEl) outlineEl.style.transform = "";
           if (moved) {
 
@@ -515,7 +520,7 @@ export function RearrangeOverlay({ rearrangeState, onChange, isDarkMode, exiting
       }>();
       for (const s of sections) {
         if (newSelected.has(s.id)) {
-          const outlineEl = document.querySelector(`[data-rearrange-section="${s.id}"]`) as HTMLElement | null;
+          const outlineEl = shadowRoot.querySelector(`[data-rearrange-section="${s.id}"]`) as HTMLElement | null;
           dragEls.set(s.id, {
             outlineEl,
             curW: s.currentRect.width, curH: s.currentRect.height,
@@ -637,7 +642,7 @@ export function RearrangeOverlay({ rearrangeState, onChange, isDarkMode, exiting
       let lastRect = { ...startRect };
 
       // Cache outline for direct updates — ghost mode, no page element transforms
-      const resizeOutlineEl = document.querySelector(`[data-rearrange-section="${id}"]`) as HTMLElement | null;
+      const resizeOutlineEl = shadowRoot.querySelector(`[data-rearrange-section="${id}"]`) as HTMLElement | null;
 
       const onMove = (ev: MouseEvent) => {
         const dx = ev.clientX - startX;
@@ -811,9 +816,14 @@ export function RearrangeOverlay({ rearrangeState, onChange, isDarkMode, exiting
     }
   }, [changedKey, sections]);
 
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  const shadowRoot = useShadowRoot(overlayRef);
+
   return (
     <>
       <div
+        ref={overlayRef}
         className={`${styles.rearrangeOverlay} ${!isDarkMode ? styles.light : ""} ${exiting ? styles.overlayExiting : ""}${extraClassName ? ` ${extraClassName}` : ""}`}
         data-feedback-toolbar
       >

@@ -10,6 +10,8 @@
   font-size: 13px;
   letter-spacing: -0.15px;
   color: rgb(26 26 26 / 0.5);
+  -webkit-user-select: none;
+  user-select: none;
   cursor: pointer;
 
   [data-agentation-theme="dark"] & {

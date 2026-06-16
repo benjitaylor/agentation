@@ -1,0 +1,489 @@
+/* Reset box-model and set borders */
+/* ============================================ */
+
+*,
+::before,
+::after {
+  border-width: 0;
+  border-style: solid;
+  box-sizing: border-box;
+}
+
+/* Document */
+/* ============================================ */
+
+/**
+ * 1. Correct line height in all browsers.
+ * 2. Prevent adjustments of font size after orientation changes in iOS.
+ * 3. Remove gray overlay on links for iOS.
+ * 4. Render kerning consistently in all browsers.
+ * 5. Correct font smoothing for macOS.
+ */
+
+:host {
+  line-height: 1.5; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+  -webkit-tap-highlight-color: transparent; /* 3 */
+  font-feature-settings: "kern"; /* 4 */
+  -webkit-font-feature-settings: "kern"; /* 5 */
+  -moz-font-feature-settings: "kern"; /* 5 */
+  -webkit-font-smoothing: antialiased; /* 5 */
+  -moz-osx-font-smoothing: grayscale; /* 5 */
+}
+
+/* Vertical rhythm */
+/* ============================================ */
+
+p,
+table,
+blockquote,
+address,
+pre,
+iframe,
+form,
+figure,
+dl {
+  margin: 0;
+}
+
+/* Headings */
+/* ============================================ */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* Lists (enumeration) */
+/* ============================================ */
+
+ul,
+ol,
+menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Lists (definition) */
+/* ============================================ */
+
+dd {
+  margin-left: 0;
+}
+
+/* Grouping content */
+/* ============================================ */
+
+/**
+ * 1. Add the correct box sizing in Firefox.
+ * 2. Show the overflow in Edge and IE.
+ */
+
+hr {
+  clear: both;
+  margin: 0;
+  border-top-width: 1px;
+  height: 0; /* 1 */
+  box-sizing: content-box; /* 1 */
+  overflow: visible; /* 2 */
+  color: inherit;
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ * 3. Wrap lines by default instead of overflow.
+ */
+
+pre {
+  font-family: inherit; /* 1 */
+  font-size: inherit; /* 2 */
+  white-space: pre-line; /* 3 */
+}
+
+address {
+  font-style: inherit;
+}
+
+/* Text-level semantics */
+/* ============================================ */
+
+/**
+ * Remove the gray background on active links in IE 10.
+ */
+
+a {
+  background-color: transparent;
+  text-decoration: none;
+  color: inherit;
+}
+
+/**
+ * 1. Remove the bottom border in Chrome 57-
+ * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.
+ */
+
+abbr[title] {
+  border-bottom: none; /* 1 */
+  text-decoration: none; /* 2 */
+}
+
+/**
+ * Add the correct font weight in Chrome, Edge, and Safari.
+ */
+
+b,
+strong {
+  font-weight: bolder;
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+
+code,
+kbd,
+samp {
+  font-family: "Menlo", "Monaco", "Consolas", "Courier New", monospace; /* 1 */
+  font-size: inherit; /* 2 */
+}
+
+/**
+ * Add the correct font size in all browsers.
+ */
+
+small {
+  font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` elements from affecting the line height in all browsers.
+ */
+
+sub,
+sup {
+  position: relative;
+  vertical-align: baseline;
+  line-height: 0;
+  font-size: 75%;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+/* Replaced content */
+/* ============================================ */
+
+/**
+ * Prevent vertical alignment issues.
+ */
+
+svg,
+img,
+embed,
+object,
+iframe {
+  vertical-align: bottom;
+}
+
+/*
+ * 1. Remove image default bottom space.
+ * 2. Prevent image from overflowing the container.
+ */
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/**
+ * Prevent alignment issues on Safari.
+ */
+
+@supports (background: -webkit-named-image(i)) {
+  svg {
+    will-change: transform;
+  }
+}
+
+/* Forms */
+/* ============================================ */
+
+/**
+ * Reset form fields to make them styleable.
+ * 1. Make form elements stylable across systems iOS especially.
+ * 2. Inherit text-transform from parent.
+ */
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  -webkit-appearance: none; /* 1 */
+  appearance: none;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  vertical-align: middle;
+  text-align: inherit;
+  text-transform: inherit; /* 2 */
+  font: inherit;
+  color: inherit;
+}
+
+/**
+ * Correct cursors for clickable elements.
+ */
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  cursor: pointer;
+}
+
+button:disabled,
+[type="button"]:disabled,
+[type="reset"]:disabled,
+[type="submit"]:disabled {
+  cursor: default;
+}
+
+/**
+ * Clickable labels and selects.
+ */
+
+select,
+label {
+  cursor: pointer;
+}
+
+/**
+ * Improve outlines for Firefox and unify style with input elements & buttons.
+ */
+
+:-moz-focusring {
+  outline: auto;
+}
+
+select:disabled {
+  opacity: inherit;
+}
+
+/**
+ * 1. Remove padding.
+ */
+
+option {
+  padding: 0; /* 1 */
+}
+
+/**
+ * Reset to invisible
+ */
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+legend {
+  display: contents;
+  padding: 0;
+}
+
+/**
+ * Add the correct vertical alignment in Chrome, Firefox, and Opera.
+ */
+
+progress {
+  vertical-align: baseline;
+}
+
+/**
+ * Remove the default vertical scrollbar in IE 10+.
+ */
+
+textarea {
+  overflow: auto;
+}
+
+/**
+ * Remove increment and decrement buttons in Chrome.
+ */
+
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+/**
+ * Correct the outline style in Safari.
+ */
+
+[type="search"] {
+  outline-offset: -2px;
+}
+
+/**
+ * Remove the inner padding in Chrome and Safari on macOS.
+ */
+
+[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/*
+ * Remove the ‘X’ from Chrome and Safari.
+ */
+
+[type="search"]::-webkit-search-decoration,
+[type="search"]::-webkit-search-cancel-button,
+[type="search"]::-webkit-search-results-button,
+[type="search"]::-webkit-search-results-decoration {
+  display: none;
+}
+
+/**
+ * 1. Hide file input completely.
+ * 2. Remove selected file text.
+ * 3. Set cursor to pointer for all browsers.
+ */
+
+[type="file"] {
+  opacity: 0; /* 1 */
+  font-size: 0; /* 2 */
+  cursor: pointer; /* 3 */
+}
+
+/**
+	* Fix appearance for Firefox
+	*/
+
+[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/**
+ * Set cursor to pointer for all browsers.
+ */
+
+[type="range"] {
+  cursor: pointer;
+}
+
+/**
+ * Reset slider thumbs to make them styleable.
+ */
+
+[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+[type="range"]::-moz-range-thumb {
+  -moz-appearance: none;
+  appearance: none;
+  border-width: 0;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+/* Interactive */
+/* ============================================ */
+
+/*
+ * Add the correct display in Edge, IE 10+, and Firefox.
+ */
+
+details {
+  display: block;
+}
+
+/*
+ * Add the correct display in all browsers.
+ */
+
+summary {
+  display: list-item;
+}
+
+/*
+ * Remove outline for editable content.
+ */
+
+[contenteditable]:focus {
+  outline: auto;
+}
+
+/* Tables */
+/* ============================================ */
+
+/**
+1. Correct table border color inheritance in all Chrome and Safari.
+*/
+
+table {
+  border-color: inherit; /* 1 */
+  border-collapse: collapse;
+}
+
+caption {
+  text-align: left;
+}
+
+td,
+th {
+  vertical-align: top;
+  padding: 0;
+}
+
+th {
+  text-align: left;
+  font-weight: inherit;
+}
+
+/* Misc */
+/* ============================================ */
+
+/*
+ * Make placeholder style consistent across all browsers.
+ */
+
+::placeholder {
+  color: #999;
+  opacity: 1;
+}
+
+/*
+ * Hide focus outline but keep it visible for Windows High Contrast Mode.
+ */
+
+:focus {
+  outline-style: solid;
+  outline-color: transparent;
+}
+
+/*
+ * Hide input arrow when used with datalist.
+ */
+
+::-webkit-calendar-picker-indicator {
+  display: none !important;
+}

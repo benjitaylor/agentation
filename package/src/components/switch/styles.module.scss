@@ -44,7 +44,7 @@
   background-color: #fff;
   transition: transform 0.15s;
 
-  .switchContainer:has(.switchInput:checked) & {
+  .switchContainer[data-checked] & {
     transform: translateX(8px);
   }
 }
