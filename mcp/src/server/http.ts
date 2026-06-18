@@ -100,6 +100,68 @@ function createMcpSession(): { server: Server; transport: StreamableHTTPServerTr
 // Webhook Support
 // -----------------------------------------------------------------------------
 
+/** Webhook retry configuration */
+interface WebhookRetryConfig {
+  /** Maximum number of retry attempts (default: 3) */
+  maxRetries: number;
+  /** Base delay in ms for exponential backoff (default: 1000) */
+  baseDelayMs: number;
+  /** Maximum delay in ms between retries (default: 30000) */
+  maxDelayMs: number;
+  /** Request timeout in ms (default: 10000) */
+  timeoutMs: number;
+}
+
+/** Default webhook retry configuration */
+const DEFAULT_WEBHOOK_CONFIG: WebhookRetryConfig = {
+  maxRetries: parseInt(process.env.AGENTATION_WEBHOOK_MAX_RETRIES || "3", 10),
+  baseDelayMs: parseInt(process.env.AGENTATION_WEBHOOK_BASE_DELAY_MS || "1000", 10),
+  maxDelayMs: parseInt(process.env.AGENTATION_WEBHOOK_MAX_DELAY_MS || "30000", 10),
+  timeoutMs: parseInt(process.env.AGENTATION_WEBHOOK_TIMEOUT_MS || "10000", 10),
+};
+
+/**
+ * Calculate exponential backoff delay with jitter.
+ * Formula: min(maxDelay, baseDelay * 2^attempt) + random jitter
+ */
+function calculateBackoffDelay(attempt: number, config: WebhookRetryConfig): number {
+  const exponentialDelay = config.baseDelayMs * Math.pow(2, attempt);
+  const cappedDelay = Math.min(exponentialDelay, config.maxDelayMs);
+  // Add jitter (0-25% of delay) to prevent thundering herd
+  const jitter = Math.random() * cappedDelay * 0.25;
+  return Math.floor(cappedDelay + jitter);
+}
+
+/**
+ * Check if an error or status code is retryable.
+ * Retries on: network errors, 5xx server errors, 429 rate limiting
+ */
+function isRetryableError(error: Error | null, status?: number): boolean {
+  // Network errors are retryable
+  if (error) {
+    const message = error.message.toLowerCase();
+    return (
+      message.includes("fetch") ||
+      message.includes("network") ||
+      message.includes("timeout") ||
+      message.includes("econnrefused") ||
+      message.includes("econnreset")
+    );
+  }
+  // HTTP status codes that are retryable
+  if (status) {
+    return status === 429 || (status >= 500 && status < 600);
+  }
+  return false;
+}
+
+/**
+ * Sleep for a given duration.
+ */
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 /**
  * Get configured webhook URLs from environment variables.
  *
@@ -130,8 +192,88 @@ function getWebhookUrls(): string[] {
 }
 
 /**
- * Send webhook notification for an action request.
- * Fire-and-forget: doesn't wait for response, logs errors but doesn't throw.
+ * Send a single webhook with retry logic.
+ * Uses exponential backoff with jitter for retries.
+ */
+async function sendWebhookWithRetry(
+  url: string,
+  payload: string,
+  config: WebhookRetryConfig = DEFAULT_WEBHOOK_CONFIG
+): Promise<void> {
+  let lastError: Error | null = null;
+  let lastStatus: number | undefined;
+
+  for (let attempt = 0; attempt <= config.maxRetries; attempt++) {
+    try {
+      // Create an AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), config.timeoutMs);
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": "Agentation-Webhook/1.0",
+        },
+        body: payload,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+      lastStatus = res.status;
+
+      // Success (2xx status codes)
+      if (res.ok) {
+        if (attempt > 0) {
+          log(`[Webhook] POST ${url} -> ${res.status} (succeeded after ${attempt} retries)`);
+        } else {
+          log(`[Webhook] POST ${url} -> ${res.status} ${res.statusText}`);
+        }
+        return;
+      }
+
+      // Non-retryable error (4xx except 429)
+      if (!isRetryableError(null, res.status)) {
+        log(`[Webhook] POST ${url} -> ${res.status} ${res.statusText} (non-retryable)`);
+        return;
+      }
+
+      // Retryable error - will continue to retry
+      lastError = new Error(`HTTP ${res.status}`);
+    } catch (err) {
+      lastError = err as Error;
+
+      // Check if it's a timeout
+      if (lastError.name === "AbortError") {
+        lastError = new Error(`Request timeout after ${config.timeoutMs}ms`);
+      }
+
+      // Non-retryable network error
+      if (!isRetryableError(lastError)) {
+        console.error(`[Webhook] POST ${url} failed (non-retryable):`, lastError.message);
+        return;
+      }
+    }
+
+    // If we have more retries, wait with exponential backoff
+    if (attempt < config.maxRetries) {
+      const delay = calculateBackoffDelay(attempt, config);
+      log(`[Webhook] POST ${url} failed, retrying in ${delay}ms (attempt ${attempt + 1}/${config.maxRetries})`);
+      await sleep(delay);
+    }
+  }
+
+  // All retries exhausted
+  console.error(
+    `[Webhook] POST ${url} failed after ${config.maxRetries} retries:`,
+    lastError?.message || `HTTP ${lastStatus}`
+  );
+}
+
+/**
+ * Send webhook notifications for an action request.
+ * Uses exponential backoff retry for transient failures.
+ * Non-blocking: runs retries in background without blocking the caller.
  */
 function sendWebhooks(actionRequest: ActionRequest): void {
   const webhookUrls = getWebhookUrls();
@@ -142,24 +284,13 @@ function sendWebhooks(actionRequest: ActionRequest): void {
 
   const payload = JSON.stringify(actionRequest);
 
+  // Fire webhooks in parallel, each with its own retry logic
   for (const url of webhookUrls) {
-    // Fire and forget - use .then().catch() instead of await
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "User-Agent": "Agentation-Webhook/1.0",
-      },
-      body: payload,
-    })
-      .then((res) => {
-        log(
-          `[Webhook] POST ${url} -> ${res.status} ${res.statusText}`
-        );
-      })
-      .catch((err) => {
-        console.error(`[Webhook] POST ${url} failed:`, (err as Error).message);
-      });
+    // Don't await - let retries happen in background
+    sendWebhookWithRetry(url, payload).catch((err) => {
+      // This catch is a safety net - sendWebhookWithRetry handles its own errors
+      console.error(`[Webhook] Unexpected error for ${url}:`, err);
+    });
   }
 
   log(
