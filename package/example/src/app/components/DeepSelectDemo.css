@@ -1,0 +1,236 @@
+/* ─────────────────────────────────────────────────────────
+ * Deep Select Demo — Landing page hero scenario
+ * Reuses shared demo-window / demo-browser-bar / demo-content
+ * from FeaturesDemo.css
+ * ───────────────────────────────────────────────────────── */
+
+/* Mini landing page layout */
+.dsd-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+}
+
+/* Nav bar */
+.dsd-nav {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  gap: 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.dsd-logo {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(0,0,0,0.8);
+  font-family: system-ui, sans-serif;
+  letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dsd-logo-mark {
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  border-radius: 4px;
+}
+
+.dsd-nav-links {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.dsd-nav-link {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(0,0,0,0.45);
+  font-family: system-ui, sans-serif;
+}
+
+/* Hero section — the animation wrapper covers this */
+.dsd-hero-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #f8faff 0%, #f0f4ff 100%);
+}
+
+/* Invisible animation overlay — the problem this feature solves */
+.dsd-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(239, 68, 68, 0);
+  transition: background 0.3s ease;
+}
+
+.dsd-overlay.flash {
+  background: rgba(239, 68, 68, 0.03);
+}
+
+/* Wrapper label hint — shows motion.div boundary */
+.dsd-wrapper-label {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 8px;
+  font-weight: 500;
+  font-family: 'SF Mono', SFMono-Regular, ui-monospace, monospace;
+  color: rgba(0,0,0,0.15);
+  z-index: 1;
+  pointer-events: none;
+  letter-spacing: 0.2px;
+}
+
+/* Hero content — entrance animation mimics what motion.div actually does */
+.dsd-hero {
+  text-align: center;
+  padding: 0 24px;
+  opacity: 0;
+  transform: translateY(12px) scale(0.97);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dsd-hero.entered {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.dsd-heading {
+  font-size: 20px;
+  font-weight: 750;
+  color: rgba(0,0,0,0.88);
+  font-family: system-ui, sans-serif;
+  letter-spacing: -0.6px;
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+
+.dsd-heading-accent {
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dsd-subtitle {
+  font-size: 10.5px;
+  color: rgba(0,0,0,0.4);
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+/* CTA button — the target element */
+.dsd-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 18px;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: white;
+  border-radius: 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  font-family: system-ui, sans-serif;
+  letter-spacing: -0.1px;
+  box-shadow: 0 1px 3px rgba(99, 102, 241, 0.3);
+}
+
+.dsd-cta-arrow {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* Social proof row */
+.dsd-social-proof {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.dsd-avatars {
+  display: flex;
+}
+
+.dsd-mini-avatar {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid white;
+  margin-left: -4px;
+}
+
+.dsd-mini-avatar:first-child {
+  margin-left: 0;
+}
+
+.dsd-social-text {
+  font-size: 8.5px;
+  color: rgba(0,0,0,0.3);
+  font-family: system-ui, sans-serif;
+  font-weight: 500;
+}
+
+/* Hover highlight */
+.ds-highlight {
+  position: absolute;
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 30;
+  opacity: 0;
+  transition: opacity 0.15s ease, border-color 0.15s ease;
+}
+
+.ds-highlight.visible {
+  opacity: 1;
+}
+
+.ds-highlight.normal {
+  border: 2px solid #3b82f6;
+}
+
+.ds-highlight.pierce {
+  border: 2px dashed #3b82f6;
+}
+
+/* Hover tooltip — shows element name */
+.ds-tooltip {
+  position: absolute;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 500;
+  font-family: 'SF Mono', SFMono-Regular, ui-monospace, monospace;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 35;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.ds-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ds-tooltip.wrong {
+  background: rgba(0,0,0,0.75);
+  color: rgba(255,255,255,0.5);
+}
+
+.ds-tooltip.correct {
+  background: rgba(0,0,0,0.85);
+  color: rgba(255,255,255,0.95);
+}

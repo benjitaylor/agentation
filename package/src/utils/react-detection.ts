@@ -87,6 +87,9 @@ export const DEFAULT_SKIP_EXACT = new Set([
   "ErrorBoundaryHandler",
   "HotReload",
   "Hot",
+  // Video framework internals
+  "SeriesSequence",
+  "AbsoluteFill",
 ]);
 
 /**
@@ -114,6 +117,11 @@ export const DEFAULT_SKIP_PATTERNS: RegExp[] = [
   /^With[A-Z]/, // withRouter, WithAuth (HOCs)
   /Wrapper$/, // Generic wrappers
   /^Root$/, // Generic Root component
+  // React internal wrappers
+  /RefForwarding/, // React.forwardRef wrapper names
+  // Video framework internals (Remotion, etc.)
+  /^Remotion/, // Remotion-prefixed internals
+  /^TransitionSeries/, // TransitionSeries wrappers
 ];
 
 /**

@@ -2,6 +2,7 @@
 
 import { Footer } from "../Footer";
 import { FeaturesDemo, SettingsDemo, SmartIdentificationDemo, MarkerKeyDemo, ComputedStylesDemo, ReactDetectionDemo, AgentChatDemo } from "../components/FeaturesDemo";
+import { DeepSelectDemo } from "../components/DeepSelectDemo";
 
 export default function FeaturesPage() {
   return (
@@ -84,6 +85,15 @@ export default function FeaturesPage() {
       </section>
 
       <section>
+        <h2 id="deep-select">Deep select</h2>
+        <p>
+          Hold <code>⌘</code> while hovering to pierce through invisible wrappers and select the actual element underneath.
+          Useful when gesture libraries, animation frameworks, or overlay patterns render empty divs on top of your content.
+        </p>
+        <DeepSelectDemo />
+      </section>
+
+      <section>
         <h2 id="layout-mode">Layout mode</h2>
         <p>
           Press <code>L</code> to enter layout mode. A component palette appears with 65+ types you can drag onto the page. You can also grab existing sections and reposition them. Changes sync to connected agents via MCP in real time.
@@ -128,8 +138,12 @@ export default function FeaturesPage() {
               <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.06)', color: 'rgba(0,0,0,0.5)', textAlign: 'right' }}>Copy feedback</td>
             </tr>
             <tr>
-              <td style={{ padding: '0.5rem 0' }}><code>X</code></td>
-              <td style={{ padding: '0.5rem 0', color: 'rgba(0,0,0,0.5)', textAlign: 'right' }}>Clear all annotations</td>
+              <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.06)' }}><code>X</code></td>
+              <td style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(0,0,0,0.06)', color: 'rgba(0,0,0,0.5)', textAlign: 'right' }}>Clear all annotations</td>
+            </tr>
+            <tr>
+              <td style={{ padding: '0.5rem 0' }}><code>⌘</code> / <code>Ctrl</code> + hover</td>
+              <td style={{ padding: '0.5rem 0', color: 'rgba(0,0,0,0.5)', textAlign: 'right' }}>Deep select (pierce overlays)</td>
             </tr>
           </tbody>
         </table>

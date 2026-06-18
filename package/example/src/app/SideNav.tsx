@@ -53,6 +53,7 @@ export function SideNav() {
         { id: 'smart-identification', text: 'Smart Identification' },
         { id: 'computed-styles', text: 'Computed Styles' },
         { id: 'react-detection', text: 'React Detection' },
+        { id: 'deep-select', text: 'Deep Select' },
         { id: 'layout-mode', text: 'Layout Mode' },
         { id: 'keyboard-shortcuts', text: 'Keyboard Shortcuts' },
         { id: 'agent-sync', text: 'Agent Sync' },

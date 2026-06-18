@@ -98,6 +98,21 @@ export function getElementPath(target: HTMLElement, maxDepth = 4): string {
 }
 
 /**
+ * Gets concatenated direct text node content from an element.
+ * Only includes immediate text nodes, not text from child elements.
+ */
+function getDirectTextContent(el: HTMLElement): string {
+  let text = "";
+  for (const child of el.childNodes) {
+    if (child.nodeType === Node.TEXT_NODE) {
+      const t = child.textContent?.trim();
+      if (t) text += (text ? " " : "") + t;
+    }
+  }
+  return text;
+}
+
+/**
  * Identifies an element and returns a human-readable name + path
  */
 export function identifyElement(target: HTMLElement): { name: string; path: string } {
@@ -199,6 +214,12 @@ export function identifyElement(target: HTMLElement): { name: string; path: stri
 
     if (ariaLabel) return { name: `${tag} [${ariaLabel}]`, path };
     if (role) return { name: `${role}`, path };
+
+    // Prefer direct text content over class names — "$54" is more useful than "styles productPrice"
+    const directText = getDirectTextContent(target);
+    if (directText && directText.length < 50) {
+      return { name: `"${directText}"`, path };
+    }
 
     if (typeof className === "string" && className) {
       const words = className

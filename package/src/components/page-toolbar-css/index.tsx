@@ -137,6 +137,7 @@ type HoverInfo = {
   elementPath: string;
   rect: DOMRect | null;
   reactComponents?: string | null;
+  isPiercing?: boolean;
 };
 
 export type OutputDetailLevel = "compact" | "standard" | "detailed" | "forensic";
@@ -231,22 +232,113 @@ injectAgentationColorTokens();
 // =============================================================================
 
 /**
- * Recursively pierces shadow DOMs to find the deepest element at a point.
- * document.elementFromPoint() stops at shadow hosts, so we need to
- * recursively check inside open shadow roots to find the actual target.
+ * Pierce through shadow DOMs to find the actual element.
+ */
+function pierceShadowDOM(
+  element: HTMLElement,
+  x: number,
+  y: number,
+): HTMLElement {
+  let el = element;
+  while (el?.shadowRoot) {
+    const deeper = el.shadowRoot.elementFromPoint(x, y) as HTMLElement | null;
+    if (!deeper || deeper === el) break;
+    el = deeper;
+  }
+  return el;
+}
+
+/**
+ * Finds the deepest element at a point, piercing shadow DOMs.
  */
 function deepElementFromPoint(x: number, y: number): HTMLElement | null {
-  let element = document.elementFromPoint(x, y) as HTMLElement | null;
+  const element = document.elementFromPoint(x, y) as HTMLElement | null;
   if (!element) return null;
+  return pierceShadowDOM(element, x, y);
+}
 
-  // Keep drilling down through shadow roots
-  while (element?.shadowRoot) {
-    const deeper = element.shadowRoot.elementFromPoint(x, y) as HTMLElement | null;
-    if (!deeper || deeper === element) break;
-    element = deeper;
+// =============================================================================
+// Pierce mode (Cmd+hover) — scans through container wrappers and invisible
+// elements to find the actual content underneath. Useful for annotation in
+// animation-heavy frameworks (Remotion, Framer Motion, etc.) where empty
+// overlay divs intercept pointer events.
+// =============================================================================
+
+const GENERIC_CONTAINER_TAGS = new Set([
+  "DIV", "SPAN", "SECTION", "ARTICLE", "MAIN", "ASIDE", "HEADER", "FOOTER", "NAV",
+]);
+
+function isEffectivelyInvisible(el: HTMLElement): boolean {
+  if (typeof el.checkVisibility === "function") {
+    return !el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true });
+  }
+  let current: HTMLElement | null = el;
+  while (current && current !== document.body) {
+    if (window.getComputedStyle(current).opacity === "0") return true;
+    current = current.parentElement;
+  }
+  return false;
+}
+
+function hasDirectContent(el: HTMLElement): boolean {
+  if (!GENERIC_CONTAINER_TAGS.has(el.tagName)) return true;
+  for (const child of el.childNodes) {
+    if (child.nodeType === Node.TEXT_NODE && child.textContent?.trim()) return true;
+  }
+  return false;
+}
+
+/**
+ * Pierce mode: scans all elements at a point to find the deepest one with
+ * visible, meaningful content. Two-pass approach:
+ *   1. Find elements with direct text content (skips empty wrappers)
+ *   2. If no text found, return the smallest visible element (catches
+ *      visual-only elements like timeline bars, chart segments, swatches)
+ * Activated by holding Cmd (Mac) / Ctrl (Windows) while hovering.
+ */
+function pierceElementFromPoint(x: number, y: number): HTMLElement | null {
+  const topElement = document.elementFromPoint(x, y) as HTMLElement | null;
+  if (!topElement) return null;
+
+  const pierced = pierceShadowDOM(topElement, x, y);
+  if (hasDirectContent(pierced) && !isEffectivelyInvisible(pierced))
+    return pierced;
+
+  const allElements = document.elementsFromPoint(x, y) as HTMLElement[];
+
+  // Pass 1: find first element with direct text content
+  for (const candidate of allElements) {
+    if (candidate === topElement) continue;
+    if (candidate === document.documentElement || candidate === document.body)
+      continue;
+    const deep = pierceShadowDOM(candidate, x, y);
+    if (hasDirectContent(deep) && !isEffectivelyInvisible(deep))
+      return deep;
   }
 
-  return element;
+  // Pass 2: no text content found — return the smallest visible element.
+  // Catches visual-only elements (timeline bars, color swatches, progress
+  // indicators, chart segments) that communicate through color/size, not text.
+  const topRect = pierced.getBoundingClientRect();
+  const topArea = topRect.width * topRect.height;
+  let smallest: HTMLElement | null = null;
+  let smallestArea = topArea;
+
+  for (const candidate of allElements) {
+    if (candidate === topElement) continue;
+    if (candidate === document.documentElement || candidate === document.body)
+      continue;
+    if (isEffectivelyInvisible(candidate)) continue;
+    const deep = pierceShadowDOM(candidate, x, y);
+    const rect = deep.getBoundingClientRect();
+    const area = rect.width * rect.height;
+    if (area > 0 && area < smallestArea) {
+      smallest = deep;
+      smallestArea = area;
+    }
+  }
+
+  return smallest || pierced;
 }
 
 function isElementFixed(element: HTMLElement): boolean {
@@ -1835,25 +1927,31 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
     }
   }, [hoveredDrawingIdx, isActive]);
 
-  // Handle mouse move
+  // Handle mouse move + instant Cmd/Ctrl re-evaluation via keydown/keyup
   useEffect(() => {
     if (!isActive || pendingAnnotation || isDrawMode || isDesignMode) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      // Use composedPath to get actual target inside shadow DOM
-      const target = (e.composedPath()[0] || e.target) as HTMLElement;
-      if (closestCrossingShadow(target, "[data-feedback-toolbar]")) {
-        setHoverInfo(null);
-        return;
-      }
+    const lastMouse = { x: 0, y: 0, hasMoved: false };
 
-      const elementUnder = deepElementFromPoint(e.clientX, e.clientY);
+    const evaluateHover = (clientX: number, clientY: number, piercing: boolean) => {
+      const elementUnder = piercing
+        ? pierceElementFromPoint(clientX, clientY)
+        : deepElementFromPoint(clientX, clientY);
       if (
         !elementUnder ||
         closestCrossingShadow(elementUnder, "[data-feedback-toolbar]")
       ) {
         setHoverInfo(null);
         return;
+      }
+
+      // When piercing, suppress indicator if result is same as normal hover
+      let effectivePiercing = piercing;
+      if (piercing) {
+        const normalElement = deepElementFromPoint(clientX, clientY);
+        if (normalElement === elementUnder) {
+          effectivePiercing = false;
+        }
       }
 
       const { name, elementName, path, reactComponents } =
@@ -1866,12 +1964,39 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
         elementPath: path,
         rect,
         reactComponents,
+        isPiercing: effectivePiercing,
       });
-      setHoverPosition({ x: e.clientX, y: e.clientY });
+      setHoverPosition({ x: clientX, y: clientY });
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Use composedPath to get actual target inside shadow DOM
+      const target = (e.composedPath()[0] || e.target) as HTMLElement;
+      if (closestCrossingShadow(target, "[data-feedback-toolbar]")) {
+        setHoverInfo(null);
+        return;
+      }
+      lastMouse.x = e.clientX;
+      lastMouse.y = e.clientY;
+      lastMouse.hasMoved = true;
+      evaluateHover(e.clientX, e.clientY, e.metaKey || e.ctrlKey);
+    };
+
+    // Re-evaluate immediately when Cmd/Ctrl is pressed or released
+    const handleKeyChange = (e: KeyboardEvent) => {
+      if ((e.key === "Meta" || e.key === "Control") && lastMouse.hasMoved) {
+        evaluateHover(lastMouse.x, lastMouse.y, e.metaKey || e.ctrlKey);
+      }
     };
 
     document.addEventListener("mousemove", handleMouseMove);
-    return () => document.removeEventListener("mousemove", handleMouseMove);
+    document.addEventListener("keydown", handleKeyChange);
+    document.addEventListener("keyup", handleKeyChange);
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("keydown", handleKeyChange);
+      document.removeEventListener("keyup", handleKeyChange);
+    };
   }, [isActive, pendingAnnotation, isDrawMode, isDesignMode, effectiveReactMode, drawStrokes]);
 
   // Start editing an annotation (right-click or click on drawing stroke)
@@ -1941,11 +2066,12 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
       if (closestCrossingShadow(target, "[data-annotation-marker]")) return;
 
       // Handle cmd+shift+click for multi-element selection
+      // Cmd is held so pierce mode is active — use pierceElementFromPoint
       if (e.metaKey && e.shiftKey && !pendingAnnotation && !editingAnnotation) {
         e.preventDefault();
         e.stopPropagation();
 
-        const elementUnder = deepElementFromPoint(e.clientX, e.clientY);
+        const elementUnder = pierceElementFromPoint(e.clientX, e.clientY);
         if (!elementUnder) return;
 
         const rect = elementUnder.getBoundingClientRect();
@@ -2012,7 +2138,11 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
 
       e.preventDefault();
 
-      const elementUnder = deepElementFromPoint(e.clientX, e.clientY);
+      // Cmd (Mac) / Ctrl (Win) without Shift = pierce mode click
+      const piercing = (e.metaKey || e.ctrlKey) && !e.shiftKey;
+      const elementUnder = piercing
+        ? pierceElementFromPoint(e.clientX, e.clientY)
+        : deepElementFromPoint(e.clientX, e.clientY);
       if (!elementUnder) return;
 
       const { name, path, reactComponents } = identifyElementWithReact(
@@ -4290,6 +4420,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
                   height: hoverInfo.rect.height,
                   borderColor: "color-mix(in srgb, var(--agentation-color-accent) 50%, transparent)",
                   backgroundColor: "color-mix(in srgb, var(--agentation-color-accent) 4%, transparent)",
+                  ...(hoverInfo.isPiercing ? { borderStyle: "dashed" } : {}),
                 }}
               />
             )}
