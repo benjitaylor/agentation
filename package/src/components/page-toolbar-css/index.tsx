@@ -69,6 +69,7 @@ import {
   updateAnnotation as updateAnnotationOnServer,
   deleteAnnotation as deleteAnnotationFromServer,
 } from "../../utils/sync";
+import { copyTextToClipboard } from "../../utils/clipboard";
 import { getReactComponentName } from "../../utils/react-detection";
 import {
   getSourceLocation,
@@ -3107,11 +3108,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
     }
 
     if (copyToClipboard) {
-      try {
-        await navigator.clipboard.writeText(output);
-      } catch {
-        // Clipboard may fail (permissions, not HTTPS, etc.) - continue anyway
-      }
+      await copyTextToClipboard(output);
     }
 
     // Fire callback with markdown output (always, regardless of clipboard success)
