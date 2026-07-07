@@ -4441,19 +4441,38 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
                   Math.min(hoverPosition.x, window.innerWidth - 100),
                 ),
                 top: Math.max(
-                  hoverPosition.y - (hoverInfo.reactComponents ? 48 : 32),
+                  hoverPosition.y - (
+                    (settings.hoverShowStyles && hoverInfo.computedStylesObj && Object.keys(hoverInfo.computedStylesObj).length > 0)
+                      ? 80 + Object.keys(hoverInfo.computedStylesObj).length * 16
+                      : hoverInfo.reactComponents ? 48 : 32
+                  ),
                   8,
                 ),
               }}
             >
               {hoverInfo.reactComponents && (
                 <div className={styles.hoverReactPath}>
-                  {hoverInfo.reactComponents}
+                  {settings.hoverShowComponent && hoverInfo.innermostComponent
+                    ? hoverInfo.innermostComponent
+                    : hoverInfo.reactComponents}
                 </div>
               )}
               <div className={styles.hoverElementName}>
                 {hoverInfo.elementName}
               </div>
+              {settings.hoverShowStyles && hoverInfo.computedStylesObj && Object.keys(hoverInfo.computedStylesObj).length > 0 && (
+                <div className={styles.hoverStyles}>
+                  {Object.entries(hoverInfo.computedStylesObj).map(([key, value]) => (
+                    <div key={key} className={styles.hoverStyleLine}>
+                      <span className={styles.hoverStyleProp}>
+                        {key.replace(/([A-Z])/g, "-$1").toLowerCase()}
+                      </span>
+                      {": "}
+                      <span className={styles.hoverStyleVal}>{value}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
