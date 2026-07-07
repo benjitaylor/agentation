@@ -864,6 +864,29 @@
   text-overflow: ellipsis;
 }
 
+.hoverStyles {
+  margin-top: 0.25rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.5625rem;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  line-height: 1.45;
+}
+
+.hoverStyleLine {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hoverStyleProp {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.hoverStyleVal {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 // =============================================================================
 // Markers Layer
 // =============================================================================
