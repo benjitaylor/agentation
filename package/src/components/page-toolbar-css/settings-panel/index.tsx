@@ -218,6 +218,24 @@ export function SettingsPanel({
                 onSettingsChange({ blockInteractions: e.target.checked })
               }
             />
+            <CheckboxField
+              className={styles.checkboxField}
+              label="Show component on hover"
+              checked={settings.hoverShowComponent}
+              onChange={(e) =>
+                onSettingsChange({ hoverShowComponent: e.target.checked })
+              }
+              tooltip="Show only the innermost React component name in the hover tooltip instead of the full tree"
+            />
+            <CheckboxField
+              className={styles.checkboxField}
+              label="Show styles on hover"
+              checked={settings.hoverShowStyles}
+              onChange={(e) =>
+                onSettingsChange({ hoverShowStyles: e.target.checked })
+              }
+              tooltip="Show computed CSS styles in the hover tooltip"
+            />
           </div>
 
           <div className={styles.divider} />

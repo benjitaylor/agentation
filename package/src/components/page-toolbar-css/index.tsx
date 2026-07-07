@@ -137,6 +137,8 @@ type HoverInfo = {
   elementPath: string;
   rect: DOMRect | null;
   reactComponents?: string | null;
+  innermostComponent?: string | null;
+  computedStylesObj?: Record<string, string>;
 };
 
 export type OutputDetailLevel = "compact" | "standard" | "detailed" | "forensic";
@@ -153,6 +155,8 @@ export type ToolbarSettings = {
   markerClickBehavior: MarkerClickBehavior;
   webhookUrl: string;
   webhooksEnabled: boolean;
+  hoverShowComponent: boolean;
+  hoverShowStyles: boolean;
 };
 
 const DEFAULT_SETTINGS: ToolbarSettings = {
@@ -164,6 +168,8 @@ const DEFAULT_SETTINGS: ToolbarSettings = {
   markerClickBehavior: "edit",
   webhookUrl: "",
   webhooksEnabled: true,
+  hoverShowComponent: false,
+  hoverShowStyles: false,
 };
 
 // Simple URL validation - checks for valid http(s) URL format
@@ -1860,19 +1866,33 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
         identifyElementWithReact(elementUnder, effectiveReactMode);
       const rect = elementUnder.getBoundingClientRect();
 
+      // Extract innermost component for hover display
+      let innermostComponent: string | null = null;
+      if (reactComponents) {
+        const parts = reactComponents.split(" ");
+        innermostComponent = parts[parts.length - 1] || null;
+      }
+
+      // Compute styles on hover when setting is enabled
+      const hoverComputedStyles = settings.hoverShowStyles
+        ? getDetailedComputedStyles(elementUnder)
+        : undefined;
+
       setHoverInfo({
         element: name,
         elementName,
         elementPath: path,
         rect,
         reactComponents,
+        innermostComponent,
+        computedStylesObj: hoverComputedStyles,
       });
       setHoverPosition({ x: e.clientX, y: e.clientY });
     };
 
     document.addEventListener("mousemove", handleMouseMove);
     return () => document.removeEventListener("mousemove", handleMouseMove);
-  }, [isActive, pendingAnnotation, isDrawMode, isDesignMode, effectiveReactMode, drawStrokes]);
+  }, [isActive, pendingAnnotation, isDrawMode, isDesignMode, effectiveReactMode, drawStrokes, settings.hoverShowStyles, settings.hoverShowComponent]);
 
   // Start editing an annotation (right-click or click on drawing stroke)
   const startEditAnnotation = useCallback((annotation: Annotation) => {
@@ -4421,19 +4441,38 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
                   Math.min(hoverPosition.x, window.innerWidth - 100),
                 ),
                 top: Math.max(
-                  hoverPosition.y - (hoverInfo.reactComponents ? 48 : 32),
+                  hoverPosition.y - (
+                    (settings.hoverShowStyles && hoverInfo.computedStylesObj && Object.keys(hoverInfo.computedStylesObj).length > 0)
+                      ? 80 + Object.keys(hoverInfo.computedStylesObj).length * 16
+                      : hoverInfo.reactComponents ? 48 : 32
+                  ),
                   8,
                 ),
               }}
             >
               {hoverInfo.reactComponents && (
                 <div className={styles.hoverReactPath}>
-                  {hoverInfo.reactComponents}
+                  {settings.hoverShowComponent && hoverInfo.innermostComponent
+                    ? hoverInfo.innermostComponent
+                    : hoverInfo.reactComponents}
                 </div>
               )}
               <div className={styles.hoverElementName}>
                 {hoverInfo.elementName}
               </div>
+              {settings.hoverShowStyles && hoverInfo.computedStylesObj && Object.keys(hoverInfo.computedStylesObj).length > 0 && (
+                <div className={styles.hoverStyles}>
+                  {Object.entries(hoverInfo.computedStylesObj).map(([key, value]) => (
+                    <div key={key} className={styles.hoverStyleLine}>
+                      <span className={styles.hoverStyleProp}>
+                        {key.replace(/([A-Z])/g, "-$1").toLowerCase()}
+                      </span>
+                      {": "}
+                      <span className={styles.hoverStyleVal}>{value}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
