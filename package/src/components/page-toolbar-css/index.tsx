@@ -1866,19 +1866,33 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
         identifyElementWithReact(elementUnder, effectiveReactMode);
       const rect = elementUnder.getBoundingClientRect();
 
+      // Extract innermost component for hover display
+      let innermostComponent: string | null = null;
+      if (reactComponents) {
+        const parts = reactComponents.split(" ");
+        innermostComponent = parts[parts.length - 1] || null;
+      }
+
+      // Compute styles on hover when setting is enabled
+      const hoverComputedStyles = settings.hoverShowStyles
+        ? getDetailedComputedStyles(elementUnder)
+        : undefined;
+
       setHoverInfo({
         element: name,
         elementName,
         elementPath: path,
         rect,
         reactComponents,
+        innermostComponent,
+        computedStylesObj: hoverComputedStyles,
       });
       setHoverPosition({ x: e.clientX, y: e.clientY });
     };
 
     document.addEventListener("mousemove", handleMouseMove);
     return () => document.removeEventListener("mousemove", handleMouseMove);
-  }, [isActive, pendingAnnotation, isDrawMode, isDesignMode, effectiveReactMode, drawStrokes]);
+  }, [isActive, pendingAnnotation, isDrawMode, isDesignMode, effectiveReactMode, drawStrokes, settings.hoverShowStyles, settings.hoverShowComponent]);
 
   // Start editing an annotation (right-click or click on drawing stroke)
   const startEditAnnotation = useCallback((annotation: Annotation) => {
