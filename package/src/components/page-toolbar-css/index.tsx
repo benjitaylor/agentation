@@ -153,6 +153,8 @@ export type ToolbarSettings = {
   markerClickBehavior: MarkerClickBehavior;
   webhookUrl: string;
   webhooksEnabled: boolean;
+  hoverShowComponent: boolean;
+  hoverShowStyles: boolean;
 };
 
 const DEFAULT_SETTINGS: ToolbarSettings = {
@@ -164,6 +166,8 @@ const DEFAULT_SETTINGS: ToolbarSettings = {
   markerClickBehavior: "edit",
   webhookUrl: "",
   webhooksEnabled: true,
+  hoverShowComponent: false,
+  hoverShowStyles: false,
 };
 
 // Simple URL validation - checks for valid http(s) URL format
