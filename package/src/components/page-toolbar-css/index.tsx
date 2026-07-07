@@ -137,6 +137,8 @@ type HoverInfo = {
   elementPath: string;
   rect: DOMRect | null;
   reactComponents?: string | null;
+  innermostComponent?: string | null;
+  computedStylesObj?: Record<string, string>;
 };
 
 export type OutputDetailLevel = "compact" | "standard" | "detailed" | "forensic";
