@@ -16,7 +16,7 @@
 npm install agentation -D
 ```
 
-## Usage
+## React
 
 ```tsx
 import { Agentation } from 'agentation';
@@ -33,6 +33,79 @@ function App() {
 
 The toolbar appears in the bottom-right corner. Click to activate, then click any element to annotate it.
 
+## SolidJS / SolidStart
+
+```bash
+npm install agentation solid-devtools -D
+```
+
+Add development-only source instrumentation before Solid's compiler:
+
+```ts
+// app.config.ts or vite.config.ts
+import agentationSolidMetadata from 'agentation/solid/vite';
+
+export default defineConfig({
+  vite: {
+    plugins: [agentationSolidMetadata()],
+  },
+});
+```
+
+Load the lifecycle wrapper on the client and behind the development flag:
+
+```tsx
+import { clientOnly } from '@solidjs/start';
+
+const DevAgentation = import.meta.env.DEV
+  ? clientOnly(() =>
+      import('agentation/solid').then(({ Agentation }) => ({
+        default: Agentation,
+      })),
+    )
+  : () => null;
+
+export default function App() {
+  return (
+    <>
+      <YourApp />
+      <DevAgentation />
+    </>
+  );
+}
+```
+
+Source instrumentation is optional. Without it, annotations still include DOM
+selectors, accessibility data, styles, text context, and geometry.
+
+## Browser and custom element
+
+Other frameworks can mount the same custom-element runtime:
+
+```ts
+import { mountAgentation } from 'agentation/browser';
+
+const agentation = mountAgentation(document, {
+  onEvent(event) {
+    if (event.detail.type === 'copy') {
+      console.log(event.detail.output);
+    }
+  },
+});
+
+// HMR or framework cleanup
+agentation.destroy();
+```
+
+For declarative usage, define the element and append `<agentation-overlay>`:
+
+```ts
+import { defineAgentationElement } from 'agentation/browser';
+
+defineAgentationElement(window);
+document.body.append(document.createElement('agentation-overlay'));
+```
+
 ## Features
 
 - **Click to annotate** – Click any element with automatic selector identification
@@ -43,7 +116,7 @@ The toolbar appears in the bottom-right corner. Click to activate, then click an
 - **Structured output** – Copy markdown with selectors, positions, and context
 - **Programmatic access** – Callback prop for direct integration with tools
 - **Dark/light mode** – Toggle in settings, persists to localStorage
-- **Zero dependencies** – Pure CSS animations, no runtime libraries
+- **Framework-neutral runtime** – One custom element shared by React, Solid, and browser callers
 
 ## Props
 
@@ -115,6 +188,12 @@ type Annotation = {
   accessibility?: string;
   isMultiSelect?: boolean;
   isFixed?: boolean;
+  framework?: {
+    name: string;
+    componentPath?: string[];
+    source?: { file: string; line?: number; column?: number };
+    confidence?: "exact" | "nearest" | "heuristic";
+  };
 };
 ```
 
@@ -126,8 +205,9 @@ Agentation captures class names, selectors, and element positions so AI agents c
 
 ## Requirements
 
-- React 18+
-- Desktop browser (mobile not supported)
+- A desktop browser (mobile is not supported)
+- React 18+ only when using the root React wrapper
+- SolidJS 1.9+ only when using `agentation/solid`
 
 ## Docs
 

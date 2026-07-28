@@ -68,8 +68,8 @@ export default function ColophonPage() {
       <div className="colophon-page">
         <div className="colophon-content">
           <p>
-            Agentation is a React component for annotating web pages and generating structured
-            feedback for AI coding agents. Zero runtime dependencies beyond React 18+, written
+            Agentation is a framework-neutral browser tool for annotating web pages and generating structured
+            feedback for AI coding agents, with React and Solid lifecycle adapters. Written
             in TypeScript with full type definitions. Available on <a href="https://www.npmjs.com/package/agentation" target="_blank" rel="noopener noreferrer">npm</a> and <a href="https://github.com/benjitaylor/agentation" target="_blank" rel="noopener noreferrer">GitHub</a>.
           </p>
           <p>

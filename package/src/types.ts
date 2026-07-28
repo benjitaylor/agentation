@@ -2,6 +2,21 @@
 // Shared Types
 // =============================================================================
 
+export type SourceLocation = {
+  file: string;
+  line?: number;
+  column?: number;
+};
+
+export type FrameworkMetadata = {
+  name: string;
+  componentPath?: string[];
+  source?: SourceLocation;
+  confidence?: "exact" | "nearest" | "heuristic";
+};
+
+export type OutputDetailLevel = "compact" | "standard" | "detailed" | "forensic";
+
 export type Annotation = {
   id: string;
   x: number; // % of viewport width
@@ -20,6 +35,7 @@ export type Annotation = {
   accessibility?: string;
   isMultiSelect?: boolean; // true if created via drag selection
   isFixed?: boolean; // true if element has fixed/sticky positioning (marker stays fixed)
+  framework?: FrameworkMetadata;
   reactComponents?: string; // React component hierarchy (e.g. "<App> <Dashboard> <Button>")
   sourceFile?: string; // Source file path from React _debugSource (dev mode only, e.g. "src/Button.tsx:42")
   drawingIndex?: number; // Index of linked draw stroke (if any)

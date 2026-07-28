@@ -54,6 +54,30 @@
       "type": "string",
       "description": "React component tree (e.g. \"App > Dashboard > Button\")"
     },
+    "framework": {
+      "type": "object",
+      "description": "Framework-neutral component and source metadata",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "componentPath": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "source": {
+          "type": "object",
+          "required": ["file"],
+          "properties": {
+            "file": { "type": "string" },
+            "line": { "type": "number" },
+            "column": { "type": "number" }
+          }
+        },
+        "confidence": {
+          "enum": ["exact", "nearest", "heuristic"]
+        }
+      }
+    },
     "cssClasses": {
       "type": "string",
       "description": "Element class list"

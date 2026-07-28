@@ -120,8 +120,16 @@ export default function SchemaPage() {
           <CodeBlock
             language="typescript"
             code={`{
-  // React-specific (when available)
-  reactComponents: string;  // Component tree ("App > Dashboard > Button")
+  // Framework metadata (when available)
+  framework: {
+    name: string;             // "react", "solid", or adapter id
+    componentPath?: string[];
+    source?: { file: string; line?: number; column?: number };
+    confidence?: "exact" | "nearest" | "heuristic";
+  };
+
+  // Legacy React compatibility
+  reactComponents: string;
 
   // Element details
   cssClasses: string;       // Class list ("btn btn-primary disabled")
@@ -208,6 +216,12 @@ export default function SchemaPage() {
   };
 
   // Optional context
+  framework?: {
+    name: string;
+    componentPath?: string[];
+    source?: { file: string; line?: number; column?: number };
+    confidence?: "exact" | "nearest" | "heuristic";
+  };
   reactComponents?: string;
   cssClasses?: string;
   computedStyles?: string;
@@ -316,6 +330,24 @@ type ThreadMessage = {
         "height": { "type": "number" }
       },
       "required": ["x", "y", "width", "height"]
+    },
+    "framework": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "componentPath": { "type": "array", "items": { "type": "string" } },
+        "source": {
+          "type": "object",
+          "required": ["file"],
+          "properties": {
+            "file": { "type": "string" },
+            "line": { "type": "number" },
+            "column": { "type": "number" }
+          }
+        },
+        "confidence": { "enum": ["exact", "nearest", "heuristic"] }
+      }
     },
     "reactComponents": { "type": "string" },
     "isFixed": { "type": "boolean" },
@@ -460,7 +492,7 @@ type ThreadMessage = {
           <ol style={{ paddingLeft: "1.25rem" }}>
             <li>Capture the required fields: <code>id</code>, <code>comment</code>, <code>elementPath</code>, <code>timestamp</code>, <code>x</code>, <code>y</code>, <code>element</code></li>
             <li>Add recommended fields for better agent accuracy: <code>url</code>, <code>boundingBox</code></li>
-            <li>For React apps, traverse the fiber tree to get <code>reactComponents</code></li>
+            <li>Add framework metadata through an adapter; keep <code>reactComponents</code> for legacy React consumers</li>
             <li>Output as JSON for MCP/API consumption, or markdown for chat pasting</li>
           </ol>
           <p style={{ marginTop: "0.75rem" }}>

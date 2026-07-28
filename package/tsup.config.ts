@@ -82,8 +82,19 @@ export default {};
   };
 }
 
+function browserSubpathPlugin(): Plugin {
+  return {
+    name: "agentation-browser-subpath",
+    setup(build) {
+      build.onResolve({ filter: /^\.\/browser\/runtime$/ }, () => ({
+        path: "agentation/browser",
+        external: true,
+      }));
+    },
+  };
+}
+
 export default defineConfig((options) => [
-  // React component
   {
     entry: ["src/index.ts"],
     format: ["cjs", "esm"],
@@ -91,13 +102,44 @@ export default defineConfig((options) => [
     splitting: false,
     sourcemap: true,
     clean: !options.watch,
-    external: ["react", "react-dom"],
-    esbuildPlugins: [scssModulesPlugin()],
+    external: ["react", "react-dom", "agentation/browser"],
+    esbuildPlugins: [browserSubpathPlugin(), scssModulesPlugin()],
     define: {
       __VERSION__: JSON.stringify(VERSION),
     },
     banner: {
       js: '"use client";',
+    },
+  },
+  {
+    entry: {
+      browser: "src/browser.ts",
+      "metadata/react": "src/metadata/react.ts",
+      "metadata/solid": "src/metadata/solid.ts",
+      "solid-vite": "src/solid-vite.ts",
+    },
+    format: ["cjs", "esm"],
+    dts: true,
+    splitting: false,
+    sourcemap: true,
+    clean: false,
+    external: ["react", "react-dom", "solid-devtools/vite", "vite"],
+    esbuildPlugins: [scssModulesPlugin()],
+    define: {
+      __VERSION__: JSON.stringify(VERSION),
+    },
+  },
+  {
+    entry: ["src/solid.ts"],
+    format: ["cjs", "esm"],
+    dts: true,
+    splitting: false,
+    sourcemap: true,
+    clean: false,
+    external: ["solid-js", "solid-js/web", "agentation/browser"],
+    esbuildPlugins: [browserSubpathPlugin(), scssModulesPlugin()],
+    define: {
+      __VERSION__: JSON.stringify(VERSION),
     },
   },
 ]);

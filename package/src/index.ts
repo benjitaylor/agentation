@@ -11,11 +11,23 @@
 //
 // =============================================================================
 
-// Main components
-// CSS-only version (default - zero runtime deps)
-export { PageFeedbackToolbarCSS as Agentation } from "./components/page-toolbar-css";
-export { PageFeedbackToolbarCSS } from "./components/page-toolbar-css";
-export type { DemoAnnotation, AgentationProps } from "./components/page-toolbar-css";
+// React compatibility wrapper. The toolbar itself is a framework-neutral
+// custom element mounted and cleaned up by this lifecycle adapter.
+export { Agentation, PageFeedbackToolbarCSS } from "./react";
+export type { AgentationProps, DemoAnnotation } from "./react";
+
+// Framework-neutral browser interface
+export { defineAgentationElement, mountAgentation } from "./browser/runtime";
+export type {
+  AgentationConfig,
+  AgentationController,
+  AgentationElement,
+  AgentationEvent,
+  AgentationEventDetail,
+  ElementMetadata,
+  ElementMetadataAdapter,
+} from "./browser/types";
+export { createReactMetadataAdapter } from "./metadata/react";
 
 // Shared components (for building custom UIs)
 export { AnnotationPopupCSS } from "./components/annotation-popup-css";
@@ -47,4 +59,9 @@ export {
 } from "./utils/storage";
 
 // Types
-export type { Annotation } from "./types";
+export type {
+  Annotation,
+  FrameworkMetadata,
+  OutputDetailLevel,
+  SourceLocation,
+} from "./types";

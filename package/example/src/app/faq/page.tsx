@@ -27,7 +27,7 @@ const faqCategories: FAQCategory[] = [
       },
       {
         question: "How do I install it?",
-        answer: "Install via npm with <code>npm install agentation -D</code>, then import and add the <code>&lt;Agentation /&gt;</code> component to your app. Works with React 18 and Next.js."
+        answer: "Install via npm with <code>npm install agentation -D</code>, then use the React, Solid, or browser entry for your framework."
       },
       {
         question: "Is there a Claude Code integration?",
@@ -94,7 +94,7 @@ const faqCategories: FAQCategory[] = [
     items: [
       {
         question: "Is there a React dependency?",
-        answer: "Yes, Agentation requires React 18+ as a peer dependency. It's built as a React component to integrate seamlessly with modern React applications."
+        answer: "Only for the React wrapper. The browser runtime has no framework dependency, and Solid applications use the <code>agentation/solid</code> wrapper."
       },
       {
         question: "Does it work with TypeScript?",

@@ -234,7 +234,7 @@ export default function InstallPage() {
         </section>
 
         <section>
-          <h2>Add to your app</h2>
+          <h2>React</h2>
           <p>
             Add the component anywhere in your React app, ideally at the root
             level. The <code>NODE_ENV</code> check ensures it only loads in
@@ -252,6 +252,64 @@ function App() {
   );
 }`}
             language="tsx"
+          />
+        </section>
+
+        <section>
+          <h2>SolidJS / SolidStart</h2>
+          <p>
+            Install <code>solid-devtools</code> for optional development source
+            metadata, then add Agentation&apos;s Vite plugin before mounting the
+            client-only wrapper.
+          </p>
+          <CodeBlock code="npm install agentation solid-devtools -D" language="bash" copyable />
+          <CodeBlock
+            code={`// app.config.ts or vite.config.ts
+import agentationSolidMetadata from "agentation/solid/vite";
+
+export default defineConfig({
+  vite: {
+    plugins: [agentationSolidMetadata()],
+  },
+});`}
+            language="ts"
+          />
+          <CodeBlock
+            code={`import { clientOnly } from "@solidjs/start";
+
+const DevAgentation = import.meta.env.DEV
+  ? clientOnly(() =>
+      import("agentation/solid").then(({ Agentation }) => ({
+        default: Agentation,
+      })),
+    )
+  : () => null;
+
+function App() {
+  return (
+    <>
+      <YourApp />
+      <DevAgentation />
+    </>
+  );
+}`}
+            language="tsx"
+          />
+        </section>
+
+        <section>
+          <h2>Other frameworks</h2>
+          <p>
+            Use the imperative browser entry from any client-side framework.
+          </p>
+          <CodeBlock
+            code={`import { mountAgentation } from "agentation/browser";
+
+const agentation = mountAgentation(document);
+
+// Run during framework or HMR cleanup
+agentation.destroy();`}
+            language="ts"
           />
         </section>
 
@@ -375,7 +433,8 @@ function App() {
           <h2>Requirements</h2>
           <ul>
             <li>
-              <strong>React 18+</strong> &mdash; Uses modern React features
+              <strong>Framework adapters</strong> &mdash; React 18+ for the
+              React wrapper or SolidJS 1.9+ for the Solid wrapper
             </li>
             <li>
               <strong>Client-side only</strong> &mdash; Requires DOM access
@@ -385,8 +444,8 @@ function App() {
               devices
             </li>
             <li>
-              <strong>Zero dependencies</strong> &mdash; No runtime deps beyond
-              React
+              <strong>Framework-neutral runtime</strong> &mdash; The browser
+              entry has no React or Solid dependency
             </li>
           </ul>
         </section>

@@ -164,7 +164,7 @@ export default function FeaturesPage() {
           <li><strong>Static positions</strong> &mdash; markers don&rsquo;t update if layout changes</li>
           <li><strong>No screenshots</strong> &mdash; output is text-only</li>
           <li><strong>Animation pause</strong> &mdash; freezes most animations and videos on the page. Some third-party animation libraries may not fully pause.</li>
-          <li><strong>React 18+ only</strong></li>
+          <li><strong>React, Solid, or framework-neutral browser integration</strong></li>
         </ul>
       </section>
     </article>

@@ -18,6 +18,61 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": {
+        "types": "./dist/browser.d.mts",
+        "default": "./dist/browser.mjs"
+      },
+      "require": {
+        "types": "./dist/browser.d.ts",
+        "default": "./dist/browser.js"
+      }
+    },
+    "./solid": {
+      "types": "./dist/solid.d.ts",
+      "import": {
+        "types": "./dist/solid.d.mts",
+        "default": "./dist/solid.mjs"
+      },
+      "require": {
+        "types": "./dist/solid.d.ts",
+        "default": "./dist/solid.js"
+      }
+    },
+    "./solid/vite": {
+      "types": "./dist/solid-vite.d.ts",
+      "import": {
+        "types": "./dist/solid-vite.d.mts",
+        "default": "./dist/solid-vite.mjs"
+      },
+      "require": {
+        "types": "./dist/solid-vite.d.ts",
+        "default": "./dist/solid-vite.js"
+      }
+    },
+    "./metadata/react": {
+      "types": "./dist/metadata/react.d.ts",
+      "import": {
+        "types": "./dist/metadata/react.d.mts",
+        "default": "./dist/metadata/react.mjs"
+      },
+      "require": {
+        "types": "./dist/metadata/react.d.ts",
+        "default": "./dist/metadata/react.js"
+      }
+    },
+    "./metadata/solid": {
+      "types": "./dist/metadata/solid.d.ts",
+      "import": {
+        "types": "./dist/metadata/solid.d.mts",
+        "default": "./dist/metadata/solid.mjs"
+      },
+      "require": {
+        "types": "./dist/metadata/solid.d.ts",
+        "default": "./dist/metadata/solid.js"
+      }
     }
   },
   "files": [
@@ -33,13 +88,25 @@
   },
   "peerDependencies": {
     "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "react-dom": ">=18.0.0",
+    "solid-devtools": ">=0.34.0",
+    "solid-js": ">=1.9.0",
+    "vite": ">=2.2.3"
   },
   "peerDependenciesMeta": {
     "react": {
       "optional": true
     },
     "react-dom": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    },
+    "solid-devtools": {
+      "optional": true
+    },
+    "vite": {
       "optional": true
     }
   },
@@ -56,8 +123,11 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sass": "^1.97.2",
+    "solid-devtools": "^0.34.5",
+    "solid-js": "^1.9.10",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",
+    "vite": "^7.0.0",
     "vitest": "^2.0.0"
   }
 }

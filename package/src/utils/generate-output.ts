@@ -1,8 +1,6 @@
-import {
-  OutputDetailLevel,
-  ReactComponentMode,
-} from "../components/page-toolbar-css";
-import { Annotation } from "../types";
+import type { Annotation, OutputDetailLevel } from "../types";
+
+export type ReactComponentMode = "smart" | "filtered" | "all" | "off";
 
 export const OUTPUT_TO_REACT_MODE: Record<
   OutputDetailLevel,
@@ -54,8 +52,24 @@ export function generateOutput(
   output += "\n";
 
   annotations.forEach((a, i) => {
+    const componentPath = a.framework?.componentPath?.join(" > ") ?? a.reactComponents;
+    const source = a.framework?.source
+      ? [
+          a.framework.source.file,
+          a.framework.source.line,
+          a.framework.source.column,
+        ]
+          .filter((part) => part !== undefined)
+          .join(":")
+      : a.sourceFile;
+    const frameworkLabel = a.framework?.name
+      ? `${a.framework.name.slice(0, 1).toUpperCase()}${a.framework.name.slice(1)}`
+      : a.reactComponents
+        ? "React"
+        : undefined;
+
     if (detailLevel === "compact") {
-      output += `${i + 1}. **${a.element}**${a.sourceFile ? ` (${a.sourceFile})` : ""}: ${a.comment}`;
+      output += `${i + 1}. **${a.element}**${source ? ` (${source})` : ""}: ${a.comment}`;
       if (a.selectedText) {
         output += ` (re: "${a.selectedText.slice(0, 30)}${a.selectedText.length > 30 ? "..." : ""}")`;
       }
@@ -90,22 +104,22 @@ export function generateOutput(
       if (a.nearbyElements) {
         output += `**Nearby Elements:** ${a.nearbyElements}\n`;
       }
-      if (a.sourceFile) {
-        output += `**Source:** ${a.sourceFile}\n`;
+      if (source) {
+        output += `**Source:** ${source}\n`;
       }
-      if (a.reactComponents) {
-        output += `**React:** ${a.reactComponents}\n`;
+      if (componentPath && frameworkLabel) {
+        output += `**${frameworkLabel}:** ${componentPath}\n`;
       }
       output += `**Feedback:** ${a.comment}\n\n`;
     } else {
       // standard and detailed
       output += `### ${i + 1}. ${a.element}\n`;
       output += `**Location:** ${a.elementPath}\n`;
-      if (a.sourceFile) {
-        output += `**Source:** ${a.sourceFile}\n`;
+      if (source) {
+        output += `**Source:** ${source}\n`;
       }
-      if (a.reactComponents) {
-        output += `**React:** ${a.reactComponents}\n`;
+      if (componentPath && frameworkLabel) {
+        output += `**${frameworkLabel}:** ${componentPath}\n`;
       }
       if (detailLevel === "detailed") {
         if (a.cssClasses) {

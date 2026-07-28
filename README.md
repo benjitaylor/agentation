@@ -16,7 +16,7 @@
 npm install agentation -D
 ```
 
-## Usage
+## React
 
 ```tsx
 import { Agentation } from 'agentation';
@@ -33,6 +33,16 @@ function App() {
 
 The toolbar appears in the bottom-right corner. Click to activate, then click any element to annotate it.
 
+## SolidJS and browser usage
+
+The same custom-element runtime is available through:
+
+- `agentation/solid` — Solid lifecycle wrapper
+- `agentation/solid/vite` — optional Solid source-location instrumentation
+- `agentation/browser` — imperative mount and custom-element registration
+
+See the [package README](package/README.md#solidjs--solidstart) for setup.
+
 ## Features
 
 - **Click to annotate** – Click any element with automatic selector identification
@@ -42,7 +52,7 @@ The toolbar appears in the bottom-right corner. Click to activate, then click an
 - **Animation pause** – Freeze all animations (CSS, JS, videos) to capture specific states
 - **Structured output** – Copy markdown with selectors, positions, and context
 - **Dark/light mode** – Matches your preference or set manually
-- **Zero dependencies** – Pure CSS animations, no runtime libraries
+- **Framework-neutral runtime** – One custom element shared by React, Solid, and browser callers
 
 ## How it works
 
@@ -50,8 +60,9 @@ Agentation captures class names, selectors, and element positions so AI agents c
 
 ## Requirements
 
-- React 18+
-- Desktop browser (mobile not supported)
+- A desktop browser (mobile is not supported)
+- React 18+ only for the React wrapper
+- SolidJS 1.9+ only for the Solid wrapper
 
 ## Docs
 
