@@ -86,6 +86,7 @@ import {
 import type { Annotation } from "../../types";
 import styles from "./styles.module.scss";
 import { generateOutput } from "../../utils/generate-output";
+import { copyTextToClipboard } from "../../utils/clipboard";
 import { AnnotationMarker, ExitingMarker, PendingMarker } from "./annotation-marker";
 import { SettingsPanel } from "./settings-panel";
 
@@ -3106,22 +3107,23 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
       }
     }
 
+    let copiedOk = !copyToClipboard;
     if (copyToClipboard) {
-      try {
-        await navigator.clipboard.writeText(output);
-      } catch {
-        // Clipboard may fail (permissions, not HTTPS, etc.) - continue anyway
-      }
+      copiedOk = await copyTextToClipboard(output);
     }
 
     // Fire callback with markdown output (always, regardless of clipboard success)
     onCopy?.(output);
 
-    setCopied(true);
-    originalSetTimeout(() => setCopied(false), 2000);
+    // Only show the success checkmark when the clipboard write actually worked
+    // (or when the consumer opted out of clipboard and handles copy via onCopy).
+    if (copiedOk) {
+      setCopied(true);
+      originalSetTimeout(() => setCopied(false), 2000);
 
-    if (settings.autoClearAfterCopy) {
-      originalSetTimeout(() => clearAll(), 500);
+      if (settings.autoClearAfterCopy) {
+        originalSetTimeout(() => clearAll(), 500);
+      }
     }
   }, [
     annotations,
