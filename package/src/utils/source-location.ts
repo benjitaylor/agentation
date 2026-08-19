@@ -36,6 +36,20 @@ export interface SourceLocation {
   reactVersion?: string;
 }
 
+/** Compact build-time source location tuple: file index, line, column. */
+export type SourceLocationTuple = [number, number, number];
+
+/** Build-time instrumentation manifest used by `data-agentation-id`. */
+export interface SourceLocationManifest {
+  version: 1;
+  files: string[];
+  locations: Record<string, SourceLocationTuple>;
+}
+
+declare global {
+  var __AGENTATION_SOURCE_MANIFEST__: SourceLocationManifest | undefined;
+}
+
 /**
  * Result of source location detection
  */
@@ -112,6 +126,40 @@ interface ReactDOMElement extends HTMLElement {
   __reactInternalInstance$?: string;
   // Alternative patterns
   _reactRootContainer?: unknown;
+}
+
+const SOURCE_LOCATION_ATTRIBUTE = "data-agentation-id";
+
+/**
+ * Resolve source metadata injected by an Agentation build integration.
+ * This is intentionally checked before React internals because it remains
+ * stable in production builds and identifies the exact JSX host element.
+ */
+function findInstrumentedSource(element: HTMLElement): SourceLocation | null {
+  const sourceId = element.getAttribute(SOURCE_LOCATION_ATTRIBUTE);
+  if (!sourceId) return null;
+
+  const manifest = globalThis.__AGENTATION_SOURCE_MANIFEST__;
+  if (manifest?.version !== 1) return null;
+
+  const source = manifest.locations[sourceId];
+  if (
+    !source ||
+    typeof source[0] !== "number" ||
+    typeof source[1] !== "number" ||
+    typeof source[2] !== "number"
+  ) {
+    return null;
+  }
+
+  const fileName = manifest.files[source[0]];
+  if (typeof fileName !== "string") return null;
+
+  return {
+    fileName,
+    lineNumber: source[1],
+    columnNumber: source[2],
+  };
 }
 
 // React fiber tag constants (for reference)
@@ -671,6 +719,16 @@ function probeSourceWalk(
  * ```
  */
 export function getSourceLocation(element: HTMLElement): SourceLocationResult {
+  const instrumentedSource = findInstrumentedSource(element);
+  if (instrumentedSource) {
+    return {
+      found: true,
+      source: instrumentedSource,
+      isReactApp: true,
+      isProduction: false,
+    };
+  }
+
   // Try to get fiber directly from the element (same approach as getReactComponentName)
   // This avoids detectReactApp() whose production heuristic can give false positives
   const fiber = getFiberFromElement(element);

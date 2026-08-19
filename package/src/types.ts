@@ -21,7 +21,7 @@ export type Annotation = {
   isMultiSelect?: boolean; // true if created via drag selection
   isFixed?: boolean; // true if element has fixed/sticky positioning (marker stays fixed)
   reactComponents?: string; // React component hierarchy (e.g. "<App> <Dashboard> <Button>")
-  sourceFile?: string; // Source file path from React _debugSource (dev mode only, e.g. "src/Button.tsx:42")
+  sourceFile?: string; // Detected source path and position (e.g. "src/Button.tsx:42:6")
   drawingIndex?: number; // Index of linked draw stroke (if any)
   elementBoundingBoxes?: Array<{
     x: number;
@@ -106,4 +106,3 @@ export type ThreadMessage = {
   content: string;
   timestamp: number;
 };
-
