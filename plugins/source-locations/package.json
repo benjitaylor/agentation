@@ -1,0 +1,26 @@
+{
+  "name": "@agentation/source-locations",
+  "version": "0.1.0",
+  "description": "Build-time JSX instrumentation for Agentation source locations",
+  "license": "PolyForm-Shield-1.0.0",
+  "type": "commonjs",
+  "files": [
+    "core.cjs",
+    "next.cjs",
+    "turbopack-loader.cjs",
+    "vite.cjs"
+  ],
+  "exports": {
+    "./next": "./next.cjs",
+    "./vite": "./vite.cjs"
+  },
+  "scripts": {
+    "test": "node --test *.test.cjs"
+  },
+  "dependencies": {
+    "@babel/core": "^7.29.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

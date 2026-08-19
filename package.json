@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "pnpm --filter agentation watch & pnpm --filter feedback-tool-example dev",
     "build": "pnpm --filter agentation build",
+    "test": "pnpm --filter agentation test && pnpm --filter @agentation/source-locations test",
     "example": "pnpm --filter feedback-tool-example dev",
     "pack": "cd package && pnpm pack",
     "mcp": "pnpm --filter agentation-mcp start",
