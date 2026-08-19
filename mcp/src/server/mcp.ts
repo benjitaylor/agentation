@@ -6,12 +6,8 @@
  * rather than maintaining its own store.
  */
 
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import type { ActionRequest } from "../types.js";
 
@@ -155,7 +151,7 @@ export const TOOLS = [
   {
     name: "agentation_get_pending",
     description:
-      "Get all pending (unacknowledged) annotations for a session. Annotations have a `kind` field: \"feedback\" (default), \"placement\" (design component placements), or \"rearrange\" (section reorder/resize). Placement and rearrange annotations include structured data.",
+      "Get all pending (unacknowledged) annotations for a session. When available, `sourceFile` is the first code lookup target for the selected element. Annotations have a `kind` field: \"feedback\" (default), \"placement\" (design component placements), or \"rearrange\" (section reorder/resize). Placement and rearrange annotations include structured data.",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -170,7 +166,7 @@ export const TOOLS = [
   {
     name: "agentation_get_all_pending",
     description:
-      "Get all pending annotations across ALL sessions. Includes feedback, design placements, and rearrange annotations. Each annotation has a `kind` field.",
+      "Get all pending annotations across ALL sessions. When available, `sourceFile` is the first code lookup target for the selected element. Includes feedback, design placements, and rearrange annotations. Each annotation has a `kind` field.",
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -254,7 +250,8 @@ export const TOOLS = [
     description:
       "Block until new annotations appear, then collect a batch and return them. " +
       "Triggers automatically when annotations are created — the user just annotates in the browser " +
-      "and the agent picks them up. Includes all annotation kinds: feedback, placement (design components), " +
+      "and the agent picks them up. When available, `sourceFile` is the first code lookup target. " +
+      "Includes all annotation kinds: feedback, placement (design components), " +
       "and rearrange (section reorder/resize). After detecting the first new annotation, waits for a batch window " +
       "to collect more before returning. Use in a loop for hands-free processing. " +
       "After addressing each annotation, call agentation_resolve with the annotation ID and a summary " +
@@ -304,6 +301,7 @@ type Annotation = {
   timestamp?: number;
   nearbyText?: string;
   reactComponents?: string;
+  sourceFile?: string;
   status: string;
   kind?: "feedback" | "placement" | "rearrange";
   placement?: {
@@ -345,6 +343,7 @@ function mapAnnotationForMcp(a: Annotation) {
     timestamp: a.timestamp,
     nearbyText: a.nearbyText,
     reactComponents: a.reactComponents,
+    sourceFile: a.sourceFile,
     ...(a.kind === "placement" && a.placement ? { placement: a.placement } : {}),
     ...(a.kind === "rearrange" && a.rearrange ? { rearrange: a.rearrange } : {}),
   };
@@ -695,6 +694,98 @@ export async function handleTool(name: string, args: unknown): Promise<ToolResul
 // Server
 // -----------------------------------------------------------------------------
 
+async function executeTool(name: string, args: unknown): Promise<ToolResult> {
+  try {
+    return await handleTool(name, args);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return error(message);
+  }
+}
+
+function getToolDescription(name: string): string {
+  const tool = TOOLS.find((candidate) => candidate.name === name);
+  if (!tool) throw new Error(`Missing MCP tool definition: ${name}`);
+  return tool.description;
+}
+
+/** Create a high-level MCP server with all Agentation tools registered. */
+export function createAgentationMcpServer(): McpServer {
+  const server = new McpServer({
+    name: "agentation",
+    version: "0.0.1",
+  });
+
+  server.registerTool(
+    "agentation_list_sessions",
+    { description: getToolDescription("agentation_list_sessions") },
+    () => executeTool("agentation_list_sessions", undefined),
+  );
+  server.registerTool(
+    "agentation_get_session",
+    {
+      description: getToolDescription("agentation_get_session"),
+      inputSchema: GetSessionSchema.shape,
+    },
+    (args) => executeTool("agentation_get_session", args),
+  );
+  server.registerTool(
+    "agentation_get_pending",
+    {
+      description: getToolDescription("agentation_get_pending"),
+      inputSchema: GetPendingSchema.shape,
+    },
+    (args) => executeTool("agentation_get_pending", args),
+  );
+  server.registerTool(
+    "agentation_get_all_pending",
+    { description: getToolDescription("agentation_get_all_pending") },
+    () => executeTool("agentation_get_all_pending", undefined),
+  );
+  server.registerTool(
+    "agentation_acknowledge",
+    {
+      description: getToolDescription("agentation_acknowledge"),
+      inputSchema: AcknowledgeSchema.shape,
+    },
+    (args) => executeTool("agentation_acknowledge", args),
+  );
+  server.registerTool(
+    "agentation_resolve",
+    {
+      description: getToolDescription("agentation_resolve"),
+      inputSchema: ResolveSchema.shape,
+    },
+    (args) => executeTool("agentation_resolve", args),
+  );
+  server.registerTool(
+    "agentation_dismiss",
+    {
+      description: getToolDescription("agentation_dismiss"),
+      inputSchema: DismissSchema.shape,
+    },
+    (args) => executeTool("agentation_dismiss", args),
+  );
+  server.registerTool(
+    "agentation_reply",
+    {
+      description: getToolDescription("agentation_reply"),
+      inputSchema: ReplySchema.shape,
+    },
+    (args) => executeTool("agentation_reply", args),
+  );
+  server.registerTool(
+    "agentation_watch_annotations",
+    {
+      description: getToolDescription("agentation_watch_annotations"),
+      inputSchema: WatchAnnotationsSchema.shape,
+    },
+    (args) => executeTool("agentation_watch_annotations", args),
+  );
+
+  return server;
+}
+
 /**
  * Create and start the MCP server on stdio.
  * @param baseUrl - Optional HTTP server URL to fetch from (default: http://localhost:4747)
@@ -704,33 +795,7 @@ export async function startMcpServer(baseUrl?: string): Promise<void> {
     setHttpBaseUrl(baseUrl);
   }
 
-  const server = new Server(
-    {
-      name: "agentation",
-      version: "0.0.1",
-    },
-    {
-      capabilities: {
-        tools: {},
-      },
-    }
-  );
-
-  // List available tools
-  server.setRequestHandler(ListToolsRequestSchema, async () => {
-    return { tools: TOOLS };
-  });
-
-  // Handle tool calls
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
-    const { name, arguments: args } = request.params;
-    try {
-      return await handleTool(name, args);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      return error(message);
-    }
-  });
+  const server = createAgentationMcpServer();
 
   // Connect via stdio
   const transport = new StdioServerTransport();

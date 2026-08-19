@@ -27,6 +27,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "test": "pnpm build && node --test test/*.test.cjs",
     "watch": "tsup --watch",
     "dev": "pnpm build && pnpm watch",
     "start": "pnpm build && node dist/cli.js server",

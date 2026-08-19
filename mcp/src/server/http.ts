@@ -4,13 +4,9 @@
  */
 
 import { createServer, type IncomingMessage, type ServerResponse } from "http";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
-import { TOOLS, handleTool, error as toolError } from "./mcp.js";
+import { createAgentationMcpServer } from "./mcp.js";
 import {
   createSession,
   getSession,
@@ -66,33 +62,25 @@ const agentConnections = new Set<ServerResponse>();
 // MCP HTTP Transport
 // -----------------------------------------------------------------------------
 
-// Store transports by session ID for stateful sessions
-const mcpTransports = new Map<string, StreamableHTTPServerTransport>();
+type McpSession = {
+  server: McpServer;
+  transport: StreamableHTTPServerTransport;
+};
+
+// Keep both objects alive for the lifetime of each stateful MCP session.
+const mcpSessions = new Map<string, McpSession>();
 
 /**
  * Initialize a new MCP server with HTTP transport for a session.
  */
-function createMcpSession(): { server: Server; transport: StreamableHTTPServerTransport } {
+async function createMcpSession(): Promise<McpSession> {
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: () => crypto.randomUUID(),
   });
 
-  const server = new Server(
-    { name: "agentation", version: "0.0.1" },
-    { capabilities: { tools: {} } }
-  );
+  const server = createAgentationMcpServer();
 
-  server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }));
-  server.setRequestHandler(CallToolRequestSchema, async (req) => {
-    try {
-      return await handleTool(req.params.name, req.params.arguments);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      return toolError(message);
-    }
-  });
-
-  server.connect(transport);
+  await server.connect(transport);
   return { server, transport };
 }
 
@@ -710,11 +698,11 @@ async function handleMcp(req: IncomingMessage, res: ServerResponse): Promise<voi
 
   // POST: Handle JSON-RPC requests
   if (method === "POST") {
-    let transport: StreamableHTTPServerTransport;
+    let mcpSession: McpSession;
 
     if (sessionId) {
       // Session ID provided - must exist in our map
-      if (!mcpTransports.has(sessionId)) {
+      if (!mcpSessions.has(sessionId)) {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end(JSON.stringify({
           jsonrpc: "2.0",
@@ -723,14 +711,14 @@ async function handleMcp(req: IncomingMessage, res: ServerResponse): Promise<voi
         }));
         return;
       }
-      transport = mcpTransports.get(sessionId)!;
+      mcpSession = mcpSessions.get(sessionId)!;
     } else {
       // No session ID - this should be an initialize request, create new session
-      const { transport: newTransport } = createMcpSession();
-      transport = newTransport;
+      mcpSession = await createMcpSession();
     }
 
     try {
+      const { transport } = mcpSession;
       // Read the request body
       const body = await new Promise<string>((resolve, reject) => {
         let data = "";
@@ -744,10 +732,10 @@ async function handleMcp(req: IncomingMessage, res: ServerResponse): Promise<voi
       // Handle the request through the transport (it writes directly to res)
       await transport.handleRequest(req, res, parsedBody);
 
-      // Store the transport with its session ID after the request is handled (for new sessions)
+      // Store the server and transport after initialization assigns a session ID.
       const newSessionId = transport.sessionId;
-      if (newSessionId && !mcpTransports.has(newSessionId)) {
-        mcpTransports.set(newSessionId, transport);
+      if (newSessionId && !mcpSessions.has(newSessionId)) {
+        mcpSessions.set(newSessionId, mcpSession);
         log(`[MCP HTTP] New session created: ${newSessionId}`);
       }
     } catch (err) {
@@ -762,13 +750,13 @@ async function handleMcp(req: IncomingMessage, res: ServerResponse): Promise<voi
 
   // GET: SSE stream for notifications
   if (method === "GET") {
-    if (!sessionId || !mcpTransports.has(sessionId)) {
+    if (!sessionId || !mcpSessions.has(sessionId)) {
       res.writeHead(400, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: "Missing or invalid Mcp-Session-Id" }));
       return;
     }
 
-    const transport = mcpTransports.get(sessionId)!;
+    const { transport } = mcpSessions.get(sessionId)!;
 
     try {
       // Handle the SSE request (transport writes directly to res)
@@ -785,10 +773,10 @@ async function handleMcp(req: IncomingMessage, res: ServerResponse): Promise<voi
 
   // DELETE: Session cleanup
   if (method === "DELETE") {
-    if (sessionId && mcpTransports.has(sessionId)) {
-      const transport = mcpTransports.get(sessionId)!;
-      await transport.close();
-      mcpTransports.delete(sessionId);
+    if (sessionId && mcpSessions.has(sessionId)) {
+      const { server } = mcpSessions.get(sessionId)!;
+      await server.close();
+      mcpSessions.delete(sessionId);
       res.writeHead(204);
       res.end();
     } else {
