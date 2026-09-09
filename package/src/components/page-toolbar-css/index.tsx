@@ -3141,6 +3141,14 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
     onCopy,
   ]);
 
+  // Manual "Send Annotations" is available when the host app provides an
+  // onSubmit callback, or a webhook target (prop or settings) with auto-send
+  // off. Without this, onSubmit-only consumers can never reach the button.
+  const hasWebhookTarget =
+    isValidUrl(settings.webhookUrl) || isValidUrl(webhookUrl || "");
+  const canSend =
+    onSubmit != null || (hasWebhookTarget && !settings.webhooksEnabled);
+
   // Send to webhook
   const sendToWebhook = useCallback(async () => {
     const displayUrl =
@@ -3188,7 +3196,10 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
     await new Promise((resolve) => originalSetTimeout(resolve, 150));
 
     // Fire webhook and check result (force=true to bypass webhooksEnabled check for manual sends)
-    const success = await fireWebhook("submit", { output, annotations }, true);
+    const webhookOk = await fireWebhook("submit", { output, annotations }, true);
+    // Without a webhook target, onSubmit is the delivery mechanism — don't
+    // report the webhook no-op as a failure.
+    const success = hasWebhookTarget ? webhookOk : onSubmit != null;
 
     // Show result
     setSendState(success ? "sent" : "failed");
@@ -3211,6 +3222,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
     effectiveReactMode,
     settings.autoClearAfterCopy,
     clearAll,
+    hasWebhookTarget,
   ]);
 
   // Toolbar dragging - mousemove and mouseup
@@ -3582,7 +3594,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
       >
         {/* Morphing container */}
         <div
-          className={`${styles.toolbarContainer} ${isActive ? styles.expanded : styles.collapsed} ${showEntranceAnimation ? styles.entrance : ""} ${isToolbarHiding ? styles.hiding : ""} ${!settings.webhooksEnabled && (isValidUrl(settings.webhookUrl) || isValidUrl(webhookUrl || "")) ? styles.serverConnected : ""}`}
+          className={`${styles.toolbarContainer} ${isActive ? styles.expanded : styles.collapsed} ${showEntranceAnimation ? styles.entrance : ""} ${isToolbarHiding ? styles.hiding : ""} ${canSend ? styles.serverConnected : ""}`}
           onClick={
             !isActive
               ? (e) => {
@@ -3735,9 +3747,9 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
               </span>
             </div>
 
-            {/* Send button - only visible when webhook URL is available AND auto-send is off */}
+            {/* Send button - visible when onSubmit is provided, or a webhook URL is available AND auto-send is off */}
             <div
-              className={`${styles.buttonWrapper} ${styles.sendButtonWrapper} ${isActive && !settings.webhooksEnabled && (isValidUrl(settings.webhookUrl) || isValidUrl(webhookUrl || "")) ? styles.sendButtonVisible : ""}`}
+              className={`${styles.buttonWrapper} ${styles.sendButtonWrapper} ${isActive && canSend ? styles.sendButtonVisible : ""}`}
             >
               <button
                 className={`${styles.controlButton} ${sendState === "sent" || sendState === "failed" ? styles.statusShowing : ""}`}
@@ -3747,18 +3759,10 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
                   sendToWebhook();
                 }}
                 disabled={
-                  !hasAnnotations ||
-                  (!isValidUrl(settings.webhookUrl) &&
-                    !isValidUrl(webhookUrl || "")) ||
-                  sendState === "sending"
+                  !hasAnnotations || !canSend || sendState === "sending"
                 }
                 data-no-hover={sendState === "sent" || sendState === "failed"}
-                tabIndex={
-                  isValidUrl(settings.webhookUrl) ||
-                  isValidUrl(webhookUrl || "")
-                    ? 0
-                    : -1
-                }
+                tabIndex={canSend ? 0 : -1}
               >
                 <IconSendArrow size={24} state={sendState} />
                 {hasAnnotations && sendState === "idle" && (
