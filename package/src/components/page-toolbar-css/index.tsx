@@ -1945,6 +1945,12 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
         e.preventDefault();
         e.stopPropagation();
 
+        // The click proves both modifiers are held. Sync the tracker so the
+        // release still opens the popup when the keydowns were never seen
+        // (keys already held before activation, or pressed while focus was
+        // outside the document).
+        modifiersHeldRef.current = { cmd: true, shift: true };
+
         const elementUnder = deepElementFromPoint(e.clientX, e.clientY);
         if (!elementUnder) return;
 
@@ -1985,11 +1991,14 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
         "button, a, input, select, textarea, [role='button'], [onclick]",
       );
 
-      // Block interactions on interactive elements when enabled
-      if (settings.blockInteractions && isInteractive) {
+      // Block page interactions when enabled. Stop propagation for every
+      // target, not just native interactive elements: framework handlers
+      // (e.g. a React onClick on a <tr>) are delegated to the root and would
+      // otherwise still fire from this capture-phase listener.
+      if (settings.blockInteractions) {
         e.preventDefault();
         e.stopPropagation();
-        // Still create annotation on the interactive element
+        // Still create annotation on the element
       }
 
       if (pendingAnnotation) {

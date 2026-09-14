@@ -136,3 +136,61 @@ describe("Annotation type", () => {
     expect(annotation.isFixed).toBe(false);
   });
 });
+
+describe("blockInteractions", () => {
+  it("does not let a picked click reach a delegated host handler", () => {
+    const onRowClick = vi.fn();
+    render(
+      <>
+        <table>
+          <tbody>
+            <tr onClick={onRowClick}>
+              <td>Cell</td>
+            </tr>
+          </tbody>
+        </table>
+        <PageFeedbackToolbarCSS />
+      </>
+    );
+
+    const cell = screen.getByText("Cell");
+    // jsdom has no layout; resolve the picked element to the clicked cell
+    document.elementFromPoint = () => cell;
+
+    // Activate feedback mode (blockInteractions defaults to true)
+    fireEvent.keyDown(document, { key: "f", ctrlKey: true, shiftKey: true });
+
+    fireEvent.click(cell);
+
+    expect(onRowClick).not.toHaveBeenCalled();
+    expect(document.querySelector("[data-annotation-popup]")).not.toBeNull();
+  });
+});
+
+describe("cmd+shift multi-select", () => {
+  it("opens the popup on modifier release even when the keydowns were never observed", () => {
+    render(
+      <>
+        <p>First</p>
+        <p>Second</p>
+        <PageFeedbackToolbarCSS />
+      </>
+    );
+    const first = screen.getByText("First");
+    const second = screen.getByText("Second");
+
+    // Modifiers are already held when feedback mode is activated
+    fireEvent.keyDown(document, { key: "f", ctrlKey: true, shiftKey: true });
+
+    document.elementFromPoint = () => first;
+    fireEvent.click(first, { metaKey: true, shiftKey: true });
+    document.elementFromPoint = () => second;
+    fireEvent.click(second, { metaKey: true, shiftKey: true });
+
+    expect(document.querySelector("[data-annotation-popup]")).toBeNull();
+
+    fireEvent.keyUp(document, { key: "Shift", metaKey: true });
+
+    expect(document.querySelector("[data-annotation-popup]")).not.toBeNull();
+  });
+});
