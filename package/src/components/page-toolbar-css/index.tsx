@@ -3412,8 +3412,10 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
         return;
       }
 
-      // Skip other shortcuts if typing or modifier keys are held
-      if (isTyping || e.metaKey || e.ctrlKey) return;
+      // Single-key shortcuts belong to the expanded toolbar. Skip them when
+      // it is collapsed (the host page owns the keyboard then), when typing,
+      // or when modifier keys are held.
+      if (!isActive || isTyping || e.metaKey || e.ctrlKey) return;
 
       // "P" to toggle pause/freeze
       if (e.key === "p" || e.key === "P") {

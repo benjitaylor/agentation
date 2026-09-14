@@ -136,3 +136,24 @@ describe("Annotation type", () => {
     expect(annotation.isFixed).toBe(false);
   });
 });
+
+describe("keyboard shortcuts", () => {
+  it("leaves single-key shortcuts to the host page while the toolbar is collapsed", () => {
+    // Layout mode mounts a palette that observes its size; jsdom has no ResizeObserver
+    vi.stubGlobal("ResizeObserver", class { observe() {} unobserve() {} disconnect() {} });
+    render(
+      <>
+        <div tabIndex={0} data-testid="editor" />
+        <PageFeedbackToolbarCSS />
+      </>
+    );
+    const editor = screen.getByTestId("editor");
+
+    // Collapsed: "l" is not intercepted (fireEvent returns false when defaultPrevented)
+    expect(fireEvent.keyDown(editor, { key: "l" })).toBe(true);
+
+    // Active: the same key is now a toolbar shortcut
+    fireEvent.keyDown(document, { key: "f", ctrlKey: true, shiftKey: true });
+    expect(fireEvent.keyDown(editor, { key: "l" })).toBe(false);
+  });
+});
