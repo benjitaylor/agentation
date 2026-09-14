@@ -3599,7 +3599,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
           onMouseDown={handleToolbarMouseDown}
           role={!isActive ? "button" : undefined}
           tabIndex={!isActive ? 0 : -1}
-          title={!isActive ? "Start feedback mode" : undefined}
+          title={!isActive ? "Start feedback mode (⌘⇧F / Ctrl+Shift+F)" : undefined}
         >
           {/* Toggle content - visible when collapsed */}
           <div

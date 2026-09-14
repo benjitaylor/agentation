@@ -40,6 +40,7 @@ The toolbar appears in the bottom-right corner. Click to activate, then click an
 - **Multi-select** – Drag to select multiple elements at once
 - **Area selection** – Drag to annotate any region, even empty space
 - **Animation pause** – Freeze all animations (CSS, JS, videos) to capture specific states
+- **Keyboard shortcut** – Toggle feedback mode with ⌘⇧F (Ctrl+Shift+F on Windows/Linux), so open menus and dropdowns stay put while you annotate them
 - **Structured output** – Copy markdown with selectors, positions, and context
 - **Dark/light mode** – Matches your preference or set manually
 - **Zero dependencies** – Pure CSS animations, no runtime libraries
