@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { PageFeedbackToolbarCSS } from "./index";
 import type { Annotation } from "../../types";
 
@@ -77,6 +77,83 @@ describe("PageFeedbackToolbarCSS", () => {
         )
       ).not.toThrow();
     });
+  });
+});
+
+describe("accessible names", () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      }
+    );
+  });
+
+  const renderToolbar = () => {
+    const { baseElement } = render(<PageFeedbackToolbarCSS />);
+    const toolbar = baseElement.querySelector("[data-feedback-toolbar]");
+    expect(toolbar).not.toBeNull();
+    return toolbar as HTMLElement;
+  };
+
+  // jsdom's selector engine chokes on React's ":r0:" auto-ids, so read the
+  // name off the element instead of going through getByRole's name matching.
+  const accessibleName = (el: Element) =>
+    (el.getAttribute("aria-label") ?? el.textContent ?? "").trim();
+
+  it("gives every toolbar button an accessible name", () => {
+    const toolbar = renderToolbar();
+    const buttons = [...toolbar.querySelectorAll("button")];
+
+    expect(buttons.length).toBeGreaterThan(0);
+    for (const button of buttons) {
+      expect(accessibleName(button)).not.toBe("");
+    }
+  });
+
+  it("labels the named control buttons", () => {
+    const toolbar = renderToolbar();
+    const names = [...toolbar.querySelectorAll("button")].map(accessibleName);
+
+    for (const name of [
+      "Pause animations",
+      "Layout mode",
+      "Hide markers",
+      "Copy feedback",
+      "Send Annotations",
+      "Clear all",
+      "Settings",
+      "Exit",
+    ]) {
+      expect(names).toContain(name);
+    }
+  });
+
+  it("labels the settings switches and the brand link", () => {
+    const toolbar = renderToolbar();
+    const switches = [
+      ...toolbar.querySelectorAll('input[type="checkbox"]'),
+    ].filter((input) => !input.id);
+
+    expect(switches.length).toBeGreaterThan(0);
+    for (const input of switches) {
+      expect(accessibleName(input)).not.toBe("");
+    }
+
+    for (const link of toolbar.querySelectorAll("a")) {
+      expect(accessibleName(link)).not.toBe("");
+    }
+  });
+
+  it("does not nest the control buttons inside the collapsed button role", () => {
+    const toolbar = renderToolbar();
+    const collapsedToggle = toolbar.querySelector('[role="button"]');
+
+    expect(collapsedToggle).not.toBeNull();
+    expect(collapsedToggle!.querySelector("button")).toBeNull();
   });
 });
 

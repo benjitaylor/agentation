@@ -3562,6 +3562,16 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
     return styles;
   };
 
+  // Labels shared by each control button's aria-label and its visible tooltip
+  const freezeLabel = isFrozen ? "Resume animations" : "Pause animations";
+  const designModeLabel = isDesignMode ? "Exit layout mode" : "Layout mode";
+  const markersLabel = showMarkers ? "Hide markers" : "Show markers";
+  const copyLabel =
+    isDesignMode && blankCanvas ? "Copy layout" : "Copy feedback";
+  // While collapsed the controls are visually hidden inside the role="button"
+  // container, so keep them out of the tab order and the accessibility tree.
+  const controlTabIndex = isActive ? undefined : -1;
+
   return createPortal(
     <div ref={portalWrapperRef} style={{ display: "contents" }} data-agentation-theme={isDarkMode ? "dark" : "light"} data-agentation-accent={settings.annotationColorId} data-agentation-root="">
       {/* Toolbar */}
@@ -3597,13 +3607,15 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
               : undefined
           }
           onMouseDown={handleToolbarMouseDown}
-          role={!isActive ? "button" : undefined}
-          tabIndex={!isActive ? 0 : -1}
-          title={!isActive ? "Start feedback mode" : undefined}
         >
-          {/* Toggle content - visible when collapsed */}
+          {/* Toggle content - visible when collapsed.
+              Carries the collapsed button role so it does not wrap the
+              (hidden) control buttons, which would nest interactive roles. */}
           <div
             className={`${styles.toggleContent} ${!isActive ? styles.visible : styles.hidden}`}
+            role={!isActive ? "button" : undefined}
+            tabIndex={!isActive ? 0 : -1}
+            title={!isActive ? "Start feedback mode" : undefined}
           >
             <IconListSparkle size={24} />
             {hasVisibleAnnotations && (
@@ -3624,6 +3636,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
             } ${tooltipsHidden || showSettings ? styles.tooltipsHidden : ""} ${tooltipSessionActive ? styles.tooltipsInSession : ""}`}
             onMouseEnter={handleControlsMouseEnter}
             onMouseLeave={handleControlsMouseLeave}
+            aria-hidden={!isActive}
           >
             <div
               className={`${styles.buttonWrapper} ${
@@ -3640,11 +3653,13 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
                   toggleFreeze();
                 }}
                 data-active={isFrozen}
+                aria-label={freezeLabel}
+                tabIndex={controlTabIndex}
               >
                 <IconPausePlayAnimated size={24} isPaused={isFrozen} />
               </button>
               <span className={styles.buttonTooltip}>
-                {isFrozen ? "Resume animations" : "Pause animations"}
+                {freezeLabel}
                 <span className={styles.shortcut}>P</span>
               </span>
             </div>
@@ -3687,11 +3702,13 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
                 }}
                 data-active={isDesignMode}
                 style={isDesignMode && blankCanvas ? { color: '#f97316', background: 'rgba(249, 115, 22, 0.25)' } : undefined}
+                aria-label={designModeLabel}
+                tabIndex={controlTabIndex}
               >
                 <IconLayout size={21} />
               </button>
               <span className={styles.buttonTooltip}>
-                {isDesignMode ? "Exit layout mode" : "Layout mode"}
+                {designModeLabel}
                 <span className={styles.shortcut}>L</span>
               </span>
             </div>
@@ -3705,11 +3722,13 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
                   setShowMarkers(!showMarkers);
                 }}
                 disabled={!hasAnnotations || isDesignMode}
+                aria-label={markersLabel}
+                tabIndex={controlTabIndex}
               >
                 <IconEyeAnimated size={24} isOpen={showMarkers} />
               </button>
               <span className={styles.buttonTooltip}>
-                {showMarkers ? "Hide markers" : "Show markers"}
+                {markersLabel}
                 <span className={styles.shortcut}>H</span>
               </span>
             </div>
@@ -3726,11 +3745,13 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
                   ? designPlacements.length === 0 && !(rearrangeState?.sections?.length)
                   : !hasAnnotations && drawStrokes.length === 0 && designPlacements.length === 0 && !(rearrangeState?.sections?.length)}
                 data-active={copied}
+                aria-label={copyLabel}
+                tabIndex={controlTabIndex}
               >
                 <IconCopyAnimated size={24} copied={copied} tint={isDesignMode && blankCanvas && (designPlacements.length > 0 || !!(rearrangeState?.sections?.length)) ? "#f97316" : undefined} />
               </button>
               <span className={styles.buttonTooltip}>
-                {isDesignMode && blankCanvas ? "Copy layout" : "Copy feedback"}
+                {copyLabel}
                 <span className={styles.shortcut}>C</span>
               </span>
             </div>
@@ -3754,11 +3775,13 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
                 }
                 data-no-hover={sendState === "sent" || sendState === "failed"}
                 tabIndex={
-                  isValidUrl(settings.webhookUrl) ||
-                  isValidUrl(webhookUrl || "")
+                  isActive &&
+                  (isValidUrl(settings.webhookUrl) ||
+                    isValidUrl(webhookUrl || ""))
                     ? 0
                     : -1
                 }
+                aria-label="Send Annotations"
               >
                 <IconSendArrow size={24} state={sendState} />
                 {hasAnnotations && sendState === "idle" && (
@@ -3785,6 +3808,8 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
                 }}
                 disabled={!hasAnnotations && drawStrokes.length === 0 && designPlacements.length === 0 && !(rearrangeState?.sections?.length)}
                 data-danger
+                aria-label="Clear all"
+                tabIndex={controlTabIndex}
               >
                 <IconTrashAlt size={24} />
               </button>
@@ -3803,6 +3828,8 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
                   if (isDesignMode) closeDesignMode();
                   setShowSettings(!showSettings);
                 }}
+                aria-label="Settings"
+                tabIndex={controlTabIndex}
               >
                 <IconGear size={24} />
               </button>
@@ -3839,6 +3866,8 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
                   hideTooltipsUntilMouseLeave();
                   deactivate();
                 }}
+                aria-label="Exit"
+                tabIndex={controlTabIndex}
               >
                 <IconXmarkLarge size={24} />
               </button>
@@ -4178,6 +4207,7 @@ const [settings, setSettings] = useState<ToolbarSettings>(() => {
         className={`${styles.drawCanvas} ${isDrawMode ? styles.active : ""}`}
         style={{ opacity: shouldShowMarkers ? 1 : 0, transition: "opacity 0.15s ease" }}
         data-feedback-toolbar
+        aria-hidden="true"
       />
 
       {/* Markers layer - normal scrolling markers */}
