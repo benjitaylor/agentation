@@ -4,6 +4,7 @@ import { useLatestAction } from "../../hooks/use-latest-action";
 import { mergeSessionFeedback } from "../../utils/merge-session-feedback";
 import { createPageEvents, createFrameProjector, viewportRect, parentFrame, captureFrameContext } from "../../utils/frame-dom";
 import { deepElementFromPoint, pierceElementFromPoint, annotationElementFromPoint } from "../../utils/hit-testing";
+import { useDisabledControlsPassThrough, withDisabledControlsHittable } from "../../utils/disabled-controls";
 
 import { useState, useCallback, useEffect, useLayoutEffect, useRef, useMemo } from "react";
 import type { Dispatch, SetStateAction } from "react";
@@ -1775,6 +1776,8 @@ function PageFeedbackToolbarForRoute({
     };
   }, []);
 
+  useDisabledControlsPassThrough(isActive, pageEvents);
+
   // Custom cursor
   useEffect(() => {
     if (!isActive) return;
@@ -2268,7 +2271,7 @@ function PageFeedbackToolbarForRoute({
         ];
 
         for (const [x, y] of points) {
-          const elements = document.elementsFromPoint(x, y);
+          const elements = withDisabledControlsHittable(() => document.elementsFromPoint(x, y));
           for (const el of elements) {
             if (el instanceof HTMLElement) candidateElements.add(el);
           }

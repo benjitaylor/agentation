@@ -6,6 +6,7 @@ import { AnnotationPopupCSS } from "../annotation-popup-css";
 import type { DetectedSection, RearrangeState } from "./types";
 import styles from "./styles.module.scss";
 import { originalSetTimeout } from "../../utils/freeze-animations";
+import { withDisabledControlsHittable } from "../../utils/disabled-controls";
 
 // =============================================================================
 // Rearrange Overlay — Click-to-capture, free drag, resize
@@ -252,7 +253,7 @@ export function RearrangeOverlay({ rearrangeState, onChange, isDarkMode, exiting
     const handleMouseMove = (e: MouseEvent) => {
       if (interactionRef.current) { setHoverHighlight(null); return; }
 
-      const el = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
+      const el = withDisabledControlsHittable(() => document.elementFromPoint(e.clientX, e.clientY)) as HTMLElement | null;
       if (!el) { setHoverHighlight(null); return; }
       if (el.closest("[data-feedback-toolbar]")) { setHoverHighlight(null); return; }
       if (el.closest("[data-design-placement]")) { setHoverHighlight(null); return; }
