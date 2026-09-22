@@ -1,5 +1,6 @@
 import { closestCrossingShadow } from "./element-identification";
 import { frameDocument, frameGeometry, isShadowRoot, viewportRect } from "./frame-dom";
+import { withDisabledControlsHittable } from "./disabled-controls";
 
 const TOOLBAR = "agentation-toolbar, [data-agentation-root], [data-feedback-toolbar], [data-annotation-popup], [data-annotation-marker]";
 const CONTAINERS = new Set([
@@ -8,6 +9,10 @@ const CONTAINERS = new Set([
 
 /** Ordinary picking crosses open shadow roots, but keeps the topmost element. */
 export function deepElementFromPoint(x: number, y: number): HTMLElement | null {
+  return withDisabledControlsHittable(() => deepElementFromPointNow(x, y));
+}
+
+function deepElementFromPointNow(x: number, y: number): HTMLElement | null {
   let element = document.elementFromPoint(x, y);
   const visited = new Set<Element>();
   while (element && !visited.has(element)) {
@@ -44,6 +49,10 @@ function isVisible(element: Element): boolean {
 }
 
 function elementsAtPoint(x: number, y: number): Element[] {
+  return withDisabledControlsHittable(() => elementsAtPointNow(x, y));
+}
+
+function elementsAtPointNow(x: number, y: number): Element[] {
   const candidates: Element[] = [];
   const seen = new Set<Element>();
   const visit = (elements: Element[], localX: number, localY: number) => {

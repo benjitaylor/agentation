@@ -8,6 +8,7 @@
 // If not installed, falls back to stroke-only canvas capture.
 //
 
+import { withDisabledControlsHittable } from "./disabled-controls";
 // Cache the import result so we only try once
 let _domCaptureModule: {
   domToCanvas: (node: Node, options?: Record<string, unknown>) => Promise<HTMLCanvasElement>;
@@ -52,7 +53,7 @@ function findCaptureTarget(
   const cy = captureY + captureH / 2;
 
   // elementsFromPoint returns elements from most specific (smallest) to least
-  const elements = document.elementsFromPoint(cx, cy);
+  const elements = withDisabledControlsHittable(() => document.elementsFromPoint(cx, cy));
 
   for (const el of elements) {
     if (!(el instanceof HTMLElement)) continue;
