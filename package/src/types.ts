@@ -22,6 +22,7 @@ export type Annotation = {
   isFixed?: boolean; // true if element has fixed/sticky positioning (marker stays fixed)
   reactComponents?: string; // React component hierarchy (e.g. "<App> <Dashboard> <Button>")
   sourceFile?: string; // Source file path from React _debugSource (dev mode only, e.g. "src/Button.tsx:42")
+  reactComponentStack?: string; // React ancestry with source coordinates where available
   attributes?: Record<string, string>; // Explicit identifying attributes captured at selection time
   frame?: {
     path: Array<{ index: number; id?: string; url: string }>;

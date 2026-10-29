@@ -78,6 +78,7 @@ import {
   getSourceLocation,
   findNearestComponentSource,
   formatSourceLocation,
+  getReactComponentStack,
 } from "../../utils/source-location";
 import {
   installAnimationFreeze,
@@ -547,6 +548,7 @@ function PageFeedbackToolbarForRoute({
     nearbyElements?: string;
     reactComponents?: string;
     sourceFile?: string;
+    reactComponentStack?: string;
     attributes?: Record<string, string>;
     frame?: Annotation["frame"];
     elementBoundingBoxes?: Array<{
@@ -1682,6 +1684,7 @@ function PageFeedbackToolbarForRoute({
         reactComponents: firstItem.reactComponents,
         targetElement: firstEl,
         sourceFile: detectSourceFile(firstEl),
+        reactComponentStack: getReactComponentStack(firstEl),
         attributes: captureElementAttributes(firstEl, attributeNames),
       });
     } else {
@@ -1743,6 +1746,7 @@ function PageFeedbackToolbarForRoute({
         cssClasses: getElementClasses(firstEl),
         nearbyText: getNearbyText(firstEl),
         sourceFile: detectSourceFile(firstEl),
+        reactComponentStack: getReactComponentStack(firstEl),
         attributes: captureElementAttributes(firstEl, attributeNames),
       });
     }
@@ -2081,6 +2085,7 @@ function PageFeedbackToolbarForRoute({
         nearbyElements: getNearbyElements(elementUnder),
         reactComponents: reactComponents ?? undefined,
         sourceFile: detectSourceFile(elementUnder),
+        reactComponentStack: getReactComponentStack(elementUnder),
         attributes: captureElementAttributes(elementUnder, attributeNames),
         frame: captureFrameContext(elementUnder, e.clientX, e.clientY),
         targetElement: elementUnder, // Store for live position queries
@@ -2548,7 +2553,8 @@ function PageFeedbackToolbarForRoute({
               cssClasses: getElementClasses(firstElement),
               nearbyText: getNearbyText(firstElement),
               sourceFile: detectSourceFile(firstElement),
-        attributes: captureElementAttributes(firstElement, attributeNames),
+              reactComponentStack: getReactComponentStack(firstElement),
+              attributes: captureElementAttributes(firstElement, attributeNames),
             });
           }
         } else if (shouldAccumulateMultiSelect && !isPrimaryMultiSelectModifierActive(e)) {
@@ -2662,6 +2668,7 @@ function PageFeedbackToolbarForRoute({
         nearbyElements: pendingAnnotation.nearbyElements,
         reactComponents: pendingAnnotation.reactComponents,
         sourceFile: pendingAnnotation.sourceFile,
+        reactComponentStack: pendingAnnotation.reactComponentStack,
         attributes: pendingAnnotation.attributes,
         frame: pendingAnnotation.frame,
         elementBoundingBoxes: pendingAnnotation.elementBoundingBoxes,

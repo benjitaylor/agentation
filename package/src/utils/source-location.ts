@@ -15,7 +15,7 @@ import * as React from "react";
 // - React 19.x (with fallbacks for changed internals)
 //
 // Limitations:
-// - Only works in development builds (production builds strip _debugSource)
+// - Generated bundle locations need source maps to resolve to original source
 // - Requires React DevTools-style fiber access
 // - Some bundlers may strip debug info even in development
 // =============================================================================
@@ -386,8 +386,12 @@ function findDebugSourceReact19(
 // stack frames already contain original source paths.
 // =============================================================================
 
+interface ProbedSourceLocation extends SourceLocation {
+  stackFileName: string;
+}
+
 /** Cache: component function → probed SourceLocation (or null if unresolvable) */
-const sourceProbeCache = new Map<Function, SourceLocation | null>();
+const sourceProbeCache = new Map<Function, ProbedSourceLocation | null>();
 
 /**
  * Extract the callable function from a fiber, handling wrappers.
@@ -481,13 +485,40 @@ function getReactDispatcher(): {
 }
 
 /**
- * Parse the first non-internal frame from an error stack string.
+ * Locate the probed component, using its caller as a boundary when available.
  */
 function parseComponentFrame(
   stack: string,
   functionName?: string,
+  callerStack?: string,
 ): { fileName: string; line: number; column?: number } | null {
   const lines = stack.split("\n");
+
+  // V8 format: "    at FnName (file:line:col)" or "    at file:line:col"
+  const v8Re = /^\s*at\s+(?:.*?\s+\()?(.+?):(\d+):(\d+)\)?$/;
+  // WebKit/Gecko: "FnName@file:line:col" or "@file:line:col"
+  const webkitRe = /^[^@]*@(.+?):(\d+):(\d+)$/;
+
+  if (callerStack !== undefined) {
+    const callerFrame = callerStack.split("\n").find(
+      (line) => v8Re.test(line) || webkitRe.test(line)
+    );
+    if (!callerFrame) return null;
+    const callerIndex = lines.findIndex(
+      (line) => line.trim() === callerFrame.trim()
+    );
+    if (callerIndex < 1) return null;
+
+    // The preceding frame is the component, even when hooks and Agentation
+    // share a minified bundle and component names are unavailable.
+    const componentFrame = lines[callerIndex - 1].trim();
+    const match = v8Re.exec(componentFrame) || webkitRe.exec(componentFrame);
+    return match ? {
+      fileName: match[1],
+      line: parseInt(match[2], 10),
+      column: parseInt(match[3], 10),
+    } : null;
+  }
 
   // Patterns to skip: our own bundle, React internals, node_modules, chunk files
   const skipPatterns = [
@@ -507,11 +538,6 @@ function parseComponentFrame(
     /scheduler/,
     /<anonymous>/,           // Proxy handler frames
   ];
-
-  // V8 format: "    at FnName (file:line:col)" or "    at file:line:col"
-  const v8Re = /^\s*at\s+(?:.*?\s+\()?(.+?):(\d+):(\d+)\)?$/;
-  // WebKit/Gecko: "FnName@file:line:col" or "@file:line:col"
-  const webkitRe = /^[^@]*@(.+?):(\d+):(\d+)$/;
 
   for (const line of lines) {
     const trimmed = line.trim();
@@ -582,7 +608,7 @@ function cleanSourcePath(rawPath: string): string {
  * Probe a single fiber's component function by invoking it with a
  * throwing hooks dispatcher and parsing the resulting error stack.
  */
-function probeComponentSource(fiber: ReactFiber): SourceLocation | null {
+function probeComponentSource(fiber: ReactFiber): ProbedSourceLocation | null {
   const fn = unwrapComponentType(fiber);
   if (!fn) return null;
 
@@ -598,7 +624,8 @@ function probeComponentSource(fiber: ReactFiber): SourceLocation | null {
   }
 
   const original = dispatcher.get();
-  let result: SourceLocation | null = null;
+  let result: ProbedSourceLocation | null = null;
+  let callerStack: string | undefined;
 
   try {
     // Install a proxy dispatcher that throws an Error (with stack) on any hook access.
@@ -608,7 +635,14 @@ function probeComponentSource(fiber: ReactFiber): SourceLocation | null {
       {},
       {
         get() {
-          throw new Error("probe");
+          const error = new Error("probe");
+          if (typeof Error.captureStackTrace === "function") {
+            const caller = new Error();
+            // Function identity survives minification; filenames and names do not.
+            Error.captureStackTrace(caller, fn);
+            callerStack = caller.stack;
+          }
+          throw error;
         },
       }
     );
@@ -618,14 +652,18 @@ function probeComponentSource(fiber: ReactFiber): SourceLocation | null {
       // Invoke the component — it will either:
       // 1. Call a hook → throws Error with stack (ideal case)
       // 2. Have no hooks → runs to completion (harmless, discarded), no stack to parse
-      fn({});
+      fn(fiber.memoizedProps || {}, null);
     } catch (e) {
       if (e instanceof Error && e.message === "probe" && e.stack) {
-        const frame = parseComponentFrame(e.stack, fn.name);
+        // Without a function boundary or a name, an internal frame is ambiguous.
+        const frame = callerStack !== undefined || fn.name
+          ? parseComponentFrame(e.stack, fn.name, callerStack)
+          : null;
         if (frame) {
           const cleaned = cleanSourcePath(frame.fileName);
           result = {
             fileName: cleaned,
+            stackFileName: frame.fileName.replace(/[?#].*$/, ""),
             lineNumber: frame.line,
             columnNumber: frame.column,
             componentName: getComponentName(fiber) || undefined,
@@ -639,6 +677,58 @@ function probeComponentSource(fiber: ReactFiber): SourceLocation | null {
 
   sourceProbeCache.set(fn, result);
   return result;
+}
+
+/** Read only this fiber's metadata so an ancestor's location is never assigned to it. */
+function getOwnDebugSource(fiber: ReactFiber): SourceLocation | null {
+  const record = fiber as unknown as Record<string, unknown>;
+  const candidates = [
+    record._debugSource,
+    record.__source,
+    record._source,
+    record.debugSource,
+    fiber.memoizedProps?.__source,
+  ];
+  for (const candidate of candidates) {
+    if (!candidate || typeof candidate !== "object") continue;
+    const source = candidate as Record<string, unknown>;
+    if (typeof source.fileName === "string" && typeof source.lineNumber === "number") {
+      return {
+        fileName: source.fileName,
+        lineNumber: source.lineNumber,
+        columnNumber: typeof source.columnNumber === "number" ? source.columnNumber : undefined,
+      };
+    }
+  }
+  return null;
+}
+
+/** Capture React ancestry for an element, with source coordinates for each component. */
+export function getReactComponentStack(element: HTMLElement): string | undefined {
+  let fiber = getFiberFromElement(element);
+  const frames: string[] = [];
+  let depth = 0;
+
+  while (fiber && depth < 50) {
+    const fn = unwrapComponentType(fiber);
+    const type = fiber.type;
+    if (fn || typeof type === "function" || (type && typeof type === "object" && "render" in type)) {
+      const name = getComponentName(fiber) || fn?.name || "Anonymous";
+      const source = getOwnDebugSource(fiber) || probeComponentSource(fiber);
+      const fileName = source && "stackFileName" in source && typeof source.stackFileName === "string"
+        ? source.stackFileName
+        : source?.fileName;
+      const location = source && fileName
+        ? formatSourceLocation({ ...source, fileName })
+        : "source unavailable";
+      frames.push(`    at ${name} (${location})`);
+    }
+    fiber = fiber.return ?? null;
+    depth++;
+  }
+
+  if (fiber) frames.push("    ... ancestry truncated after 50 fibers");
+  return frames.length ? frames.join("\n") : undefined;
 }
 
 /**
@@ -667,8 +757,8 @@ function probeSourceWalk(
  * Gets the source file location for a DOM element in a React application
  *
  * This function attempts to extract the source file path and line number
- * where a React component is defined. This only works in development mode
- * as production builds strip debug information.
+ * where a React component is defined. Development metadata provides original
+ * locations; stack probes may return generated locations that need source maps.
  *
  * @param element - DOM element to get source location for
  * @returns SourceLocationResult with location info or reason for failure

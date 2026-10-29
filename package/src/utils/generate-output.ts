@@ -31,6 +31,13 @@ export function generateOutputHeader(pathname: string, appName?: string): string
   return output;
 }
 
+function formatSourceContext(annotation: Annotation): string {
+  if (annotation.reactComponentStack) {
+    return `**React component stack (nearest first; source locations may be unavailable):**\n\`\`\`text\n${annotation.reactComponentStack}\n\`\`\`\n`;
+  }
+  return annotation.sourceFile ? `**Source:** ${annotation.sourceFile}\n` : "";
+}
+
 export function generateOutput(
   annotations: Annotation[],
   pathname: string,
@@ -63,7 +70,7 @@ export function generateOutput(
 
   annotations.forEach((a, i) => {
     if (detailLevel === "compact") {
-      output += `${i + 1}. **${a.element}**${a.sourceFile ? ` (${a.sourceFile})` : ""}: ${a.comment}`;
+      output += `${i + 1}. **${a.element}**${a.sourceFile && !a.reactComponentStack ? ` (${a.sourceFile})` : ""}: ${a.comment}`;
       if (a.selectedText) {
         output += ` (re: "${a.selectedText.slice(0, 30)}${a.selectedText.length > 30 ? "..." : ""}")`;
       }
@@ -98,9 +105,7 @@ export function generateOutput(
       if (a.nearbyElements) {
         output += `**Nearby Elements:** ${a.nearbyElements}\n`;
       }
-      if (a.sourceFile) {
-        output += `**Source:** ${a.sourceFile}\n`;
-      }
+      output += formatSourceContext(a);
       if (a.reactComponents) {
         output += `**React:** ${a.reactComponents}\n`;
       }
@@ -109,9 +114,7 @@ export function generateOutput(
       // standard and detailed
       output += `### ${i + 1}. ${a.element}\n`;
       output += `**Location:** ${a.elementPath}\n`;
-      if (a.sourceFile) {
-        output += `**Source:** ${a.sourceFile}\n`;
-      }
+      output += formatSourceContext(a);
       if (a.reactComponents) {
         output += `**React:** ${a.reactComponents}\n`;
       }
