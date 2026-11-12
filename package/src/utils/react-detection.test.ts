@@ -6,6 +6,7 @@ import {
   getReactComponentName,
   isReactPage,
   clearReactDetectionCache,
+  hasReactFiber,
   DEFAULT_SKIP_EXACT,
   DEFAULT_SKIP_PATTERNS,
 } from "./react-detection";
@@ -37,6 +38,11 @@ function attachFiber(element: HTMLElement, fiber: unknown) {
   (element as unknown as Record<string, unknown>)["__reactFiber$test"] = fiber;
 }
 
+// Helper to attach React container property to a root element (React 18/19 createRoot)
+function attachContainer(element: HTMLElement, container: unknown = {}) {
+  (element as unknown as Record<string, unknown>)["__reactContainer$test"] = container;
+}
+
 // Helper to create element with fiber attached
 function createElementWithFiber(
   fiber: MockFiber,
@@ -55,6 +61,48 @@ describe("react-detection", () => {
   beforeEach(() => {
     clearReactDetectionCache();
     document.body.innerHTML = "";
+    for (const key of Object.keys(document.body)) {
+      if (key.startsWith("__react") || key.startsWith("_react")) {
+        delete (document.body as unknown as Record<string, unknown>)[key];
+      }
+    }
+  });
+
+  describe("hasReactFiber", () => {
+    it("returns false for regular elements", () => {
+      const el = document.createElement("div");
+      expect(hasReactFiber(el)).toBe(false);
+    });
+
+    it("returns true for elements with __reactFiber$ property (React 18/19)", () => {
+      const el = document.createElement("div");
+      (el as unknown as Record<string, unknown>)["__reactFiber$12345"] = {};
+      expect(hasReactFiber(el)).toBe(true);
+    });
+
+    it("returns true for elements with __reactContainer$ property (React 19 createRoot)", () => {
+      const el = document.createElement("div");
+      (el as unknown as Record<string, unknown>)["__reactContainer$abcdef"] = {};
+      expect(hasReactFiber(el)).toBe(true);
+    });
+
+    it("returns true for elements with __reactInternalInstance$ property (React 17)", () => {
+      const el = document.createElement("div");
+      (el as unknown as Record<string, unknown>)["__reactInternalInstance$12345"] = {};
+      expect(hasReactFiber(el)).toBe(true);
+    });
+
+    it("returns true for elements with __reactProps$ property", () => {
+      const el = document.createElement("div");
+      (el as unknown as Record<string, unknown>)["__reactProps$12345"] = {};
+      expect(hasReactFiber(el)).toBe(true);
+    });
+
+    it("returns true for elements with legacy _reactRootContainer (React 16/17)", () => {
+      const el = document.createElement("div");
+      (el as unknown as Record<string, unknown>)["_reactRootContainer"] = {};
+      expect(hasReactFiber(el)).toBe(true);
+    });
   });
 
   describe("isReactPage", () => {
@@ -90,12 +138,94 @@ describe("react-detection", () => {
       expect(isReactPage()).toBe(true);
     });
 
+    it("returns true when React 19 createRoot container (__reactContainer$) is on #root", () => {
+      const root = document.createElement("div");
+      root.id = "root";
+      attachContainer(root);
+      document.body.appendChild(root);
+      expect(isReactPage()).toBe(true);
+    });
+
+    it("returns true when React 19 createRoot container is on #app", () => {
+      const app = document.createElement("div");
+      app.id = "app";
+      attachContainer(app);
+      document.body.appendChild(app);
+      expect(isReactPage()).toBe(true);
+    });
+
+    it("returns true when React 19 createRoot container is on #__next", () => {
+      const next = document.createElement("div");
+      next.id = "__next";
+      attachContainer(next);
+      document.body.appendChild(next);
+      expect(isReactPage()).toBe(true);
+    });
+
+    it("returns true when React 19 createRoot container is on body", () => {
+      attachContainer(document.body);
+      expect(isReactPage()).toBe(true);
+      delete (document.body as unknown as Record<string, unknown>)["__reactContainer$test"];
+    });
+
+    it("returns true when React 19 createRoot container is on immediate child of body", () => {
+      const child = document.createElement("div");
+      attachContainer(child);
+      document.body.appendChild(child);
+      expect(isReactPage()).toBe(true);
+    });
+
+    it("handles random suffixes on __reactContainer$", () => {
+      const root = document.createElement("div");
+      root.id = "root";
+      (root as unknown as Record<string, unknown>)["__reactContainer$r9x2k8z1"] = {};
+      document.body.appendChild(root);
+      expect(isReactPage()).toBe(true);
+    });
+
+    it("returns true for legacy React 16/17 _reactRootContainer on #root", () => {
+      const root = document.createElement("div");
+      root.id = "root";
+      (root as unknown as Record<string, unknown>)["_reactRootContainer"] = {};
+      document.body.appendChild(root);
+      expect(isReactPage()).toBe(true);
+    });
+
+    it("does not cache negative results for delayed React mounting", () => {
+      // 1. Initially, non-React page returns false
+      expect(isReactPage()).toBe(false);
+
+      // 2. Later, React 19 mounts with createRoot without page reload or manual cache clear
+      const root = document.createElement("div");
+      root.id = "root";
+      attachContainer(root);
+      document.body.appendChild(root);
+
+      // 3. Next call should detect React 19 successfully (not stuck on cached false)
+      expect(isReactPage()).toBe(true);
+    });
+
     it("caches the result", () => {
       attachFiber(document.body, createMockFiber("App"));
       expect(isReactPage()).toBe(true);
       // Remove the fiber
       delete (document.body as unknown as Record<string, unknown>)["__reactFiber$test"];
       // Should still return true due to cache
+      expect(isReactPage()).toBe(true);
+    });
+
+    it("caches positive results once React 19 createRoot is detected", () => {
+      const root = document.createElement("div");
+      root.id = "root";
+      attachContainer(root);
+      document.body.appendChild(root);
+
+      expect(isReactPage()).toBe(true);
+
+      // Remove the container property
+      delete (root as unknown as Record<string, unknown>)["__reactContainer$test"];
+
+      // Should still return true due to positive cache
       expect(isReactPage()).toBe(true);
     });
   });
@@ -178,6 +308,66 @@ describe("react-detection", () => {
       const result2 = getReactComponentName(element, { mode: "all" });
 
       expect(result1).toBe(result2); // Same reference = cached
+    });
+
+    it("extracts component hierarchy in React 19 apps using createRoot on #root", () => {
+      const root = document.createElement("div");
+      root.id = "root";
+      attachContainer(root);
+      document.body.appendChild(root);
+
+      const app = createMockFiber("App");
+      const button = createMockFiber("Button", app);
+      const element = createElementWithFiber(button);
+
+      const result = getReactComponentName(element, { mode: "all" });
+      expect(result.components).toEqual(["Button", "App"]);
+      expect(result.path).toBe("<App> <Button>");
+    });
+
+    it("extracts component names after delayed React 19 mount", () => {
+      const element = document.createElement("button");
+      document.body.appendChild(element);
+
+      // 1. Called before React mounts: returns empty and does not permanently poison detection
+      const preResult = getReactComponentName(element);
+      expect(preResult.path).toBeNull();
+      expect(preResult.components).toEqual([]);
+
+      // 2. React mounts later with createRoot and attaches fiber to button
+      const root = document.createElement("div");
+      root.id = "root";
+      attachContainer(root);
+      document.body.appendChild(root);
+
+      const app = createMockFiber("App");
+      const submitBtn = createMockFiber("SubmitButton", app);
+      attachFiber(element, submitBtn);
+
+      // 3. Called after React mounts: successfully extracts components
+      const postResult = getReactComponentName(element, { mode: "all" });
+      expect(postResult.components).toEqual(["SubmitButton", "App"]);
+      expect(postResult.path).toBe("<App> <SubmitButton>");
+    });
+
+    it("detects React and extracts components when element has fiber even with non-standard root", () => {
+      // Non-standard root container not in commonRoots and deeply nested
+      const wrapper = document.createElement("div");
+      const customRoot = document.createElement("section");
+      customRoot.id = "unusual-container";
+      wrapper.appendChild(customRoot);
+      document.body.appendChild(wrapper);
+
+      const app = createMockFiber("Dashboard");
+      const card = createMockFiber("MetricCard", app);
+      const element = document.createElement("div");
+      attachFiber(element, card);
+      customRoot.appendChild(element);
+
+      const result = getReactComponentName(element, { mode: "all" });
+      expect(result.components).toEqual(["MetricCard", "Dashboard"]);
+      expect(result.path).toBe("<Dashboard> <MetricCard>");
+      expect(isReactPage()).toBe(true);
     });
   });
 

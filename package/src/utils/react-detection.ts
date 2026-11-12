@@ -367,17 +367,22 @@ let reactDetectionCache: boolean | null = null;
 const componentCacheAll = new WeakMap<HTMLElement, ReactComponentInfo>();
 
 /**
- * Checks if React is present on the page
+ * Check if an element has React fiber or root keys
  */
-/**
- * Check if an element has React fiber keys
- */
-function hasReactFiber(element: Element): boolean {
-  return Object.keys(element).some(
-    (key) =>
-      key.startsWith("__reactFiber$") ||
-      key.startsWith("__reactInternalInstance$") ||
-      key.startsWith("__reactProps$"),
+export function hasReactFiber(element: Element): boolean {
+  if (!element || typeof element !== "object") {
+    return false;
+  }
+  return (
+    "_reactRootContainer" in element ||
+    Object.keys(element).some(
+      (key) =>
+        key.startsWith("__reactFiber$") ||
+        key.startsWith("__reactInternalInstance$") ||
+        key.startsWith("__reactProps$") ||
+        key.startsWith("__reactContainer$") ||
+        key.startsWith("_reactRootContainer"),
+    )
   );
 }
 
@@ -387,8 +392,8 @@ function hasReactFiber(element: Element): boolean {
  * to #root, #app, #__next, etc. rather than document.body directly.
  */
 export function isReactPage(): boolean {
-  if (reactDetectionCache !== null) {
-    return reactDetectionCache;
+  if (reactDetectionCache === true) {
+    return true;
   }
 
   if (typeof document === "undefined") {
@@ -421,7 +426,9 @@ export function isReactPage(): boolean {
     }
   }
 
-  reactDetectionCache = false;
+  // Do not cache negative results: delayed React mounting (e.g., async
+  // scripts, client-side hydration, createRoot) should not leave the
+  // page permanently classified as non-React.
   return false;
 }
 
@@ -636,11 +643,16 @@ export function getReactComponentName(
   }
 
   if (!isReactPage()) {
-    const result: ReactComponentInfo = { path: null, components: [] };
-    if (useCache) {
-      componentCacheAllRef.map.set(element, result);
+    // If element itself has a React fiber, mark React as detected and continue
+    if (getFiberFromElement(element)) {
+      reactDetectionCache = true;
+    } else {
+      const result: ReactComponentInfo = { path: null, components: [] };
+      if (useCache) {
+        componentCacheAllRef.map.set(element, result);
+      }
+      return result;
     }
-    return result;
   }
 
   // Collect DOM classes for smart mode
