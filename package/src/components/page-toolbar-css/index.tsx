@@ -4146,7 +4146,7 @@ function PageFeedbackToolbarForRoute({
           {isDesignMode && blankCanvas && canvasReady && (
             <div className={designStyles.wireframeNotice} data-feedback-toolbar>
               <div className={designStyles.wireframeOpacityRow}>
-              <span className={designStyles.wireframeOpacityLabel}>Toggle Opacity</span>
+              <span id="agentation-wireframe-opacity-label" className={designStyles.wireframeOpacityLabel}>Toggle Opacity</span>
                 <input
                   type="range"
                   className={designStyles.wireframeOpacitySlider}
@@ -4154,6 +4154,7 @@ function PageFeedbackToolbarForRoute({
                   max={1}
                   step={0.01}
                   value={canvasOpacity}
+                  aria-labelledby="agentation-wireframe-opacity-label"
                   onChange={(e) => setCanvasOpacity(Number(e.target.value))}
                 />
               </div>
