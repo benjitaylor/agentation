@@ -156,13 +156,13 @@ Good: "This bullet list reads like docs, not a showcase. Use a 3-column card gri
 
 ## Install
 
-The skill must be symlinked into `~/.claude/skills/` for Claude Code to discover it:
+If `/agentation-self-driving` is already available in Claude Code, setup is complete. To install the skill for your user account, run this from any directory:
 
 ```bash
-ln -s "$(pwd)/skills/agentation-self-driving" ~/.claude/skills/agentation-self-driving
+npx skills add benjitaylor/agentation --skill agentation-self-driving --agent claude-code --global
 ```
 
-Restart Claude Code after installing. Verify with `/agentation-self-driving` — if it loads the skill instructions, the symlink is working.
+Restart Claude Code and run `/agentation-self-driving` to verify the installation.
 
 ## Troubleshooting
 
