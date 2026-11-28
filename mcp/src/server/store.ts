@@ -26,7 +26,10 @@ import { integerEnv, MAX_TIMER_MS } from "./config.js";
 // Store Singleton
 // -----------------------------------------------------------------------------
 
+export type StoreKind = "sqlite" | "memory";
+
 let _store: AFSStore | null = null;
+let _storeKind: StoreKind;
 
 /**
  * Get the store instance. Lazily initializes on first access.
@@ -39,12 +42,22 @@ export function getStore(): AFSStore {
 }
 
 /**
+ * Which backend the store uses, initializing it if needed. "memory" means
+ * annotations are lost when this process exits.
+ */
+export function getStoreKind(): StoreKind {
+  getStore();
+  return _storeKind;
+}
+
+/**
  * Initialize the store. Tries SQLite first, falls back to in-memory.
  */
 function initializeStore(): AFSStore {
   // Check if we should use in-memory only
   if (process.env.AGENTATION_STORE === "memory") {
     process.stderr.write("[Store] Using in-memory store (AGENTATION_STORE=memory)\n");
+    _storeKind = "memory";
     return createMemoryStore();
   }
 
@@ -54,9 +67,12 @@ function initializeStore(): AFSStore {
     const { createSQLiteStore } = require("./sqlite.js");
     const store = createSQLiteStore();
     process.stderr.write("[Store] Using SQLite store (~/.agentation/store.db)\n");
+    _storeKind = "sqlite";
     return store;
   } catch (err) {
     console.warn("[Store] SQLite unavailable, falling back to in-memory:", (err as Error).message);
+    console.warn("[Store] Annotations are kept in memory only and will be lost when this server stops.");
+    _storeKind = "memory";
     return createMemoryStore();
   }
 }
