@@ -133,6 +133,13 @@ test('real HTTP action returns while its webhook is pending, then retries once',
   assert.ok(received[0].id);
   assert.deepEqual(received[0],received[1]);
 });
+test('health reports the local store, and omits it in cloud mode', async t => {
+  const base = await server(t);
+  assert.deepEqual(await (await request(base, '/health')).json(), { status:'ok', mode:'local', store:'sqlite' });
+  setCloudApiKey('local-test-only');
+  t.after(() => setCloudApiKey(undefined));
+  assert.deepEqual(await (await request(base, '/health')).json(), { status:'ok', mode:'cloud' });
+});
 test('CORS remains local when JSON and SSE are proxied to cloud', async t => {
   const base = await server(t);
   const originalFetch = global.fetch;

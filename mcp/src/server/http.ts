@@ -23,6 +23,8 @@ import {
   getPendingAnnotations,
   addThreadMessage,
   getEventsSince,
+  getStore,
+  getStoreKind,
 } from "./store.js";
 import { eventBus } from "./events.js";
 import { isLoopbackAddress, isLoopbackHost, isLocalHostHeader } from "./network.js";
@@ -926,7 +928,6 @@ export function startHttpServer(
   if (apiKey) {
     setCloudApiKey(apiKey);
   }
-
   const server = createServer(async (req, res) => {
     if (!allowRemote) {
       if (!isLoopbackAddress(req.socket.remoteAddress))
@@ -951,7 +952,9 @@ export function startHttpServer(
 
     // Health check (always local)
     if (pathname === "/health" && method === "GET") {
-      return sendJson(res, 200, { status: "ok", mode: isCloudMode() ? "cloud" : "local" });
+      return sendJson(res, 200, isCloudMode()
+        ? { status: "ok", mode: "cloud" }
+        : { status: "ok", mode: "local", store: getStoreKind() });
     }
 
     // Status endpoint (always local)
@@ -1004,6 +1007,8 @@ export function startHttpServer(
   const onListening = () => {
     const where = host && !isLoopbackHost(host) ? host : "localhost";
     log(`[HTTP] Agentation server listening on http://${where}:${port}${isCloudMode() ? " (cloud mode)" : ""}${allowRemote ? " (remote access enabled)" : ""}`);
+    // Open the local store once this process owns the port, so a SQLite failure is logged at startup.
+    if (!isCloudMode()) getStore();
   };
   if (host) server.listen(port, host, onListening);
   else server.listen(port, onListening);
